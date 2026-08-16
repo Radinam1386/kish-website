@@ -1,0 +1,818 @@
+/* =========================================================
+   Admin Teacher Details
+   Scoped Namespace:
+   admin-teacher-details-x7k2
+   ========================================================= */
+
+.admin-teacher-details-x7k2-page {
+  --admin-teacher-details-x7k2-red: #e74c3c;
+  --admin-teacher-details-x7k2-red-dark: #c0392b;
+  --admin-teacher-details-x7k2-red-light: #fff1f1;
+  --admin-teacher-details-x7k2-red-soft: #fdf5f3;
+  --admin-teacher-details-x7k2-red-border:
+    rgba(231, 76, 60, 0.16);
+
+  --admin-teacher-details-x7k2-text: #2d3436;
+  --admin-teacher-details-x7k2-muted: #7f8c8d;
+  --admin-teacher-details-x7k2-border: #eceff3;
+
+  --admin-teacher-details-x7k2-glass:
+    rgba(255, 255, 255, 0.78);
+
+  width: 100%;
+  direction: rtl;
+}
+
+
+/* =========================================================
+   Header
+   ========================================================= */
+
+.admin-teacher-details-x7k2-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.96),
+      rgba(253, 247, 246, 0.96)
+    );
+
+  border: 1px solid
+    var(--admin-teacher-details-x7k2-border);
+
+  border-radius: 24px;
+
+  box-shadow:
+    0 10px 30px rgba(37, 41, 45, 0.05);
+}
+
+
+.admin-teacher-details-x7k2-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  min-width: 0;
+}
+
+
+.admin-teacher-details-x7k2-back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 0.4rem;
+
+  padding: 0.65rem 0.9rem;
+
+  background: #ffffff;
+
+  color:
+    var(--admin-teacher-details-x7k2-muted);
+
+  border: 1px solid
+    var(--admin-teacher-details-x7k2-border);
+
+  border-radius: 10px;
+
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+
+.admin-teacher-details-x7k2-back-button:hover {
+  color:
+    var(--admin-teacher-details-x7k2-red);
+
+  border-color:
+    var(--admin-teacher-details-x7k2-red-border);
+
+  transform: translateX(3px);
+
+  box-shadow:
+    0 4px 12px rgba(231, 76, 60, 0.08);
+}
+
+
+.admin-teacher-details-x7k2-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 68px;
+  height: 68px;
+
+  flex-shrink: 0;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--admin-teacher-details-x7k2-red),
+      var(--admin-teacher-details-x7k2-red-dark)
+    );
+
+  color: #ffffff;
+
+  border-radius: 20px;
+
+  font-size: 1.7rem;
+  font-weight: 800;
+
+  box-shadow:
+    0 8px 22px rgba(231, 76, 60, 0.22);
+}
+
+
+.admin-teacher-details-x7k2-heading {
+  min-width: 0;
+}
+
+
+.admin-teacher-details-x7k2-name-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 0.7rem;
+}
+
+
+.admin-teacher-details-x7k2-name-row h2 {
+  margin: 0;
+
+  color:
+    var(--admin-teacher-details-x7k2-text);
+
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+
+.admin-teacher-details-x7k2-heading p {
+  margin: 0.25rem 0;
+
+  color:
+    var(--admin-teacher-details-x7k2-muted);
+
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+
+.admin-teacher-details-x7k2-teacher-id {
+  color:
+    #a0a5a8;
+
+  font-family: "Vazirmatn", sans-serif;
+
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   Status
+   ========================================================= */
+
+.admin-teacher-details-x7k2-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+
+  padding: 0.3rem 0.65rem;
+
+  border-radius: 999px;
+
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+
+.admin-teacher-details-x7k2-status-active {
+  background: #eefaf2;
+  color: #299b52;
+
+  border: 1px solid #d6f0df;
+}
+
+
+/* =========================================================
+   Stats
+   ========================================================= */
+
+.admin-teacher-details-x7k2-stats {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 1rem;
+
+  margin-bottom: 1.5rem;
+}
+
+
+.admin-teacher-details-x7k2-stat-card {
+  display: flex;
+  align-items: center;
+
+  gap: 0.85rem;
+
+  min-width: 0;
+
+  padding: 1rem 1.1rem;
+
+  background:
+    rgba(255, 255, 255, 0.9);
+
+  border: 1px solid
+    var(--admin-teacher-details-x7k2-border);
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 6px 20px rgba(37, 41, 45, 0.035);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+
+.admin-teacher-details-x7k2-stat-card:hover {
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 10px 25px rgba(37, 41, 45, 0.07);
+}
+
+
+.admin-teacher-details-x7k2-stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 46px;
+  height: 46px;
+
+  flex-shrink: 0;
+
+  border-radius: 14px;
+}
+
+
+.admin-teacher-details-x7k2-stat-primary {
+  background: #fff1f1;
+  color: #e74c3c;
+}
+
+
+.admin-teacher-details-x7k2-stat-green {
+  background: #eefaf2;
+  color: #299b52;
+}
+
+
+.admin-teacher-details-x7k2-stat-blue {
+  background: #eff6ff;
+  color: #3478c5;
+}
+
+
+.admin-teacher-details-x7k2-stat-orange {
+  background: #fff7e8;
+  color: #d88916;
+}
+
+
+.admin-teacher-details-x7k2-stat-content {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+
+  gap: 0.2rem;
+}
+
+
+.admin-teacher-details-x7k2-stat-content span {
+  color:
+    var(--admin-teacher-details-x7k2-muted);
+
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+
+.admin-teacher-details-x7k2-stat-content strong {
+  color:
+    var(--admin-teacher-details-x7k2-text);
+
+  font-family: "Vazirmatn", sans-serif;
+
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   Sections
+   ========================================================= */
+
+.admin-teacher-details-x7k2-section {
+  margin-bottom: 1.5rem;
+
+  padding: 1.5rem;
+
+  background:
+    var(--admin-teacher-details-x7k2-glass);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border: 1px solid
+    var(--admin-teacher-details-x7k2-border);
+
+  border-radius: 22px;
+
+  box-shadow:
+    0 10px 30px rgba(37, 41, 45, 0.045);
+}
+
+
+.admin-teacher-details-x7k2-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 1rem;
+
+  margin-bottom: 1.25rem;
+}
+
+
+.admin-teacher-details-x7k2-section-header h3 {
+  display: flex;
+  align-items: center;
+
+  gap: 0.5rem;
+
+  margin: 0;
+
+  color:
+    var(--admin-teacher-details-x7k2-text);
+
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+
+.admin-teacher-details-x7k2-section-header h3 svg {
+  color:
+    var(--admin-teacher-details-x7k2-red);
+}
+
+
+.admin-teacher-details-x7k2-section-header p {
+  margin: 0.3rem 0 0;
+
+  color:
+    var(--admin-teacher-details-x7k2-muted);
+
+  font-size: 0.8rem;
+}
+
+
+.admin-teacher-details-x7k2-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0.4rem 0.75rem;
+
+  background:
+    var(--admin-teacher-details-x7k2-red-light);
+
+  color:
+    var(--admin-teacher-details-x7k2-red);
+
+  border: 1px solid
+    var(--admin-teacher-details-x7k2-red-border);
+
+  border-radius: 999px;
+
+  font-size: 0.75rem;
+  font-weight: 800;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   Information Grid
+   ========================================================= */
+
+.admin-teacher-details-x7k2-info-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 1rem;
+}
+
+
+.admin-teacher-details-x7k2-info-card {
+  display: flex;
+  align-items: center;
+
+  gap: 0.8rem;
+
+  min-width: 0;
+
+  padding: 1rem;
+
+  background: #ffffff;
+
+  border: 1px solid
+    var(--admin-teacher-details-x7k2-border);
+
+  border-radius: 15px;
+
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease;
+}
+
+
+.admin-teacher-details-x7k2-info-card:hover {
+  transform: translateY(-2px);
+
+  border-color:
+    var(--admin-teacher-details-x7k2-red-border);
+}
+
+
+.admin-teacher-details-x7k2-info-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 40px;
+  height: 40px;
+
+  flex-shrink: 0;
+
+  background:
+    var(--admin-teacher-details-x7k2-red-light);
+
+  color:
+    var(--admin-teacher-details-x7k2-red);
+
+  border-radius: 11px;
+}
+
+
+.admin-teacher-details-x7k2-info-card > div:last-child {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+
+  gap: 0.2rem;
+}
+
+
+.admin-teacher-details-x7k2-info-card span {
+  color:
+    var(--admin-teacher-details-x7k2-muted);
+
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+
+.admin-teacher-details-x7k2-info-card strong {
+  overflow: hidden;
+
+  color:
+    var(--admin-teacher-details-x7k2-text);
+
+  font-family: "Vazirmatn", sans-serif;
+
+  font-size: 0.9rem;
+  font-weight: 800;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.admin-teacher-details-x7k2-ltr {
+  direction: ltr;
+  text-align: right;
+}
+
+
+.admin-teacher-details-x7k2-email {
+  font-size: 0.82rem !important;
+}
+
+
+/* =========================================================
+   Classes
+   ========================================================= */
+
+.admin-teacher-details-x7k2-class-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 1rem;
+}
+
+
+.admin-teacher-details-x7k2-class-card {
+  padding: 1.2rem;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff,
+      #fff8f6
+    );
+
+  border: 1px solid
+    var(--admin-teacher-details-x7k2-border);
+
+  border-radius: 18px;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+
+.admin-teacher-details-x7k2-class-card:hover {
+  transform: translateY(-3px);
+
+  border-color:
+    var(--admin-teacher-details-x7k2-red-border);
+
+  box-shadow:
+    0 10px 25px rgba(231, 76, 60, 0.07);
+}
+
+
+.admin-teacher-details-x7k2-class-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 1rem;
+
+  padding-bottom: 1rem;
+
+  border-bottom: 1px solid
+    var(--admin-teacher-details-x7k2-border);
+}
+
+
+.admin-teacher-details-x7k2-class-level {
+  display: inline-flex;
+
+  padding: 0.25rem 0.55rem;
+
+  background:
+    var(--admin-teacher-details-x7k2-red-light);
+
+  color:
+    var(--admin-teacher-details-x7k2-red);
+
+  border-radius: 7px;
+
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+
+.admin-teacher-details-x7k2-class-top h4 {
+  margin: 0.45rem 0 0.15rem;
+
+  color:
+    var(--admin-teacher-details-x7k2-text);
+
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+
+.admin-teacher-details-x7k2-class-code {
+  color:
+    var(--admin-teacher-details-x7k2-muted);
+
+  font-size: 0.75rem;
+}
+
+
+.admin-teacher-details-x7k2-class-status {
+  flex-shrink: 0;
+
+  padding: 0.3rem 0.6rem;
+
+  background: #eefaf2;
+
+  color: #299b52;
+
+  border: 1px solid #d7efdf;
+
+  border-radius: 999px;
+
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+
+.admin-teacher-details-x7k2-class-details {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 0.6rem;
+
+  padding-top: 1rem;
+}
+
+
+.admin-teacher-details-x7k2-class-details div {
+  display: flex;
+  align-items: center;
+
+  gap: 0.35rem;
+
+  min-width: 0;
+
+  color:
+    var(--admin-teacher-details-x7k2-muted);
+
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+
+.admin-teacher-details-x7k2-class-details svg {
+  flex-shrink: 0;
+
+  color:
+    var(--admin-teacher-details-x7k2-red);
+}
+
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+  .admin-teacher-details-x7k2-stats {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-teacher-details-x7k2-info-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+
+@media (max-width: 850px) {
+
+  .admin-teacher-details-x7k2-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-teacher-details-x7k2-header-right {
+    align-items: flex-start;
+  }
+
+  .admin-teacher-details-x7k2-header
+  > button {
+    width: 100%;
+  }
+
+  .admin-teacher-details-x7k2-class-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+
+@media (max-width: 650px) {
+
+  .admin-teacher-details-x7k2-page {
+    width: 100%;
+  }
+
+  .admin-teacher-details-x7k2-header {
+    padding: 1rem;
+    border-radius: 18px;
+  }
+
+  .admin-teacher-details-x7k2-header-right {
+    flex-wrap: wrap;
+  }
+
+  .admin-teacher-details-x7k2-back-button {
+    order: 3;
+    width: 100%;
+  }
+
+  .admin-teacher-details-x7k2-avatar {
+    width: 56px;
+    height: 56px;
+
+    border-radius: 16px;
+
+    font-size: 1.35rem;
+  }
+
+  .admin-teacher-details-x7k2-name-row h2 {
+    font-size: 1.1rem;
+  }
+
+  .admin-teacher-details-x7k2-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-teacher-details-x7k2-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-teacher-details-x7k2-section {
+    padding: 1rem;
+
+    border-radius: 18px;
+  }
+
+  .admin-teacher-details-x7k2-section-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+}
+
+
+@media (max-width: 480px) {
+
+  .admin-teacher-details-x7k2-stat-card {
+    padding: 0.85rem;
+  }
+
+  .admin-teacher-details-x7k2-stat-icon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .admin-teacher-details-x7k2-info-card {
+    padding: 0.85rem;
+  }
+
+  .admin-teacher-details-x7k2-class-card {
+    padding: 1rem;
+  }
+
+  .admin-teacher-details-x7k2-class-top {
+    flex-direction: column;
+  }
+
+  .admin-teacher-details-x7k2-class-status {
+    align-self: flex-start;
+  }
+
+  .admin-teacher-details-x7k2-class-details {
+    grid-template-columns: 1fr;
+  }
+
+}

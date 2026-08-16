@@ -1,0 +1,995 @@
+/* =========================================================
+   Teacher Students
+   Scoped Namespace:
+   teacher-students-k7p2
+   ========================================================= */
+
+.teacher-students-k7p2-root {
+  --teacher-students-k7p2-primary: var(--primary);
+  --teacher-students-k7p2-primary-dark: var(--primary-dark);
+
+  --teacher-students-k7p2-text: oklch(25% 0 0);
+  --teacher-students-k7p2-text-dark: oklch(20% 0 0);
+
+  --teacher-students-k7p2-muted: oklch(55% 0 0);
+  --teacher-students-k7p2-muted-light: oklch(60% 0 0);
+
+  --teacher-students-k7p2-border: oklch(88% 0 0);
+  --teacher-students-k7p2-border-light: oklch(92% 0 0);
+
+  --teacher-students-k7p2-white: #ffffff;
+
+  --teacher-students-k7p2-green: oklch(42% 0.14 150);
+  --teacher-students-k7p2-green-light: oklch(94% 0.05 150);
+
+  --teacher-students-k7p2-blue: oklch(48% 0.16 250);
+  --teacher-students-k7p2-blue-light: oklch(94% 0.04 250);
+
+  width: 100%;
+  max-width: 100%;
+
+  min-width: 0;
+
+  overflow-x: hidden;
+}
+
+
+/* =========================================================
+   Stats
+   ========================================================= */
+
+.teacher-students-k7p2-stats {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 1rem;
+
+  width: 100%;
+  min-width: 0;
+
+  margin-bottom: 1.5rem;
+}
+
+
+.teacher-students-k7p2-meta-card {
+  display: flex;
+  align-items: center;
+
+  gap: 0.85rem;
+
+  min-width: 0;
+  min-height: 88px;
+
+  padding: 1rem 1.1rem;
+
+  background:
+    var(--teacher-students-k7p2-white);
+
+  border: 1px solid
+    var(--teacher-students-k7p2-border-light);
+
+  border-radius: var(--radius-lg);
+
+  box-shadow:
+    var(--shadow-sm);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+
+.teacher-students-k7p2-meta-card:hover {
+  transform: translateY(-3px);
+
+  box-shadow:
+    var(--shadow-md);
+}
+
+
+.teacher-students-k7p2-meta-content {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+
+  gap: 0.3rem;
+}
+
+
+.teacher-students-k7p2-meta-content span {
+  overflow: hidden;
+
+  color:
+    var(--teacher-students-k7p2-muted);
+
+  font-size: 0.85rem;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.teacher-students-k7p2-meta-content strong {
+  color:
+    var(--teacher-students-k7p2-text);
+
+  font-family:
+    "Vazirmatn",
+    sans-serif;
+
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   Meta Icons
+   ========================================================= */
+
+.teacher-students-k7p2-meta-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 48px;
+  height: 48px;
+
+  flex-shrink: 0;
+
+  border-radius: 15px;
+}
+
+
+.teacher-students-k7p2-primary-bg {
+  color:
+    var(--teacher-students-k7p2-primary-dark);
+
+  background:
+    oklch(95% 0.04 29);
+}
+
+
+.teacher-students-k7p2-green-bg {
+  color:
+    var(--teacher-students-k7p2-green);
+
+  background:
+    var(--teacher-students-k7p2-green-light);
+}
+
+
+.teacher-students-k7p2-blue-bg {
+  color:
+    var(--teacher-students-k7p2-blue);
+
+  background:
+    var(--teacher-students-k7p2-blue-light);
+}
+
+
+/* =========================================================
+   Main Section
+   ========================================================= */
+
+.teacher-students-k7p2-section {
+  width: 100%;
+  min-width: 0;
+}
+
+
+.teacher-students-k7p2-section-header {
+  width: 100%;
+  min-width: 0;
+
+  margin-bottom: 1.25rem;
+}
+
+
+.teacher-students-k7p2-section-title {
+  margin: 0;
+
+  color:
+    var(--teacher-students-k7p2-text);
+
+  font-size: 1.1rem;
+  font-weight: 800;
+
+  line-height: 1.7;
+}
+
+
+.teacher-students-k7p2-section-description {
+  max-width: 800px;
+
+  margin: 0.35rem 0 0;
+
+  color:
+    var(--teacher-students-k7p2-muted);
+
+  font-size: 0.85rem;
+
+  line-height: 1.9;
+}
+
+
+/* =========================================================
+   Filters
+   ========================================================= */
+
+.teacher-students-k7p2-filter-row {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 2fr)
+    minmax(220px, 1fr);
+
+  gap: 1rem;
+
+  width: 100%;
+
+  margin-bottom: 1.25rem;
+}
+
+
+.teacher-students-k7p2-search-wrapper,
+.teacher-students-k7p2-select-wrapper {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  min-width: 0;
+}
+
+
+.teacher-students-k7p2-search-icon,
+.teacher-students-k7p2-filter-icon {
+  position: absolute;
+
+  right: 0.85rem;
+
+  z-index: 1;
+
+  color:
+    var(--teacher-students-k7p2-muted);
+
+  pointer-events: none;
+}
+
+
+.teacher-students-k7p2-search-input,
+.teacher-students-k7p2-select {
+  display: block;
+
+  width: 100%;
+  min-width: 0;
+
+  padding:
+    0.72rem
+    2.45rem
+    0.72rem
+    0.85rem;
+
+  color:
+    var(--teacher-students-k7p2-text);
+
+  background:
+    var(--teacher-students-k7p2-white);
+
+  border: 1px solid
+    var(--teacher-students-k7p2-border);
+
+  border-radius: var(--radius-md);
+
+  font-family:
+    "Vazirmatn",
+    sans-serif;
+
+  font-size: 0.85rem;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.teacher-students-k7p2-search-input:focus,
+.teacher-students-k7p2-select:focus {
+  outline: none;
+
+  border-color:
+    var(--teacher-students-k7p2-primary);
+
+  box-shadow:
+    0 0 0 3px
+    oklch(92% 0.04 29 / 0.4);
+}
+
+
+.teacher-students-k7p2-select {
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   Desktop Table
+   ========================================================= */
+
+.teacher-students-k7p2-desktop-table {
+  display: block;
+
+  width: 100%;
+  max-width: 100%;
+
+  min-width: 0;
+}
+
+
+.teacher-students-k7p2-table-wrapper {
+  width: 100%;
+  max-width: 100%;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  border-radius: var(--radius-lg);
+
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+
+
+.teacher-students-k7p2-table {
+  width: 100%;
+
+  min-width: 780px;
+
+  border-collapse: collapse;
+  border-spacing: 0;
+
+  direction: rtl;
+  text-align: right;
+}
+
+
+.teacher-students-k7p2-table th {
+  padding: 1rem;
+
+  color:
+    var(--teacher-students-k7p2-text);
+
+  background:
+    oklch(98% 0 0);
+
+  border-bottom: 1px solid
+    var(--teacher-students-k7p2-border-light);
+
+  font-size: 0.82rem;
+  font-weight: 800;
+
+  white-space: nowrap;
+}
+
+
+.teacher-students-k7p2-table td {
+  padding: 0.95rem 1rem;
+
+  color:
+    var(--teacher-students-k7p2-text);
+
+  border-bottom: 1px solid
+    var(--teacher-students-k7p2-border-light);
+
+  font-size: 0.87rem;
+
+  vertical-align: middle;
+}
+
+
+.teacher-students-k7p2-table tbody tr {
+  transition:
+    background-color 0.2s ease;
+}
+
+
+.teacher-students-k7p2-table tbody tr:hover {
+  background:
+    oklch(99% 0 0);
+}
+
+
+.teacher-students-k7p2-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+
+/* =========================================================
+   Student ID
+   ========================================================= */
+
+.teacher-students-k7p2-id-badge {
+  color:
+    var(--teacher-students-k7p2-muted);
+
+  font-family:
+    "Vazirmatn",
+    sans-serif;
+
+  font-size: 0.8rem;
+  font-weight: 800;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   Student Name
+   ========================================================= */
+
+.teacher-students-k7p2-name-cell {
+  display: flex;
+  align-items: center;
+
+  gap: 0.6rem;
+
+  min-width: 140px;
+}
+
+
+.teacher-students-k7p2-avatar-icon {
+  width: 28px;
+  height: 28px;
+
+  padding: 0.25rem;
+
+  flex-shrink: 0;
+
+  color:
+    var(--teacher-students-k7p2-primary);
+
+  background:
+    oklch(95% 0.04 29);
+
+  border-radius: 50%;
+}
+
+
+.teacher-students-k7p2-name-cell strong {
+  color:
+    var(--teacher-students-k7p2-text-dark);
+
+  font-size: 0.88rem;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   Phone
+   ========================================================= */
+
+.teacher-students-k7p2-phone {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 0.35rem;
+
+  color:
+    oklch(45% 0 0);
+
+  font-family:
+    "Vazirmatn",
+    sans-serif;
+
+  font-size: 0.82rem;
+
+  direction: ltr;
+
+  white-space: nowrap;
+}
+
+
+.teacher-students-k7p2-phone svg {
+  color:
+    oklch(65% 0 0);
+
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   Class
+   ========================================================= */
+
+.teacher-students-k7p2-class-badge {
+  display: inline-block;
+
+  max-width: 190px;
+
+  padding:
+    0.35rem
+    0.6rem;
+
+  overflow: hidden;
+
+  color:
+    var(--teacher-students-k7p2-primary-dark);
+
+  background:
+    oklch(95% 0.04 29);
+
+  border-radius: 9px;
+
+  font-size: 0.75rem;
+  font-weight: 700;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   Grade / Attendance
+   ========================================================= */
+
+.teacher-students-k7p2-vazir-num {
+  font-family:
+    "Vazirmatn",
+    sans-serif;
+}
+
+
+.teacher-students-k7p2-grade {
+  color:
+    var(--teacher-students-k7p2-primary-dark);
+
+  font-size: 0.92rem;
+}
+
+
+.teacher-students-k7p2-attendance {
+  color:
+    var(--teacher-students-k7p2-green);
+
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   Status
+   ========================================================= */
+
+.teacher-students-k7p2-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    0.35rem
+    0.65rem;
+
+  border-radius: 999px;
+
+  font-size: 0.74rem;
+  font-weight: 800;
+
+  white-space: nowrap;
+}
+
+
+.teacher-students-k7p2-status-active {
+  color:
+    oklch(42% 0.14 150);
+
+  background:
+    oklch(94% 0.05 150);
+}
+
+
+.teacher-students-k7p2-status-warning {
+  color:
+    oklch(50% 0.15 45);
+
+  background:
+    oklch(96% 0.04 45);
+}
+
+
+/* =========================================================
+   Mobile List
+   ========================================================= */
+
+.teacher-students-k7p2-mobile-list {
+  display: none;
+}
+
+
+.teacher-students-k7p2-mobile-card {
+  width: 100%;
+  min-width: 0;
+
+  padding: 1rem;
+
+  background:
+    var(--teacher-students-k7p2-white);
+
+  border: 1px solid
+    var(--teacher-students-k7p2-border-light);
+
+  border-radius: 18px;
+
+  box-shadow:
+    var(--shadow-sm);
+}
+
+
+.teacher-students-k7p2-mobile-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 0.75rem;
+}
+
+
+.teacher-students-k7p2-mobile-student {
+  display: flex;
+  align-items: center;
+
+  min-width: 0;
+
+  gap: 0.7rem;
+}
+
+
+.teacher-students-k7p2-mobile-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  height: 42px;
+
+  flex-shrink: 0;
+
+  color:
+    var(--teacher-students-k7p2-primary);
+
+  background:
+    oklch(95% 0.04 29);
+
+  border-radius: 13px;
+}
+
+
+.teacher-students-k7p2-mobile-student-info {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+
+  gap: 0.2rem;
+}
+
+
+.teacher-students-k7p2-mobile-student-info strong {
+  overflow: hidden;
+
+  color:
+    var(--teacher-students-k7p2-text-dark);
+
+  font-size: 0.9rem;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.teacher-students-k7p2-mobile-id {
+  color:
+    var(--teacher-students-k7p2-muted);
+
+  font-family:
+    "Vazirmatn",
+    sans-serif;
+
+  font-size: 0.7rem;
+}
+
+
+.teacher-students-k7p2-mobile-divider {
+  width: 100%;
+  height: 1px;
+
+  margin:
+    0.9rem
+    0;
+
+  background:
+    var(--teacher-students-k7p2-border-light);
+}
+
+
+.teacher-students-k7p2-mobile-info-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 0.8rem;
+}
+
+
+.teacher-students-k7p2-mobile-info {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+
+  gap: 0.25rem;
+}
+
+
+.teacher-students-k7p2-mobile-info > span {
+  color:
+    var(--teacher-students-k7p2-muted);
+
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+
+.teacher-students-k7p2-mobile-info > strong {
+  overflow: hidden;
+
+  color:
+    var(--teacher-students-k7p2-text);
+
+  font-size: 0.8rem;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.teacher-students-k7p2-mobile-phone {
+  display: flex;
+  align-items: center;
+
+  gap: 0.3rem;
+
+  direction: ltr;
+}
+
+
+.teacher-students-k7p2-mobile-phone svg {
+  flex-shrink: 0;
+
+  color:
+    var(--teacher-students-k7p2-muted);
+}
+
+
+.teacher-students-k7p2-mobile-class {
+  color:
+    var(--teacher-students-k7p2-primary-dark) !important;
+}
+
+
+.teacher-students-k7p2-mobile-grade {
+  color:
+    var(--teacher-students-k7p2-primary-dark) !important;
+
+  font-family:
+    "Vazirmatn",
+    sans-serif;
+}
+
+
+.teacher-students-k7p2-mobile-attendance {
+  color:
+    var(--teacher-students-k7p2-green) !important;
+
+  font-family:
+    "Vazirmatn",
+    sans-serif;
+}
+
+
+/* =========================================================
+   Empty State
+   ========================================================= */
+
+.teacher-students-k7p2-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  width: 100%;
+
+  min-height: 220px;
+
+  padding: 2rem;
+
+  color:
+    var(--teacher-students-k7p2-muted-light);
+
+  text-align: center;
+}
+
+
+.teacher-students-k7p2-empty svg {
+  margin-bottom: 0.75rem;
+
+  color:
+    oklch(78% 0 0);
+}
+
+
+.teacher-students-k7p2-empty p {
+  margin: 0;
+
+  font-size: 0.85rem;
+}
+
+
+/* =========================================================
+   Tablet
+   ========================================================= */
+
+@media (max-width: 1100px) {
+  .teacher-students-k7p2-stats {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .teacher-students-k7p2-filter-row {
+    grid-template-columns:
+      1fr 280px;
+  }
+
+  .teacher-students-k7p2-table {
+    min-width: 760px;
+  }
+}
+
+
+/* =========================================================
+   Small Tablet
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .teacher-students-k7p2-root {
+    width: 100%;
+    max-width: 100%;
+
+    overflow-x: hidden;
+  }
+
+  .teacher-students-k7p2-stats {
+    grid-template-columns: 1fr;
+
+    gap: 0.85rem;
+  }
+
+  .teacher-students-k7p2-filter-row {
+    grid-template-columns: 1fr;
+
+    gap: 0.75rem;
+  }
+
+  .teacher-students-k7p2-search-wrapper,
+  .teacher-students-k7p2-select-wrapper {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .teacher-students-k7p2-desktop-table {
+    display: none;
+  }
+
+  .teacher-students-k7p2-mobile-list {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    min-width: 0;
+
+    gap: 0.8rem;
+  }
+
+  .teacher-students-k7p2-section-description {
+    max-width: 100%;
+
+    font-size: 0.8rem;
+  }
+}
+
+
+/* =========================================================
+   Mobile
+   ========================================================= */
+
+@media (max-width: 520px) {
+  .teacher-students-k7p2-meta-card {
+    min-height: 78px;
+
+    padding: 0.85rem;
+  }
+
+  .teacher-students-k7p2-meta-icon {
+    width: 42px;
+    height: 42px;
+
+    border-radius: 13px;
+  }
+
+  .teacher-students-k7p2-meta-content span {
+    font-size: 0.78rem;
+  }
+
+  .teacher-students-k7p2-meta-content strong {
+    font-size: 1rem;
+  }
+
+  .teacher-students-k7p2-section-title {
+    font-size: 1rem;
+  }
+
+  .teacher-students-k7p2-mobile-card {
+    padding: 0.9rem;
+  }
+
+  .teacher-students-k7p2-mobile-card-header {
+    align-items: center;
+  }
+
+  .teacher-students-k7p2-mobile-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .teacher-students-k7p2-mobile-student-info strong {
+    font-size: 0.85rem;
+  }
+
+  .teacher-students-k7p2-status-badge {
+    padding:
+      0.3rem
+      0.55rem;
+
+    font-size: 0.68rem;
+  }
+}
+
+
+/* =========================================================
+   Very Small Mobile
+   ========================================================= */
+
+@media (max-width: 380px) {
+  .teacher-students-k7p2-mobile-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .teacher-students-k7p2-mobile-card-header {
+    align-items: flex-start;
+  }
+
+  .teacher-students-k7p2-mobile-student {
+    max-width: 65%;
+  }
+
+  .teacher-students-k7p2-mobile-student-info strong {
+    max-width: 150px;
+  }
+
+  .teacher-students-k7p2-meta-card {
+    padding: 0.75rem;
+  }
+}

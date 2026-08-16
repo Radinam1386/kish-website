@@ -1,0 +1,194 @@
+/* Button.css */
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap');
+
+.animated-btn {
+  font-family:var(--font);
+  position: relative;
+  overflow: hidden;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.animated-btn:active {
+  transform: scale(0.97);
+}
+
+/* Sizes */
+.animated-btn--small {
+  padding: 6px 14px;
+  font-size: 13px;
+  border-radius: 6px;
+}
+
+.animated-btn--medium {
+  padding: 10px 20px;
+  font-size: 14px;
+}
+
+.animated-btn--large {
+  padding: 14px 28px;
+  font-size: 16px;
+  border-radius: 10px;
+}
+
+/* Variants */
+.animated-btn--primary {
+  background: var(--red-5);
+  color: white;
+  box-shadow: 0 2px 8px oklch(52% 0.22 25 / 0.25);
+}
+
+.animated-btn--primary:hover:not(.animated-btn--disabled) {
+  background: var(--red-7);
+  box-shadow: 0 4px 16px oklch(52% 0.22 25 / 0.35);
+  transform: translateY(-1px);
+}
+
+.animated-btn--secondary {
+  background: white;
+  color: var(--red-5);
+  border: 2px solid var(--red-5);
+  box-shadow: 0 2px 6px oklch(0% 0 0 / 0.08);
+}
+
+.animated-btn--secondary:hover:not(.animated-btn--disabled) {
+  background: var(--red-0);
+  border-color: var(--red-7);
+  color: var(--red-7);
+  box-shadow: 0 4px 12px oklch(0% 0 0 / 0.12);
+}
+
+.animated-btn--ghost {
+  background: transparent;
+  color: var(--neu-7);
+  border: 1px solid var(--neu-1);
+}
+
+.animated-btn--ghost:hover:not(.animated-btn--disabled) {
+  background: var(--neu-0);
+  border-color: var(--neu-3);
+  color: var(--neu-9);
+}
+
+.animated-btn--danger {
+  background: var(--danger);
+  color: white;
+  box-shadow: 0 2px 8px oklch(52% 0.22 25 / 0.25);
+}
+
+.animated-btn--danger:hover:not(.animated-btn--disabled) {
+  background: var(--red-9);
+  box-shadow: 0 4px 16px oklch(52% 0.22 25 / 0.35);
+  color: white;
+}
+
+/* States */
+.animated-btn--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.animated-btn--loading {
+  cursor: wait;
+}
+
+/* Content wrapper */
+.animated-btn__content {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Icon */
+.animated-btn__icon {
+  display: inline-flex;
+  font-size: 1.1em;
+}
+
+/* Spinner */
+.animated-btn__spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Ripple effect */
+.animated-btn__ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: oklch(100% 0 0 / 0.3);
+  pointer-events: none;
+  transform: scale(0);
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+/* Shine effect on hover */
+.animated-btn--primary::before,
+.animated-btn--danger::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    oklch(100% 0 0 / 0.2),
+    transparent
+  );
+  transition: left 0.5s;
+  color: black;
+}
+
+.animated-btn--primary:hover:not(.animated-btn--disabled)::before,
+.animated-btn--danger:hover:not(.animated-btn--disabled)::before {
+  left: 100%;
+}
+
+/* Focus visible for accessibility */
+.animated-btn:focus-visible {
+  outline: 2px solid var(--red-5);
+  outline-offset: 2px;
+}
+
+/* Pulse animation for primary */
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 2px 8px oklch(52% 0.22 25 / 0.25);
+  }
+  50% {
+    box-shadow: 0 2px 16px oklch(52% 0.22 25 / 0.45);
+  }
+}
+
+.animated-btn--primary.animated-btn--pulse {
+  animation: pulse 2s infinite;
+}

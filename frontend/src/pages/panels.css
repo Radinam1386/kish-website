@@ -1,0 +1,51 @@
+.stats-row { display: flex; gap: var(--s4); flex-wrap: wrap; }
+.stat-card {
+  flex: 1; min-width: 160px; background: white; border-radius: 14px;
+  padding: var(--s4); box-shadow: 0 4px 14px oklch(20% 0.02 260 / 0.06);
+}
+.stat-value { font-size: 1.6rem; font-weight: 700; color: oklch(45% 0.18 260); }
+.stat-label { color: oklch(55% 0.02 260); font-size: 0.85rem; margin-top: 4px; }
+
+.panel-card {
+  background: white; border-radius: 14px; padding: var(--s5);
+  box-shadow: 0 4px 14px oklch(20% 0.02 260 / 0.06);
+}
+.panel-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--s4); }
+
+.search-box {
+  padding: var(--s2) var(--s3); border: 1px solid oklch(88% 0.01 260);
+  border-radius: 10px; width: 220px;
+}
+
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th, .data-table td {
+  padding: var(--s3); text-align: right; border-bottom: 1px solid oklch(93% 0.01 260);
+  font-size: 0.9rem;
+}
+
+.badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; }
+.badge.green { background: oklch(90% 0.1 150); color: oklch(35% 0.15 150); }
+.badge.red { background: oklch(90% 0.08 20); color: oklch(40% 0.15 20); }
+
+.chip-row { display: flex; gap: var(--s2); margin-bottom: var(--s4); flex-wrap: wrap; }
+.chip {
+  padding: var(--s2) var(--s4); border-radius: 20px; border: 1px solid oklch(88% 0.01 260);
+  background: white; cursor: pointer; font-size: 0.85rem;
+}
+.chip.active { background: oklch(55% 0.18 260); color: white; border-color: transparent; }
+
+.class-detail { margin-top: var(--s4); }
+.student-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: var(--s2); }
+.student-list li { display: flex; justify-content: space-between; padding: var(--s2) 0; border-bottom: 1px solid oklch(95% 0.01 260); }
+.row-actions { display: flex; gap: var(--s2); }
+
+.two-col { display: flex; gap: var(--s6); margin: var(--s4) 0; }
+.btn-row { display: flex; gap: var(--s2); }
+
+.primary-btn { padding: var(--s2) var(--s4); border: none; border-radius: 10px; background: oklch(55% 0.18 260); color: white; cursor: pointer; }
+.secondary-btn { padding: var(--s2) var(--s4); border: 1px solid oklch(88% 0.01 260); border-radius: 10px; background: white; cursor: pointer; }
+.ghost-btn { padding: 4px 10px; border-radius: 8px; border: 1px solid oklch(90% 0.01 260); background: transparent; font-size: 0.75rem; cursor: pointer; }
+
+.profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s4); margin-bottom: var(--s4); }
+.profile-grid label { display: flex; flex-direction: column; gap: var(--s2); font-size: 0.85rem; }
+.profile-grid input { padding: var(--s2) var(--s3); border: 1px solid oklch(88% 0.01 260); border-radius: 10px; }

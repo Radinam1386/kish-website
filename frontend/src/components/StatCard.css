@@ -1,0 +1,168 @@
+.stat-card-p {
+  --exam-red: #e74c3c;
+  --exam-red-dark: #c0392b;
+  --exam-red-light: #fdecea;
+  --exam-red-border: rgba(231, 76, 60, 0.18);
+
+  --exam-blue: #3498db;
+  --exam-blue-dark: #2474a8;
+  --exam-blue-light: #eaf4fb;
+
+  --exam-green: #27ae60;
+  --exam-green-dark: #1e8e4e;
+  --exam-green-light: #eaf8f0;
+
+  --exam-text: #263238;
+  --exam-text-soft: #66727d;
+  --exam-muted: #98a4ae;
+  --exam-glass: rgba(255, 255, 255, 0.74);
+  --exam-glass-strong: rgba(255, 255, 255, 0.86);
+
+  --exam-radius-xl: 24px;
+  --exam-radius-lg: 18px;
+  --exam-radius-md: 14px;
+  --exam-ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+  width: 100%;
+  color: var(--exam-text);
+  direction: rtl;
+}
+
+
+/* =====================================================
+   Stats
+===================================================== */
+
+.stat-card-p {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  overflow: hidden;
+  min-height: 108px;
+  padding: 20px;
+  border: 1px solid var(--exam-red-border);
+  border-radius: var(--exam-radius-xl);
+  background: var(--exam-glass);
+  box-shadow:
+    0 12px 30px rgba(38, 50, 56, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition:
+    transform 0.4s var(--exam-ease),
+    box-shadow 0.4s var(--exam-ease),
+    border-color 0.4s var(--exam-ease);
+  animation: exam-fade-up 0.6s var(--exam-ease) both;
+}
+
+
+.stat-card-p::after {
+  position: absolute;
+  z-index: -1;
+  top: -55px;
+  left: -55px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: rgba(231, 76, 60, 0.12);
+  content: "";
+  filter: blur(30px);
+  opacity: 0;
+  transition: opacity 0.4s var(--exam-ease);
+}
+
+
+.stat-card-p:hover {
+  border-color: rgba(231, 76, 60, 0.4);
+  box-shadow:
+    0 22px 45px rgba(231, 76, 60, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  transform: translateY(-6px);
+}
+
+
+.stat-card-p:hover::after {
+  opacity: 1;
+}
+
+
+.stat-card__icon-p {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  flex: 0 0 54px;
+  border-radius: 17px;
+  color: #ffffff;
+  transition: transform 0.35s var(--exam-ease);
+}
+
+
+.stat-card-p:hover .stat-card__icon-p {
+  transform: scale(1.08) rotate(-6deg);
+}
+
+
+.stat-card__icon-p.red {
+  background: linear-gradient(135deg, #f05b4b, #c0392b);
+  box-shadow: 0 8px 18px rgba(231, 76, 60, 0.28);
+}
+
+
+.stat-card__icon-p.blue {
+  background: linear-gradient(135deg, #43a4dc, #2474a8);
+  box-shadow: 0 8px 18px rgba(52, 152, 219, 0.25);
+}
+
+
+.stat-card__icon-p.soft-red {
+  background: linear-gradient(135deg, #ff8c7f, #e74c3c);
+  box-shadow: 0 8px 18px rgba(231, 76, 60, 0.24);
+}
+
+
+.stat-card__content-p {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+
+.stat-card__title-p {
+  color: var(--exam-text-soft);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+
+.stat-card__value-p {
+  margin: 0;
+  color: var(--exam-text);
+  font-size: 1.08rem;
+  font-weight: 900;
+}
+
+
+.stat-card__hint-p {
+  margin: 0;
+  color: var(--exam-muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+
+@keyframes exam-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

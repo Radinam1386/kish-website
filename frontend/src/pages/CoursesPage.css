@@ -1,0 +1,272 @@
+/* ============ کلی ============ */
+.klc-page {
+  min-height: 100vh;
+  background: oklch(97.764% 0.01081 23.778);
+  overflow: hidden;
+}
+
+/* ============ بخش قهرمان ============ */
+.klc-hero {
+  position: relative;
+  padding: 120px 32px 80px;
+  text-align: center;
+  overflow: hidden;
+}
+
+.klc-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.3;
+  animation: klcBlobFloat 8s ease-in-out infinite;
+}
+
+.klc-blob-1 {
+  width: 400px;
+  height: 400px;
+  background: var(--primary);
+  top: -100px;
+  left: -100px;
+  animation-delay: 0s;
+}
+
+.klc-blob-2 {
+  width: 350px;
+  height: 350px;
+  background: var(--secondary);
+  top: 50px;
+  right: -80px;
+  animation-delay: 2s;
+}
+
+.klc-blob-3 {
+  width: 300px;
+  height: 300px;
+  background: var(--accent);
+  bottom: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation-delay: 4s;
+}
+
+@keyframes klcBlobFloat {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -30px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+}
+
+.klc-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.klc-hero-title {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--primary-dark);
+  margin-bottom: 20px;
+  animation: klcFadeInUp 0.8s ease;
+}
+
+.klc-hero-subtitle {
+  font-size: 1.2rem;
+  color: oklch(45% 0.02 260);
+  line-height: 1.8;
+  animation: klcFadeInUp 1s ease;
+}
+
+@keyframes klcFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============ کانتینر و گرید ============ */
+.klc-container {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px 80px;
+}
+
+.klc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 32px;
+}
+
+/* ============ کارت دوره ============ */
+.klc-card {
+  background: oklch(100% 0 0 / 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid oklch(90% 0 0 / 0.5);
+  border-radius: 20px;
+  padding: 32px;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+  animation: klcFadeInUp 0.6s ease backwards;
+}
+
+.klc-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.klc-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.klc-card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.klc-card:nth-child(4) {
+  animation-delay: 0.4s;
+}
+.klc-card:nth-child(5) {
+  animation-delay: 0.5s;
+}
+.klc-card:nth-child(6) {
+  animation-delay: 0.6s;
+}
+
+.klc-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--sh-accent);
+}
+
+.klc-icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  display: inline-block;
+  animation: klcIconBounce 2s ease-in-out infinite;
+}
+
+@keyframes klcIconBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.klc-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 12px;
+}
+
+.klc-desc {
+  font-size: 0.95rem;
+  color: oklch(40% 0.02 260);
+  line-height: 1.6;
+  margin-bottom: 24px;
+  min-height: 60px;
+}
+
+/* ============ جزئیات دوره ============ */
+.klc-details {
+  border-top: 1px solid oklch(90% 0 0);
+  border-bottom: 1px solid oklch(90% 0 0);
+  padding: 20px 0;
+  margin-bottom: 24px;
+}
+
+.klc-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.klc-detail-item:last-child {
+  margin-bottom: 0;
+}
+
+.klc-label {
+  font-size: 0.9rem;
+  color: oklch(50% 0.02 260);
+  font-weight: 500;
+}
+
+.klc-value {
+  font-size: 0.9rem;
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+/* ============ فوتر کارت و لینک تماس ============ */
+.klc-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.klc-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ============ ریسپانسیو ============ */
+@media (max-width: 768px) {
+  .klc-page {
+    padding-top: 80px;
+  }
+
+  .klc-hero-title {
+    font-size: 2.2rem;
+  }
+
+  .klc-hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .klc-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .klc-card {
+    padding: 24px;
+  }
+
+  .klc-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 480px) {
+  .klc-hero {
+    padding: 80px 20px 60px;
+  }
+
+  .klc-hero-title {
+    font-size: 1.8rem;
+  }
+
+  .klc-container {
+    padding: 0 20px 60px;
+  }
+
+  .klc-icon {
+    font-size: 2.5rem;
+  }
+}

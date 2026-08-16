@@ -1,0 +1,902 @@
+/* ===== Dashboard Layout ===== */
+
+.dashboard {
+  display: flex;
+  min-height: 100vh;
+  background: oklch(97.5% 0.005 29);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ===== Background Blobs ===== */
+
+.dashboard-blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.15;
+  z-index: 0;
+  pointer-events: none;
+  animation: blobFloat 15s ease-in-out infinite;
+}
+
+.blob-1 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, var(--primary), transparent 70%);
+  top: -100px;
+  left: -100px;
+}
+
+.blob-2 {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, var(--primary-dark), transparent 70%);
+  bottom: -80px;
+  right: -80px;
+  animation-delay: -7s;
+}
+
+@keyframes blobFloat {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(30px, -30px) scale(1.1);
+  }
+}
+
+/* ===== Sidebar ===== */
+
+.dashboard-sidebar {
+  width: 280px;
+  background: linear-gradient(
+    180deg,
+    oklch(55.799% 0.17067 24.538),
+    oklch(34.475% 0.12887 27.358)
+  );
+  color: white;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  z-index: 100;
+  box-shadow: -4px 0 24px oklch(0% 0 0 / 0.1);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* =========================================================
+   Brand
+   ========================================================= */
+
+.dashboard-brand {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  min-width: 0;
+
+  padding: 1.4rem 1.25rem;
+
+  border-bottom: 1px solid oklch(100% 0 0 / 0.09);
+}
+
+/* =========================================================
+   Brand Flex
+   ========================================================= */
+
+.brand-flex {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  min-width: 0;
+
+  gap: 0.8rem;
+
+  direction: rtl;
+}
+
+/* =========================================================
+   Brand Logo
+   ========================================================= */
+
+.brand-logo {
+  display: block;
+
+  width: 48px;
+  height: 48px;
+
+  flex: 0 0 48px;
+
+  object-fit: contain;
+
+  padding: 5px;
+
+  background: #ffffff;
+
+  border-radius: 13px;
+
+  box-shadow: 0 5px 16px oklch(0% 0 0 / 0.16);
+
+  border: 1px solid oklch(100% 0 0 / 0.2);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.brand-logo:hover {
+  transform: translateY(-2px);
+
+  box-shadow: 0 8px 20px oklch(0% 0 0 / 0.2);
+}
+
+/* =========================================================
+   Brand Text
+   ========================================================= */
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+
+  min-width: 0;
+
+  gap: 0.25rem;
+
+  overflow: hidden;
+}
+
+/* Brand Name */
+
+.brand-text strong {
+  display: block;
+
+  max-width: 100%;
+
+  overflow: hidden;
+
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 800;
+
+  line-height: 1.4;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Brand Role */
+
+.brand-text small {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: fit-content;
+  max-width: 100%;
+
+  padding: 0.18rem 0.55rem;
+
+  border-radius: 999px;
+
+  background: oklch(100% 0 0 / 0.1);
+
+  border: 1px solid oklch(100% 0 0 / 0.1);
+
+  color: oklch(88% 0.025 29);
+
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 600;
+
+  line-height: 1.4;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   Sidebar Close Button
+   ========================================================= */
+
+.sidebar-close {
+  display: none;
+
+  position: absolute;
+
+  left: 1rem;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+
+  padding: 0;
+
+  background: oklch(100% 0 0 / 0.1);
+
+  border: 1px solid oklch(100% 0 0 / 0.08);
+
+  border-radius: var(--radius-md);
+
+  color: #ffffff;
+
+  cursor: pointer;
+
+  transition:
+    background 0.25s ease,
+    transform 0.25s ease;
+}
+
+.sidebar-close:hover {
+  background: var(--primary);
+
+  transform: translateY(-50%) rotate(90deg);
+}
+
+/* =========================================================
+   Tablet
+   ========================================================= */
+
+@media (max-width: 1024px) {
+  .dashboard-brand {
+    padding: 1.35rem 1.15rem;
+  }
+
+  .brand-logo {
+    width: 46px;
+    height: 46px;
+    flex-basis: 46px;
+  }
+
+  .brand-text strong {
+    font-size: 0.98rem;
+  }
+}
+
+/* =========================================================
+   Mobile Sidebar
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .dashboard-brand {
+    padding: 1.15rem 1rem;
+  }
+
+  .brand-flex {
+    gap: 0.7rem;
+
+    padding-left: 2.5rem;
+  }
+
+  .brand-logo {
+    width: 42px;
+    height: 42px;
+
+    flex-basis: 42px;
+
+    padding: 4px;
+
+    border-radius: 11px;
+  }
+
+  .brand-text {
+    gap: 0.2rem;
+  }
+
+  .brand-text strong {
+    font-size: 0.92rem;
+  }
+
+  .brand-text small {
+    font-size: 0.66rem;
+    padding: 0.15rem 0.5rem;
+  }
+
+  .sidebar-close {
+    display: flex;
+  }
+}
+
+/* =========================================================
+   Small Mobile
+   ========================================================= */
+
+@media (max-width: 480px) {
+  .dashboard-brand {
+    padding: 1rem 0.85rem;
+  }
+
+  .brand-flex {
+    gap: 0.6rem;
+    padding-left: 2.4rem;
+  }
+
+  .brand-logo {
+    width: 38px;
+    height: 38px;
+
+    flex-basis: 38px;
+
+    border-radius: 10px;
+  }
+
+  .brand-text strong {
+    font-size: 0.86rem;
+  }
+
+  .brand-text small {
+    max-width: 120px;
+
+    font-size: 0.62rem;
+  }
+
+  .sidebar-close {
+    left: 0.75rem;
+
+    width: 32px;
+    height: 32px;
+  }
+}
+/* ===== Navigation ===== */
+
+.dashboard-nav {
+  flex: 1;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  overflow-y: auto;
+}
+
+.dashboard-link {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.85rem 1.1rem;
+  border-radius: var(--radius-md);
+  color: oklch(78% 0.02 29);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-link::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, oklch(60% 0.19 29 / 0.15), transparent);
+  transition: width 0.3s ease;
+}
+
+.link-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-link span:last-child {
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-link:hover {
+  color: white;
+  background: oklch(100% 0 0 / 0.06);
+}
+
+.dashboard-link:hover .link-icon {
+  transform: translateX(-3px);
+}
+
+.dashboard-link.active {
+  color: white;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  box-shadow: 0 4px 14px oklch(60% 0.19 29 / 0.35);
+}
+
+.dashboard-link.active::before {
+  width: 0;
+}
+
+.dashboard-link.active .link-icon {
+  transform: scale(1.1);
+}
+
+/* ===== Logout ===== */
+
+.dashboard-logout {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 1rem;
+  padding: 0.85rem 1.1rem;
+  border-radius: var(--radius-md);
+  color: oklch(80% 0.1 29);
+  background: oklch(100% 0 0 / 0.05);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: 1px solid oklch(100% 0 0 / 0.08);
+  transition: all 0.3s ease;
+}
+
+.dashboard-logout:hover {
+  background: oklch(55% 0.2 29 / 0.25);
+  color: white;
+  border-color: oklch(60% 0.19 29 / 0.4);
+  transform: translateX(-3px);
+}
+
+/* ===== Overlay ===== */
+
+.dashboard-overlay {
+  position: fixed;
+  inset: 0;
+  background: oklch(0% 0 0 / 0.5);
+  z-index: 90;
+  backdrop-filter: blur(2px);
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ===== Main Content ===== */
+
+.dashboard-main {
+  flex: 1;
+  margin-right: 280px;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+}
+/* =========================================================
+   Dashboard Header
+   ========================================================= */
+
+.dashboard-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+
+  width: 100%;
+
+  background: oklch(100% 0 0 / 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  border-bottom: 1px solid oklch(0% 0 0 / 0.06);
+
+  box-shadow: 0 4px 20px oklch(0% 0 0 / 0.035);
+}
+
+/* =========================================================
+   Header Inner
+   ========================================================= */
+
+.dashboard-header-inner {
+  width: 100%;
+  min-height: 92px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 1.5rem;
+
+  padding: 1rem 2.5rem;
+
+  direction: rtl;
+}
+
+/* =========================================================
+   Header Titles
+   ========================================================= */
+
+.header-titles {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: flex-start;
+  justify-content: center;
+
+  gap: 0.45rem;
+}
+
+/* =========================================================
+   Header Subtitle
+   ========================================================= */
+
+.header-subtitle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: fit-content;
+  max-width: 100%;
+
+  padding: 0.28rem 0.8rem;
+
+  border-radius: 999px;
+
+  background: oklch(96% 0.04 29);
+
+  color: var(--primary);
+
+  font-size: 0.78rem;
+  font-weight: 700;
+
+  line-height: 1.4;
+
+  white-space: nowrap;
+}
+
+/* =========================================================
+   Header Title
+   ========================================================= */
+
+.dashboard-header h1 {
+  margin: 0;
+
+  max-width: 100%;
+
+  color: oklch(20% 0 0);
+
+  font-size: 1.4rem;
+  font-weight: 800;
+
+  line-height: 1.4;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   Mobile Menu Button
+   ========================================================= */
+
+.mobile-menu-btn {
+  display: none;
+
+  flex: 0 0 44px;
+
+  width: 44px;
+  height: 44px;
+
+  padding: 0;
+
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid oklch(100% 0 0 / 0.15);
+
+  border-radius: 13px;
+
+  background: linear-gradient(135deg, var(--red-5), var(--red-7));
+
+  color: #ffffff;
+
+  cursor: pointer;
+
+  box-shadow: 0 5px 14px oklch(60% 0.19 29 / 0.28);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+}
+
+.mobile-menu-btn:hover {
+  transform: translateY(-2px);
+
+  box-shadow: 0 8px 18px oklch(60% 0.19 29 / 0.35);
+}
+
+.mobile-menu-btn:active {
+  transform: scale(0.94);
+}
+
+/* =========================================================
+   Dashboard Content
+   ========================================================= */
+
+.dashboard-content {
+  flex: 1;
+
+  width: 100%;
+
+  padding: 2.5rem;
+
+  animation: fadeInUp 0.5s ease-out;
+}
+
+/* =========================================================
+   Header - Tablet
+   ========================================================= */
+
+@media (max-width: 1024px) {
+  .dashboard-header-inner {
+    min-height: 82px;
+
+    padding: 0.9rem 1.5rem;
+  }
+
+  .mobile-menu-btn {
+    display: flex;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.3rem;
+  }
+
+  .header-subtitle {
+    font-size: 0.75rem;
+  }
+
+  .dashboard-content {
+    padding: 2rem;
+  }
+}
+
+/* =========================================================
+   Header - Mobile
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .dashboard-header-inner {
+    min-height: 74px;
+
+    padding: 0.8rem 1.25rem;
+
+    gap: 1rem;
+  }
+
+  .header-titles {
+    flex: 1;
+
+    min-width: 0;
+
+    gap: 0.3rem;
+  }
+
+  .header-subtitle {
+    max-width: 100%;
+
+    padding: 0.2rem 0.65rem;
+
+    font-size: 0.7rem;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.15rem;
+
+    line-height: 1.35;
+  }
+
+  .mobile-menu-btn {
+    flex: 0 0 42px;
+
+    width: 42px;
+    height: 42px;
+
+    border-radius: 12px;
+  }
+
+  .dashboard-content {
+    padding: 1.25rem;
+  }
+}
+
+/* =========================================================
+   Header - Small Mobile
+   ========================================================= */
+
+@media (max-width: 480px) {
+  .dashboard-header-inner {
+    min-height: 68px;
+
+    padding: 0.7rem 0.9rem;
+
+    gap: 0.75rem;
+  }
+
+  .header-titles {
+    gap: 0.2rem;
+  }
+
+  .header-subtitle {
+    padding: 0.17rem 0.55rem;
+
+    font-size: 0.64rem;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1rem;
+  }
+
+  .mobile-menu-btn {
+    flex: 0 0 40px;
+
+    width: 40px;
+    height: 40px;
+
+    border-radius: 11px;
+  }
+
+  .dashboard-content {
+    padding: 1rem;
+  }
+}
+
+/* =========================================================
+   Header - Very Small Screens
+   ========================================================= */
+
+@media (max-width: 360px) {
+  .dashboard-header-inner {
+    padding: 0.65rem 0.75rem;
+  }
+
+  .dashboard-header h1 {
+    font-size: 0.92rem;
+  }
+
+  .header-subtitle {
+    font-size: 0.6rem;
+  }
+
+  .mobile-menu-btn {
+    flex-basis: 38px;
+
+    width: 38px;
+    height: 38px;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1024px) {
+  .dashboard-sidebar {
+    transform: translateX(100%);
+    width: 280px;
+    box-shadow: -10px 0 30px oklch(0% 0 0 / 0.2);
+  }
+
+  .dashboard-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-close {
+    display: flex;
+  }
+
+  .mobile-menu-btn {
+    display: flex;
+  }
+
+  .dashboard-main {
+    margin-right: 0;
+  }
+
+  .dashboard-header {
+    padding: 1.25rem 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-header {
+    padding: 1rem 1.5rem;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.3rem;
+  }
+
+  .header-subtitle {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.6rem;
+  }
+
+  .dashboard-content {
+    padding: 1.25rem;
+  }
+
+  /* بهینه‌سازی برند در موبایل */
+  .dashboard-brand {
+    padding: 1.25rem 1rem;
+  }
+
+  .brand-logo {
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-header {
+    padding: 0.8rem 1rem;
+  }
+
+  /* در گوشی‌های خیلی کوچک، سایدبار عرض بیشتری بگیرد */
+  .dashboard-sidebar {
+    width: 85%;
+  }
+
+  .dashboard-content {
+    padding: 1rem;
+  }
+
+  /* حذف المان‌های سنگین پس‌زمینه برای پرفورمنس موبایل */
+  .dashboard-blob {
+    display: none;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.1rem;
+  }
+}
+
+/* انیمیشن برای ورود نرم Overlay */
+.dashboard-overlay {
+  position: fixed;
+  inset: 0;
+  background: oklch(0% 0 0 / 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 95;
+  cursor: pointer;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

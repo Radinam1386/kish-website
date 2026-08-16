@@ -1,0 +1,1097 @@
+/* ========================================
+   Admin Tuition
+   Scoped Namespace:
+   admin-tuition-x8p4
+======================================== */
+
+.admin-tuition-x8p4-root {
+  --admin-tuition-x8p4-primary: var(--primary);
+  --admin-tuition-x8p4-primary-dark: var(--primary-dark);
+
+  --admin-tuition-x8p4-text: oklch(25% 0 0);
+  --admin-tuition-x8p4-muted: oklch(55% 0 0);
+
+  --admin-tuition-x8p4-border: oklch(93% 0 0);
+
+  width: 100%;
+}
+
+
+/* ========================================
+   Statistics
+======================================== */
+
+.admin-tuition-x8p4-stats {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 1rem;
+
+  margin-bottom: 1.5rem;
+}
+
+
+.admin-tuition-x8p4-stat-card {
+  display: flex;
+  align-items: center;
+
+  gap: 0.85rem;
+
+  min-height: 90px;
+
+  padding: 1rem 1.1rem;
+
+  background: white;
+
+  border: 1px solid
+    oklch(93% 0 0);
+
+  border-radius: var(--radius-lg);
+
+  box-shadow: var(--shadow-sm);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+
+.admin-tuition-x8p4-stat-card:hover {
+  transform: translateY(-3px);
+
+  box-shadow: var(--shadow-md);
+}
+
+
+.admin-tuition-x8p4-stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 48px;
+  height: 48px;
+
+  flex-shrink: 0;
+
+  border-radius: 15px;
+}
+
+
+.admin-tuition-x8p4-stat-icon.primary {
+  color: var(--primary-dark);
+  background: oklch(95% 0.04 29);
+}
+
+
+.admin-tuition-x8p4-stat-icon.green {
+  color: oklch(45% 0.14 150);
+  background: oklch(94% 0.05 150);
+}
+
+
+.admin-tuition-x8p4-stat-icon.blue {
+  color: oklch(45% 0.16 250);
+  background: oklch(94% 0.04 250);
+}
+
+
+.admin-tuition-x8p4-stat-icon.orange {
+  color: oklch(50% 0.15 60);
+  background: oklch(95% 0.05 60);
+}
+
+
+.admin-tuition-x8p4-stat-content {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0.3rem;
+
+  min-width: 0;
+}
+
+
+.admin-tuition-x8p4-stat-content span {
+  color: var(--admin-tuition-x8p4-muted);
+
+  font-size: 0.82rem;
+
+  white-space: nowrap;
+}
+
+
+.admin-tuition-x8p4-stat-content strong {
+  color: var(--admin-tuition-x8p4-text);
+
+  font-family: "Vazirmatn", sans-serif;
+
+  font-size: 1rem;
+
+  font-weight: 800;
+
+  white-space: nowrap;
+}
+
+
+/* ========================================
+   Main Section
+======================================== */
+
+.admin-tuition-x8p4-section {
+  width: 100%;
+
+  padding: 2rem;
+
+  background: white;
+
+  border: 1px solid
+    oklch(95% 0 0);
+
+  border-radius: var(--radius-lg);
+
+  box-shadow: var(--shadow-sm);
+
+  margin-bottom: 2rem;
+
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
+}
+
+
+.admin-tuition-x8p4-section:hover {
+  box-shadow: var(--shadow-md);
+
+  transform: translateY(-2px);
+}
+
+
+/* ========================================
+   Header
+======================================== */
+
+.admin-tuition-x8p4-section-header {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 1rem;
+
+  margin-bottom: 1.5rem;
+
+  padding-bottom: 1rem;
+
+  border-bottom: 2px solid
+    oklch(95% 0 0);
+}
+
+
+.admin-tuition-x8p4-heading {
+  min-width: 0;
+}
+
+
+.admin-tuition-x8p4-title {
+  display: flex;
+
+  align-items: center;
+
+  gap: 0.5rem;
+
+  margin: 0;
+
+  color: var(--primary);
+
+  font-size: 1.45rem;
+
+  font-weight: 800;
+}
+
+
+.admin-tuition-x8p4-title::before {
+  content: "";
+
+  width: 4px;
+
+  height: 24px;
+
+  flex-shrink: 0;
+
+  background:
+    linear-gradient(
+      180deg,
+      var(--primary),
+      var(--primary-dark)
+    );
+
+  border-radius: 2px;
+}
+
+
+.admin-tuition-x8p4-description {
+  margin: 0.5rem 0 0;
+
+  color: var(--admin-tuition-x8p4-muted);
+
+  font-size: 0.86rem;
+}
+
+
+.admin-tuition-x8p4-header-badge {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 0.4rem;
+
+  padding: 0.55rem 0.9rem;
+
+  color: var(--primary);
+
+  background: oklch(97% 0.03 29);
+
+  border: 1px solid
+    oklch(92% 0.05 29);
+
+  border-radius: var(--radius-full);
+
+  font-size: 0.82rem;
+
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+
+/* ========================================
+   Filters
+======================================== */
+
+.admin-tuition-x8p4-filters {
+  display: flex;
+
+  gap: 1rem;
+
+  margin-bottom: 1.25rem;
+
+  flex-wrap: wrap;
+}
+
+
+.admin-tuition-x8p4-search-wrapper,
+.admin-tuition-x8p4-select-wrapper {
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+}
+
+
+.admin-tuition-x8p4-search-wrapper {
+  flex: 2;
+
+  min-width: 280px;
+}
+
+
+.admin-tuition-x8p4-select-wrapper {
+  flex: 1;
+
+  min-width: 200px;
+}
+
+
+.admin-tuition-x8p4-search-icon,
+.admin-tuition-x8p4-filter-icon {
+  position: absolute;
+
+  right: 0.85rem;
+
+  color: oklch(55% 0 0);
+
+  pointer-events: none;
+
+  z-index: 2;
+}
+
+
+.admin-tuition-x8p4-search-input,
+.admin-tuition-x8p4-select {
+  width: 100%;
+
+  padding: 0.7rem 2.5rem 0.7rem 0.85rem;
+
+  background: white;
+
+  color: oklch(25% 0 0);
+
+  border: 1px solid
+    oklch(88% 0 0);
+
+  border-radius: var(--radius-md);
+
+  font-family: "Vazirmatn", sans-serif;
+
+  font-size: 0.86rem;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.admin-tuition-x8p4-search-input:focus,
+.admin-tuition-x8p4-select:focus {
+  outline: none;
+
+  border-color: var(--primary);
+
+  box-shadow:
+    0 0 0 3px
+    oklch(92% 0.04 29 / 0.4);
+}
+
+
+/* ========================================
+   Summary
+======================================== */
+
+.admin-tuition-x8p4-summary {
+  display: flex;
+
+  align-items: center;
+
+  gap: 1rem;
+
+  margin-bottom: 1rem;
+
+  flex-wrap: wrap;
+}
+
+
+.admin-tuition-x8p4-summary > div {
+  display: flex;
+
+  align-items: center;
+
+  gap: 0.5rem;
+
+  padding: 0.55rem 0.8rem;
+
+  background: oklch(98% 0 0);
+
+  border: 1px solid
+    oklch(94% 0 0);
+
+  border-radius: var(--radius-md);
+
+  font-size: 0.82rem;
+}
+
+
+.admin-tuition-x8p4-summary span {
+  color: oklch(55% 0 0);
+}
+
+
+.admin-tuition-x8p4-summary strong.green {
+  color: oklch(42% 0.14 150);
+}
+
+
+.admin-tuition-x8p4-summary strong.orange {
+  color: oklch(50% 0.15 60);
+}
+
+
+/* ========================================
+   Table
+======================================== */
+
+.admin-tuition-x8p4-table-wrapper {
+  width: 100%;
+
+  overflow-x: auto;
+
+  border: 1px solid
+    oklch(94% 0 0);
+
+  border-radius: var(--radius-md);
+
+  scrollbar-width: thin;
+}
+
+
+.admin-tuition-x8p4-table {
+  width: 100%;
+
+  min-width: 1100px;
+
+  border-collapse: collapse;
+
+  background: white;
+
+  direction: rtl;
+
+  text-align: right;
+}
+
+
+.admin-tuition-x8p4-table thead {
+  background:
+    linear-gradient(
+      135deg,
+      oklch(98% 0.02 29),
+      oklch(96% 0.04 29)
+    );
+
+  border-bottom: 2px solid
+    var(--primary);
+}
+
+
+.admin-tuition-x8p4-table th {
+  padding: 1rem 1.1rem;
+
+  color: var(--primary-dark);
+
+  font-size: 0.85rem;
+
+  font-weight: 800;
+
+  white-space: nowrap;
+}
+
+
+.admin-tuition-x8p4-table td {
+  padding: 1rem 1.1rem;
+
+  color: oklch(35% 0 0);
+
+  font-size: 0.86rem;
+
+  border-bottom: 1px solid
+    oklch(96% 0 0);
+
+  vertical-align: middle;
+}
+
+
+.admin-tuition-x8p4-table tbody tr {
+  transition:
+    background-color 0.2s ease;
+}
+
+
+.admin-tuition-x8p4-table tbody tr:hover {
+  background: oklch(98.5% 0.01 29);
+}
+
+
+.admin-tuition-x8p4-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+
+/* ========================================
+   Student
+======================================== */
+
+.admin-tuition-x8p4-student {
+  display: flex;
+
+  align-items: center;
+
+  gap: 0.7rem;
+
+  min-width: 170px;
+}
+
+
+.admin-tuition-x8p4-avatar {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  width: 42px;
+  height: 42px;
+
+  flex-shrink: 0;
+
+  color: white;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--primary),
+      var(--primary-dark)
+    );
+
+  border-radius: 13px;
+
+  font-size: 1rem;
+
+  font-weight: 800;
+}
+
+
+.admin-tuition-x8p4-student > div:last-child {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 0.25rem;
+
+  min-width: 0;
+}
+
+
+.admin-tuition-x8p4-student strong {
+  color: oklch(22% 0 0);
+
+  font-size: 0.9rem;
+
+  white-space: nowrap;
+}
+
+
+.admin-tuition-x8p4-student span {
+  display: flex;
+
+  align-items: center;
+
+  gap: 0.25rem;
+
+  color: oklch(55% 0 0);
+
+  font-family: "Vazirmatn", sans-serif;
+
+  font-size: 0.75rem;
+
+  direction: rtl;
+
+  white-space: nowrap;
+}
+
+
+/* ========================================
+   Class
+======================================== */
+
+.admin-tuition-x8p4-class-badge {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 0.35rem;
+
+  padding: 0.4rem 0.7rem;
+
+  color: oklch(40% 0.15 240);
+
+  background:
+    linear-gradient(
+      135deg,
+      oklch(96% 0.03 240),
+      oklch(98% 0.01 240)
+    );
+
+  border: 1px solid
+    oklch(90% 0.05 240);
+
+  border-radius: var(--radius-full);
+
+  font-size: 0.76rem;
+
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+
+/* ========================================
+   Prices
+======================================== */
+
+.admin-tuition-x8p4-price,
+.admin-tuition-x8p4-paid-price,
+.admin-tuition-x8p4-remaining-price,
+.admin-tuition-x8p4-zero-price {
+  font-family: "Vazirmatn", sans-serif;
+
+  font-size: 0.83rem;
+
+  font-weight: 800;
+}
+
+
+.admin-tuition-x8p4-price {
+  color: oklch(30% 0 0);
+}
+
+
+.admin-tuition-x8p4-paid-price {
+  color: oklch(42% 0.14 150);
+}
+
+
+.admin-tuition-x8p4-remaining-price {
+  color: oklch(48% 0.15 30);
+}
+
+
+.admin-tuition-x8p4-zero-price {
+  color: oklch(55% 0 0);
+}
+
+
+.admin-tuition-x8p4-table td small {
+  display: block;
+
+  margin-top: 0.15rem;
+
+  color: oklch(60% 0 0);
+
+  font-size: 0.68rem;
+}
+
+
+/* ========================================
+   Status
+======================================== */
+
+.admin-tuition-x8p4-status {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 0.4rem 0.75rem;
+
+  border-radius: var(--radius-full);
+
+  font-size: 0.75rem;
+
+  font-weight: 800;
+
+  white-space: nowrap;
+}
+
+
+.admin-tuition-x8p4-status.paid {
+  color: oklch(38% 0.14 150);
+
+  background:
+    oklch(94% 0.08 145);
+
+  border: 1px solid
+    oklch(85% 0.12 145);
+}
+
+
+.admin-tuition-x8p4-status.pending {
+  color: oklch(45% 0.15 70);
+
+  background:
+    oklch(95% 0.09 70);
+
+  border: 1px solid
+    oklch(88% 0.12 70);
+}
+
+
+.admin-tuition-x8p4-status.debt {
+  color: oklch(48% 0.17 35);
+
+  background:
+    oklch(95% 0.06 35);
+
+  border: 1px solid
+    oklch(88% 0.1 35);
+}
+
+
+.admin-tuition-x8p4-status.unpaid {
+  color: oklch(42% 0.18 25);
+
+  background:
+    oklch(95% 0.06 25);
+
+  border: 1px solid
+    oklch(88% 0.1 25);
+}
+
+
+/* ========================================
+   Date
+======================================== */
+
+.admin-tuition-x8p4-date {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 0.35rem;
+
+  color: oklch(50% 0 0);
+
+  font-family: "Vazirmatn", sans-serif;
+
+  font-size: 0.76rem;
+
+  white-space: nowrap;
+}
+
+
+/* ========================================
+   Actions
+======================================== */
+
+.admin-tuition-x8p4-actions {
+  display: flex;
+
+  align-items: center;
+
+  gap: 0.45rem;
+
+  min-width: max-content;
+}
+
+
+/* ========================================
+   Empty
+======================================== */
+
+.admin-tuition-x8p4-empty {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  min-height: 280px;
+
+  padding: 2rem;
+
+  color: oklch(65% 0 0);
+
+  text-align: center;
+}
+
+
+.admin-tuition-x8p4-empty svg {
+  margin-bottom: 0.75rem;
+
+  color: oklch(75% 0 0);
+}
+
+
+.admin-tuition-x8p4-empty h4 {
+  margin: 0 0 0.4rem;
+
+  color: oklch(35% 0 0);
+
+  font-size: 1rem;
+}
+
+
+.admin-tuition-x8p4-empty p {
+  margin: 0;
+
+  font-size: 0.82rem;
+}
+
+
+/* ========================================
+   Responsive - Tablet
+======================================== */
+
+@media (max-width: 1100px) {
+
+  .admin-tuition-x8p4-stats {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+
+/* ========================================
+   Responsive - Mobile
+======================================== */
+
+@media (max-width: 768px) {
+
+  .admin-tuition-x8p4-section {
+    padding: 1.25rem;
+
+    margin-bottom: 1.5rem;
+  }
+
+
+  .admin-tuition-x8p4-section-header {
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 1rem;
+
+    text-align: center;
+  }
+
+
+  .admin-tuition-x8p4-title {
+    justify-content: center;
+
+    font-size: 1.2rem;
+  }
+
+
+  .admin-tuition-x8p4-title::before {
+    height: 20px;
+  }
+
+
+  .admin-tuition-x8p4-description {
+    line-height: 1.8;
+  }
+
+
+  .admin-tuition-x8p4-header-badge {
+    justify-content: center;
+  }
+
+
+  .admin-tuition-x8p4-filters {
+    flex-direction: column;
+
+    gap: 0.75rem;
+  }
+
+
+  .admin-tuition-x8p4-search-wrapper,
+  .admin-tuition-x8p4-select-wrapper {
+    width: 100%;
+
+    min-width: 0;
+  }
+
+
+  /*
+     تبدیل جدول به کارت
+  */
+
+  .admin-tuition-x8p4-table-wrapper {
+    overflow: visible;
+
+    border: none;
+  }
+
+
+  .admin-tuition-x8p4-table,
+  .admin-tuition-x8p4-table thead,
+  .admin-tuition-x8p4-table tbody,
+  .admin-tuition-x8p4-table tr,
+  .admin-tuition-x8p4-table th,
+  .admin-tuition-x8p4-table td {
+    display: block;
+  }
+
+
+  .admin-tuition-x8p4-table {
+    min-width: 0;
+
+    width: 100%;
+  }
+
+
+  .admin-tuition-x8p4-table thead {
+    display: none;
+  }
+
+
+  .admin-tuition-x8p4-table tbody tr {
+    position: relative;
+
+    margin-bottom: 1rem;
+
+    padding: 0.75rem;
+
+    background: white;
+
+    border: 1px solid
+      oklch(92% 0 0);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+  }
+
+
+  .admin-tuition-x8p4-table tbody tr:hover {
+    background: white;
+  }
+
+
+  .admin-tuition-x8p4-table td {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 1rem;
+
+    min-height: 48px;
+
+    padding: 0.7rem 0.5rem;
+
+    border-bottom: 1px solid
+      oklch(96% 0 0);
+
+    text-align: left;
+  }
+
+
+  .admin-tuition-x8p4-table td:last-child {
+    border-bottom: none;
+
+    justify-content: center;
+
+    padding-top: 1rem;
+  }
+
+
+  .admin-tuition-x8p4-table td::before {
+    content: attr(data-label);
+
+    flex-shrink: 0;
+
+    color: var(--primary);
+
+    font-size: 0.76rem;
+
+    font-weight: 800;
+
+    text-align: right;
+  }
+
+
+  .admin-tuition-x8p4-student {
+    justify-content: flex-end;
+
+    text-align: right;
+  }
+
+
+  .admin-tuition-x8p4-actions {
+    width: 100%;
+
+    justify-content: center;
+
+    flex-wrap: wrap;
+  }
+
+
+  .admin-tuition-x8p4-actions button {
+    flex: 1;
+
+    min-width: 120px;
+  }
+
+}
+
+
+/* ========================================
+   Small Mobile
+======================================== */
+
+@media (max-width: 480px) {
+
+  .admin-tuition-x8p4-stats {
+    grid-template-columns: 1fr;
+
+    gap: 0.75rem;
+  }
+
+
+  .admin-tuition-x8p4-stat-card {
+    min-height: 78px;
+
+    padding: 0.9rem;
+  }
+
+
+  .admin-tuition-x8p4-stat-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+
+  .admin-tuition-x8p4-stat-content strong {
+    font-size: 0.92rem;
+  }
+
+
+  .admin-tuition-x8p4-section {
+    padding: 1rem 0.75rem;
+  }
+
+
+  .admin-tuition-x8p4-summary {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+
+  .admin-tuition-x8p4-summary > div {
+    justify-content: space-between;
+  }
+
+
+  .admin-tuition-x8p4-table td {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 0.45rem;
+  }
+
+
+  .admin-tuition-x8p4-table td::before {
+    width: 100%;
+  }
+
+
+  .admin-tuition-x8p4-student {
+    width: 100%;
+
+    justify-content: flex-start;
+  }
+
+
+  .admin-tuition-x8p4-actions {
+    flex-direction: column;
+
+    width: 100%;
+  }
+
+
+  .admin-tuition-x8p4-actions button {
+    width: 100%;
+
+    flex: none;
+  }
+
+}

@@ -1,0 +1,1005 @@
+/* =========================================================
+   Teacher Panel
+   Scoped Namespace:
+   teacher-panel-x7k2
+========================================================= */
+
+.teacher-panel-x7k2-root {
+  --teacher-panel-x7k2-red: #e74c3c;
+  --teacher-panel-x7k2-red-dark: #c0392b;
+  --teacher-panel-x7k2-red-light: #fff1f1;
+  --teacher-panel-x7k2-red-soft: #fdf5f4;
+  --teacher-panel-x7k2-red-border: rgba(231, 76, 60, 0.18);
+
+  --teacher-panel-x7k2-green: #27ae60;
+  --teacher-panel-x7k2-green-light: #ecf9f1;
+
+  --teacher-panel-x7k2-amber: #f39c12;
+  --teacher-panel-x7k2-amber-light: #fff7e8;
+
+  --teacher-panel-x7k2-text: #2d3436;
+  --teacher-panel-x7k2-text-soft: #66727d;
+  --teacher-panel-x7k2-muted: #98a2aa;
+
+  --teacher-panel-x7k2-border: rgba(45, 52, 54, 0.08);
+
+  --teacher-panel-x7k2-glass: rgba(255, 255, 255, 0.78);
+  --teacher-panel-x7k2-glass-strong: rgba(255, 255, 255, 0.92);
+
+  --teacher-panel-x7k2-shadow:
+    0 12px 32px rgba(45, 52, 54, 0.055);
+
+  --teacher-panel-x7k2-shadow-hover:
+    0 20px 42px rgba(231, 76, 60, 0.11);
+
+  --teacher-panel-x7k2-radius-xl: 22px;
+  --teacher-panel-x7k2-radius-lg: 17px;
+  --teacher-panel-x7k2-radius-md: 12px;
+
+  --teacher-panel-x7k2-ease:
+    cubic-bezier(0.16, 1, 0.3, 1);
+
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  direction: rtl;
+}
+
+
+/* =========================================================
+   Statistics Grid
+========================================================= */
+
+.teacher-panel-x7k2-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 30px;
+}
+
+
+/* =========================================================
+   Sections
+========================================================= */
+
+.teacher-panel-x7k2-section {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin-bottom: 30px;
+  animation: teacher-panel-x7k2-fade-up 0.55s
+    var(--teacher-panel-x7k2-ease) both;
+}
+
+.teacher-panel-x7k2-section:nth-of-type(2) {
+  animation-delay: 0.08s;
+}
+
+.teacher-panel-x7k2-section:nth-of-type(3) {
+  animation-delay: 0.14s;
+}
+
+
+/* =========================================================
+   Section Header
+========================================================= */
+
+.teacher-panel-x7k2-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  min-width: 0;
+
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.teacher-panel-x7k2-section-title {
+  position: relative;
+
+  margin: 0;
+  padding-right: 14px;
+
+  color: var(--teacher-panel-x7k2-text);
+
+  font-size: 1.08rem;
+  font-weight: 900;
+  line-height: 1.8;
+}
+
+.teacher-panel-x7k2-section-title::before {
+  position: absolute;
+  top: 50%;
+  right: 0;
+
+  width: 4px;
+  height: 22px;
+
+  border-radius: 999px;
+
+  background: linear-gradient(
+    180deg,
+    var(--teacher-panel-x7k2-red),
+    var(--teacher-panel-x7k2-red-dark)
+  );
+
+  content: "";
+  transform: translateY(-50%);
+}
+
+
+/* =========================================================
+   Action Button Link
+========================================================= */
+
+.teacher-panel-x7k2-action-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  color: inherit;
+  text-decoration: none;
+
+  font-family: inherit;
+  font-weight: 800;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   Table Shell
+========================================================= */
+
+.teacher-panel-x7k2-table-shell {
+  position: relative;
+
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  overflow: hidden;
+
+  border: 1px solid
+    var(--teacher-panel-x7k2-red-border);
+
+  border-radius:
+    var(--teacher-panel-x7k2-radius-xl);
+
+  background:
+    var(--teacher-panel-x7k2-glass);
+
+  box-shadow:
+    var(--teacher-panel-x7k2-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  transition:
+    box-shadow 0.35s var(--teacher-panel-x7k2-ease),
+    border-color 0.35s var(--teacher-panel-x7k2-ease);
+}
+
+.teacher-panel-x7k2-table-shell:hover {
+  border-color:
+    rgba(231, 76, 60, 0.25);
+
+  box-shadow:
+    var(--teacher-panel-x7k2-shadow-hover),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+
+/* =========================================================
+   Table Scroll
+   Desktop / Tablet
+========================================================= */
+
+.teacher-panel-x7k2-table-scroll {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  scrollbar-width: thin;
+  scrollbar-color:
+    rgba(231, 76, 60, 0.3)
+    transparent;
+}
+
+.teacher-panel-x7k2-table-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.teacher-panel-x7k2-table-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.teacher-panel-x7k2-table-scroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background:
+    rgba(231, 76, 60, 0.28);
+}
+
+.teacher-panel-x7k2-table-scroll::-webkit-scrollbar-thumb:hover {
+  background:
+    rgba(231, 76, 60, 0.45);
+}
+
+
+/* =========================================================
+   Main Table
+========================================================= */
+
+.teacher-panel-x7k2-table {
+  width: 100%;
+  min-width: 760px;
+
+  border-collapse: separate;
+  border-spacing: 0;
+
+  direction: rtl;
+  text-align: right;
+}
+
+
+/* =========================================================
+   Table Head
+========================================================= */
+
+.teacher-panel-x7k2-table thead th {
+  padding: 15px 17px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fff8f6 0%,
+      #fff1ef 100%
+    );
+
+  border-bottom:
+    1px solid
+    var(--teacher-panel-x7k2-red-border);
+
+  color:
+    var(--teacher-panel-x7k2-text);
+
+  font-size: 0.78rem;
+  font-weight: 900;
+
+  line-height: 1.5;
+
+  white-space: nowrap;
+}
+
+.teacher-panel-x7k2-table thead th:first-child {
+  border-top-right-radius:
+    var(--teacher-panel-x7k2-radius-xl);
+}
+
+.teacher-panel-x7k2-table thead th:last-child {
+  border-top-left-radius:
+    var(--teacher-panel-x7k2-radius-xl);
+}
+
+
+/* =========================================================
+   Table Body
+========================================================= */
+
+.teacher-panel-x7k2-table tbody tr {
+  transition:
+    background 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.teacher-panel-x7k2-table tbody tr:hover {
+  background:
+    rgba(231, 76, 60, 0.035);
+}
+
+.teacher-panel-x7k2-table tbody td {
+  padding: 16px 17px;
+
+  border-bottom:
+    1px solid
+    var(--teacher-panel-x7k2-border);
+
+  color:
+    var(--teacher-panel-x7k2-text);
+
+  font-size: 0.82rem;
+  font-weight: 600;
+
+  vertical-align: middle;
+
+  white-space: nowrap;
+}
+
+.teacher-panel-x7k2-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+
+/* =========================================================
+   Class Tag
+========================================================= */
+
+.teacher-panel-x7k2-class-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  max-width: 100%;
+
+  padding: 6px 10px;
+
+  border:
+    1px solid
+    var(--teacher-panel-x7k2-red-border);
+
+  border-radius: 10px;
+
+  background:
+    var(--teacher-panel-x7k2-red-soft);
+
+  color:
+    var(--teacher-panel-x7k2-red);
+
+  font-size: 0.76rem;
+  font-weight: 800;
+
+  white-space: nowrap;
+
+  transition:
+    transform 0.25s var(--teacher-panel-x7k2-ease),
+    background 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.teacher-panel-x7k2-class-tag:hover {
+  background:
+    var(--teacher-panel-x7k2-red-light);
+
+  box-shadow:
+    0 6px 15px rgba(231, 76, 60, 0.09);
+
+  transform: translateY(-1px);
+}
+
+.teacher-panel-x7k2-class-tag--highlight {
+  background:
+    linear-gradient(
+      135deg,
+      #fff1ef,
+      #fde2de
+    );
+
+  box-shadow:
+    0 5px 14px
+    rgba(231, 76, 60, 0.07);
+}
+
+
+/* =========================================================
+   Count
+========================================================= */
+
+.teacher-panel-x7k2-count {
+  display: inline-flex;
+  align-items: center;
+
+  color:
+    var(--teacher-panel-x7k2-text);
+
+  font-size: 0.8rem;
+  font-weight: 800;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   Schedule
+========================================================= */
+
+.teacher-panel-x7k2-time {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 6px 9px;
+
+  border:
+    1px solid
+    var(--teacher-panel-x7k2-border);
+
+  border-radius: 9px;
+
+  background:
+    var(--teacher-panel-x7k2-glass-strong);
+
+  color:
+    var(--teacher-panel-x7k2-text-soft);
+
+  font-family:
+    "Vazirmatn",
+    sans-serif;
+
+  font-size: 0.75rem;
+  font-weight: 700;
+
+  direction: ltr;
+  white-space: nowrap;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+
+  transition:
+    border-color 0.25s ease,
+    color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.teacher-panel-x7k2-time:hover {
+  border-color:
+    var(--teacher-panel-x7k2-red-border);
+
+  color:
+    var(--teacher-panel-x7k2-red);
+
+  box-shadow:
+    0 5px 14px
+    rgba(231, 76, 60, 0.07);
+}
+
+
+/* =========================================================
+   Capacity
+========================================================= */
+
+.teacher-panel-x7k2-capacity {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 6px 10px;
+
+  border:
+    1px solid
+    rgba(231, 76, 60, 0.14);
+
+  border-radius: 999px;
+
+  background:
+    var(--teacher-panel-x7k2-red-light);
+
+  color:
+    var(--teacher-panel-x7k2-red-dark);
+
+  font-size: 0.72rem;
+  font-weight: 900;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   Exam Title
+========================================================= */
+
+.teacher-panel-x7k2-exam-title {
+  display: block;
+
+  max-width: 250px;
+
+  overflow: hidden;
+
+  color:
+    var(--teacher-panel-x7k2-text);
+
+  font-size: 0.82rem;
+  font-weight: 900;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   Status
+========================================================= */
+
+.teacher-panel-x7k2-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 95px;
+
+  padding: 6px 11px;
+
+  border-radius: 999px;
+
+  font-size: 0.7rem;
+  font-weight: 900;
+
+  white-space: nowrap;
+}
+
+.teacher-panel-x7k2-status-done {
+  border:
+    1px solid
+    rgba(39, 174, 96, 0.18);
+
+  background:
+    var(--teacher-panel-x7k2-green-light);
+
+  color:
+    #1e8e4e;
+}
+
+.teacher-panel-x7k2-status-pending {
+  border:
+    1px solid
+    rgba(243, 156, 18, 0.2);
+
+  background:
+    var(--teacher-panel-x7k2-amber-light);
+
+  color:
+    #b7791f;
+}
+
+
+/* =========================================================
+   Mobile Card Layout
+   مهم:
+   از اینجا به بعد جدول دیگر جدول عادی نیست.
+   هر tr تبدیل به کارت می‌شود.
+========================================================= */
+
+@media (max-width: 700px) {
+
+  .teacher-panel-x7k2-root {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .teacher-panel-x7k2-stat-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+
+  .teacher-panel-x7k2-section {
+    width: 100%;
+    margin-bottom: 24px;
+  }
+
+  .teacher-panel-x7k2-section-head {
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .teacher-panel-x7k2-section-title {
+    padding-right: 0;
+
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  .teacher-panel-x7k2-section-title::before {
+    display: none;
+  }
+
+  .teacher-panel-x7k2-section-head > * {
+    max-width: 100%;
+  }
+
+  .teacher-panel-x7k2-table-shell {
+    overflow: visible;
+
+    border-radius:
+      var(--teacher-panel-x7k2-radius-lg);
+  }
+
+  .teacher-panel-x7k2-table-scroll {
+    overflow: visible;
+  }
+
+  .teacher-panel-x7k2-table {
+    display: block;
+
+    width: 100%;
+    min-width: 0;
+
+    border-collapse: separate;
+  }
+
+  .teacher-panel-x7k2-table thead {
+    display: none;
+  }
+
+  .teacher-panel-x7k2-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    width: 100%;
+    padding: 10px;
+  }
+
+  .teacher-panel-x7k2-table tbody tr {
+    display: grid;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(0, 1fr);
+
+    gap: 0;
+
+    width: 100%;
+
+    overflow: hidden;
+
+    border:
+      1px solid
+      var(--teacher-panel-x7k2-red-border);
+
+    border-radius: 15px;
+
+    background:
+      rgba(255, 255, 255, 0.82);
+
+    box-shadow:
+      0 7px 20px
+      rgba(45, 52, 54, 0.045);
+
+    transition:
+      transform 0.25s var(--teacher-panel-x7k2-ease),
+      box-shadow 0.25s ease,
+      border-color 0.25s ease;
+  }
+
+  .teacher-panel-x7k2-table tbody tr:hover {
+    background:
+      rgba(255, 255, 255, 0.95);
+
+    border-color:
+      rgba(231, 76, 60, 0.25);
+
+    box-shadow:
+      0 12px 26px
+      rgba(231, 76, 60, 0.08);
+
+    transform: translateY(-2px);
+  }
+
+  .teacher-panel-x7k2-table tbody td {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    min-width: 0;
+
+    padding: 11px 12px;
+
+    border-bottom:
+      1px solid
+      rgba(45, 52, 54, 0.055);
+
+    font-size: 0.76rem;
+
+    white-space: normal;
+  }
+
+  .teacher-panel-x7k2-table tbody td:nth-child(odd) {
+    border-left:
+      1px solid
+      rgba(45, 52, 54, 0.055);
+  }
+
+  .teacher-panel-x7k2-table tbody td:last-child {
+    border-bottom: none;
+  }
+
+  /* دو ستون آخر */
+  .teacher-panel-x7k2-table tbody td:nth-last-child(-n + 2) {
+    border-bottom: none;
+  }
+
+  /* هر سلول برچسب خودش را می‌گیرد */
+  .teacher-panel-x7k2-table tbody td::before {
+    display: block;
+
+    margin-left: 7px;
+
+    color:
+      var(--teacher-panel-x7k2-muted);
+
+    font-size: 0.62rem;
+    font-weight: 800;
+
+    white-space: nowrap;
+  }
+
+  /* جدول کلاس‌ها */
+  .teacher-panel-x7k2-table tbody td:nth-child(1)::before {
+    content: "کلاس";
+  }
+
+  .teacher-panel-x7k2-table tbody td:nth-child(2)::before {
+    content: "تعداد";
+  }
+
+  .teacher-panel-x7k2-table tbody td:nth-child(3)::before {
+    content: "زمان";
+  }
+
+  .teacher-panel-x7k2-table tbody td:nth-child(4)::before {
+    content: "تشکیل‌شده";
+  }
+
+  .teacher-panel-x7k2-table tbody td:nth-child(5)::before {
+    content: "باقی‌مانده";
+  }
+
+  .teacher-panel-x7k2-table tbody td:nth-child(6)::before {
+    content: "عملیات";
+  }
+
+  /* جدول آزمون‌ها */
+  .teacher-panel-x7k2-table tbody td:nth-child(1)::before {
+    content: "عنوان";
+  }
+
+  .teacher-panel-x7k2-table tbody td:nth-child(2)::before {
+    content: "کلاس";
+  }
+
+  .teacher-panel-x7k2-table tbody td:nth-child(3)::before {
+    content: "تاریخ";
+  }
+
+  .teacher-panel-x7k2-table tbody td:nth-child(4)::before {
+    content: "شرکت‌کنندگان";
+  }
+
+  .teacher-panel-x7k2-table tbody td:nth-child(5)::before {
+    content: "وضعیت";
+  }
+
+  .teacher-panel-x7k2-class-tag {
+    max-width: calc(100% - 45px);
+
+    overflow: hidden;
+
+    padding: 5px 8px;
+
+    font-size: 0.67rem;
+
+    text-overflow: ellipsis;
+  }
+
+  .teacher-panel-x7k2-time {
+    max-width: calc(100% - 45px);
+
+    overflow: hidden;
+
+    padding: 5px 7px;
+
+    font-size: 0.65rem;
+
+    text-overflow: ellipsis;
+  }
+
+  .teacher-panel-x7k2-count {
+    font-size: 0.68rem;
+  }
+
+  .teacher-panel-x7k2-capacity {
+    padding: 5px 8px;
+
+    font-size: 0.64rem;
+  }
+
+  .teacher-panel-x7k2-exam-title {
+    max-width: calc(100% - 45px);
+
+    font-size: 0.7rem;
+
+    text-overflow: ellipsis;
+  }
+
+  .teacher-panel-x7k2-status {
+    min-width: auto;
+
+    padding: 5px 8px;
+
+    font-size: 0.63rem;
+  }
+
+  .teacher-panel-x7k2-action-link {
+    width: 100%;
+
+    font-size: 0.67rem;
+  }
+
+}
+
+
+/* =========================================================
+   Very Small Phones
+========================================================= */
+
+@media (max-width: 430px) {
+
+  .teacher-panel-x7k2-stat-grid {
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .teacher-panel-x7k2-section {
+    margin-bottom: 20px;
+  }
+
+  .teacher-panel-x7k2-section-head {
+    gap: 10px;
+  }
+
+  .teacher-panel-x7k2-section-title {
+    font-size: 0.94rem;
+  }
+
+  .teacher-panel-x7k2-table-shell {
+    border-radius: 14px;
+  }
+
+  .teacher-panel-x7k2-table tbody {
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .teacher-panel-x7k2-table tbody tr {
+    border-radius: 13px;
+  }
+
+  .teacher-panel-x7k2-table tbody td {
+    padding: 9px 10px;
+
+    font-size: 0.7rem;
+  }
+
+  .teacher-panel-x7k2-table tbody td::before {
+    margin-left: 5px;
+
+    font-size: 0.57rem;
+  }
+
+  .teacher-panel-x7k2-class-tag {
+    padding: 4px 6px;
+    font-size: 0.61rem;
+  }
+
+  .teacher-panel-x7k2-time {
+    padding: 4px 5px;
+    font-size: 0.59rem;
+  }
+
+  .teacher-panel-x7k2-capacity {
+    padding: 4px 7px;
+    font-size: 0.58rem;
+  }
+
+  .teacher-panel-x7k2-status {
+    padding: 4px 7px;
+    font-size: 0.57rem;
+  }
+
+  .teacher-panel-x7k2-action-link {
+    font-size: 0.61rem;
+  }
+
+}
+
+
+/* =========================================================
+   Tablet
+========================================================= */
+
+@media (min-width: 701px) and (max-width: 1100px) {
+
+  .teacher-panel-x7k2-stat-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 14px;
+  }
+
+  .teacher-panel-x7k2-table {
+    min-width: 700px;
+  }
+
+  .teacher-panel-x7k2-table thead th {
+    padding: 13px 12px;
+
+    font-size: 0.72rem;
+  }
+
+  .teacher-panel-x7k2-table tbody td {
+    padding: 13px 12px;
+
+    font-size: 0.75rem;
+  }
+
+}
+
+
+/* =========================================================
+   Laptop / Desktop
+========================================================= */
+
+@media (min-width: 1101px) {
+
+  .teacher-panel-x7k2-table-scroll {
+    overflow-x: hidden;
+  }
+
+  .teacher-panel-x7k2-table {
+    min-width: 0;
+  }
+
+}
+
+
+/* =========================================================
+   Reduced Motion
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .teacher-panel-x7k2-root *,
+  .teacher-panel-x7k2-root *::before,
+  .teacher-panel-x7k2-root *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+
+    transition-duration: 0.01ms !important;
+
+    scroll-behavior: auto !important;
+  }
+
+}
+
+
+/* =========================================================
+   Animation
+========================================================= */
+
+@keyframes teacher-panel-x7k2-fade-up {
+
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+}

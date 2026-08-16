@@ -1,0 +1,329 @@
+/* src/pages/Login.css */
+
+/* ── Tokens ── */
+:root {
+  --red-9: oklch(30% 0.18 25);
+  --red-7: oklch(42% 0.22 25);
+  --red-5: oklch(52% 0.22 25);
+  --red-4: oklch(60% 0.20 25);
+  --red-1: oklch(96% 0.04 25);
+  --neu-0: oklch(98% 0 0);
+  --neu-1: oklch(95% 0 0);
+  --neu-3: oklch(88% 0 0);
+  --neu-6: oklch(55% 0 0);
+  --neu-9: oklch(14% 0 0);
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+}
+
+/* ── Root ── */
+.login-root {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--neu-0);
+  position: relative;
+  overflow: hidden;
+  padding: 24px;
+  padding-top: 80px;
+}
+
+/* ── Background blobs ── */
+.login-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.18;
+}
+
+.blob-1 {
+  width: 500px;
+  height: 500px;
+  background: var(--red-5);
+  top: -120px;
+  right: -100px;
+}
+
+.blob-2 {
+  width: 400px;
+  height: 400px;
+  background: oklch(65% 0.18 25);
+  bottom: -100px;
+  left: -80px;
+}
+
+/* ── Inner layout ── */
+.login-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  width: 100%;
+  max-width: 440px;
+}
+
+/* ── Brand ── */
+.login-brand {
+  text-align: center;
+  color: var(--neu-9);
+}
+
+.login-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;    
+  text-align: center;
+}
+
+.brand-icon {
+  font-size: 2.8rem;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 4px 12px oklch(52% 0.22 25 / 0.3));
+}
+
+.brand-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-brand h1 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.02em;
+  color: var(--neu-9);
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent); 
+  margin: 0 0 8px 0;   
+}
+
+.tagline {
+  font-size: 0.8rem;
+  color: var(--neu-6);
+  margin: 0;
+}
+
+
+.login-card {
+  width: 100%;
+  background: #fff;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--neu-3);
+  box-shadow:
+    0 2px 4px oklch(0% 0 0 / 0.04),
+    0 12px 40px oklch(0% 0 0 / 0.08);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.card-header h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--neu-9);
+  margin: 0 0 4px;
+}
+
+.card-header p {
+  font-size: 0.82rem;
+  color: var(--neu-6);
+  margin: 0;
+}
+
+/* ── Role grid ── */
+.role-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.role-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 6px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--neu-3);
+  background: var(--neu-0);
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.18s, background 0.18s, transform 0.15s;
+}
+
+.role-item:hover {
+  border-color: var(--red-4);
+  background: var(--red-1);
+}
+
+.role-item.active {
+  border-color: var(--red-5);
+  background: var(--red-1);
+  box-shadow: 0 0 0 3px oklch(52% 0.22 25 / 0.12);
+}
+
+.role-item:active { transform: scale(0.96); }
+
+.role-icon { font-size: 1.4rem; line-height: 1; }
+
+.role-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--neu-9);
+  white-space: nowrap;
+}
+
+.role-check {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--red-5);
+  line-height: 1;
+}
+
+/* ── Form ── */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--neu-9);
+}
+
+.input-wrap {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.95rem;
+  pointer-events: none;
+  line-height: 1;
+}
+
+.input-wrap input {
+  width: 100%;
+  padding: 11px 40px 11px 14px;
+  border: 1.5px solid var(--neu-3);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: var(--neu-9);
+  background: var(--neu-0);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+
+.input-wrap input::placeholder { color: var(--neu-6); }
+
+.input-wrap input:focus {
+  border-color: var(--red-5);
+  box-shadow: 0 0 0 3px oklch(52% 0.22 25 / 0.12);
+  background: #fff;
+}
+
+/* ── Submit button ── */
+.btn-submit {
+  width: 100%;
+  padding: 13px;
+  background: var(--red-5);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.18s, transform 0.15s, box-shadow 0.18s;
+  box-shadow: 0 4px 16px oklch(52% 0.22 25 / 0.3);
+  margin-top: 4px;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background: var(--red-7);
+  box-shadow: 0 6px 20px oklch(52% 0.22 25 / 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-submit:active:not(:disabled) { transform: scale(0.98); }
+
+.btn-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+/* Spinner */
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid oklch(100% 0 0 / 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Footer ── */
+.login-footer {
+  text-align: center;
+  margin: 0;
+}
+
+.login-footer a {
+  font-size: 0.82rem;
+  color: var(--red-5);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.login-footer a:hover { text-decoration: underline; }
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .login-card { padding: 24px 20px; }
+  .role-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-submit, .role-item, .input-wrap input { transition: none; }
+  .spinner { animation: none; opacity: 0.7; }
+}

@@ -1,0 +1,157 @@
+.navbar {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: 100;
+  background: oklch(98.5% 0.004 55 / .80);
+  backdrop-filter: blur(16px) saturate(1.5);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  border-block-end: 1px solid transparent;
+  transition:
+    background   var(--dur-base) var(--ease),
+    border-color var(--dur-base) var(--ease),
+    box-shadow   var(--dur-base) var(--ease);
+}
+.navbar--scrolled {
+  background: oklch(99.5% 0.003 55 / .95);
+  border-block-end-color: var(--border);
+  box-shadow: var(--sh-sm);
+}
+.navbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 70px;
+  gap: var(--s4);
+}
+.navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  font-weight: 900;
+  color: var(--text);
+  flex-shrink: 0;
+  transition: opacity var(--dur-base) var(--ease);
+}
+
+.navbar__brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;     
+}
+
+.navbar__brand:hover { opacity: .8; }
+
+.navbar__logo {
+  width: 42px; height: 42px;
+  background: white;
+  color: #fff;
+  border-radius: var(--r-md);
+  display: grid;
+  place-items: center;
+  font-size: var(--tx-lg);
+  font-weight: 900;
+  box-shadow: var(--sh-accent);
+  transition: transform var(--dur-base) var(--ease-spring), box-shadow var(--dur-base) var(--ease);
+}
+
+.navbar__links {
+  display: flex;
+  align-items: center;
+  gap: var(--s6);
+}
+.navbar__link {
+  font-size: var(--tx-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+  position: relative;
+  padding-block-end: 2px;
+  transition: color var(--dur-base) var(--ease);
+}
+.navbar__link::after {
+  content: '';
+  position: absolute;
+  inset-block-end: -2px;
+  inset-inline: 0;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--dur-base) var(--ease);
+}
+.navbar__link:hover { color: var(--accent); }
+.navbar__link:hover::after { transform: scaleX(1); transform-origin: left; }
+.navbar__link--active { color: var(--accent); }
+.navbar__link--active::after { transform: scaleX(1); }
+
+.navbar__desktop-cta {
+  display: block;
+  /* margin-top: var(--s2); */
+
+}
+.navbar__mobile-cta {
+  display: none;
+  margin-top: var(--s2);
+}
+
+.navbar__burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  padding: var(--s2);
+  border-radius: var(--r-sm);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  transition: background var(--dur-base) var(--ease);
+  width: 36px;
+  height: 36px;
+}
+.navbar__burger:hover { background: var(--surface-2); }
+.navbar__burger span {
+  display: block;
+  width: 22px; height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: transform var(--dur-base) var(--ease), opacity var(--dur-base) var(--ease);
+}
+
+.navbar__burger--open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.navbar__burger--open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.navbar__burger--open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+@media (max-width: 680px) {
+  .navbar__burger { display: flex; }
+  .navbar__desktop-cta { display: none; }
+  .navbar__mobile-cta { display: block; }
+  
+  .navbar__links {
+    position: fixed;
+    inset-block-start: 70px;
+    inset-inline: 0;
+    background: var(--surface, #ffffff);
+    flex-direction: column;
+    align-items: stretch;
+    padding: var(--s4) var(--s6) var(--s8);
+    gap: var(--s1);
+    box-shadow: var(--sh-lg);
+    border-block-end: 1px solid var(--border);
+    transform: translateY(-120%);
+    opacity: 0;
+    transition:
+      transform var(--dur-slow) var(--ease),
+      opacity   var(--dur-slow) var(--ease);
+    z-index: 99;
+  }
+  
+  .navbar__links--open { 
+    transform: translateY(0); 
+    opacity: 1; 
+  }
+  .navbar__link { padding: var(--s3) 0; font-size: var(--tx-base); border-block-end: 1px solid var(--border-soft); }
+  .navbar__link:last-of-type { border-block-end: none; }
+}
