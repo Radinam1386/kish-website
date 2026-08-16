@@ -32,3 +32,4 @@ yarn-error.log*
 venv*
 backend/venv
 .env*
+test.txt
