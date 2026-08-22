@@ -70,21 +70,25 @@ function TeacherAttendance() {
               title="نام کلاس"
               value="English A2"
               icon={<Hash size={23} />}
+              color="red"
             />
             <StatCard
               title="تاریخ جلسه"
               value="۱۴۰۵/۰۹/۲۰"
               icon={<Calendar size={23} />}
+              color="light-blue"
             />
             <StatCard
               title="شماره جلسه"
               value="جلسه ۱۲"
               icon={<Hash size={23} />}
+              color="light-green"
             />
             <StatCard
               title="استاد مربوطه"
               value="خانم رضایی"
               icon={<UserCircle size={23} />}
+              color="red"
             />
           </div>
         </section>

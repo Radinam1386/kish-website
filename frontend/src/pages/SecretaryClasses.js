@@ -125,57 +125,42 @@ function SecretaryClasses() {
         classItem.room.toLowerCase().includes(search);
 
       const matchesStatus =
-        statusFilter === "all" ||
-        classItem.statusType === statusFilter;
+        statusFilter === "all" || classItem.statusType === statusFilter;
 
       const matchesLevel =
-        levelFilter === "all" ||
-        classItem.level === levelFilter;
+        levelFilter === "all" || classItem.level === levelFilter;
 
       return matchesSearch && matchesStatus && matchesLevel;
     });
   }, [classes, searchTerm, statusFilter, levelFilter]);
 
   const totalStudents = useMemo(() => {
-    return classes.reduce(
-      (total, classItem) => total + classItem.enrolled,
-      0
-    );
+    return classes.reduce((total, classItem) => total + classItem.enrolled, 0);
   }, [classes]);
 
   const totalCapacity = useMemo(() => {
-    return classes.reduce(
-      (total, classItem) => total + classItem.capacity,
-      0
-    );
+    return classes.reduce((total, classItem) => total + classItem.capacity, 0);
   }, [classes]);
 
   const activeClasses = useMemo(() => {
-    return classes.filter(
-      (classItem) => classItem.statusType === "active"
-    ).length;
+    return classes.filter((classItem) => classItem.statusType === "active")
+      .length;
   }, [classes]);
 
   const openClasses = useMemo(() => {
-    return classes.filter(
-      (classItem) => classItem.statusType === "open"
-    ).length;
+    return classes.filter((classItem) => classItem.statusType === "open")
+      .length;
   }, [classes]);
 
   const emptyCapacity = totalCapacity - totalStudents;
 
   const occupancyPercent =
-    totalCapacity > 0
-      ? Math.round((totalStudents / totalCapacity) * 100)
-      : 0;
+    totalCapacity > 0 ? Math.round((totalStudents / totalCapacity) * 100) : 0;
 
   const getCapacityPercent = (enrolled, capacity) => {
     if (!capacity) return 0;
 
-    return Math.min(
-      Math.round((enrolled / capacity) * 100),
-      100
-    );
+    return Math.min(Math.round((enrolled / capacity) * 100), 100);
   };
 
   const getProgressClass = (percent) => {
@@ -207,9 +192,7 @@ function SecretaryClasses() {
   };
 
   const handleDeleteClass = (id) => {
-    setClasses((prev) =>
-      prev.filter((classItem) => classItem.id !== id)
-    );
+    setClasses((prev) => prev.filter((classItem) => classItem.id !== id));
   };
 
   return (
@@ -219,7 +202,6 @@ function SecretaryClasses() {
       menuType="secretary"
     >
       <div className="secretary-classes-x9k3-root">
-
         {/* =========================================
             Statistics
         ========================================== */}
@@ -230,6 +212,7 @@ function SecretaryClasses() {
             value={`${classes.length} کلاس`}
             hint="کلاس‌های ثبت‌شده"
             icon={<BookOpen />}
+            color="red"
           />
 
           <StatCard
@@ -237,6 +220,7 @@ function SecretaryClasses() {
             value={`${activeClasses} کلاس`}
             hint="در حال برگزاری"
             icon={<CheckCircle2 />}
+            color="green"
           />
 
           <StatCard
@@ -244,50 +228,25 @@ function SecretaryClasses() {
             value={`${totalStudents} نفر`}
             hint="ثبت‌نام‌شده"
             icon={<Users />}
-          />
-
-          <StatCard
-            title="ظرفیت خالی"
-            value={`${emptyCapacity} نفر`}
-            hint={`${openClasses} کلاس آماده ثبت‌نام`}
-            icon={<CalendarDays />}
+            color="blue"
           />
         </div>
-
-        {/* =========================================
-            Main Section
-        ========================================== */}
-
         <section className="secretary-classes-x9k3-section">
-
-          {/* Header */}
-
           <div className="secretary-classes-x9k3-header">
             <div className="secretary-classes-x9k3-heading">
-              <h3 className="secretary-classes-x9k3-title">
-                لیست کلاس‌ها
-              </h3>
+              <h3 className="secretary-classes-x9k3-title">لیست کلاس‌ها</h3>
 
               <p className="secretary-classes-x9k3-description">
                 مدیریت کلاس‌ها، مدرس‌ها، ظرفیت و وضعیت ثبت‌نام
               </p>
             </div>
 
-            <AnimatedButton
-              variant="primary"
-              onClick={handleAddClass}
-            >
+            <AnimatedButton variant="primary" onClick={handleAddClass}>
               <Plus size={18} />
               افزودن کلاس جدید
             </AnimatedButton>
           </div>
-
-          {/* =========================================
-              Filters
-          ========================================== */}
-
           <div className="secretary-classes-x9k3-filters">
-
             <div className="secretary-classes-x9k3-search">
               <Search
                 size={18}
@@ -297,9 +256,7 @@ function SecretaryClasses() {
               <input
                 type="search"
                 value={searchTerm}
-                onChange={(event) =>
-                  setSearchTerm(event.target.value)
-                }
+                onChange={(event) => setSearchTerm(event.target.value)}
                 placeholder="جستجو بر اساس نام کلاس، کد، مدرس یا اتاق..."
                 className="secretary-classes-x9k3-input"
               />
@@ -313,29 +270,19 @@ function SecretaryClasses() {
 
               <select
                 value={statusFilter}
-                onChange={(event) =>
-                  setStatusFilter(event.target.value)
-                }
+                onChange={(event) => setStatusFilter(event.target.value)}
                 className="secretary-classes-x9k3-select"
               >
                 <option value="all">همه وضعیت‌ها</option>
-                <option value="active">
-                  در حال برگزاری
-                </option>
-                <option value="open">
-                  ثبت‌نام آزاد
-                </option>
-                <option value="full">
-                  تکمیل ظرفیت
-                </option>
+                <option value="active">در حال برگزاری</option>
+                <option value="open">ثبت‌نام آزاد</option>
+                <option value="full">تکمیل ظرفیت</option>
               </select>
             </div>
 
             <select
               value={levelFilter}
-              onChange={(event) =>
-                setLevelFilter(event.target.value)
-              }
+              onChange={(event) => setLevelFilter(event.target.value)}
               className="secretary-classes-x9k3-level-select"
             >
               <option value="all">همه سطوح</option>
@@ -345,30 +292,20 @@ function SecretaryClasses() {
               <option value="تخصصی">تخصصی</option>
             </select>
           </div>
-
-          {/* Result */}
-
           <div className="secretary-classes-x9k3-result">
             <span>
-              نمایش{" "}
-              <strong>{filteredClasses.length}</strong>{" "}
-              کلاس از{" "}
+              نمایش
+              <strong>{filteredClasses.length}</strong> کلاس از
               <strong>{classes.length}</strong>
             </span>
 
             <span>
-              ظرفیت استفاده‌شده:{" "}
+              ظرفیت استفاده‌شده:
               <strong>{occupancyPercent}٪</strong>
             </span>
           </div>
-
-          {/* =========================================
-              Table
-          ========================================== */}
-
           <div className="secretary-classes-x9k3-table-wrapper">
             <table className="secretary-classes-x9k3-table">
-
               <thead>
                 <tr>
                   <th>کلاس</th>
@@ -382,25 +319,19 @@ function SecretaryClasses() {
               </thead>
 
               <tbody>
-
                 {filteredClasses.length > 0 ? (
                   filteredClasses.map((classItem) => {
                     const percent = getCapacityPercent(
                       classItem.enrolled,
-                      classItem.capacity
+                      classItem.capacity,
                     );
 
-                    const progressClass =
-                      getProgressClass(percent);
+                    const progressClass = getProgressClass(percent);
 
                     return (
                       <tr key={classItem.id}>
-
-                        {/* Class */}
-
                         <td data-label="کلاس">
                           <div className="secretary-classes-x9k3-class">
-
                             <div
                               className={`secretary-classes-x9k3-class-icon ${classItem.colorType}`}
                             >
@@ -408,9 +339,7 @@ function SecretaryClasses() {
                             </div>
 
                             <div className="secretary-classes-x9k3-class-info">
-                              <strong>
-                                {classItem.title}
-                              </strong>
+                              <strong>{classItem.title}</strong>
 
                               <div>
                                 <span className="secretary-classes-x9k3-badge">
@@ -422,23 +351,17 @@ function SecretaryClasses() {
                                 </span>
                               </div>
                             </div>
-
                           </div>
                         </td>
 
-                        {/* Teacher */}
 
                         <td data-label="مدرس">
                           <div className="secretary-classes-x9k3-teacher">
-
                             <div className="secretary-classes-x9k3-teacher-avatar">
                               {classItem.teacher.charAt(0)}
                             </div>
 
-                            <span>
-                              {classItem.teacher}
-                            </span>
-
+                            <span>{classItem.teacher}</span>
                           </div>
                         </td>
 
@@ -446,7 +369,6 @@ function SecretaryClasses() {
 
                         <td data-label="زمان برگزاری">
                           <div className="secretary-classes-x9k3-schedule">
-
                             <span>
                               <CalendarDays size={15} />
                               {classItem.schedule}
@@ -457,10 +379,7 @@ function SecretaryClasses() {
                               {classItem.time}
                             </span>
 
-                            <small>
-                              {classItem.room}
-                            </small>
-
+                            <small>{classItem.room}</small>
                           </div>
                         </td>
 
@@ -468,15 +387,10 @@ function SecretaryClasses() {
 
                         <td data-label="ظرفیت">
                           <div className="secretary-classes-x9k3-capacity">
-
                             <div className="secretary-classes-x9k3-capacity-number">
-                              <strong>
-                                {classItem.enrolled}
-                              </strong>
+                              <strong>{classItem.enrolled}</strong>
 
-                              <span>
-                                از {classItem.capacity} نفر
-                              </span>
+                              <span>از {classItem.capacity} نفر</span>
                             </div>
 
                             <div className="secretary-classes-x9k3-progress">
@@ -488,10 +402,7 @@ function SecretaryClasses() {
                               />
                             </div>
 
-                            <small>
-                              {percent}٪ تکمیل
-                            </small>
-
+                            <small>{percent}٪ تکمیل</small>
                           </div>
                         </td>
 
@@ -520,7 +431,6 @@ function SecretaryClasses() {
                           className="secretary-classes-x9k3-action-cell"
                         >
                           <div className="secretary-classes-x9k3-actions">
-
                             <button
                               type="button"
                               className="secretary-classes-x9k3-action view"
@@ -541,16 +451,12 @@ function SecretaryClasses() {
                               type="button"
                               className="secretary-classes-x9k3-action delete"
                               title="حذف کلاس"
-                              onClick={() =>
-                                handleDeleteClass(classItem.id)
-                              }
+                              onClick={() => handleDeleteClass(classItem.id)}
                             >
                               <Trash2 size={16} />
                             </button>
-
                           </div>
                         </td>
-
                       </tr>
                     );
                   })
@@ -560,23 +466,16 @@ function SecretaryClasses() {
                       <div className="secretary-classes-x9k3-empty">
                         <BookOpen size={42} />
 
-                        <strong>
-                          کلاسی پیدا نشد
-                        </strong>
+                        <strong>کلاسی پیدا نشد</strong>
 
-                        <span>
-                          عبارت جستجو یا فیلتر انتخابی را
-                          تغییر دهید.
-                        </span>
+                        <span>عبارت جستجو یا فیلتر انتخابی را تغییر دهید.</span>
                       </div>
                     </td>
                   </tr>
                 )}
-
               </tbody>
             </table>
           </div>
-
         </section>
       </div>
     </DashboardLayout>

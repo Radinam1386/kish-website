@@ -50,19 +50,22 @@ function StudentTuition() {
         <StatCard
           title="کل شهریه ترم"
           value={financeSummary.totalTuition}
-          icon={<DollarSign size={23} />}
+          icon={<DollarSign />}
+          color="red"
         />
 
         <StatCard
           title="مجموع پرداخت‌شده"
           value={financeSummary.paidAmount}
-          icon={<CheckCircle2 size={23} />}
+          icon={<CheckCircle2 />}
+          color="green"
         />
 
         <StatCard
           title="باقیمانده بدهی"
           value={financeSummary.remainingDebt}
-          icon={<AlertTriangle size={23} />}
+          icon={<AlertTriangle />}
+          color="light-orange"
         />
       </div>
 
@@ -74,16 +77,13 @@ function StudentTuition() {
             </div>
 
             <div>
-              <h3 className="admin-section-title mt-4">
-                فاکتورهای صادر شده
-              </h3>
+              <h3 className="admin-section-title mt-4">فاکتورهای صادر شده</h3>
 
               <p className="admin-section-description">
                 لیست صورت‌حساب‌های آموزشی دوره شما
               </p>
             </div>
           </div>
-
         </div>
 
         <div className="tuition-table-wrapper">
@@ -111,35 +111,25 @@ function StudentTuition() {
                       <div>
                         <strong>{invoice.title}</strong>
 
-                        <span>
-                          {invoice.id}
-                        </span>
+                        <span>{invoice.id}</span>
                       </div>
                     </div>
                   </td>
 
                   <td>
-                    <span className="tuition-course">
-                      {invoice.course}
-                    </span>
+                    <span className="tuition-course">{invoice.course}</span>
                   </td>
 
                   <td>
-                    <strong className="tuition-amount">
-                      {invoice.amount}
-                    </strong>
+                    <strong className="tuition-amount">{invoice.amount}</strong>
                   </td>
 
                   <td>
-                    <span className="tuition-date">
-                      {invoice.dueDate}
-                    </span>
+                    <span className="tuition-date">{invoice.dueDate}</span>
                   </td>
 
                   <td>
-                    <span
-                      className={`status-badge ${invoice.statusClass}`}
-                    >
+                    <span className={`status-badge ${invoice.statusClass}`}>
                       {invoice.status}
                     </span>
                   </td>

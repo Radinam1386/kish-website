@@ -156,16 +156,13 @@ function SecretaryPanel() {
       menuType="secretary"
     >
       <div className="secretary-panel-x8m4-root">
-        {/* ========================================
-            Statistics
-        ======================================== */}
-
         <div className="secretary-panel-x8m4-stats">
           <StatCard
             title="ثبت‌نامی‌ها"
             value={`${students.length} نفر`}
             hint="ترم جاری"
             icon={<UsersRound />}
+            color="red"
           />
 
           <StatCard
@@ -173,6 +170,7 @@ function SecretaryPanel() {
             value={`${paidStudents} مورد`}
             hint="از دانش‌آموزان"
             icon={<CreditCard />}
+            color="green"
           />
 
           <StatCard
@@ -180,6 +178,7 @@ function SecretaryPanel() {
             value={`${totalAttendanceRecords} رکورد`}
             hint="دانش‌آموزان منظم"
             icon={<ClipboardCheck />}
+            color="light-blue"
           />
 
           <StatCard
@@ -187,13 +186,9 @@ function SecretaryPanel() {
             value={`${activeClasses} کلاس`}
             hint="در حال برگزاری"
             icon={<CalendarDays />}
+            color="soft-red"
           />
         </div>
-
-        {/* ========================================
-            Quick Search
-        ======================================== */}
-
         <section className="secretary-panel-x8m4-section">
           <div className="secretary-panel-x8m4-section-header">
             <div>
@@ -244,9 +239,6 @@ function SecretaryPanel() {
               افزودن دانش‌آموز
             </AnimatedButton>
           </div>
-
-          {/* Filters */}
-
           <div className="secretary-panel-x8m4-filters">
             <div className="secretary-panel-x8m4-filter-wrapper">
               <Filter size={17} className="secretary-panel-x8m4-filter-icon" />
@@ -264,9 +256,6 @@ function SecretaryPanel() {
               </select>
             </div>
           </div>
-
-          {/* Students Table */}
-
           <div className="secretary-panel-x8m4-table-wrapper">
             <table className="secretary-panel-x8m4-table">
               <thead>
@@ -366,11 +355,6 @@ function SecretaryPanel() {
             </table>
           </div>
         </section>
-
-        {/* ========================================
-            Class Progress
-        ======================================== */}
-
         <section className="secretary-panel-x8m4-section">
           <div className="secretary-panel-x8m4-section-header">
             <div>

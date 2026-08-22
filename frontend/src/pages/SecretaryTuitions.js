@@ -4,14 +4,15 @@ import {
   AlertTriangle,
   Receipt,
   Download,
-  CreditCard,
-  Landmark,
-  Hash,
   CalendarDays,
-  ArrowLeft,
+  CreditCard,
+  Hash,
 } from "lucide-react";
+
 import DashboardLayout from "../components/DashboardLayout";
-import "./StudentTuition.css";
+import "./SecretaryTuitions.css";
+import StatCard from "../components/StatCard";
+import { redirect } from "react-router-dom";
 
 function StudentTuition() {
   const financeSummary = {
@@ -25,7 +26,8 @@ function StudentTuition() {
   const invoices = [
     {
       id: "INV-40501",
-      title: "شهریه ترم بهار ۱۴۰۵ (دوره English A2)",
+      title: "شهریه ترم بهار ۱۴۰۵",
+      course: "دوره English A2",
       amount: "۷,۵۰۰,۰۰۰ ریال",
       dueDate: "۱۴۰۵/۰۲/۱۵",
       status: "پرداخت شده",
@@ -33,7 +35,8 @@ function StudentTuition() {
     },
     {
       id: "INV-40502",
-      title: "شهریه ترم تابستان ۱۴۰۵ (دوره Conversation B1)",
+      title: "شهریه ترم تابستان ۱۴۰۵",
+      course: "دوره Conversation B1",
       amount: "۵,۰۰۰,۰۰۰ ریال",
       dueDate: "۱۴۰۵/۰۵/۱۰",
       status: "پرداخت ناموفق / معلق",
@@ -41,53 +44,59 @@ function StudentTuition() {
     },
   ];
 
+  const transactions = [
+    {
+      id: "TRX-85021",
+      title: "پرداخت شهریه",
+      description: "شهریه ترم بهار ۱۴۰۵",
+      date: "۱۴۰۵/۰۲/۱۰",
+      method: "درگاه آنلاین",
+      amount: "۷,۵۰۰,۰۰۰ ریال",
+      status: "موفق",
+      statusClass: "status-paid",
+    },
+    {
+      id: "TRX-85022",
+      title: "پرداخت شهریه",
+      description: "بخشی از شهریه ترم تابستان",
+      date: "۱۴۰۵/۰۵/۰۸",
+      method: "درگاه آنلاین",
+      amount: "۱,۰۰۰,۰۰۰ ریال",
+      status: "موفق",
+      statusClass: "status-paid",
+    },
+  ];
+
   return (
     <DashboardLayout
-      role="پنل دانش‌آموز"
+      role="پنل منشی"
       title="وضعیت شهریه و مالی"
-      menuType="student"
+      menuType="secretary"
     >
       <div className="student-tuition-page">
         <section className="tuition-stats-grid">
-          <article className="tuition-stat-card first">
-            <div className="tuition-stat-icon primary-bg">
-              <DollarSign size={24} />
-            </div>
-
-            <div className="tuition-stat-content">
-              <span>کل شهریه ترم</span>
-              <strong>{financeSummary.totalTuition}</strong>
-            </div>
-          </article>
-
-          <article className="tuition-stat-card second">
-            <div className="tuition-stat-icon primary-bg">
-              <CheckCircle2 size={24} />
-            </div>
-
-            <div className="tuition-stat-content">
-              <span>مجموع پرداخت‌شده</span>
-              <strong>{financeSummary.paidAmount}</strong>
-            </div>
-          </article>
-
-          <article className="tuition-stat-card third">
-            <div className="tuition-stat-icon debt-bg">
-              <AlertTriangle size={24} />
-            </div>
-
-            <div className="tuition-stat-content">
-              <span>باقیمانده بدهی</span>
-              <strong className="debt-highlight">
-                {financeSummary.remainingDebt}
-              </strong>
-            </div>
-          </article>
+          <StatCard
+            title="کل شهریه ترم"
+            value={financeSummary.totalTuition}
+            icon={<DollarSign />}
+            color="red"
+          />
+          <StatCard
+            title="مجموع پرداخت‌شده"
+            value={financeSummary.paidAmount}
+            icon={<CheckCircle2 />}
+            color="green"
+          />
+          <StatCard
+            title="باقیمانده بدهی"
+            value={financeSummary.remainingDebt}
+            icon={<AlertTriangle />}
+            color="light-orange"
+          />
         </section>
-
         <section className="tuition-section">
           <div className="tuition-section-header">
-            <div>
+            <div className="tuition-heading-box">
               <span className="tuition-kicker">
                 <Receipt size={15} />
                 فاکتورها
@@ -100,7 +109,9 @@ function StudentTuition() {
               </p>
             </div>
 
-            <span className={`tuition-status-pill ${financeSummary.statusClass}`}>
+            <span
+              className={`tuition-status-pill ${financeSummary.statusClass}`}
+            >
               {financeSummary.statusText}
             </span>
           </div>
@@ -111,12 +122,42 @@ function StudentTuition() {
             ))}
           </div>
         </section>
+
+        {/* ==============================
+            Transactions
+        ============================== */}
+
+        <section className="tuition-section">
+          <div className="tuition-section-header">
+            <div className="tuition-heading-box">
+              <span className="tuition-kicker">
+                <CreditCard size={15} />
+                تراکنش‌ها
+              </span>
+
+              <h3 className="tuition-section-title">سوابق پرداخت</h3>
+
+              <p className="tuition-section-desc">
+                تاریخچه پرداخت‌های ثبت‌شده برای حساب شما
+              </p>
+            </div>
+          </div>
+
+          <div className="transaction-list">
+            {transactions.map((transaction) => (
+              <TransactionCard key={transaction.id} transaction={transaction} />
+            ))}
+          </div>
+        </section>
       </div>
     </DashboardLayout>
   );
 }
 
-/* ===== Invoice Card ===== */
+/* =====================================================
+   Invoice Card
+===================================================== */
+
 function InvoiceCard({ invoice }) {
   return (
     <article className="invoice-card">
@@ -129,7 +170,13 @@ function InvoiceCard({ invoice }) {
 
         <div className="invoice-title-box">
           <h4>{invoice.title}</h4>
-          <span>شناسه فاکتور: {invoice.id}</span>
+
+          <span className="invoice-course">{invoice.course}</span>
+
+          <span className="invoice-id">
+            <Hash size={12} />
+            {invoice.id}
+          </span>
         </div>
       </div>
 
@@ -139,6 +186,7 @@ function InvoiceCard({ invoice }) {
             <DollarSign size={14} />
             مبلغ فاکتور
           </span>
+
           <strong>{invoice.amount}</strong>
         </div>
 
@@ -147,6 +195,7 @@ function InvoiceCard({ invoice }) {
             <CalendarDays size={14} />
             مهلت پرداخت
           </span>
+
           <strong>{invoice.dueDate}</strong>
         </div>
       </div>
@@ -155,6 +204,68 @@ function InvoiceCard({ invoice }) {
         <span className={`status-badge ${invoice.statusClass}`}>
           {invoice.status}
         </span>
+
+        <button type="button" className="invoice-download-btn">
+          <Download size={15} />
+          دانلود فاکتور
+        </button>
+      </div>
+    </article>
+  );
+}
+
+/* =====================================================
+   Transaction Card
+===================================================== */
+
+function TransactionCard({ transaction }) {
+  return (
+    <article className="transaction-card">
+      <div className="transaction-main">
+        <div className="trx-icon-wrap">
+          <CreditCard size={21} />
+        </div>
+
+        <div className="trx-info">
+          <div className="trx-title-row">
+            <strong>{transaction.title}</strong>
+
+            <span className={`status-badge ${transaction.statusClass}`}>
+              {transaction.status}
+            </span>
+          </div>
+
+          <p>{transaction.description}</p>
+
+          <div className="trx-details">
+            <span>
+              <CalendarDays size={13} />
+              {transaction.date}
+            </span>
+
+            <span>
+              <CreditCard size={13} />
+              {transaction.method}
+            </span>
+
+            <span>
+              <Hash size={13} />
+              {transaction.id}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="trx-amount">
+        <strong>{transaction.amount}</strong>
+
+        <button
+          type="button"
+          className="icon-download-btn"
+          aria-label="دانلود رسید"
+        >
+          <Download size={17} />
+        </button>
       </div>
     </article>
   );

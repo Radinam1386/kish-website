@@ -81,18 +81,20 @@ function ExamPage() {
                 title="زمان باقی‌مانده"
                 value="۴۵ دقیقه"
                 icon={<Clock3 size={23} />}
+                color="red"
               />
               <StatCard
                 title="وضعیت پاسخ‌دهی"
                 value={`${answeredCount} از ${totalQuestions} سوال`}
                 icon={<Eye size={23} />}
+                color="blue"
               />
               <StatCard
                 title="وضعیت آزمون"
                 value={isAllAnswered ? "آماده ثبت نهایی" : "در حال تکمیل"}
                 icon={<FileCheck2 size={23} />}
+                color="orange"
               />
-
             </section>
 
             <section className="exam-questions-list">
@@ -270,8 +272,8 @@ function QuestionCard({ question, questionIndex, selectedAnswer, onSelect }) {
               className={`question-option-btn ${isSelected ? "selected" : ""}`}
               onClick={() => onSelect(question.id, optionIndex)}
             >
-              <ChevronLeft size={18} className="option-arrow" />
-              <span className="option-label">{option}</span>
+              <span className="option-label" dir="ltr">{option}</span>
+              {/* <ChevronLeft size={18} className="option-arrow" /> */}
               <span className="option-letter">
                 {String.fromCharCode(65 + optionIndex)}
               </span>

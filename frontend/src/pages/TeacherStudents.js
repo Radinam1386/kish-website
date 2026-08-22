@@ -109,23 +109,21 @@ function TeacherStudents() {
             title="کل دانش‌آموزان شما"
             value={`${studentsData.length} نفر`}
             icon={<Users size={23} />}
+            color="red"
           />
           <StatCard
             title="میانگین نمرات کلاس‌ها"
             value="۱۷.۱۲"
             icon={<TrendingUp size={23} />}
+            color="green"
           />
           <StatCard
             title="دانش‌آموزان ممتاز"
             value="۲ نفر"
             icon={<Award size={23} />}
+            color="orange"
           />
         </div>
-
-        {/* =========================
-            Main Section
-        ========================== */}
-
         <section className="teacher-students-k7p2-section">
           <div className="teacher-students-k7p2-section-header">
             <div>

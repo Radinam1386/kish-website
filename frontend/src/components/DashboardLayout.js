@@ -30,7 +30,7 @@ function DashboardLayout({ role, title, children, menuType }) {
       {
         label: "امتحانات",
         icon: <FileText size={19} />,
-        to: "/panel/student/exam/1",
+        to: "/panel/student/exams",
       },
     ],
 
@@ -63,6 +63,11 @@ function DashboardLayout({ role, title, children, menuType }) {
         label: "کلاس‌ها",
         icon: <CalendarDays size={19} />,
         to: "/panel/secretary/classes",
+      },
+      {
+        label: "دانش‌آموزان",
+        icon: <UsersRound size={19} />,
+        to: "/panel/secretary/students",
       },
       {
         label: "شهریه‌ها",

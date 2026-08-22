@@ -28,7 +28,6 @@
   direction: rtl;
 }
 
-
 /* =====================================================
    Stats
 ===================================================== */
@@ -57,36 +56,87 @@
   animation: exam-fade-up 0.6s var(--exam-ease) both;
 }
 
-
 .stat-card-p::after {
   position: absolute;
+
   z-index: -1;
+
   top: -55px;
   left: -55px;
+
   width: 150px;
   height: 150px;
+
   border-radius: 50%;
-  background: rgba(231, 76, 60, 0.12);
+
   content: "";
+
   filter: blur(30px);
+
   opacity: 0;
+
   transition: opacity 0.4s var(--exam-ease);
 }
 
-
 .stat-card-p:hover {
-  border-color: rgba(231, 76, 60, 0.4);
-  box-shadow:
-    0 22px 45px rgba(231, 76, 60, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.95);
   transform: translateY(-6px);
 }
-
 
 .stat-card-p:hover::after {
   opacity: 1;
 }
 
+.stat-card-p:has(.stat-card__icon-p.red)::after,
+.stat-card-p:has(.stat-card__icon-p.soft-red)::after {
+  background: rgba(231, 76, 60, 0.14);
+}
+
+.stat-card-p:has(.stat-card__icon-p.red):hover,
+.stat-card-p:has(.stat-card__icon-p.soft-red):hover {
+  border-color: rgba(231, 76, 60, 0.4);
+}
+
+/* =====================================================
+   BLUE
+===================================================== */
+
+.stat-card-p:has(.stat-card__icon-p.blue)::after,
+.stat-card-p:has(.stat-card__icon-p.light-blue)::after {
+  background: rgba(52, 152, 219, 0.14);
+}
+
+.stat-card-p:has(.stat-card__icon-p.blue):hover,
+.stat-card-p:has(.stat-card__icon-p.light-blue):hover {
+  border-color: rgba(52, 152, 219, 0.4);
+}
+
+/* =====================================================
+   GREEN
+===================================================== */
+
+.stat-card-p:has(.stat-card__icon-p.green)::after,
+.stat-card-p:has(.stat-card__icon-p.light-green)::after {
+  background: rgba(39, 174, 96, 0.14);
+}
+
+.stat-card-p:has(.stat-card__icon-p.green):hover,
+.stat-card-p:has(.stat-card__icon-p.light-green):hover {
+  border-color: rgba(39, 174, 96, 0.4);
+}
+
+/* =====================================================
+   ORANGE
+===================================================== */
+
+.stat-card-p:has(.stat-card__icon-p.orange)::after,
+.stat-card-p:has(.stat-card__icon-p.light-orange)::after {
+  background: rgba(243, 156, 18, 0.14);
+}
+
+.stat-card-p:has(.stat-card__icon-p.orange):hover,
+.stat-card-p:has(.stat-card__icon-p.light-orange):hover {
+  border-color: rgba(243, 156, 18, 0.4);
+}
 
 .stat-card__icon-p {
   display: flex;
@@ -100,29 +150,49 @@
   transition: transform 0.35s var(--exam-ease);
 }
 
-
 .stat-card-p:hover .stat-card__icon-p {
   transform: scale(1.08) rotate(-6deg);
 }
-
 
 .stat-card__icon-p.red {
   background: linear-gradient(135deg, #f05b4b, #c0392b);
   box-shadow: 0 8px 18px rgba(231, 76, 60, 0.28);
 }
 
-
 .stat-card__icon-p.blue {
   background: linear-gradient(135deg, #43a4dc, #2474a8);
   box-shadow: 0 8px 18px rgba(52, 152, 219, 0.25);
 }
 
+.stat-card__icon-p.light-blue {
+  background: linear-gradient(135deg, #74c7f4, #3498db);
+  box-shadow: 0 8px 18px rgba(52, 152, 219, 0.22);
+}
+
+.stat-card__icon-p.green {
+  background: linear-gradient(135deg, #42c878, #1e8e4e);
+  box-shadow: 0 8px 18px rgba(39, 174, 96, 0.27);
+}
+
+.stat-card__icon-p.light-green {
+  background: linear-gradient(135deg, #68d391, #27ae60);
+  box-shadow: 0 8px 18px rgba(39, 174, 96, 0.23);
+}
+
+.stat-card__icon-p.orange {
+  background: linear-gradient(135deg, #f6b840, #e67e22);
+  box-shadow: 0 8px 18px rgba(243, 156, 18, 0.28);
+}
+
+.stat-card__icon-p.light-orange {
+  background: linear-gradient(135deg, #f8c969, #f39c12);
+  box-shadow: 0 8px 18px rgba(243, 156, 18, 0.24);
+}
 
 .stat-card__icon-p.soft-red {
   background: linear-gradient(135deg, #ff8c7f, #e74c3c);
   box-shadow: 0 8px 18px rgba(231, 76, 60, 0.24);
 }
-
 
 .stat-card__content-p {
   display: flex;
@@ -131,13 +201,11 @@
   min-width: 0;
 }
 
-
 .stat-card__title-p {
   color: var(--exam-text-soft);
   font-size: 0.82rem;
   font-weight: 600;
 }
-
 
 .stat-card__value-p {
   margin: 0;
@@ -146,14 +214,12 @@
   font-weight: 900;
 }
 
-
 .stat-card__hint-p {
   margin: 0;
   color: var(--exam-muted);
   font-size: 0.78rem;
   font-weight: 500;
 }
-
 
 @keyframes exam-fade-up {
   from {

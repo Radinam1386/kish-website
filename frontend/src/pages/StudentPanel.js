@@ -1,9 +1,4 @@
-import {
-  BookOpen,
-  CalendarDays,
-  CreditCard,
-  FileText,
-} from "lucide-react";
+import { BookOpen, CalendarDays, CreditCard, FileText } from "lucide-react";
 import DashboardLayout from "../components/DashboardLayout";
 import StatCard from "../components/StatCard";
 import "./StudentPanel.css";
@@ -27,17 +22,14 @@ function StudentPanel() {
   ];
 
   return (
-    <DashboardLayout
-      role="پنل دانش‌آموز"
-      title="داشبورد من"
-      menuType="student"
-    >
+    <DashboardLayout role="پنل دانش‌آموز" title="داشبورد من" menuType="student">
       <div className="student-panel-stats-grid">
         <StatCard
           title="کلاس فعال"
           value="English A2"
           hint="ترم جاری"
           icon={<BookOpen />}
+          color="red"
         />
 
         <StatCard
@@ -45,6 +37,7 @@ function StudentPanel() {
           value="۸ جلسه"
           hint="از ۲۰ جلسه"
           icon={<CalendarDays />}
+          color="blue"
         />
 
         <StatCard
@@ -52,6 +45,7 @@ function StudentPanel() {
           value="پرداخت شده"
           hint="بدون بدهی"
           icon={<CreditCard />}
+          color="orange"
         />
 
         <StatCard
@@ -59,14 +53,13 @@ function StudentPanel() {
           value="۱۷.۵"
           hint="میان‌ترم"
           icon={<FileText />}
+          color="green"
         />
       </div>
 
       <div className="student-panel-content-grid">
         <section className="student-panel-data-card">
-          <h3 className="student-panel-section-title">
-            برنامه کلاس‌ها
-          </h3>
+          <h3 className="student-panel-section-title">برنامه کلاس‌ها</h3>
 
           <div className="student-panel-list-wrapper">
             {scheduleData.map((item, index) => (
@@ -85,9 +78,7 @@ function StudentPanel() {
                 </div>
 
                 <div className="student-panel-list-item-sub">
-                  <span className="student-panel-badge-time">
-                    {item.time}
-                  </span>
+                  <span className="student-panel-badge-time">{item.time}</span>
                 </div>
               </div>
             ))}
@@ -95,25 +86,19 @@ function StudentPanel() {
         </section>
 
         <section className="student-panel-data-card">
-          <h3 className="student-panel-section-title">
-            آخرین نمرات
-          </h3>
+          <h3 className="student-panel-section-title">آخرین نمرات</h3>
 
           <div className="student-panel-list-wrapper">
             <div className="student-panel-list-item">
               <div className="student-panel-list-item-main">
-                <span className="student-panel-list-item-date">
-                  ۱۴۰۵/۰۴/۱۵
-                </span>
+                <span className="student-panel-list-item-date">۱۴۰۵/۰۴/۱۵</span>
 
                 <span className="student-panel-list-item-title">
                   Midterm Exam
                 </span>
               </div>
 
-              <span className="student-panel-score-badge">
-                ۱۷.۵
-              </span>
+              <span className="student-panel-score-badge">۱۷.۵</span>
             </div>
           </div>
         </section>

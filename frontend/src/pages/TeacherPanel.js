@@ -53,11 +53,7 @@ function TeacherPanel() {
   ];
 
   return (
-    <DashboardLayout
-      role="پنل معلم"
-      title="پنل معلم"
-      menuType="teacher"
-    >
+    <DashboardLayout role="پنل معلم" title="پنل معلم" menuType="teacher">
       <div className="teacher-panel-x7k2-root">
         <div className="teacher-panel-x7k2-stat-grid">
           <StatCard
@@ -65,6 +61,7 @@ function TeacherPanel() {
             value="۲ کلاس"
             hint="این ترم"
             icon={<BookOpen />}
+            color="light-green"
           />
 
           <StatCard
@@ -72,6 +69,7 @@ function TeacherPanel() {
             value="۲۴ نفر"
             hint="در کلاس‌های من"
             icon={<UsersRound />}
+            color="red"
           />
 
           <StatCard
@@ -79,6 +77,7 @@ function TeacherPanel() {
             value="۱۸۶ رکورد"
             hint="این ترم"
             icon={<ClipboardCheck />}
+            color="blue"
           />
 
           <StatCard
@@ -86,19 +85,15 @@ function TeacherPanel() {
             value="۵ آزمون"
             hint="این ترم"
             icon={<FileText />}
+            color="light-orange"
           />
         </div>
 
         <section className="teacher-panel-x7k2-section">
           <div className="teacher-panel-x7k2-section-head">
-            <h3 className="teacher-panel-x7k2-section-title">
-              کلاس‌های من
-            </h3>
+            <h3 className="teacher-panel-x7k2-section-title">کلاس‌های من</h3>
 
-            <AnimatedButton
-              variant="danger"
-              icon={<PlusCircle size={18} />}
-            >
+            <AnimatedButton variant="danger" icon={<PlusCircle size={18} />}>
               <Link
                 to="/panel/teacher/create-exam"
                 className="teacher-panel-x7k2-action-link"
@@ -171,9 +166,7 @@ function TeacherPanel() {
 
         <section className="teacher-panel-x7k2-section">
           <div className="teacher-panel-x7k2-section-head">
-            <h3 className="teacher-panel-x7k2-section-title">
-              آخرین آزمون‌ها
-            </h3>
+            <h3 className="teacher-panel-x7k2-section-title">آخرین آزمون‌ها</h3>
           </div>
 
           <div className="teacher-panel-x7k2-table-shell">

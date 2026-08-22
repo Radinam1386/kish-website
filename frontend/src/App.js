@@ -28,6 +28,10 @@ import AdminTeachers from "./pages/AdminTeachers";
 import AdminTeacherDetails from "./pages/AdminTeacherDetails";
 import AdminTuition from "./pages/AdminTuition";
 import AdminStudentDetails from "./components/AdminStudentDetails";
+import SecretaryStudents from "./pages/SecretaryStudents";
+import SecretaryStudentForm from "./pages/SecretaryStudentForm";
+import StudentExams from "./pages/StudentExams";
+import StudentExamResult from "./pages/StudentExamResult";
 
 function App() {
   const location = useLocation();
@@ -61,6 +65,11 @@ function App() {
         <Route path="/panel/student" element={<StudentPanel />} />
         <Route path="/panel/student/tuition" element={<StudentTuition />} />
         <Route path="/panel/teacher/students" element={<TeacherStudents />} />
+        <Route path="/panel/student/exams" element={<StudentExams />} />
+        <Route
+          path="/panel/student/examresult/:examResultId"
+          element={<StudentExamResult />}
+        />
         <Route path="/panel/student/exam/:examId" element={<StudentExam />} />
 
         <Route path="/panel/teacher" element={<TeacherPanel />} />
@@ -79,6 +88,18 @@ function App() {
           element={<AdminStudentDetails />}
         />
         <Route path="/panel/secretary/classes" element={<SecretaryClasses />} />
+        <Route
+          path="/panel/secretary/students"
+          element={<SecretaryStudents />}
+        />
+        <Route
+          path="/panel/secretary/students/:id/edit"
+          element={<SecretaryStudentForm />}
+        />
+        <Route
+          path="/panel/secretary/students/new"
+          element={<SecretaryStudentForm />}
+        />
         <Route
           path="/panel/secretary/attendance"
           element={<SecretaryAttendance />}
