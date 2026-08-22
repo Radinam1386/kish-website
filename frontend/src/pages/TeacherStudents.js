@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Users,
   Search,
@@ -12,79 +12,105 @@ import {
 import DashboardLayout from "../components/DashboardLayout";
 import "./TeacherStudents.css";
 import StatCard from "../components/StatCard";
+import { api, getFullName } from "../services/api";
 
 function TeacherStudents() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedClass, setSelectedClass] = useState("all");
+  const [classrooms, setClassrooms] = useState([]);
+  const [attendanceRecords, setAttendanceRecords] = useState([]);
+  const [submissions, setSubmissions] = useState([]);
 
-  const teacherClasses = [
-    {
-      id: "all",
-      name: "همه کلاس‌ها",
-    },
-    {
-      id: "english-a2",
-      name: "English A2 (کلاس ۱۰۲)",
-    },
-    {
-      id: "conversation-b1",
-      name: "Conversation B1 (کلاس ۲۰۴)",
-    },
-  ];
+  useEffect(() => {
+    let alive = true;
 
-  const studentsData = [
-    {
-      id: "STD-8821",
-      name: "سارا حسینی",
-      phone: "۰۹۱۲۳۴۵۶۷۸۹",
-      className: "English A2 (کلاس ۱۰۲)",
-      classId: "english-a2",
-      averageGrade: "۱۸.۵",
-      attendanceRate: "۹۵٪",
-      status: "فعال",
-      statusClass: "active",
-    },
-    {
-      id: "STD-8822",
-      name: "امیرمحمد علیزاده",
-      phone: "۰۹۳۵۷۶۵۴۳۲۱",
-      className: "English A2 (کلاس ۱۰۲)",
-      classId: "english-a2",
-      averageGrade: "۱۹.۲",
-      attendanceRate: "۱۰۰٪",
-      status: "فعال",
-      statusClass: "active",
-    },
-    {
-      id: "STD-8823",
-      name: "فاطمه رضایی",
-      phone: "۰۹۱۹۸۷۶۵۴۳۲",
-      className: "Conversation B1 (کلاس ۲۰۴)",
-      classId: "conversation-b1",
-      averageGrade: "۱۶.۸",
-      attendanceRate: "۸۸٪",
-      status: "فعال",
-      statusClass: "active",
-    },
-    {
-      id: "STD-8824",
-      name: "محمدامین کریمی",
-      phone: "۰۹۱۲۱۱۱۱۱۱۱",
-      className: "Conversation B1 (کلاس ۲۰۴)",
-      classId: "conversation-b1",
-      averageGrade: "۱۴.۰",
-      attendanceRate: "۷۵٪",
-      status: "مشروط هشدار",
-      statusClass: "warning",
-    },
-  ];
+    async function loadData() {
+      try {
+        const [classroomsData, attendanceData, submissionsData] =
+          await Promise.all([
+            api.classrooms.list(),
+            api.attendance.list(),
+            api.submissions.list(),
+          ]);
+
+        if (!alive) return;
+        setClassrooms(classroomsData);
+        setAttendanceRecords(attendanceData);
+        setSubmissions(submissionsData);
+      } catch {
+        if (alive) setClassrooms([]);
+      }
+    }
+
+    loadData();
+
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const teacherClasses = useMemo(
+    () => [
+      { id: "all", name: "همه کلاس‌ها" },
+      ...classrooms.map((classroom) => ({
+        id: classroom.id,
+        name: classroom.name,
+      })),
+    ],
+    [classrooms],
+  );
+
+  const studentsData = useMemo(() => {
+    const rows = [];
+
+    classrooms.forEach((classroom) => {
+      (classroom.enrollments || []).forEach((enrollment) => {
+        const student = enrollment.student_detail;
+        const records = attendanceRecords.filter(
+          (record) => record.student === student.id,
+        );
+        const presentRecords = records.filter(
+          (record) => record.status === "present" || record.status === "late",
+        );
+        const graded = submissions.filter(
+          (submission) =>
+            submission.student === student.id &&
+            submission.total_score !== null &&
+            submission.total_score !== undefined,
+        );
+        const averageGrade = graded.length
+          ? (
+              graded.reduce((sum, item) => sum + Number(item.total_score), 0) /
+              graded.length
+            ).toFixed(1)
+          : "-";
+        const attendanceRate = records.length
+          ? `${Math.round((presentRecords.length / records.length) * 100)}٪`
+          : "-";
+
+        rows.push({
+          id: student.id,
+          name: getFullName(student),
+          phone: student.phone_number || "-",
+          className: classroom.name,
+          classId: classroom.id,
+          averageGrade,
+          attendanceRate,
+          status: student.is_active ? "فعال" : "غیرفعال",
+          statusClass: student.is_active ? "active" : "warning",
+        });
+      });
+    });
+
+    return rows;
+  }, [classrooms, attendanceRecords, submissions]);
 
   const filteredStudents = studentsData.filter((student) => {
     const normalizedSearch = searchTerm.trim();
 
     const matchesSearch =
       student.name.includes(normalizedSearch) ||
-      student.id.includes(normalizedSearch) ||
+      String(student.id).includes(normalizedSearch) ||
       student.phone.includes(normalizedSearch);
 
     const matchesClass =
@@ -113,13 +139,25 @@ function TeacherStudents() {
           />
           <StatCard
             title="میانگین نمرات کلاس‌ها"
-            value="۱۷.۱۲"
+            value={
+              submissions.length
+                ? (
+                    submissions.reduce(
+                      (sum, item) => sum + Number(item.total_score || 0),
+                      0,
+                    ) / submissions.length
+                  ).toFixed(1)
+                : "-"
+            }
             icon={<TrendingUp size={23} />}
             color="green"
           />
           <StatCard
             title="دانش‌آموزان ممتاز"
-            value="۲ نفر"
+            value={
+              submissions.filter((item) => Number(item.total_score || 0) >= 18)
+                .length
+            }
             icon={<Award size={23} />}
             color="orange"
           />

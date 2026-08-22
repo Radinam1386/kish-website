@@ -1,32 +1,69 @@
+import { useEffect, useMemo, useState } from "react";
 import { BookOpen, CalendarDays, CreditCard, FileText } from "lucide-react";
 import DashboardLayout from "../components/DashboardLayout";
 import StatCard from "../components/StatCard";
 import "./StudentPanel.css";
+import { api, getFullName } from "../services/api";
 
 function StudentPanel() {
-  const scheduleData = [
-    {
-      day: "شنبه",
-      time: "۱۶:۰۰ - ۱۸:۰۰",
-      class: "English A2",
-      teacher: "خانم رضایی",
-      status: "فعال",
-    },
-    {
-      day: "دوشنبه",
-      time: "۱۶:۰۰ - ۱۸:۰۰",
-      class: "English A2",
-      teacher: "خانم رضایی",
-      status: "فعال",
-    },
-  ];
+  const [classrooms, setClassrooms] = useState([]);
+  const [sessions, setSessions] = useState([]);
+  const [submissions, setSubmissions] = useState([]);
+
+  useEffect(() => {
+    let alive = true;
+
+    async function loadData() {
+      try {
+        const [classroomsData, sessionsData, submissionsData] =
+          await Promise.all([
+            api.classrooms.list(),
+            api.sessions.list(),
+            api.submissions.list(),
+          ]);
+
+        if (!alive) return;
+        setClassrooms(classroomsData);
+        setSessions(sessionsData);
+        setSubmissions(submissionsData);
+      } catch {
+        if (alive) {
+          setClassrooms([]);
+          setSessions([]);
+          setSubmissions([]);
+        }
+      }
+    }
+
+    loadData();
+
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const scheduleData = useMemo(
+    () =>
+      classrooms.map((classroom) => ({
+        day: classroom.created_at?.slice(0, 10) || "-",
+        time: "-",
+        class: classroom.name,
+        teacher: getFullName(classroom.teacher_detail),
+        status: "فعال",
+      })),
+    [classrooms],
+  );
+
+  const latestGrade = submissions.find(
+    (item) => item.total_score !== null && item.total_score !== undefined,
+  );
 
   return (
     <DashboardLayout role="پنل دانش‌آموز" title="داشبورد من" menuType="student">
       <div className="student-panel-stats-grid">
         <StatCard
           title="کلاس فعال"
-          value="English A2"
+          value={classrooms[0]?.name || "-"}
           hint="ترم جاری"
           icon={<BookOpen />}
           color="red"
@@ -34,24 +71,24 @@ function StudentPanel() {
 
         <StatCard
           title="جلسات باقی‌مانده"
-          value="۸ جلسه"
-          hint="از ۲۰ جلسه"
+          value={`${sessions.length} جلسه`}
+          hint="ثبت‌شده"
           icon={<CalendarDays />}
           color="blue"
         />
 
         <StatCard
           title="وضعیت شهریه"
-          value="پرداخت شده"
-          hint="بدون بدهی"
+          value="ثبت نشده"
+          hint="در بک‌اند مدل ندارد"
           icon={<CreditCard />}
           color="orange"
         />
 
         <StatCard
           title="نمرات"
-          value="۱۷.۵"
-          hint="میان‌ترم"
+          value={latestGrade?.total_score ?? "-"}
+          hint="آخرین نمره ثبت‌شده"
           icon={<FileText />}
           color="green"
         />
@@ -98,7 +135,9 @@ function StudentPanel() {
                 </span>
               </div>
 
-              <span className="student-panel-score-badge">۱۷.۵</span>
+                <span className="student-panel-score-badge">
+                  {latestGrade?.total_score ?? "-"}
+                </span>
             </div>
           </div>
         </section>

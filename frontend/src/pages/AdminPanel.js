@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   BookOpen,
   CalendarDays,
@@ -12,139 +12,133 @@ import {
 import DashboardLayout from "../components/DashboardLayout";
 import StatCard from "../components/StatCard";
 import { AnimatedButton } from "../components/AnimatedButton";
+import { api, getFullName } from "../services/api";
 
 import "./AdminPanel.css";
 
 function AdminPanel() {
-  const [stats] = useState([
+  const [users, setUsers] = useState([]);
+  const [classrooms, setClassrooms] = useState([]);
+  const [enrollments, setEnrollments] = useState([]);
+
+  useEffect(() => {
+    let alive = true;
+
+    async function loadData() {
+      try {
+        const [usersData, classroomsData, enrollmentsData] = await Promise.all([
+          api.users.list(),
+          api.classrooms.list(),
+          api.enrollments.list(),
+        ]);
+
+        if (!alive) return;
+        setUsers(usersData);
+        setClassrooms(classroomsData);
+        setEnrollments(enrollmentsData);
+      } catch {
+        if (alive) {
+          setUsers([]);
+          setClassrooms([]);
+          setEnrollments([]);
+        }
+      }
+    }
+
+    loadData();
+
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const students = useMemo(
+    () =>
+      users
+        .filter((user) => user.role === "student")
+        .slice(0, 5)
+        .map((user) => {
+          const enrollment = enrollments.find((item) => item.student === user.id);
+          const classroom = classrooms.find(
+            (item) => item.id === enrollment?.classroom,
+          );
+
+          return {
+            id: user.id,
+            name: getFullName(user),
+            phone: user.phone_number || "-",
+            className: classroom?.name || "بدون کلاس",
+            tuitionStatus: "ثبت نشده",
+            tuitionStatusClass: "admin-panel-status-pending",
+          };
+        }),
+    [users, enrollments, classrooms],
+  );
+
+  const teachers = useMemo(
+    () =>
+      users
+        .filter((user) => user.role === "teacher")
+        .slice(0, 6)
+        .map((user) => {
+          const activeClasses = classrooms.filter(
+            (classroom) => classroom.teacher === user.id,
+          ).length;
+
+          return {
+            id: user.id,
+            name: getFullName(user),
+            avatar: getFullName(user).charAt(0),
+            specialty: user.email || "ثبت نشده",
+            activeClasses: `${activeClasses} کلاس فعال`,
+          };
+        }),
+    [users, classrooms],
+  );
+
+  const schedule = useMemo(
+    () =>
+      classrooms.slice(0, 5).map((classroom) => ({
+        id: classroom.id,
+        className: classroom.name,
+        teacher: getFullName(classroom.teacher_detail),
+        days: "در مدل بک‌اند ثبت نشده",
+        time: "-",
+        capacity: `${classroom.student_count || 0} نفر`,
+      })),
+    [classrooms],
+  );
+
+  const stats = [
     {
       id: 1,
       title: "کل دانش‌آموزان",
-      value: "۲۴۶ نفر",
+      value: `${users.filter((user) => user.role === "student").length} نفر`,
       hint: "فعال و ثبت‌نامی",
       icon: <UsersRound />,
     },
     {
       id: 2,
       title: "معلمان",
-      value: "۱۸ نفر",
+      value: `${users.filter((user) => user.role === "teacher").length} نفر`,
       hint: "اساتید فعال",
       icon: <BookOpen />,
     },
     {
       id: 3,
       title: "شهریه‌ها",
-      value: "۸۴٪",
-      hint: "پرداخت‌شده",
+      value: "ثبت نشده",
+      hint: "endpoint ندارد",
       icon: <CreditCard />,
     },
     {
       id: 4,
       title: "کلاس‌ها",
-      value: "۳۱ کلاس",
+      value: `${classrooms.length} کلاس`,
       hint: "در حال اجرا",
       icon: <CalendarDays />,
     },
-  ]);
-
-  const [students] = useState([
-    {
-      id: 1,
-      name: "علی محمدی",
-      phone: "۰۹۱۲۰۰۰۰۰۰۰",
-      className: "English A2",
-      tuitionStatus: "پرداخت شده",
-      tuitionStatusClass: "admin-panel-status-paid",
-    },
-    {
-      id: 2,
-      name: "سارا احمدی",
-      phone: "۰۹۱۲۱۱۱۱۱۱۱",
-      className: "Kids Starter",
-      tuitionStatus: "در انتظار",
-      tuitionStatusClass: "admin-panel-status-pending",
-    },
-    {
-      id: 3,
-      name: "محمد کریمی",
-      phone: "۰۹۱۲۲۲۲۲۲۲۲",
-      className: "English B1",
-      tuitionStatus: "پرداخت شده",
-      tuitionStatusClass: "admin-panel-status-paid",
-    },
-  ]);
-
-  const [teachers] = useState([
-    {
-      id: 1,
-      name: "خانم رضایی",
-      avatar: "خ",
-      specialty: "زبان عمومی",
-      activeClasses: "۴ کلاس فعال",
-    },
-    {
-      id: 2,
-      name: "آقای کریمی",
-      avatar: "آ",
-      specialty: "مکالمه",
-      activeClasses: "۳ کلاس فعال",
-    },
-    {
-      id: 3,
-      name: "خانم مرادی",
-      avatar: "خ",
-      specialty: "کودکان",
-      activeClasses: "۵ کلاس فعال",
-    },
-        {
-      id: 3,
-      name: "خانم مرادی",
-      avatar: "خ",
-      specialty: "کودکان",
-      activeClasses: "۵ کلاس فعال",
-    },
-        {
-      id: 3,
-      name: "خانم مرادی",
-      avatar: "خ",
-      specialty: "کودکان",
-      activeClasses: "۵ کلاس فعال",
-    },
-        {
-      id: 3,
-      name: "خانم مرادی",
-      avatar: "خ",
-      specialty: "کودکان",
-      activeClasses: "۵ کلاس فعال",
-    },
-  ]);
-
-  const [schedule] = useState([
-    {
-      id: 1,
-      className: "English A2",
-      teacher: "خانم رضایی",
-      days: "شنبه / دوشنبه",
-      time: "۱۷:۰۰",
-      capacity: "۱۸ نفر",
-    },
-    {
-      id: 2,
-      className: "Kids Starter",
-      teacher: "خانم مرادی",
-      days: "یکشنبه / سه‌شنبه",
-      time: "۱۶:۰۰",
-      capacity: "۱۲ نفر",
-    },
-    {
-      id: 3,
-      className: "English B1",
-      teacher: "آقای کریمی",
-      days: "چهارشنبه / پنج‌شنبه",
-      time: "۱۸:۳۰",
-      capacity: "۱۵ نفر",
-    },
-  ]);
+  ];
 
   return (
     <DashboardLayout
