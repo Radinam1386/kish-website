@@ -55,6 +55,27 @@ class ExamSubmission(models.Model):
         limit_choices_to={'role': 'student'},
     )
     submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def calculate_score(self):
+        total = 0
+        fully_graded = True
+
+        for answer in self.answers.select_related('question', 'selected_choice'):
+            if answer.question.question_type == 'multiple_choice':
+                if answer.selected_choice and answer.selected_choice.is_correct:
+                    total += answer.question.max_score
+            else:  # essay
+                if answer.score is not None:
+                    total += answer.score
+                else:
+                    fully_graded = False
+
+        self.total_score = total
+        self.is_graded = fully_graded
+        self.save()
+        return total
+
+
     total_score = models.FloatField(null=True, blank=True)  # بعد از تصحیح کامل محاسبه میشه
     is_graded = models.BooleanField(default=False)
 
