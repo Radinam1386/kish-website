@@ -30,6 +30,8 @@ import AdminTuition from "./pages/AdminTuition";
 import AdminStudentDetails from "./components/AdminStudentDetails";
 import SecretaryStudents from "./pages/SecretaryStudents";
 import SecretaryStudentForm from "./pages/SecretaryStudentForm";
+import AdminStudentForm from "./pages/AdminStudentForm";
+import AdminTeacherForm from "./pages/AdminTeacherForm";
 import StudentExams from "./pages/StudentExams";
 import StudentExamResult from "./pages/StudentExamResult";
 
@@ -64,7 +66,6 @@ function App() {
 
         <Route path="/panel/student" element={<StudentPanel />} />
         <Route path="/panel/student/tuition" element={<StudentTuition />} />
-        <Route path="/panel/teacher/students" element={<TeacherStudents />} />
         <Route path="/panel/student/exams" element={<StudentExams />} />
         <Route
           path="/panel/student/examresult/:examResultId"
@@ -81,6 +82,7 @@ function App() {
           path="/panel/teacher/attendance/:classId"
           element={<TeacherAttendance />}
         />
+        <Route path="/panel/teacher/students" element={<TeacherStudents />} />
 
         <Route path="/panel/secretary" element={<SecretaryPanel />} />
         <Route
@@ -117,6 +119,14 @@ function App() {
           element={<AdminTeacherDetails />}
         />
         <Route path="/panel/admin/tuition" element={<AdminTuition />} />
+        <Route
+          path="/panel/admin/students/new"
+          element={<AdminStudentForm />}
+        />
+        <Route
+          path="/panel/admin/teachers/new"
+          element={<AdminTeacherForm />}
+        />
       </Routes>
       {!isDashboard && <Footer />}
     </>

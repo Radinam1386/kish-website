@@ -105,9 +105,7 @@ function AdminStudentDetails() {
   const sessionPercent = useMemo(() => {
     if (!student.sessions.total) return 0;
 
-    return Math.round(
-      (student.sessions.held / student.sessions.total) * 100,
-    );
+    return Math.round((student.sessions.held / student.sessions.total) * 100);
   }, [student.sessions]);
 
   const formatPrice = (value) => {
@@ -125,10 +123,6 @@ function AdminStudentDetails() {
       menuType="admin"
     >
       <div className="admin-student-details-x9p4-root">
-        {/* =====================================
-            Back / Header
-        ====================================== */}
-
         <div className="admin-student-details-x9p4-page-header">
           <div className="admin-student-details-x9p4-header-content">
             <Link
@@ -150,35 +144,27 @@ function AdminStudentDetails() {
                 <div className="admin-student-details-x9p4-subtitle">
                   <span>کد دانش‌آموزی: {student.studentCode}</span>
 
-                  <span className="admin-student-details-x9p4-dot">
-                    •
-                  </span>
+                  <span className="admin-student-details-x9p4-dot">•</span>
 
                   <span>{student.className}</span>
                 </div>
               </div>
             </div>
           </div>
-
-          <AnimatedButton
-            variant="primary"
-            onClick={handleEdit}
-          >
-            <Edit3 size={17} />
-            {isEditing ? "ذخیره اطلاعات" : "ویرایش اطلاعات"}
-          </AnimatedButton>
+          <Link to={`/panel/secretary/students/:${student.id}/edit`}>
+            <AnimatedButton variant="primary" onClick={handleEdit}>
+              <Edit3 size={17} />
+              {isEditing ? "ذخیره اطلاعات" : "ویرایش اطلاعات"}
+            </AnimatedButton>
+          </Link>
         </div>
-
-        {/* =====================================
-            Statistics
-        ====================================== */}
-
         <div className="admin-student-details-x9p4-stats">
           <StatCard
             title="درصد حضور"
             value={`${attendancePercent}٪`}
             hint={`${student.attendance.present} حضور از ${student.attendance.total} جلسه`}
             icon={<ClipboardCheck />}
+            color="green"
           />
 
           <StatCard
@@ -186,14 +172,13 @@ function AdminStudentDetails() {
             value={`${student.sessions.held} جلسه`}
             hint={`${student.sessions.remaining} جلسه باقی‌مانده`}
             icon={<CalendarDays />}
+            color="blue"
           />
 
           <StatCard
             title="وضعیت شهریه"
             value={
-              student.tuition.status === "paid"
-                ? "پرداخت شده"
-                : "در انتظار"
+              student.tuition.status === "paid" ? "پرداخت شده" : "در انتظار"
             }
             hint={
               student.tuition.remaining === 0
@@ -201,6 +186,7 @@ function AdminStudentDetails() {
                 : `${formatPrice(student.tuition.remaining)} تومان باقی‌مانده`
             }
             icon={<CreditCard />}
+            color="red"
           />
 
           <StatCard
@@ -208,6 +194,7 @@ function AdminStudentDetails() {
             value={student.className}
             hint={student.teacher}
             icon={<BookOpen />}
+            color="orange"
           />
         </div>
 
@@ -328,9 +315,7 @@ function AdminStudentDetails() {
         <section className="admin-student-details-x9p4-section">
           <div className="admin-student-details-x9p4-section-header">
             <div>
-              <h3 className="admin-student-details-x9p4-title">
-                وضعیت شهریه
-              </h3>
+              <h3 className="admin-student-details-x9p4-title">وضعیت شهریه</h3>
 
               <p className="admin-student-details-x9p4-description">
                 وضعیت پرداخت شهریه ترم جاری
@@ -339,9 +324,7 @@ function AdminStudentDetails() {
 
             <span
               className={`admin-student-details-x9p4-status ${
-                student.tuition.status === "paid"
-                  ? "paid"
-                  : "pending"
+                student.tuition.status === "paid" ? "paid" : "pending"
               }`}
             >
               {student.tuition.status === "paid"
@@ -353,9 +336,7 @@ function AdminStudentDetails() {
           <div className="admin-student-details-x9p4-tuition-grid">
             <div>
               <span>مبلغ کل</span>
-              <strong>
-                {formatPrice(student.tuition.total)} تومان
-              </strong>
+              <strong>{formatPrice(student.tuition.total)} تومان</strong>
             </div>
 
             <div>
@@ -379,9 +360,7 @@ function AdminStudentDetails() {
               style={{
                 width: `${
                   student.tuition.total
-                    ? (student.tuition.paid /
-                        student.tuition.total) *
-                      100
+                    ? (student.tuition.paid / student.tuition.total) * 100
                     : 0
                 }%`,
               }}
@@ -453,9 +432,7 @@ function AdminStudentDetails() {
         <section className="admin-student-details-x9p4-section">
           <div className="admin-student-details-x9p4-section-header">
             <div>
-              <h3 className="admin-student-details-x9p4-title">
-                پیشرفت ترم
-              </h3>
+              <h3 className="admin-student-details-x9p4-title">پیشرفت ترم</h3>
 
               <p className="admin-student-details-x9p4-description">
                 میزان جلسات برگزار شده و باقی‌مانده
@@ -501,9 +478,7 @@ function AdminStudentDetails() {
         <section className="admin-student-details-x9p4-section">
           <div className="admin-student-details-x9p4-section-header">
             <div>
-              <h3 className="admin-student-details-x9p4-title">
-                سابقه پرداخت
-              </h3>
+              <h3 className="admin-student-details-x9p4-title">سابقه پرداخت</h3>
 
               <p className="admin-student-details-x9p4-description">
                 سوابق مالی دانش‌آموز
@@ -525,17 +500,13 @@ function AdminStudentDetails() {
               <tbody>
                 {student.payments.map((payment) => (
                   <tr key={payment.id}>
-                    <td data-label="عنوان">
-                      {payment.title}
-                    </td>
+                    <td data-label="عنوان">{payment.title}</td>
 
                     <td data-label="مبلغ">
                       {formatPrice(payment.amount)} تومان
                     </td>
 
-                    <td data-label="تاریخ">
-                      {payment.date}
-                    </td>
+                    <td data-label="تاریخ">{payment.date}</td>
 
                     <td data-label="وضعیت">
                       <span className="admin-student-details-x9p4-payment-status">
@@ -557,9 +528,7 @@ function AdminStudentDetails() {
         <section className="admin-student-details-x9p4-section">
           <div className="admin-student-details-x9p4-section-header">
             <div>
-              <h3 className="admin-student-details-x9p4-title">
-                سابقه حضور
-              </h3>
+              <h3 className="admin-student-details-x9p4-title">سابقه حضور</h3>
 
               <p className="admin-student-details-x9p4-description">
                 آخرین وضعیت حضور و غیاب
@@ -580,13 +549,9 @@ function AdminStudentDetails() {
               <tbody>
                 {student.attendanceHistory.map((item) => (
                   <tr key={item.id}>
-                    <td data-label="تاریخ">
-                      {item.date}
-                    </td>
+                    <td data-label="تاریخ">{item.date}</td>
 
-                    <td data-label="روز">
-                      {item.day}
-                    </td>
+                    <td data-label="روز">{item.day}</td>
 
                     <td data-label="وضعیت">
                       <span

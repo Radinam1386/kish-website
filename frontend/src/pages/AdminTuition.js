@@ -182,30 +182,30 @@ function AdminTuition() {
   return (
     <DashboardLayout role="پنل مدیریت" title="مدیریت شهریه‌ها" menuType="admin">
       <div className="admin-tuition-x8p4-root">
-        {/* ========================================
-            Statistics
-        ======================================== */}
-
         <div className="admin-tuition-x8p4-stats">
           <StatCard
             title="کل شهریه"
             value={`${formatPrice(totalTuition)} تومان`}
             icon={<CreditCard size={23} />}
+            color='red'
           />
           <StatCard
             title="دریافتی"
             value={`${formatPrice(totalPaid)} تومان`}
             icon={<CheckCircle2 size={23} />}
+            color="green"
           />
           <StatCard
             title="مانده"
             value={`${formatPrice(totalRemaining)} تومان`}
             icon={<Clock3 size={23} />}
+            color='orange'
           />
           <StatCard
             title="درصد وصول"
             value={`${paymentPercentage}٪`}
             icon={<Users size={23} />}
+            color='blue'
           />
         </div>
 

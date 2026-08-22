@@ -14,6 +14,7 @@ import { AnimatedButton } from "../components/AnimatedButton";
 import DashboardLayout from "../components/DashboardLayout";
 import StatCard from "../components/StatCard";
 import { api, getFullName } from "../services/api";
+import { Link } from "react-router-dom";
 
 function AdminStudents() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -55,7 +56,9 @@ function AdminStudents() {
       users
         .filter((user) => user.role === "student")
         .map((user) => {
-          const enrollment = enrollments.find((item) => item.student === user.id);
+          const enrollment = enrollments.find(
+            (item) => item.student === user.id,
+          );
           const classroom = classrooms.find(
             (item) => item.id === enrollment?.classroom,
           );
@@ -136,39 +139,33 @@ function AdminStudents() {
               </p>
             </div>
           </div>
-
-          <AnimatedButton variant="primary">
-            <UserPlus size={18} />
-            افزودن دانش‌آموز
-          </AnimatedButton>
+          <Link to={"/panel/admin/students/new"}>
+            <AnimatedButton variant="primary">
+              <UserPlus size={18} />
+              افزودن دانش‌آموز
+            </AnimatedButton>
+          </Link>
         </div>
-
-        {/* ================================
-          Stats
-      ================================= */}
-
         <div className="admin-students-x7k2-stats">
           <StatCard
             title="کل دانش‌آموزان"
             value={`${students.length} نفر`}
             icon={<Users size={23} />}
+            color="red"
           />
           <StatCard
             title="کلاس‌های فعال"
             value={`${classes.length - 1} کلاس`}
             icon={<BookOpen size={23} />}
+            color="green"
           />
           <StatCard
             title="نمایش فعلی"
             value={`${filteredStudents.length} نفر`}
             icon={<GraduationCap size={23} />}
+            color="blue"
           />
         </div>
-
-        {/* ================================
-          Filters
-      ================================= */}
-
         <div className="admin-students-x7k2-filters">
           <div className="admin-students-x7k2-search-wrapper">
             <Search size={18} className="admin-students-x7k2-search-icon" />
@@ -198,11 +195,6 @@ function AdminStudents() {
             </select>
           </div>
         </div>
-
-        {/* ================================
-          Table
-      ================================= */}
-
         <div className="admin-students-x7k2-table-shell">
           <div className="admin-students-x7k2-table-scroll">
             <table className="admin-students-x7k2-table">

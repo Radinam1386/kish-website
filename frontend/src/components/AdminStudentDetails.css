@@ -56,18 +56,13 @@
 
   border-radius: 50%;
 
-  background: linear-gradient(
-    135deg,
-    var(--primary),
-    var(--primary-dark)
-  );
+  background: var(--red-5);
 
   color: white;
   font-size: 1.7rem;
   font-weight: 800;
 
-  box-shadow:
-    0 6px 18px oklch(60% 0.19 29 / 0.25);
+  box-shadow: 0 6px 18px oklch(60% 0.19 29 / 0.25);
 }
 
 .admin-student-details-x9p4-heading h2 {
@@ -165,11 +160,7 @@
   height: 24px;
   flex-shrink: 0;
 
-  background: linear-gradient(
-    180deg,
-    var(--primary),
-    var(--primary-dark)
-  );
+  background: linear-gradient(180deg, var(--primary), var(--primary-dark));
 
   border-radius: 2px;
 }
@@ -203,11 +194,7 @@
   border: 1px solid oklch(94% 0 0);
   border-radius: var(--radius-md);
 
-  background: linear-gradient(
-    135deg,
-    oklch(99% 0 0),
-    oklch(97% 0.02 29)
-  );
+  background: linear-gradient(135deg, oklch(99% 0 0), oklch(97% 0.02 29));
 }
 
 .admin-student-details-x9p4-info-icon {
@@ -339,11 +326,7 @@
 .admin-student-details-x9p4-progress-fill {
   height: 100%;
 
-  background: linear-gradient(
-    90deg,
-    var(--primary),
-    var(--primary-dark)
-  );
+  background: linear-gradient(90deg, var(--primary), var(--primary-dark));
 
   border-radius: var(--radius-full);
 
@@ -477,11 +460,7 @@
 }
 
 .admin-student-details-x9p4-table thead {
-  background: linear-gradient(
-    135deg,
-    oklch(98% 0.02 29),
-    oklch(96% 0.04 29)
-  );
+  background: linear-gradient(135deg, oklch(98% 0.02 29), oklch(96% 0.04 29));
 
   border-bottom: 2px solid var(--primary);
 }

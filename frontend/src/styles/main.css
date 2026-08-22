@@ -1,5 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap');
-
+@font-face {
+  font-family: 'Vazir';
+  src: url('../assets/fonts/Vazir.woff2') format('woff2'),
+    url('../assets/fonts/Vazir.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
 :root {
   /* Neutral ramp — warm */
   --n-0:   #ffffff;
@@ -65,7 +70,7 @@
   --sh-accent-lg: 0 8px 40px oklch(52% .208 22/.40);
 
   /* Type scale */
-  --font: 'Vazirmatn', system-ui, sans-serif;
+  --font: 'Vazir', system-ui, sans-serif;
   --tx-xs:   clamp(.70rem,1.4vw,.75rem);
   --tx-sm:   clamp(.80rem,1.7vw,.875rem);
   --tx-base: clamp(.875rem,1.9vw,1rem);

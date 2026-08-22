@@ -118,37 +118,32 @@ function AdminTeachers() {
   return (
     <DashboardLayout role="پنل مدیریت" title="مدیریت معلمان" menuType="admin">
       <div className="admin-teachers-x7k2-root">
-        {/* ================================
-            Statistics
-        ================================= */}
-
         <div className="admin-teachers-x7k2-stats">
           <StatCard
             title="کل معلمان"
             value={`${teachers.length} نفر`}
             icon={<Users size={23} />}
+            color="orange"
           />
           <StatCard
             title="معلمان فعال"
             value={`${activeTeachers} نفر`}
             icon={<GraduationCap size={23} />}
+            color="green"
           />
           <StatCard
             title="کلاس‌های فعال"
             value={`${totalClasses} کلاس`}
             icon={<BookOpen size={23} />}
+            color="blue"
           />
           <StatCard
             title="دانش‌آموزان تحت آموزش"
             value={`${totalStudents} نفر`}
             icon={<Users size={23} />}
+            color="red"
           />
         </div>
-
-        {/* ================================
-            Main Section
-        ================================= */}
-
         <section className="admin-teachers-x7k2-section">
           {/* Header */}
 
@@ -160,11 +155,12 @@ function AdminTeachers() {
                 مدیریت اطلاعات، تخصص، کلاس‌ها و وضعیت اساتید
               </p>
             </div>
-
-            <AnimatedButton variant="primary">
-              <UserPlus size={18} />
-              افزودن معلم
-            </AnimatedButton>
+            <Link to={"/panel/admin/teachers/new"}> 
+              <AnimatedButton variant="primary">
+                <UserPlus size={18} />
+                افزودن معلم
+              </AnimatedButton>
+            </Link>
           </div>
 
           {/* ================================

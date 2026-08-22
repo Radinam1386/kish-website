@@ -1,11 +1,8 @@
-/* src/pages/Login.css */
-
-/* ── Tokens ── */
 :root {
   --red-9: oklch(30% 0.18 25);
   --red-7: oklch(42% 0.22 25);
   --red-5: oklch(52% 0.22 25);
-  --red-4: oklch(60% 0.20 25);
+  --red-4: oklch(60% 0.2 25);
   --red-1: oklch(96% 0.04 25);
   --neu-0: oklch(98% 0 0);
   --neu-1: oklch(95% 0 0);
@@ -16,8 +13,6 @@
   --radius-md: 16px;
   --radius-lg: 24px;
 }
-
-/* ── Root ── */
 .login-root {
   min-height: 100vh;
   display: flex;
@@ -73,7 +68,6 @@
   max-width: 440px;
 }
 
-/* ── Brand ── */
 .login-brand {
   text-align: center;
   color: var(--neu-9);
@@ -82,8 +76,9 @@
 .login-brand {
   display: flex;
   flex-direction: column;
-  align-items: center;    
+  align-items: center;
   text-align: center;
+  /* background-color: var(--neu-3); */
 }
 
 .brand-icon {
@@ -108,8 +103,8 @@
 .subtitle {
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--accent); 
-  margin: 0 0 8px 0;   
+  color: var(--accent);
+  margin: 0 0 8px 0;
 }
 
 .tagline {
@@ -117,7 +112,6 @@
   color: var(--neu-6);
   margin: 0;
 }
-
 
 .login-card {
   width: 100%;
@@ -137,70 +131,9 @@
   font-size: 1.15rem;
   font-weight: 700;
   color: var(--neu-9);
-  margin: 0 0 4px;
+  margin: auto;
 }
 
-.card-header p {
-  font-size: 0.82rem;
-  color: var(--neu-6);
-  margin: 0;
-}
-
-/* ── Role grid ── */
-.role-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-}
-
-.role-item {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 12px 6px;
-  border-radius: var(--radius-sm);
-  border: 1.5px solid var(--neu-3);
-  background: var(--neu-0);
-  cursor: pointer;
-  font-family: inherit;
-  transition: border-color 0.18s, background 0.18s, transform 0.15s;
-}
-
-.role-item:hover {
-  border-color: var(--red-4);
-  background: var(--red-1);
-}
-
-.role-item.active {
-  border-color: var(--red-5);
-  background: var(--red-1);
-  box-shadow: 0 0 0 3px oklch(52% 0.22 25 / 0.12);
-}
-
-.role-item:active { transform: scale(0.96); }
-
-.role-icon { font-size: 1.4rem; line-height: 1; }
-
-.role-label {
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--neu-9);
-  white-space: nowrap;
-}
-
-.role-check {
-  position: absolute;
-  top: 5px;
-  left: 5px;
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: var(--red-5);
-  line-height: 1;
-}
-
-/* ── Form ── */
 .login-form {
   display: flex;
   flex-direction: column;
@@ -244,17 +177,75 @@
   background: var(--neu-0);
   outline: none;
   box-sizing: border-box;
-  transition: border-color 0.18s, box-shadow 0.18s;
+  transition:
+    border-color 0.18s,
+    box-shadow 0.18s;
+  direction: ltr;
 }
 
-.input-wrap input::placeholder { color: var(--neu-6); }
+.input-wrap input::placeholder {
+  color: var(--neu-6);
+}
 
 .input-wrap input:focus {
   border-color: var(--red-5);
   box-shadow: 0 0 0 3px oklch(52% 0.22 25 / 0.12);
   background: #fff;
 }
+/* =====================================================
+   Password Toggle
+===================================================== */
 
+.input-password-toggle {
+  position: absolute;
+
+  top: 50%;
+  right: 10px;
+
+  z-index: 3;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 8px;
+
+  background: transparent;
+
+  color: var(--neu-6);
+
+  cursor: pointer;
+
+  transform: translateY(-50%);
+
+  transition:
+    color 0.18s ease,
+    background 0.18s ease,
+    transform 0.18s ease;
+}
+
+.input-password-toggle:hover {
+  color: var(--red-5);
+
+  background: var(--red-1);
+}
+
+.input-password-toggle:active {
+  transform: translateY(-50%) scale(0.92);
+}
+
+.input-password-toggle svg {
+  width: 18px;
+  height: 18px;
+
+  pointer-events: none;
+}
 /* ── Submit button ── */
 .btn-submit {
   width: 100%;
@@ -271,7 +262,10 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: background 0.18s, transform 0.15s, box-shadow 0.18s;
+  transition:
+    background 0.18s,
+    transform 0.15s,
+    box-shadow 0.18s;
   box-shadow: 0 4px 16px oklch(52% 0.22 25 / 0.3);
   margin-top: 4px;
 }
@@ -282,7 +276,9 @@
   transform: translateY(-1px);
 }
 
-.btn-submit:active:not(:disabled) { transform: scale(0.98); }
+.btn-submit:active:not(:disabled) {
+  transform: scale(0.98);
+}
 
 .btn-submit:disabled {
   cursor: not-allowed;
@@ -300,7 +296,11 @@
   display: inline-block;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 /* ── Footer ── */
 .login-footer {
@@ -315,15 +315,28 @@
   font-weight: 500;
 }
 
-.login-footer a:hover { text-decoration: underline; }
+.login-footer a:hover {
+  text-decoration: underline;
+}
 
 /* ── Responsive ── */
 @media (max-width: 480px) {
-  .login-card { padding: 24px 20px; }
-  .role-grid { grid-template-columns: repeat(2, 1fr); }
+  .login-card {
+    padding: 24px 20px;
+  }
+  .role-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .btn-submit, .role-item, .input-wrap input { transition: none; }
-  .spinner { animation: none; opacity: 0.7; }
+  .btn-submit,
+  .role-item,
+  .input-wrap input {
+    transition: none;
+  }
+  .spinner {
+    animation: none;
+    opacity: 0.7;
+  }
 }

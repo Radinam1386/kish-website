@@ -219,11 +219,6 @@ function SecretaryPanel() {
             </AnimatedButton>
           </div>
         </section>
-
-        {/* ========================================
-            Students
-        ======================================== */}
-
         <section className="secretary-panel-x8m4-section">
           <div className="secretary-panel-x8m4-section-header">
             <div>
@@ -233,11 +228,12 @@ function SecretaryPanel() {
                 مدیریت وضعیت ثبت‌نام، شهریه و حضور دانش‌آموزان
               </p>
             </div>
-
-            <AnimatedButton variant="primary" onClick={handleAddStudent}>
-              <UserPlus size={18} />
-              افزودن دانش‌آموز
-            </AnimatedButton>
+            <Link to={"/panel/secretary/students/new"}>
+              <AnimatedButton variant="primary" onClick={handleAddStudent}>
+                <UserPlus size={18} />
+                افزودن دانش‌آموز
+              </AnimatedButton>
+            </Link>
           </div>
           <div className="secretary-panel-x8m4-filters">
             <div className="secretary-panel-x8m4-filter-wrapper">

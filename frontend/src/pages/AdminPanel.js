@@ -15,6 +15,7 @@ import { AnimatedButton } from "../components/AnimatedButton";
 import { api, getFullName } from "../services/api";
 
 import "./AdminPanel.css";
+import { Link } from "react-router-dom";
 
 function AdminPanel() {
   const [users, setUsers] = useState([]);
@@ -58,7 +59,9 @@ function AdminPanel() {
         .filter((user) => user.role === "student")
         .slice(0, 5)
         .map((user) => {
-          const enrollment = enrollments.find((item) => item.student === user.id);
+          const enrollment = enrollments.find(
+            (item) => item.student === user.id,
+          );
           const classroom = classrooms.find(
             (item) => item.id === enrollment?.classroom,
           );
@@ -116,6 +119,7 @@ function AdminPanel() {
       value: `${users.filter((user) => user.role === "student").length} نفر`,
       hint: "فعال و ثبت‌نامی",
       icon: <UsersRound />,
+      color: "green",
     },
     {
       id: 2,
@@ -123,6 +127,7 @@ function AdminPanel() {
       value: `${users.filter((user) => user.role === "teacher").length} نفر`,
       hint: "اساتید فعال",
       icon: <BookOpen />,
+      color :"blue"
     },
     {
       id: 3,
@@ -130,6 +135,7 @@ function AdminPanel() {
       value: "ثبت نشده",
       hint: "endpoint ندارد",
       icon: <CreditCard />,
+      color:"light-orange"
     },
     {
       id: 4,
@@ -137,6 +143,7 @@ function AdminPanel() {
       value: `${classrooms.length} کلاس`,
       hint: "در حال اجرا",
       icon: <CalendarDays />,
+      color:"red"
     },
   ];
 
@@ -146,7 +153,6 @@ function AdminPanel() {
       title="پنل مدیریت آقا بهنام"
       menuType="admin"
     >
-
       <div className="admin-panel-x7k2-stats-grid">
         {stats.map((stat) => (
           <StatCard
@@ -155,22 +161,19 @@ function AdminPanel() {
             value={stat.value}
             hint={stat.hint}
             icon={stat.icon}
+            color={stat.color}
           />
         ))}
       </div>
 
-      {/* ================= Students ================= */}
-
       <section className="admin-panel-x7k2-section">
         <div className="admin-panel-x7k2-section-header">
-          <h3 className="admin-panel-x7k2-section-title">
-            مدیریت دانش‌آموزان
-          </h3>
-
-          <AnimatedButton variant="primary">
-            <UserPlus size={18} />
-            افزودن دانش‌آموز
-          </AnimatedButton>
+          <h3 className="admin-panel-x7k2-section-title">مدیریت دانش‌آموزان</h3>
+          <Link to={"/panel/admin/students/new"}>
+            <AnimatedButton variant="primary" icon={<UserPlus size={18} />}>
+              افزودن دانش‌آموز
+            </AnimatedButton>
+          </Link>
         </div>
 
         <div className="admin-panel-x7k2-table-wrapper">
@@ -215,10 +218,7 @@ function AdminPanel() {
                   </td>
 
                   <td data-label="عملیات">
-                    <AnimatedButton
-                      variant="secondary"
-                      size="small"
-                    >
+                    <AnimatedButton variant="secondary" size="small">
                       <Eye size={16} />
                       مشاهده
                     </AnimatedButton>
@@ -229,27 +229,20 @@ function AdminPanel() {
           </table>
         </div>
       </section>
-
-      {/* ================= Teachers ================= */}
-
       <section className="admin-panel-x7k2-section">
         <div className="admin-panel-x7k2-section-header">
-          <h3 className="admin-panel-x7k2-section-title">
-            معلمان
-          </h3>
+          <h3 className="admin-panel-x7k2-section-title">معلمان</h3>
 
-          <AnimatedButton variant="primary">
-            <UserPlus size={18} />
-            افزودن معلم
-          </AnimatedButton>
+          <Link to={"/panel/admin/teachers/new"}>
+            <AnimatedButton variant="primary" icon={<UserPlus size={18} />}>
+              افزودن معلم
+            </AnimatedButton>
+          </Link>
         </div>
 
         <div className="admin-panel-x7k2-teacher-grid">
           {teachers.map((teacher) => (
-            <div
-              className="admin-panel-x7k2-teacher-card"
-              key={teacher.id}
-            >
+            <div className="admin-panel-x7k2-teacher-card" key={teacher.id}>
               <div className="admin-panel-x7k2-teacher-avatar">
                 {teacher.avatar}
               </div>
@@ -276,14 +269,9 @@ function AdminPanel() {
           ))}
         </div>
       </section>
-
-      {/* ================= Schedule ================= */}
-
       <section className="admin-panel-x7k2-section">
         <div className="admin-panel-x7k2-section-header">
-          <h3 className="admin-panel-x7k2-section-title">
-            برنامه کلاس‌ها
-          </h3>
+          <h3 className="admin-panel-x7k2-section-title">برنامه کلاس‌ها</h3>
         </div>
 
         <div className="admin-panel-x7k2-table-wrapper">
@@ -307,9 +295,7 @@ function AdminPanel() {
                     </span>
                   </td>
 
-                  <td data-label="استاد">
-                    {item.teacher}
-                  </td>
+                  <td data-label="استاد">{item.teacher}</td>
 
                   <td data-label="روزها">
                     <span className="admin-panel-x7k2-schedule-days">
