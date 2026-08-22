@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   PlusCircle,
   Trash2,
@@ -13,8 +13,13 @@ import {
 import DashboardLayout from "../components/DashboardLayout";
 import "./TeacherCreateExam.css";
 import { AnimatedButton } from "../components/AnimatedButton";
+import { api } from "../services/api";
 
 function TeacherCreateExam() {
+  const [examTitle, setExamTitle] = useState("");
+  const [examDate, setExamDate] = useState("");
+  const [classroomId, setClassroomId] = useState("");
+  const [classrooms, setClassrooms] = useState([]);
   const [questionType, setQuestionType] = useState("multiple");
   const [editingQuestionId, setEditingQuestionId] = useState(null);
 
@@ -25,6 +30,29 @@ function TeacherCreateExam() {
   const [correctOption, setCorrectOption] = useState(0);
 
   const [questions, setQuestions] = useState([]);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    let alive = true;
+
+    async function loadClasses() {
+      try {
+        const data = await api.classrooms.list();
+        if (!alive) return;
+        setClassrooms(data);
+        setClassroomId(data[0]?.id || "");
+      } catch (err) {
+        if (alive) setMessage(err.message || "دریافت کلاس‌ها ناموفق بود.");
+      }
+    }
+
+    loadClasses();
+
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const resetQuestionForm = () => {
     setQuestionType("multiple");
@@ -135,6 +163,57 @@ function TeacherCreateExam() {
     }
   };
 
+  const handleSaveExam = async () => {
+    if (!examTitle.trim() || !examDate || !classroomId) {
+      setMessage("عنوان، کلاس و تاریخ آزمون الزامی است.");
+      return;
+    }
+
+    if (questions.length === 0) {
+      setMessage("حداقل یک سؤال برای آزمون اضافه کنید.");
+      return;
+    }
+
+    setSaving(true);
+    setMessage("");
+
+    try {
+      const exam = await api.exams.create({
+        title: examTitle,
+        date: examDate,
+        classroom: Number(classroomId),
+      });
+
+      for (const [index, question] of questions.entries()) {
+        await api.questions.create({
+          exam: exam.id,
+          text: question.text,
+          question_type:
+            question.type === "multiple" ? "multiple_choice" : "essay",
+          max_score: 1,
+          order: index + 1,
+          choices:
+            question.type === "multiple"
+              ? question.options.map((option, optionIndex) => ({
+                  text: option,
+                  is_correct: optionIndex === question.correctOption,
+                }))
+              : [],
+        });
+      }
+
+      setExamTitle("");
+      setExamDate("");
+      setQuestions([]);
+      resetQuestionForm();
+      setMessage("آزمون با موفقیت در بک‌اند ثبت شد.");
+    } catch (err) {
+      setMessage(err.message || "ثبت آزمون ناموفق بود.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <DashboardLayout
       role="پنل معلم"
@@ -168,6 +247,8 @@ function TeacherCreateExam() {
               <input
                 className="xqv-teacher-exam-input"
                 type="text"
+                value={examTitle}
+                onChange={(event) => setExamTitle(event.target.value)}
                 placeholder="مثلاً Quiz Unit 4"
               />
             </div>
@@ -175,10 +256,16 @@ function TeacherCreateExam() {
             <div className="xqv-teacher-exam-field">
               <label>انتخاب کلاس</label>
 
-              <select className="xqv-teacher-exam-input">
-                <option>English A2</option>
-                <option>Conversation B1</option>
-                <option>Kids Starter</option>
+              <select
+                className="xqv-teacher-exam-input"
+                value={classroomId}
+                onChange={(event) => setClassroomId(event.target.value)}
+              >
+                {classrooms.map((classroom) => (
+                  <option key={classroom.id} value={classroom.id}>
+                    {classroom.name}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -198,6 +285,8 @@ function TeacherCreateExam() {
               <input
                 className="xqv-teacher-exam-input"
                 type="date"
+                value={examDate}
+                onChange={(event) => setExamDate(event.target.value)}
               />
             </div>
           </div>
@@ -615,9 +704,17 @@ function TeacherCreateExam() {
             <AnimatedButton
               variant="danger"
               icon={<Save size={18} />}
+              onClick={handleSaveExam}
+              disabled={saving}
             >
-              ثبت نهایی امتحان
+              {saving ? "در حال ثبت..." : "ثبت نهایی امتحان"}
             </AnimatedButton>
+          </div>
+        )}
+
+        {message && (
+          <div className="xqv-teacher-exam-empty">
+            <span>{message}</span>
           </div>
         )}
       </section>

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   BookOpen,
   CalendarDays,
@@ -19,99 +19,71 @@ import StatCard from "../components/StatCard";
 import { AnimatedButton } from "../components/AnimatedButton";
 
 import "./SecretaryClasses.css";
+import { api, getFullName } from "../services/api";
 
 function SecretaryClasses() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [levelFilter, setLevelFilter] = useState("all");
 
-  const [classes, setClasses] = useState([
-    {
-      id: 1,
-      title: "English A2",
-      code: "ENG-A2-102",
-      category: "زبان انگلیسی",
-      level: "مقدماتی",
-      teacher: "مریم احمدی",
-      schedule: "شنبه و چهارشنبه",
-      time: "۱۶:۰۰ تا ۱۸:۰۰",
-      room: "کلاس ۱۰۲",
-      capacity: 20,
-      enrolled: 18,
-      startDate: "۱۴۰۵/۰۶/۰۸",
-      status: "در حال برگزاری",
-      statusType: "active",
-      colorType: "orange",
-    },
-    {
-      id: 2,
-      title: "Conversation B1",
-      code: "CON-B1-204",
-      category: "مکالمه",
-      level: "متوسط",
-      teacher: "علی رضایی",
-      schedule: "دوشنبه و پنجشنبه",
-      time: "۱۰:۰۰ تا ۱۲:۰۰",
-      room: "کلاس ۲۰۴",
-      capacity: 15,
-      enrolled: 12,
-      startDate: "۱۴۰۵/۰۶/۱۰",
-      status: "در حال برگزاری",
-      statusType: "active",
-      colorType: "blue",
-    },
-    {
-      id: 3,
-      title: "Grammar Advanced",
-      code: "GRA-ADV-301",
-      category: "گرامر",
-      level: "پیشرفته",
-      teacher: "سحر کریمی",
-      schedule: "یکشنبه و سه‌شنبه",
-      time: "۱۴:۰۰ تا ۱۶:۰۰",
-      room: "کلاس ۳۰۱",
-      capacity: 12,
-      enrolled: 12,
-      startDate: "۱۴۰۵/۰۶/۰۹",
-      status: "تکمیل ظرفیت",
-      statusType: "full",
-      colorType: "purple",
-    },
-    {
-      id: 4,
-      title: "IELTS Preparation",
-      code: "IELTS-405",
-      category: "آمادگی آزمون",
-      level: "تخصصی",
-      teacher: "رضا موسوی",
-      schedule: "جمعه",
-      time: "۰۹:۰۰ تا ۱۳:۰۰",
-      room: "کلاس ۴۰۵",
-      capacity: 18,
-      enrolled: 8,
-      startDate: "۱۴۰۵/۰۶/۱۴",
-      status: "ثبت‌نام آزاد",
-      statusType: "open",
-      colorType: "green",
-    },
-    {
-      id: 5,
-      title: "English Kids",
-      code: "KID-ENG-101",
-      category: "کودکان",
-      level: "مقدماتی",
-      teacher: "نگار محمدی",
-      schedule: "شنبه و دوشنبه",
-      time: "۱۱:۰۰ تا ۱۲:۳۰",
-      room: "کلاس ۱۰۱",
-      capacity: 15,
-      enrolled: 15,
-      startDate: "۱۴۰۵/۰۶/۰۸",
-      status: "تکمیل ظرفیت",
-      statusType: "full",
-      colorType: "yellow",
-    },
-  ]);
+  const [rawClasses, setRawClasses] = useState([]);
+  const [terms, setTerms] = useState([]);
+  const [teachers, setTeachers] = useState([]);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let alive = true;
+
+    async function loadData() {
+      try {
+        const [classroomsData, termsData, usersData] = await Promise.all([
+          api.classrooms.list(),
+          api.terms.list(),
+          api.users.list(),
+        ]);
+
+        if (!alive) return;
+        setRawClasses(classroomsData);
+        setTerms(termsData);
+        setTeachers(usersData.filter((user) => user.role === "teacher"));
+      } catch (err) {
+        if (alive) setError(err.message || "دریافت کلاس‌ها ناموفق بود.");
+      }
+    }
+
+    loadData();
+
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const classes = useMemo(
+    () =>
+      rawClasses.map((classroom, index) => {
+        const term = terms.find((item) => item.id === classroom.term);
+        const enrolled = classroom.student_count || 0;
+
+        return {
+          id: classroom.id,
+          title: classroom.name,
+          code: `CLS-${classroom.id}`,
+          category: term?.name || "ترم نامشخص",
+          level: term?.name || "ثبت نشده",
+          teacher: getFullName(classroom.teacher_detail),
+          schedule: "در مدل بک‌اند ثبت نشده",
+          time: "-",
+          room: "-",
+          capacity: Math.max(enrolled, 1),
+          enrolled,
+          startDate: term?.start_date || "-",
+          status: term?.is_active ? "در حال برگزاری" : "غیرفعال",
+          statusType: term?.is_active ? "active" : "open",
+          colorType: ["orange", "blue", "green", "yellow"][index % 4],
+        };
+      }),
+    [rawClasses, terms],
+  );
 
   const filteredClasses = useMemo(() => {
     const search = searchTerm.trim().toLowerCase();
@@ -147,13 +119,6 @@ function SecretaryClasses() {
       .length;
   }, [classes]);
 
-  const openClasses = useMemo(() => {
-    return classes.filter((classItem) => classItem.statusType === "open")
-      .length;
-  }, [classes]);
-
-  const emptyCapacity = totalCapacity - totalStudents;
-
   const occupancyPercent =
     totalCapacity > 0 ? Math.round((totalStudents / totalCapacity) * 100) : 0;
 
@@ -169,30 +134,34 @@ function SecretaryClasses() {
     return "normal";
   };
 
-  const handleAddClass = () => {
-    const newClass = {
-      id: Date.now(),
-      title: "کلاس جدید",
-      code: `CLS-${Date.now().toString().slice(-4)}`,
-      category: "زبان انگلیسی",
-      level: "مقدماتی",
-      teacher: "مدرس جدید",
-      schedule: "شنبه و دوشنبه",
-      time: "۱۶:۰۰ تا ۱۸:۰۰",
-      room: "کلاس جدید",
-      capacity: 20,
-      enrolled: 0,
-      startDate: "۱۴۰۵/۰۷/۰۱",
-      status: "ثبت‌نام آزاد",
-      statusType: "open",
-      colorType: "orange",
-    };
+  const handleAddClass = async () => {
+    const term = terms.find((item) => item.is_active) || terms[0];
+    const teacher = teachers[0];
 
-    setClasses((prev) => [newClass, ...prev]);
+    if (!term || !teacher) {
+      alert("برای ساخت کلاس، ابتدا حداقل یک ترم و یک معلم در بک‌اند ثبت کنید.");
+      return;
+    }
+
+    try {
+      const newClass = await api.classrooms.create({
+        name: "کلاس جدید",
+        term: term.id,
+        teacher: teacher.id,
+      });
+      setRawClasses((prev) => [newClass, ...prev]);
+    } catch (err) {
+      alert(err.message || "ساخت کلاس ناموفق بود.");
+    }
   };
 
-  const handleDeleteClass = (id) => {
-    setClasses((prev) => prev.filter((classItem) => classItem.id !== id));
+  const handleDeleteClass = async (id) => {
+    try {
+      await api.classrooms.remove(id);
+      setRawClasses((prev) => prev.filter((classItem) => classItem.id !== id));
+    } catch (err) {
+      alert(err.message || "حذف کلاس ناموفق بود.");
+    }
   };
 
   return (
@@ -246,6 +215,12 @@ function SecretaryClasses() {
               افزودن کلاس جدید
             </AnimatedButton>
           </div>
+          {error && (
+            <div className="secretary-classes-x9k3-empty">
+              <BookOpen size={42} />
+              <strong>{error}</strong>
+            </div>
+          )}
           <div className="secretary-classes-x9k3-filters">
             <div className="secretary-classes-x9k3-search">
               <Search

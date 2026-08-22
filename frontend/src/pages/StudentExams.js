@@ -1,13 +1,11 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
-  BookOpen,
   CalendarDays,
   CheckCircle2,
   Clock3,
   FileQuestion,
   History,
   Play,
-  RotateCcw,
   Timer,
   Trophy,
   UserRound,
@@ -18,71 +16,77 @@ import "./StudentExams.css";
 import DashboardLayout from "../components/DashboardLayout";
 import StatCard from "../components/StatCard";
 import { Link } from "react-router-dom";
-
-const examsData = [
-  {
-    id: 1,
-    title: "آزمون میان‌ترم",
-    subject: "English A2",
-    teacher: "محمد احمدی",
-    questions: 20,
-    duration: 30,
-    date: "۱۴۰۵/۰۵/۲۸",
-    time: "۱۰:۰۰",
-    status: "active",
-    description: "آزمون میان‌ترم شامل مباحث فصل اول تا سوم.",
-  },
-  {
-    id: 2,
-    title: "آزمون پایان‌ترم",
-    subject: "English A2",
-    teacher: "علی رضایی",
-    questions: 15,
-    duration: 25,
-    date: "۱۴۰۵/۰۵/۲۹",
-    time: "۱۲:۳۰",
-    status: "active",
-    description: "آزمون چهارگزینه‌ای فصل دوم.",
-  },
-  {
-    id: 3,
-    title: "آزمون زبان انگلیسی",
-    subject: "زبان انگلیسی",
-    teacher: "سارا کریمی",
-    questions: 25,
-    duration: 40,
-    date: "۱۴۰۵/۰۵/۲۵",
-    time: "۰۹:۰۰",
-    status: "completed",
-    score: "۱۸ از ۲۰",
-    description: "آزمون لغات و گرامر زبان انگلیسی.",
-  },
-  {
-    id: 4,
-    title: "آزمون فصل اول",
-    subject: "نمیدونم",
-    teacher: "رضا موسوی",
-    questions: 20,
-    duration: 30,
-    date: "۱۴۰۵/۰۵/۲۳",
-    time: "۱۱:۰۰",
-    status: "completed",
-    score: "۱۶ از ۲۰",
-    description: "آزمون مربوط به مباحث فصل اول.",
-  },
-];
+import { api, getFullName } from "../services/api";
 
 function StudentExams() {
   const [activeTab, setActiveTab] = useState("active");
+  const [exams, setExams] = useState([]);
+  const [classrooms, setClassrooms] = useState([]);
+  const [submissions, setSubmissions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let alive = true;
+
+    async function loadData() {
+      try {
+        const [examsData, classroomsData, submissionsData] = await Promise.all([
+          api.exams.list(),
+          api.classrooms.list(),
+          api.submissions.list(),
+        ]);
+
+        if (!alive) return;
+        setExams(examsData);
+        setClassrooms(classroomsData);
+        setSubmissions(submissionsData);
+      } catch (err) {
+        if (alive) setError(err.message || "دریافت آزمون‌ها ناموفق بود.");
+      } finally {
+        if (alive) setLoading(false);
+      }
+    }
+
+    loadData();
+
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const examsData = useMemo(
+    () =>
+      exams.map((exam) => {
+        const classroom = classrooms.find((item) => item.id === exam.classroom);
+        const submission = submissions.find((item) => item.exam === exam.id);
+
+        return {
+          ...exam,
+          subject: classroom?.name || `کلاس ${exam.classroom}`,
+          teacher: getFullName(classroom?.teacher_detail),
+          questionsCount: exam.questions?.length || 0,
+          status: submission ? "completed" : "active",
+          score:
+            submission?.total_score !== null && submission?.total_score !== undefined
+              ? `${submission.total_score}`
+              : submission
+                ? "در انتظار تصحیح"
+                : "",
+          description: `${exam.title} - ${classroom?.name || "کلاس"}`,
+        };
+      }),
+    [exams, classrooms, submissions],
+  );
 
   const activeExams = useMemo(
     () => examsData.filter((exam) => exam.status === "active"),
-    [],
+    [examsData],
   );
 
   const completedExams = useMemo(
     () => examsData.filter((exam) => exam.status === "completed"),
-    [],
+    [examsData],
   );
 
   const currentExams = activeTab === "active" ? activeExams : completedExams;
@@ -105,13 +109,13 @@ function StudentExams() {
           />
           <StatCard
             title="آزمون‌های داده‌شده"
-            value={activeExams.length}
+            value={completedExams.length}
             icon={<CheckCircle2 />}
             color="green"
           />
           <StatCard
             title="آخرین نتیجه"
-            value="۱۸ از ۲۰"
+            value={completedExams[0]?.score || "-"}
             icon={<Trophy />}
             color="orange"
           />
@@ -172,7 +176,16 @@ function StudentExams() {
             Exams Grid
         ===================================================== */}
 
-          {currentExams.length > 0 ? (
+          {loading ? (
+            <div className="student-exams-empty">
+              <strong>در حال دریافت آزمون‌ها...</strong>
+            </div>
+          ) : error ? (
+            <div className="student-exams-empty">
+              <XCircle size={30} />
+              <strong>{error}</strong>
+            </div>
+          ) : currentExams.length > 0 ? (
             <div className="student-exams-grid">
               {currentExams.map((exam) => (
                 <article className="student-exams-card" key={exam.id}>
@@ -228,7 +241,7 @@ function StudentExams() {
 
                       <div>
                         <span>تعداد سوال</span>
-                        <strong>{exam.questions} سوال</strong>
+                        <strong>{exam.questionsCount} سوال</strong>
                       </div>
                     </div>
 
@@ -237,7 +250,7 @@ function StudentExams() {
 
                       <div>
                         <span>زمان آزمون</span>
-                        <strong>{exam.duration} دقیقه</strong>
+                        <strong>طبق اعلام مدرس</strong>
                       </div>
                     </div>
 
@@ -255,7 +268,7 @@ function StudentExams() {
 
                       <div>
                         <span>ساعت</span>
-                        <strong>{exam.time}</strong>
+                        <strong>-</strong>
                       </div>
                     </div>
                   </div>

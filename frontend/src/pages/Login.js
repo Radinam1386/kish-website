@@ -1,13 +1,14 @@
 // src/pages/Login.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { api, rolePanelPath, storage } from "../services/api";
 import "./Login.css";
 
 const ROLES = [
-  { key: "panel/student", label: "دانش‌آموز", icon: "📘" },
-  { key: "panel/teacher", label: "استاد", icon: "🎓" },
-  { key: "panel/secretary", label: "منشی", icon: "📋" },
-  { key: "panel/admin", label: "مدیریت", icon: "⚙️" },
+  { key: "student", label: "دانش‌آموز", icon: "📘" },
+  { key: "teacher", label: "استاد", icon: "🎓" },
+  { key: "secretary", label: "منشی", icon: "📋" },
+  { key: "admin", label: "مدیریت", icon: "⚙️" },
 ];
 
 export default function Login() {
@@ -15,12 +16,30 @@ export default function Login() {
   const [phone, setPhone] = useState("");
   const [pass, setPass] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => navigate(`/${role}`), 800);
+    setError("");
+
+    try {
+      const session = await api.login({ username: phone, password: pass });
+      storage.setSession(session);
+
+      if (session.user.role !== role) {
+        setError("نقش انتخاب‌شده با حساب کاربری واردشده همخوانی ندارد.");
+        storage.clearSession();
+        return;
+      }
+
+      navigate(rolePanelPath(session.user.role));
+    } catch (err) {
+      setError(err.message || "ورود ناموفق بود.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -65,15 +84,16 @@ export default function Login() {
 
           <form className="login-form" onSubmit={handleSubmit}>
             <div className="field">
-              <label htmlFor="phone">شماره موبایل</label>
+              <label htmlFor="phone">نام کاربری</label>
               <div className="input-wrap">
                 <span className="input-icon">📱</span>
                 <input
                   id="phone"
-                  type="tel"
-                  placeholder="09xxxxxxxxx"
+                  type="text"
+                  placeholder="نام کاربری ثبت‌شده"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
+                  dir="ltr"
                   required
                 />
               </div>
@@ -93,6 +113,8 @@ export default function Login() {
                 />
               </div>
             </div>
+
+            {error && <p className="login-error">{error}</p>}
 
             <button
               type="submit"

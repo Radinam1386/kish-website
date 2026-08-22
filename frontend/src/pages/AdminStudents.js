@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Search,
   Filter,
@@ -13,67 +13,66 @@ import "./AdminStudents.css";
 import { AnimatedButton } from "../components/AnimatedButton";
 import DashboardLayout from "../components/DashboardLayout";
 import StatCard from "../components/StatCard";
+import { api, getFullName } from "../services/api";
 
 function AdminStudents() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedClass, setSelectedClass] = useState("all");
+  const [users, setUsers] = useState([]);
+  const [enrollments, setEnrollments] = useState([]);
+  const [classrooms, setClassrooms] = useState([]);
+  const [error, setError] = useState("");
 
-  const [students] = useState([
-    {
-      id: "STD-1001",
-      name: "علی محمدی",
-      phone: "۰۹۱۲۰۰۰۰۰۰۰",
-      className: "English A2",
-      classId: "english-a2",
-      tuitionStatus: "پرداخت شده",
-      tuitionStatusClass: "paid",
-    },
-    {
-      id: "STD-1002",
-      name: "سارا احمدی",
-      phone: "۰۹۱۲۱۱۱۱۱۱۱",
-      className: "Kids Starter",
-      classId: "kids-starter",
-      tuitionStatus: "در انتظار",
-      tuitionStatusClass: "pending",
-    },
-    {
-      id: "STD-1003",
-      name: "محمد کریمی",
-      phone: "۰۹۱۲۲۲۲۲۲۲۲",
-      className: "English B1",
-      classId: "english-b1",
-      tuitionStatus: "پرداخت شده",
-      tuitionStatusClass: "paid",
-    },
-    {
-      id: "STD-1004",
-      name: "نگار رضایی",
-      phone: "۰۹۱۲۳۳۳۳۳۳۳",
-      className: "English A2",
-      classId: "english-a2",
-      tuitionStatus: "در انتظار",
-      tuitionStatusClass: "pending",
-    },
-    {
-      id: "STD-1005",
-      name: "امیرحسین اکبری",
-      phone: "۰۹۱۲۴۴۴۴۴۴۴",
-      className: "English B1",
-      classId: "english-b1",
-      tuitionStatus: "پرداخت شده",
-      tuitionStatusClass: "paid",
-    },
-    {
-      id: "STD-1006",
-      name: "فاطمه مرادی",
-      phone: "۰۹۱۲۵۵۵۵۵۵۵",
-      className: "Kids Starter",
-      classId: "kids-starter",
-      tuitionStatus: "پرداخت شده",
-      tuitionStatusClass: "paid",
-    },
-  ]);
+  useEffect(() => {
+    let alive = true;
+
+    async function loadData() {
+      try {
+        const [usersData, enrollmentsData, classroomsData] = await Promise.all([
+          api.users.list(),
+          api.enrollments.list(),
+          api.classrooms.list(),
+        ]);
+
+        if (!alive) return;
+        setUsers(usersData);
+        setEnrollments(enrollmentsData);
+        setClassrooms(classroomsData);
+      } catch (err) {
+        if (alive) setError(err.message || "دریافت دانش‌آموزان ناموفق بود.");
+      }
+    }
+
+    loadData();
+
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const students = useMemo(
+    () =>
+      users
+        .filter((user) => user.role === "student")
+        .map((user) => {
+          const enrollment = enrollments.find((item) => item.student === user.id);
+          const classroom = classrooms.find(
+            (item) => item.id === enrollment?.classroom,
+          );
+
+          return {
+            id: user.id,
+            username: user.username,
+            name: getFullName(user),
+            phone: user.phone_number || "-",
+            className: classroom?.name || "بدون کلاس",
+            classId: classroom?.id || "none",
+            tuitionStatus: "ثبت نشده",
+            tuitionStatusClass: "pending",
+          };
+        }),
+    [users, enrollments, classrooms],
+  );
 
   const classes = useMemo(() => {
     const uniqueClasses = students.reduce((acc, student) => {
@@ -104,7 +103,8 @@ function AdminStudents() {
     return students.filter((student) => {
       const matchesSearch =
         student.name.toLowerCase().includes(normalizedSearch) ||
-        student.id.toLowerCase().includes(normalizedSearch) ||
+        String(student.id).toLowerCase().includes(normalizedSearch) ||
+        student.username.toLowerCase().includes(normalizedSearch) ||
         student.phone.includes(normalizedSearch) ||
         student.className.toLowerCase().includes(normalizedSearch);
 
@@ -218,7 +218,13 @@ function AdminStudents() {
               </thead>
 
               <tbody>
-                {filteredStudents.length > 0 ? (
+                {error ? (
+                  <tr>
+                    <td colSpan="6" className="admin-students-x7k2-empty">
+                      {error}
+                    </td>
+                  </tr>
+                ) : filteredStudents.length > 0 ? (
                   filteredStudents.map((student) => (
                     <tr key={student.id}>
                       <td data-label="شناسه">

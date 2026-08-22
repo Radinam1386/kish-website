@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Users,
   UserPlus,
@@ -17,57 +17,68 @@ import { AnimatedButton } from "../components/AnimatedButton";
 
 import "./AdminTeachers.css";
 import StatCard from "../components/StatCard";
+import { api, getFullName } from "../services/api";
 
 function AdminTeachers() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSpecialty, setSelectedSpecialty] = useState("all");
 
-  const [teachers, setTeachers] = useState([
-    {
-      id: 1,
-      name: "خانم رضایی",
-      phone: "۰۹۱۲۳۴۵۶۷۸۹",
-      specialty: "زبان عمومی",
-      classes: 4,
-      students: 68,
-      status: "فعال",
-      statusType: "active",
-      avatar: "خ",
-    },
-    {
-      id: 2,
-      name: "آقای کریمی",
-      phone: "۰۹۳۵۷۶۵۴۳۲۱",
-      specialty: "مکالمه",
-      classes: 3,
-      students: 51,
-      status: "فعال",
-      statusType: "active",
-      avatar: "آ",
-    },
-    {
-      id: 3,
-      name: "خانم مرادی",
-      phone: "۰۹۱۹۸۷۶۵۴۳۲",
-      specialty: "کودکان",
-      classes: 5,
-      students: 74,
-      status: "فعال",
-      statusType: "active",
-      avatar: "خ",
-    },
-    {
-      id: 4,
-      name: "آقای احمدی",
-      phone: "۰۹۱۲۱۱۱۱۱۱۱",
-      specialty: "گرامر",
-      classes: 2,
-      students: 32,
-      status: "مرخصی",
-      statusType: "warning",
-      avatar: "ا",
-    },
-  ]);
+  const [users, setUsers] = useState([]);
+  const [classrooms, setClassrooms] = useState([]);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let alive = true;
+
+    async function loadData() {
+      try {
+        const [usersData, classroomsData] = await Promise.all([
+          api.users.list(),
+          api.classrooms.list(),
+        ]);
+
+        if (!alive) return;
+        setUsers(usersData);
+        setClassrooms(classroomsData);
+      } catch (err) {
+        if (alive) setError(err.message || "دریافت معلمان ناموفق بود.");
+      }
+    }
+
+    loadData();
+
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const teachers = useMemo(
+    () =>
+      users
+        .filter((user) => user.role === "teacher")
+        .map((user) => {
+          const teacherClasses = classrooms.filter(
+            (classroom) => classroom.teacher === user.id,
+          );
+          const students = teacherClasses.reduce(
+            (total, classroom) => total + (classroom.student_count || 0),
+            0,
+          );
+
+          return {
+            id: user.id,
+            name: getFullName(user),
+            phone: user.phone_number || "-",
+            specialty: user.email || "ثبت نشده",
+            classes: teacherClasses.length,
+            students,
+            status: user.is_active ? "فعال" : "غیرفعال",
+            statusType: user.is_active ? "active" : "warning",
+            avatar: getFullName(user).charAt(0),
+          };
+        }),
+    [users, classrooms],
+  );
 
   const specialties = [
     "all",
@@ -103,22 +114,6 @@ function AdminTeachers() {
   const activeTeachers = teachers.filter(
     (teacher) => teacher.statusType === "active",
   ).length;
-
-  const handleAddTeacher = () => {
-    const newTeacher = {
-      id: Date.now(),
-      name: "معلم جدید",
-      phone: "۰۹۱۲۰۰۰۰۰۰۰",
-      specialty: "زبان عمومی",
-      classes: 0,
-      students: 0,
-      status: "فعال",
-      statusType: "active",
-      avatar: "م",
-    };
-
-    setTeachers((prev) => [...prev, newTeacher]);
-  };
 
   return (
     <DashboardLayout role="پنل مدیریت" title="مدیریت معلمان" menuType="admin">
@@ -166,7 +161,7 @@ function AdminTeachers() {
               </p>
             </div>
 
-            <AnimatedButton variant="primary" onClick={handleAddTeacher}>
+            <AnimatedButton variant="primary">
               <UserPlus size={18} />
               افزودن معلم
             </AnimatedButton>
@@ -214,7 +209,12 @@ function AdminTeachers() {
               Teachers Grid
           ================================= */}
 
-          {filteredTeachers.length > 0 ? (
+          {error ? (
+            <div className="admin-teachers-x7k2-empty">
+              <Users size={42} />
+              <h4>{error}</h4>
+            </div>
+          ) : filteredTeachers.length > 0 ? (
             <div className="admin-teachers-x7k2-grid">
               {filteredTeachers.map((teacher) => (
                 <article key={teacher.id} className="admin-teachers-x7k2-card">

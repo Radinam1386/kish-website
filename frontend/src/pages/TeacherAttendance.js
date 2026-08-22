@@ -1,39 +1,79 @@
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Save, Users, Calendar, Hash, UserCircle } from "lucide-react";
 import DashboardLayout from "../components/DashboardLayout";
 import { AnimatedButton } from "../components/AnimatedButton";
 import "./TeacherAttendance.css";
 import StatCard from "../components/StatCard";
+import { api, getFullName } from "../services/api";
 
 function TeacherAttendance() {
   const { classId } = useParams();
+  const [classroom, setClassroom] = useState(null);
+  const [statuses, setStatuses] = useState({});
+  const [notes, setNotes] = useState({});
+  const [message, setMessage] = useState("");
+  const [saving, setSaving] = useState(false);
+  const today = new Date().toISOString().slice(0, 10);
 
-  const students = [
-    {
-      id: 1,
-      name: "علی محمدی",
-      phone: "09120000000",
-      level: "A2",
-    },
-    {
-      id: 2,
-      name: "سارا احمدی",
-      phone: "09121111111",
-      level: "A2",
-    },
-    {
-      id: 3,
-      name: "محمد کریمی",
-      phone: "09122222222",
-      level: "A2",
-    },
-    {
-      id: 4,
-      name: "نگار رضایی",
-      phone: "09123333333",
-      level: "A2",
-    },
-  ];
+  useEffect(() => {
+    let alive = true;
+
+    async function loadClassroom() {
+      try {
+        const data = await api.classrooms.get(classId);
+        if (!alive) return;
+        setClassroom(data);
+        setStatuses(
+          Object.fromEntries(
+            (data.enrollments || []).map((item) => [item.student, "present"]),
+          ),
+        );
+      } catch (err) {
+        if (alive) setMessage(err.message || "دریافت کلاس ناموفق بود.");
+      }
+    }
+
+    loadClassroom();
+
+    return () => {
+      alive = false;
+    };
+  }, [classId]);
+
+  const students = useMemo(
+    () => (classroom?.enrollments || []).map((item) => item.student_detail),
+    [classroom],
+  );
+
+  const handleSave = async () => {
+    setSaving(true);
+    setMessage("");
+
+    try {
+      const session = await api.sessions.create({
+        classroom: Number(classId),
+        date: today,
+      });
+
+      await Promise.all(
+        students.map((student) =>
+          api.attendance.create({
+            session: session.id,
+            student: student.id,
+            status: statuses[student.id] || "present",
+            note: notes[student.id] || "",
+          }),
+        ),
+      );
+
+      setMessage("حضور و غیاب با موفقیت ثبت شد.");
+    } catch (err) {
+      setMessage(err.message || "ثبت حضور و غیاب ناموفق بود.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <DashboardLayout
@@ -60,33 +100,38 @@ function TeacherAttendance() {
               </div>
             </div>
 
-            <AnimatedButton variant="danger" icon={<Save size={18} />}>
-              ثبت نهایی لیست
+            <AnimatedButton
+              variant="danger"
+              icon={<Save size={18} />}
+              onClick={handleSave}
+              disabled={saving || !students.length}
+            >
+              {saving ? "در حال ثبت..." : "ثبت نهایی لیست"}
             </AnimatedButton>
           </div>
 
           <div className="teacher-attendance-q9m4-meta-grid">
             <StatCard
               title="نام کلاس"
-              value="English A2"
+              value={classroom?.name || "-"}
               icon={<Hash size={23} />}
               color="red"
             />
             <StatCard
               title="تاریخ جلسه"
-              value="۱۴۰۵/۰۹/۲۰"
+              value={today}
               icon={<Calendar size={23} />}
               color="light-blue"
             />
             <StatCard
               title="شماره جلسه"
-              value="جلسه ۱۲"
+              value="جلسه امروز"
               icon={<Hash size={23} />}
               color="light-green"
             />
             <StatCard
               title="استاد مربوطه"
-              value="خانم رضایی"
+              value={getFullName(classroom?.teacher_detail)}
               icon={<UserCircle size={23} />}
               color="red"
             />
@@ -122,7 +167,7 @@ function TeacherAttendance() {
                     <tr key={student.id}>
                       <td>
                         <div className="teacher-attendance-q9m4-student-name">
-                          {student.name}
+                          {getFullName(student)}
                         </div>
                       </td>
 
@@ -134,15 +179,25 @@ function TeacherAttendance() {
 
                       <td>
                         <span className="teacher-attendance-q9m4-level-badge">
-                          {student.level}
+                          {student.username}
                         </span>
                       </td>
 
                       <td>
-                        <select className="teacher-attendance-q9m4-select">
+                        <select
+                          className="teacher-attendance-q9m4-select"
+                          value={statuses[student.id] || "present"}
+                          onChange={(event) =>
+                            setStatuses((prev) => ({
+                              ...prev,
+                              [student.id]: event.target.value,
+                            }))
+                          }
+                        >
                           <option value="present">حاضر</option>
                           <option value="absent">غایب</option>
                           <option value="late">تاخیر</option>
+                          <option value="excused">غیبت موجه</option>
                         </select>
                       </td>
 
@@ -150,6 +205,13 @@ function TeacherAttendance() {
                         <input
                           className="teacher-attendance-q9m4-input"
                           type="text"
+                          value={notes[student.id] || ""}
+                          onChange={(event) =>
+                            setNotes((prev) => ({
+                              ...prev,
+                              [student.id]: event.target.value,
+                            }))
+                          }
                           placeholder="مثلاً: تاخیر با هماهنگی..."
                         />
                       </td>
@@ -157,6 +219,7 @@ function TeacherAttendance() {
                   ))}
                 </tbody>
               </table>
+              {message && <div className="teacher-attendance-q9m4-count-badge">{message}</div>}
             </div>
           </div>
         </section>

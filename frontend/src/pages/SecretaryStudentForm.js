@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   ArrowRight,
   Copy,
@@ -14,9 +14,11 @@ import {
 import DashboardLayout from "../components/DashboardLayout";
 import "./SecretaryStudentForm.css";
 import { AnimatedButton } from "../components/AnimatedButton";
+import { api } from "../services/api";
 
 function SecretaryStudentForm() {
   const navigate = useNavigate();
+  const { id } = useParams();
 
   const [showPassword, setShowPassword] = useState(false);
   const [passwordCopied, setPasswordCopied] = useState(false);
@@ -45,19 +47,69 @@ function SecretaryStudentForm() {
     }));
   };
 
-  const handleSubmit = (event) => {
+  useEffect(() => {
+    let alive = true;
+
+    async function loadStudent() {
+      if (!id) return;
+
+      try {
+        const user = await api.users.get(id);
+        if (!alive) return;
+        setFormData((prev) => ({
+          ...prev,
+          firstName: user.first_name || "",
+          lastName: user.last_name || "",
+          phone: user.phone_number || "",
+          email: user.email || "",
+          username: user.username || "",
+          status: user.is_active ? "active" : "inactive",
+        }));
+      } catch (error) {
+        alert(error.message || "دریافت اطلاعات دانش‌آموز ناموفق بود.");
+      }
+    }
+
+    loadStudent();
+
+    return () => {
+      alive = false;
+    };
+  }, [id]);
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
+    if (!id && formData.password !== formData.confirmPassword) {
       alert("رمز عبور و تکرار رمز عبور یکسان نیستند.");
       return;
     }
 
-    console.log("Student:", formData);
+    try {
+      const payload = {
+        username: formData.username,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        email: formData.email,
+        phone_number: formData.phone,
+        role: "student",
+        is_active: formData.status === "active",
+      };
 
-    alert("دانش‌آموز با موفقیت ثبت شد.");
+      if (id) {
+        await api.users.update(id, payload);
+      } else {
+        await api.users.create({
+          ...payload,
+          password: formData.password,
+        });
+      }
 
-    navigate("/panel/secretary/students");
+      alert("دانش‌آموز با موفقیت ثبت شد.");
+      navigate("/panel/secretary/students");
+    } catch (error) {
+      alert(error.message || "ثبت دانش‌آموز ناموفق بود.");
+    }
   };
   const generatePassword = () => {
     const upper = "ABCDEFGHJKLMNPQRSTUVWXYZ";
@@ -168,7 +220,7 @@ function SecretaryStudentForm() {
 
               <label className="secretary-student-form-field">
                 <span>
-                  کد ملی <b>*</b>
+                  کد ملی
                 </span>
 
                 <input
@@ -178,7 +230,6 @@ function SecretaryStudentForm() {
                   placeholder="۱۰ رقم"
                   inputMode="numeric"
                   maxLength="10"
-                  required
                 />
               </label>
 
@@ -253,14 +304,13 @@ function SecretaryStudentForm() {
 
               <label className="secretary-student-form-field">
                 <span>
-                  سطح زبان <b>*</b>
+                  سطح زبان
                 </span>
 
                 <select
                   name="level"
                   value={formData.level}
                   onChange={handleChange}
-                  required
                 >
                   <option value="">انتخاب سطح</option>
 
@@ -277,7 +327,7 @@ function SecretaryStudentForm() {
               </label>
               <label className="secretary-student-form-field">
                 <span>
-                  رمز عبور <b>*</b>
+                  رمز عبور {!id && <b>*</b>}
                 </span>
 
                 <div className="secretary-student-password">
@@ -288,7 +338,7 @@ function SecretaryStudentForm() {
                     onChange={handleChange}
                     placeholder="رمز عبور"
                     dir="ltr"
-                    required
+                    required={!id}
                   />
 
                   <button

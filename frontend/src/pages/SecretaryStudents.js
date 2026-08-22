@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Edit3,
@@ -14,51 +14,53 @@ import DashboardLayout from "../components/DashboardLayout";
 import "./SecretaryStudents.css";
 import { AnimatedButton } from "../components/AnimatedButton";
 import StatCard from "../components/StatCard";
+import { api } from "../services/api";
 
 function SecretaryStudents() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  const [students, setStudents] = useState([
-    {
-      id: 1,
-      firstName: "علی",
-      lastName: "محمدی",
-      nationalId: "1234567890",
-      phone: "09123456789",
-      email: "ali@example.com",
-      username: "ali.mohammadi",
-      password: "jS*dvn8LDsMa",
-      level: "Intermediate",
-      status: "active",
-      registeredAt: "1405/05/12",
-    },
-    {
-      id: 2,
-      firstName: "سارا",
-      lastName: "احمدی",
-      nationalId: "0987654321",
-      phone: "09121234567",
-      email: "sara@example.com",
-      username: "sara.ahmadi",
-      password: "TKr!Pz5BuLLx",
-      level: "Elementary",
-      status: "active",
-      registeredAt: "1405/05/18",
-    },
-    {
-      id: 3,
-      firstName: "محمد",
-      lastName: "رضایی",
-      nationalId: "1122334455",
-      phone: "09351234567",
-      email: "mohammad@example.com",
-      username: "m.rezaei",
-      password: "o&jEj8UHN*9X",
-      level: "inactive",
-      registeredAt: "1405/04/21",
-    },
-  ]);
+  const [users, setUsers] = useState([]);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let alive = true;
+
+    async function loadStudents() {
+      try {
+        const data = await api.users.list();
+        if (!alive) return;
+        setUsers(data);
+      } catch (err) {
+        if (alive) setError(err.message || "دریافت دانش‌آموزان ناموفق بود.");
+      }
+    }
+
+    loadStudents();
+
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const students = useMemo(
+    () =>
+      users
+        .filter((user) => user.role === "student")
+        .map((user) => ({
+          id: user.id,
+          firstName: user.first_name || "",
+          lastName: user.last_name || "",
+          nationalId: "-",
+          phone: user.phone_number || "-",
+          email: user.email || "",
+          username: user.username,
+          level: "",
+          status: user.is_active ? "active" : "inactive",
+          registeredAt: "-",
+        })),
+    [users],
+  );
 
   const filteredStudents = useMemo(() => {
     return students.filter((student) => {
@@ -80,7 +82,7 @@ function SecretaryStudents() {
     });
   }, [students, search, statusFilter]);
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     const student = students.find((item) => item.id === id);
 
     if (!student) return;
@@ -91,7 +93,12 @@ function SecretaryStudents() {
 
     if (!confirmed) return;
 
-    setStudents((prev) => prev.filter((student) => student.id !== id));
+    try {
+      await api.users.remove(id);
+      setUsers((prev) => prev.filter((user) => user.id !== id));
+    } catch (err) {
+      alert(err.message || "حذف دانش‌آموز ناموفق بود.");
+    }
   };
 
   return (
@@ -180,7 +187,13 @@ function SecretaryStudents() {
               </thead>
 
               <tbody>
-                {filteredStudents.length > 0 ? (
+                {error ? (
+                  <tr>
+                    <td colSpan="7" className="secretary-students-empty-row">
+                      {error}
+                    </td>
+                  </tr>
+                ) : filteredStudents.length > 0 ? (
                   filteredStudents.map((student) => (
                     <tr key={student.id}>
                       <td>

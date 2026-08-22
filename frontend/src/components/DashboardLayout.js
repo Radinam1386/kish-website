@@ -9,12 +9,11 @@ import {
   Home,
   LogOut,
   Menu,
-  Square,
   UsersRound,
   X,
 } from "lucide-react";
 import "./DashboardLayout.css";
-import { AnimatedButton } from "./AnimatedButton";
+import { storage } from "../services/api";
 
 function DashboardLayout({ role, title, children, menuType }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -116,7 +115,7 @@ function DashboardLayout({ role, title, children, menuType }) {
       <aside className={`dashboard-sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="dashboard-brand">
           <div className="brand-flex">
-            <img src="/logo.png" className="brand-logo"></img>
+            <img src="/logo.png" className="brand-logo" alt="Kish Institute" />
             <div className="brand-text">
               <strong>Kish Institute</strong>
               <small>{role}</small>
@@ -148,7 +147,11 @@ function DashboardLayout({ role, title, children, menuType }) {
           ))}
         </nav>
 
-        <Link to="/" className="dashboard-logout">
+        <Link
+          to="/login"
+          className="dashboard-logout"
+          onClick={() => storage.clearSession()}
+        >
           <LogOut size={19} />
           <span>خروج از حساب</span>
         </Link>

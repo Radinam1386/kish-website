@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from .models import Exam, Question, ExamSubmission, Answer
 from .serializers import (
     ExamSerializer, QuestionSerializer, QuestionStudentSerializer,
-    ExamSubmissionSerializer, AnswerSerializer
+    ExamStudentSerializer, ExamSubmissionSerializer, AnswerSerializer,
+    AnswerStudentSerializer,
 )
 
 

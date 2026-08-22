@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from "react";
 import {
   BookOpen,
   ClipboardCheck,
@@ -10,47 +11,52 @@ import DashboardLayout from "../components/DashboardLayout";
 import StatCard from "../components/StatCard";
 import "./TeacherPanel.css";
 import { AnimatedButton } from "../components/AnimatedButton";
+import { api, getFullName } from "../services/api";
 
 function TeacherPanel() {
-  const classes = [
-    {
-      id: "english-a2",
-      name: "English A2",
-      students: 14,
-      time: "ش/د/چ ۱۶-۱۸",
-      held: 12,
-      remaining: 8,
-    },
-    {
-      id: "conversation-b1",
-      name: "Conversation B1",
-      students: 10,
-      time: "ی/س ۱۰-۱۲",
-      held: 14,
-      remaining: 6,
-    },
-  ];
+  const [classes, setClasses] = useState([]);
+  const [exams, setExams] = useState([]);
+  const [sessions, setSessions] = useState([]);
+  const [submissions, setSubmissions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const latestExams = [
-    {
-      id: 1,
-      title: "Midterm - Unit 1-3",
-      className: "English A2",
-      date: "۱۴۰۵/۰۴/۱۵",
-      participants: "۱۳ / ۱۴",
-      status: "برگزارشده",
-      statusClass: "teacher-panel-x7k2-status-done",
-    },
-    {
-      id: 2,
-      title: "Speaking Test",
-      className: "Conversation B1",
-      date: "۱۴۰۵/۰۵/۲۰",
-      participants: "—",
-      status: "برنامه‌ریزی‌شده",
-      statusClass: "teacher-panel-x7k2-status-pending",
-    },
-  ];
+  useEffect(() => {
+    let alive = true;
+
+    async function loadData() {
+      try {
+        const [classroomsData, examsData, sessionsData, submissionsData] =
+          await Promise.all([
+            api.classrooms.list(),
+            api.exams.list(),
+            api.sessions.list(),
+            api.submissions.list(),
+          ]);
+
+        if (!alive) return;
+        setClasses(classroomsData);
+        setExams(examsData);
+        setSessions(sessionsData);
+        setSubmissions(submissionsData);
+      } catch (err) {
+        if (alive) setError(err.message || "دریافت اطلاعات پنل ناموفق بود.");
+      } finally {
+        if (alive) setLoading(false);
+      }
+    }
+
+    loadData();
+
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const totalStudents = useMemo(
+    () => classes.reduce((total, cls) => total + (cls.student_count || 0), 0),
+    [classes],
+  );
 
   return (
     <DashboardLayout role="پنل معلم" title="پنل معلم" menuType="teacher">
@@ -58,7 +64,7 @@ function TeacherPanel() {
         <div className="teacher-panel-x7k2-stat-grid">
           <StatCard
             title="کلاس‌های فعال"
-            value="۲ کلاس"
+            value={`${classes.length} کلاس`}
             hint="این ترم"
             icon={<BookOpen />}
             color="light-green"
@@ -66,7 +72,7 @@ function TeacherPanel() {
 
           <StatCard
             title="کل دانش‌آموزان"
-            value="۲۴ نفر"
+            value={`${totalStudents} نفر`}
             hint="در کلاس‌های من"
             icon={<UsersRound />}
             color="red"
@@ -74,7 +80,7 @@ function TeacherPanel() {
 
           <StatCard
             title="حضور ثبت‌شده"
-            value="۱۸۶ رکورد"
+            value={`${sessions.length} جلسه`}
             hint="این ترم"
             icon={<ClipboardCheck />}
             color="blue"
@@ -82,7 +88,7 @@ function TeacherPanel() {
 
           <StatCard
             title="آزمون‌های ایجادشده"
-            value="۵ آزمون"
+            value={`${exams.length} آزمون`}
             hint="این ترم"
             icon={<FileText />}
             color="light-orange"
@@ -118,7 +124,19 @@ function TeacherPanel() {
                 </thead>
 
                 <tbody>
-                  {classes.map((cls) => (
+                  {loading && (
+                    <tr>
+                      <td colSpan="6">در حال دریافت اطلاعات...</td>
+                    </tr>
+                  )}
+
+                  {!loading && error && (
+                    <tr>
+                      <td colSpan="6">{error}</td>
+                    </tr>
+                  )}
+
+                  {!loading && !error && classes.map((cls) => (
                     <tr key={cls.id}>
                       <td>
                         <span className="teacher-panel-x7k2-class-tag teacher-panel-x7k2-class-tag--highlight">
@@ -128,21 +146,27 @@ function TeacherPanel() {
 
                       <td>
                         <span className="teacher-panel-x7k2-count">
-                          {cls.students} نفر
+                          {cls.student_count || 0} نفر
                         </span>
                       </td>
 
                       <td>
                         <span className="teacher-panel-x7k2-time">
-                          {cls.time}
+                          {cls.term}
                         </span>
                       </td>
 
-                      <td>{cls.held} جلسه</td>
+                      <td>
+                        {
+                          sessions.filter(
+                            (session) => session.classroom === cls.id,
+                          ).length
+                        } جلسه
+                      </td>
 
                       <td>
                         <span className="teacher-panel-x7k2-capacity">
-                          {cls.remaining} جلسه
+                          {getFullName(cls.teacher_detail)}
                         </span>
                       </td>
 
@@ -183,7 +207,15 @@ function TeacherPanel() {
                 </thead>
 
                 <tbody>
-                  {latestExams.map((exam) => (
+                  {exams.map((exam) => {
+                    const classItem = classes.find(
+                      (item) => item.id === exam.classroom,
+                    );
+                    const examSubmissions = submissions.filter(
+                      (item) => item.exam === exam.id,
+                    );
+
+                    return (
                     <tr key={exam.id}>
                       <td>
                         <strong className="teacher-panel-x7k2-exam-title">
@@ -193,7 +225,7 @@ function TeacherPanel() {
 
                       <td>
                         <span className="teacher-panel-x7k2-class-tag">
-                          {exam.className}
+                          {classItem?.name || exam.classroom}
                         </span>
                       </td>
 
@@ -203,17 +235,19 @@ function TeacherPanel() {
                         </span>
                       </td>
 
-                      <td>{exam.participants}</td>
+                      <td>
+                        {examSubmissions.length} / {classItem?.student_count || 0}
+                      </td>
 
                       <td>
                         <span
                           className={`teacher-panel-x7k2-status ${exam.statusClass}`}
                         >
-                          {exam.status}
+                          ثبت‌شده
                         </span>
                       </td>
                     </tr>
-                  ))}
+                  )})}
                 </tbody>
               </table>
             </div>
