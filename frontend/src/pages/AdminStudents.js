@@ -121,7 +121,7 @@ function AdminStudents() {
   return (
     <DashboardLayout
       role="پنل مدیریت"
-      title="پنل مدیریت آقا بهنام"
+      title="مدیریت دانش آموزان"
       menuType="admin"
     >
       <section className="admin-students-x7k2-section">

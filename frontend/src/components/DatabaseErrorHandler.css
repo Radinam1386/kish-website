@@ -1,0 +1,215 @@
+.database-error-handler {
+  width: 100%;
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 13px 14px;
+  margin-top: 12px;
+
+  border-radius: 12px;
+  border: 1px solid #f0d4d4;
+
+  background: #fff7f7;
+
+  direction: rtl;
+
+  animation: database-error-handler-slide-in 0.25s ease;
+}
+
+.database-error-handler__icon {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background: #ffe8e8;
+
+  font-size: 18px;
+}
+
+.database-error-handler__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.database-error-handler__title {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: #c0392b;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.database-error-handler__message {
+  margin: 0;
+
+  color: #6f6f6f;
+
+  font-size: 12px;
+  line-height: 1.8;
+  font-weight: 500;
+}
+
+.database-error-handler__close {
+  width: 28px;
+  min-width: 28px;
+  height: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 8px;
+
+  background: transparent;
+
+  color: #999;
+
+  font-size: 21px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.database-error-handler__close:hover {
+  background: #ffe4e4;
+  color: #c0392b;
+}
+
+/* Database */
+
+.database-error-handler.database {
+  border-color: #f1d5d5;
+  background: #fff7f7;
+}
+
+.database-error-handler.database
+  .database-error-handler__icon {
+  background: #ffe6e6;
+}
+
+/* Network */
+
+.database-error-handler.network {
+  border-color: #d7e5f5;
+  background: #f6faff;
+}
+
+.database-error-handler.network
+  .database-error-handler__icon {
+  background: #e7f1ff;
+}
+
+.database-error-handler.network
+  .database-error-handler__title {
+  color: #2874a6;
+}
+
+/* Authentication */
+
+.database-error-handler.auth {
+  border-color: #f1dfc7;
+  background: #fffaf3;
+}
+
+.database-error-handler.auth
+  .database-error-handler__icon {
+  background: #fff0d8;
+}
+
+.database-error-handler.auth
+  .database-error-handler__title {
+  color: #b9770e;
+}
+
+/* Permission */
+
+.database-error-handler.permission {
+  border-color: #e4d9ef;
+  background: #faf7fd;
+}
+
+.database-error-handler.permission
+  .database-error-handler__icon {
+  background: #eee4f7;
+}
+
+.database-error-handler.permission
+  .database-error-handler__title {
+  color: #7d3c98;
+}
+
+/* Server */
+
+.database-error-handler.server {
+  border-color: #d8dde2;
+  background: #f7f8f9;
+}
+
+.database-error-handler.server
+  .database-error-handler__icon {
+  background: #e9ecef;
+}
+
+.database-error-handler.server
+  .database-error-handler__title {
+  color: #566573;
+}
+
+/* General Error */
+
+.database-error-handler.error {
+  border-color: #f0d4d4;
+  background: #fff7f7;
+}
+
+@keyframes database-error-handler-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .database-error-handler {
+    gap: 9px;
+    padding: 11px;
+    border-radius: 10px;
+  }
+
+  .database-error-handler__icon {
+    width: 32px;
+    min-width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+
+  .database-error-handler__title {
+    font-size: 12px;
+  }
+
+  .database-error-handler__message {
+    font-size: 11px;
+    line-height: 1.7;
+  }
+}

@@ -34,6 +34,8 @@ import AdminStudentForm from "./pages/AdminStudentForm";
 import AdminTeacherForm from "./pages/AdminTeacherForm";
 import StudentExams from "./pages/StudentExams";
 import StudentExamResult from "./pages/StudentExamResult";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
 
 function App() {
   const location = useLocation();
@@ -63,6 +65,8 @@ function App() {
         <Route path="/courses" element={<CoursesPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
 
         <Route path="/panel/student" element={<StudentPanel />} />
         <Route path="/panel/student/tuition" element={<StudentTuition />} />

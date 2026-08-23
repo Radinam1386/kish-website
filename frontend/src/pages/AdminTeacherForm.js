@@ -11,17 +11,25 @@ import {
   Save,
   UserRound,
 } from "lucide-react";
+
 import DashboardLayout from "../components/DashboardLayout";
+import DatabaseErrorHandler from "../components/DatabaseErrorHandler";
 import "./AdminStudentForm.css";
 import { AnimatedButton } from "../components/AnimatedButton";
 import { api } from "../services/api";
 
-function SecretaryStudentForm() {
+function AdminTeacherForm() {
   const navigate = useNavigate();
   const { id } = useParams();
 
   const [showPassword, setShowPassword] = useState(false);
   const [passwordCopied, setPasswordCopied] = useState(false);
+
+  // خطاهای API / دیتابیس
+  const [databaseError, setDatabaseError] = useState(null);
+
+  // وضعیت ثبت فرم
+  const [submitting, setSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -41,6 +49,11 @@ function SecretaryStudentForm() {
   const handleChange = (event) => {
     const { name, value } = event.target;
 
+    // با تغییر فرم، خطای قبلی پاک شود
+    if (databaseError) {
+      setDatabaseError(null);
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -50,12 +63,16 @@ function SecretaryStudentForm() {
   useEffect(() => {
     let alive = true;
 
-    async function loadStudent() {
+    async function loadTeacher() {
       if (!id) return;
 
       try {
+        setDatabaseError(null);
+
         const user = await api.users.get(id);
+
         if (!alive) return;
+
         setFormData((prev) => ({
           ...prev,
           firstName: user.first_name || "",
@@ -66,11 +83,13 @@ function SecretaryStudentForm() {
           status: user.is_active ? "active" : "inactive",
         }));
       } catch (error) {
-        alert(error.message || "دریافت اطلاعات دانش‌آموز ناموفق بود.");
+        if (!alive) return;
+
+        setDatabaseError(error);
       }
     }
 
-    loadStudent();
+    loadTeacher();
 
     return () => {
       alive = false;
@@ -85,6 +104,9 @@ function SecretaryStudentForm() {
       return;
     }
 
+    setDatabaseError(null);
+    setSubmitting(true);
+
     try {
       const payload = {
         username: formData.username,
@@ -92,7 +114,7 @@ function SecretaryStudentForm() {
         last_name: formData.lastName,
         email: formData.email,
         phone_number: formData.phone,
-        role: "student",
+        role: "teacher",
         is_active: formData.status === "active",
       };
 
@@ -105,12 +127,18 @@ function SecretaryStudentForm() {
         });
       }
 
-      alert("دانش‌آموز با موفقیت ثبت شد.");
-      navigate("/panel/secretary/students");
+      alert(
+        id ? "اطلاعات معلم با موفقیت ویرایش شد." : "معلم با موفقیت ثبت شد.",
+      );
+
+      navigate("/panel/secretary/teachers");
     } catch (error) {
-      alert(error.message || "ثبت دانش‌آموز ناموفق بود.");
+      setDatabaseError(error);
+    } finally {
+      setSubmitting(false);
     }
   };
+
   const generatePassword = () => {
     const upper = "ABCDEFGHJKLMNPQRSTUVWXYZ";
     const lower = "abcdefghijkmnopqrstuvwxyz";
@@ -164,18 +192,21 @@ function SecretaryStudentForm() {
   };
 
   return (
-    <DashboardLayout role="مدیریت" title="افزودن معلم" menuType="admin">
+    <DashboardLayout
+      role="مدیریت"
+      title={id ? "ویرایش معلم" : "افزودن معلم"}
+      menuType="admin"
+    >
       <div className="secretary-student-form-page">
         <div className="secretary-student-form-top">
           <Link
-            to="/panel/secretary/students"
+            to="/panel/admin/teachers"
             className="secretary-student-form-back"
           >
             <ArrowRight size={18} />
             <span>بازگشت به معلمان</span>
           </Link>
         </div>
-
         <form className="secretary-student-form" onSubmit={handleSubmit}>
           <section className="secretary-student-form-card">
             <div className="secretary-student-form-card-header">
@@ -219,9 +250,7 @@ function SecretaryStudentForm() {
               </label>
 
               <label className="secretary-student-form-field">
-                <span>
-                  کد ملی
-                </span>
+                <span>کد ملی</span>
 
                 <input
                   name="nationalId"
@@ -303,9 +332,7 @@ function SecretaryStudentForm() {
               </label>
 
               <label className="secretary-student-form-field">
-                <span>
-                  سطح زبان
-                </span>
+                <span>سطح زبان</span>
 
                 <select
                   name="level"
@@ -313,22 +340,16 @@ function SecretaryStudentForm() {
                   onChange={handleChange}
                 >
                   <option value="">انتخاب سطح</option>
-
                   <option value="Elementary">Elementary</option>
-
                   <option value="Pre-Intermediate">Pre-Intermediate</option>
-
                   <option value="Intermediate">Intermediate</option>
-
                   <option value="Upper-Intermediate">Upper-Intermediate</option>
-
                   <option value="Advanced">Advanced</option>
                 </select>
               </label>
+
               <label className="secretary-student-form-field">
-                <span>
-                  رمز عبور {!id && <b>*</b>}
-                </span>
+                <span>رمز عبور {!id && <b>*</b>}</span>
 
                 <div className="secretary-student-password">
                   <input
@@ -397,25 +418,41 @@ function SecretaryStudentForm() {
                   onChange={handleChange}
                 >
                   <option value="active">فعال</option>
-
                   <option value="inactive">غیرفعال</option>
                 </select>
               </label>
             </div>
           </section>
-
-          {/* ================= Actions ================= */}
-
+          {databaseError && (
+            <DatabaseErrorHandler
+              error={databaseError}
+              onClose={() => setDatabaseError(null)}
+            />
+          )}
           <div className="secretary-student-form-actions">
-            <Link
-              to="/panel/secretary/students"
-            >
+            <Link to="/panel/secretary/teachers">
               <AnimatedButton variant="ghost">انصراف</AnimatedButton>
             </Link>
 
-            <AnimatedButton variant="primary">
-              <Save size={18} />
-              <span>ثبت معلم</span>
+            <AnimatedButton
+              variant="primary"
+              type="submit"
+              disabled={submitting}
+            >
+              {submitting ? (
+                <>
+                  <RefreshCw
+                    size={18}
+                    className="secretary-student-form-loading"
+                  />
+                  <span>در حال ثبت...</span>
+                </>
+              ) : (
+                <>
+                  <Save size={18} />
+                  <span>ثبت معلم</span>
+                </>
+              )}
             </AnimatedButton>
           </div>
         </form>
@@ -424,4 +461,4 @@ function SecretaryStudentForm() {
   );
 }
 
-export default SecretaryStudentForm;
+export default AdminTeacherForm;

@@ -150,7 +150,7 @@ function AdminPanel() {
   return (
     <DashboardLayout
       role="پنل مدیریت"
-      title="پنل مدیریت آقا بهنام"
+      title="مدیریت"
       menuType="admin"
     >
       <div className="admin-panel-x7k2-stats-grid">

@@ -75,7 +75,7 @@ const CoursesPage = () => {
       <div className="klc-hero">
         <div className="klc-blob klc-blob-1" aria-hidden="true" />
         <div className="klc-blob klc-blob-2" aria-hidden="true" />
-        <div className="klc-blob klc-blob-3" aria-hidden="true" />
+        {/* <div className="klc-blob klc-blob-3" aria-hidden="true" /> */}
 
         <div className="klc-hero-content">
           <h1 className="klc-hero-title">دوره‌های آموزشی</h1>

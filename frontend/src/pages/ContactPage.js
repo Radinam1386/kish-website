@@ -55,8 +55,8 @@ const SOCIALS = [
     ),
   },
   {
-    label: "واتساپ",
-    href: "#",
+    label: "",
+    href: "https://t.me/Behhhh",
     icon: (
       <svg
         width="25"

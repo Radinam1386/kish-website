@@ -26,35 +26,6 @@ const FEATURES = [
     title: "آمادگی آزمون",
     desc: "تضمین قبولی در آزمون‌های IELTS و TOEFL",
   },
-  {
-    icon: "💼",
-    title: "انگلیسی تخصصی",
-    desc: "آموزش تخصصی برای کسب‌وکار و محیط‌های حرفه‌ای",
-  },
-];
-
-const TESTIMONIALS = [
-  {
-    name: "سارا احمدی",
-    role: "دانشجوی مهندسی",
-    text: "با کلاس‌های خصوصی این آموزشگاه تونستم نمره ۷.۵ در آیلتس بگیرم. اساتید فوق‌العاده بودن!",
-    avatar: "👩‍🎓",
-    score: "IELTS: 7.5",
-  },
-  {
-    name: "امیر حسینی",
-    role: "مترجم",
-    text: "دوره پیشرفته انگلیسی اینجا باعث شد که به‌راحتی بتونم توی حرفه‌ام موفق بشم.",
-    avatar: "👨‍💼",
-    score: "Advanced C1",
-  },
-  {
-    name: "سارا کریمی",
-    role: "دانش‌آموز",
-    text: "از صفر شروع کردم و الان می‌تونم راحت صحبت کنم. معلم‌ها خیلی صبور و دلسوز بودن.",
-    avatar: "👧",
-    score: "Elementary → Intermediate",
-  },
 ];
 
 export default function Landing() {
@@ -290,41 +261,6 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
-      {/* Testimonials */}
-      <section className="testimonials-section">
-        <div className="container">
-          <div className="section-header reveal" ref={r}>
-            <span className="section-badge">نظرات دانش‌آموزان</span>
-            <h2 className="section-title">
-              <span className="text-accent">موفقیت</span> شما، افتخار ماست
-            </h2>
-          </div>
-
-          <div className="testimonials-grid">
-            {TESTIMONIALS.map((t, i) => (
-              <div
-                key={i}
-                className="testimonial-card reveal"
-                ref={r}
-                style={{ transitionDelay: `${i * 100}ms` }}
-              >
-                <div className="testimonial-header">
-                  <div className="testimonial-avatar">{t.avatar}</div>
-                  <div className="testimonial-meta">
-                    <div className="testimonial-name">{t.name}</div>
-                    <div className="testimonial-role">{t.role}</div>
-                  </div>
-                  <div className="testimonial-score">{t.score}</div>
-                </div>
-                <p className="testimonial-text">«{t.text}»</p>
-                <div className="testimonial-stars">★★★★★</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* CTA */}
       <section className="cta-section reveal" ref={r}>
         <div className="container">

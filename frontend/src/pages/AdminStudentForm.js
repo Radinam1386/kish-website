@@ -11,7 +11,9 @@ import {
   Save,
   UserRound,
 } from "lucide-react";
+
 import DashboardLayout from "../components/DashboardLayout";
+import DatabaseErrorHandler from "../components/DatabaseErrorHandler";
 import "./AdminStudentForm.css";
 import { AnimatedButton } from "../components/AnimatedButton";
 import { api } from "../services/api";
@@ -22,6 +24,12 @@ function SecretaryStudentForm() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [passwordCopied, setPasswordCopied] = useState(false);
+
+  // خطای API / دیتابیس
+  const [databaseError, setDatabaseError] = useState(null);
+
+  // وضعیت ثبت یا ویرایش
+  const [submitting, setSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -41,6 +49,11 @@ function SecretaryStudentForm() {
   const handleChange = (event) => {
     const { name, value } = event.target;
 
+    // با تغییر اطلاعات، خطای قبلی پاک شود
+    if (databaseError) {
+      setDatabaseError(null);
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -54,8 +67,12 @@ function SecretaryStudentForm() {
       if (!id) return;
 
       try {
+        setDatabaseError(null);
+
         const user = await api.users.get(id);
+
         if (!alive) return;
+
         setFormData((prev) => ({
           ...prev,
           firstName: user.first_name || "",
@@ -66,7 +83,9 @@ function SecretaryStudentForm() {
           status: user.is_active ? "active" : "inactive",
         }));
       } catch (error) {
-        alert(error.message || "دریافت اطلاعات دانش‌آموز ناموفق بود.");
+        if (!alive) return;
+
+        setDatabaseError(error);
       }
     }
 
@@ -84,6 +103,9 @@ function SecretaryStudentForm() {
       alert("رمز عبور و تکرار رمز عبور یکسان نیستند.");
       return;
     }
+
+    setDatabaseError(null);
+    setSubmitting(true);
 
     try {
       const payload = {
@@ -105,12 +127,20 @@ function SecretaryStudentForm() {
         });
       }
 
-      alert("دانش‌آموز با موفقیت ثبت شد.");
+      alert(
+        id
+          ? "اطلاعات دانش‌آموز با موفقیت ویرایش شد."
+          : "دانش‌آموز با موفقیت ثبت شد.",
+      );
+
       navigate("/panel/secretary/students");
     } catch (error) {
-      alert(error.message || "ثبت دانش‌آموز ناموفق بود.");
+      setDatabaseError(error);
+    } finally {
+      setSubmitting(false);
     }
   };
+
   const generatePassword = () => {
     const upper = "ABCDEFGHJKLMNPQRSTUVWXYZ";
     const lower = "abcdefghijkmnopqrstuvwxyz";
@@ -164,11 +194,15 @@ function SecretaryStudentForm() {
   };
 
   return (
-    <DashboardLayout role="مدیریت" title="افزودن دانش‌آموز" menuType="admin">
+    <DashboardLayout
+      role="مدیریت"
+      title={id ? "ویرایش دانش‌آموز" : "افزودن دانش‌آموز"}
+      menuType="admin"
+    >
       <div className="secretary-student-form-page">
         <div className="secretary-student-form-top">
           <Link
-            to="/panel/secretary/students"
+            to="/panel/admin/students"
             className="secretary-student-form-back"
           >
             <ArrowRight size={18} />
@@ -219,9 +253,7 @@ function SecretaryStudentForm() {
               </label>
 
               <label className="secretary-student-form-field">
-                <span>
-                  کد ملی
-                </span>
+                <span>کد ملی</span>
 
                 <input
                   name="nationalId"
@@ -303,9 +335,7 @@ function SecretaryStudentForm() {
               </label>
 
               <label className="secretary-student-form-field">
-                <span>
-                  سطح زبان
-                </span>
+                <span>سطح زبان</span>
 
                 <select
                   name="level"
@@ -325,10 +355,9 @@ function SecretaryStudentForm() {
                   <option value="Advanced">Advanced</option>
                 </select>
               </label>
+
               <label className="secretary-student-form-field">
-                <span>
-                  رمز عبور {!id && <b>*</b>}
-                </span>
+                <span>رمز عبور {!id && <b>*</b>}</span>
 
                 <div className="secretary-student-password">
                   <input
@@ -397,25 +426,42 @@ function SecretaryStudentForm() {
                   onChange={handleChange}
                 >
                   <option value="active">فعال</option>
-
                   <option value="inactive">غیرفعال</option>
                 </select>
               </label>
             </div>
           </section>
 
-          {/* ================= Actions ================= */}
-
+          {databaseError && (
+            <DatabaseErrorHandler
+              error={databaseError}
+              onClose={() => setDatabaseError(null)}
+            />
+          )}
           <div className="secretary-student-form-actions">
-            <Link
-              to="/panel/secretary/students"
-            >
+            <Link to="/panel/secretary/students">
               <AnimatedButton variant="ghost">انصراف</AnimatedButton>
             </Link>
 
-            <AnimatedButton variant="primary">
-              <Save size={18} />
-              <span>ثبت دانش‌آموز</span>
+            <AnimatedButton
+              variant="primary"
+              type="submit"
+              disabled={submitting}
+            >
+              {submitting ? (
+                <>
+                  <RefreshCw
+                    size={18}
+                    className="secretary-student-form-loading"
+                  />
+                  <span>در حال ثبت...</span>
+                </>
+              ) : (
+                <>
+                  <Save size={18} />
+                  <span>ثبت دانش‌آموز</span>
+                </>
+              )}
             </AnimatedButton>
           </div>
         </form>

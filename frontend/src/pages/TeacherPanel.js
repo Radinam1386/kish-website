@@ -98,15 +98,14 @@ function TeacherPanel() {
         <section className="teacher-panel-x7k2-section">
           <div className="teacher-panel-x7k2-section-head">
             <h3 className="teacher-panel-x7k2-section-title">کلاس‌های من</h3>
-
-            <AnimatedButton variant="danger" icon={<PlusCircle size={18} />}>
-              <Link
-                to="/panel/teacher/create-exam"
-                className="teacher-panel-x7k2-action-link"
-              >
+            <Link
+              to="/panel/teacher/create-exam"
+              className="teacher-panel-x7k2-action-link"
+            >
+              <AnimatedButton variant="danger" icon={<PlusCircle size={18} />}>
                 ایجاد آزمون
-              </Link>
-            </AnimatedButton>
+              </AnimatedButton>
+            </Link>
           </div>
 
           <div className="teacher-panel-x7k2-table-shell">
@@ -136,52 +135,55 @@ function TeacherPanel() {
                     </tr>
                   )}
 
-                  {!loading && !error && classes.map((cls) => (
-                    <tr key={cls.id}>
-                      <td>
-                        <span className="teacher-panel-x7k2-class-tag teacher-panel-x7k2-class-tag--highlight">
-                          {cls.name}
-                        </span>
-                      </td>
+                  {!loading &&
+                    !error &&
+                    classes.map((cls) => (
+                      <tr key={cls.id}>
+                        <td>
+                          <span className="teacher-panel-x7k2-class-tag teacher-panel-x7k2-class-tag--highlight">
+                            {cls.name}
+                          </span>
+                        </td>
 
-                      <td>
-                        <span className="teacher-panel-x7k2-count">
-                          {cls.student_count || 0} نفر
-                        </span>
-                      </td>
+                        <td>
+                          <span className="teacher-panel-x7k2-count">
+                            {cls.student_count || 0} نفر
+                          </span>
+                        </td>
 
-                      <td>
-                        <span className="teacher-panel-x7k2-time">
-                          {cls.term}
-                        </span>
-                      </td>
+                        <td>
+                          <span className="teacher-panel-x7k2-time">
+                            {cls.term}
+                          </span>
+                        </td>
 
-                      <td>
-                        {
-                          sessions.filter(
-                            (session) => session.classroom === cls.id,
-                          ).length
-                        } جلسه
-                      </td>
+                        <td>
+                          {
+                            sessions.filter(
+                              (session) => session.classroom === cls.id,
+                            ).length
+                          }{" "}
+                          جلسه
+                        </td>
 
-                      <td>
-                        <span className="teacher-panel-x7k2-capacity">
-                          {getFullName(cls.teacher_detail)}
-                        </span>
-                      </td>
+                        <td>
+                          <span className="teacher-panel-x7k2-capacity">
+                            {getFullName(cls.teacher_detail)}
+                          </span>
+                        </td>
 
-                      <td>
-                        <AnimatedButton variant="danger">
-                          <Link
-                            to={`/panel/teacher/attendance/${cls.id}`}
-                            className="teacher-panel-x7k2-action-link"
-                          >
-                            حضور و غیاب
-                          </Link>
-                        </AnimatedButton>
-                      </td>
-                    </tr>
-                  ))}
+                        <td>
+                          <AnimatedButton variant="danger">
+                            <Link
+                              to={`/panel/teacher/attendance/${cls.id}`}
+                              className="teacher-panel-x7k2-action-link"
+                            >
+                              حضور و غیاب
+                            </Link>
+                          </AnimatedButton>
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>
@@ -216,38 +218,40 @@ function TeacherPanel() {
                     );
 
                     return (
-                    <tr key={exam.id}>
-                      <td>
-                        <strong className="teacher-panel-x7k2-exam-title">
-                          {exam.title}
-                        </strong>
-                      </td>
+                      <tr key={exam.id}>
+                        <td>
+                          <strong className="teacher-panel-x7k2-exam-title">
+                            {exam.title}
+                          </strong>
+                        </td>
 
-                      <td>
-                        <span className="teacher-panel-x7k2-class-tag">
-                          {classItem?.name || exam.classroom}
-                        </span>
-                      </td>
+                        <td>
+                          <span className="teacher-panel-x7k2-class-tag">
+                            {classItem?.name || exam.classroom}
+                          </span>
+                        </td>
 
-                      <td>
-                        <span className="teacher-panel-x7k2-count">
-                          {exam.date}
-                        </span>
-                      </td>
+                        <td>
+                          <span className="teacher-panel-x7k2-count">
+                            {exam.date}
+                          </span>
+                        </td>
 
-                      <td>
-                        {examSubmissions.length} / {classItem?.student_count || 0}
-                      </td>
+                        <td>
+                          {examSubmissions.length} /{" "}
+                          {classItem?.student_count || 0}
+                        </td>
 
-                      <td>
-                        <span
-                          className={`teacher-panel-x7k2-status ${exam.statusClass}`}
-                        >
-                          ثبت‌شده
-                        </span>
-                      </td>
-                    </tr>
-                  )})}
+                        <td>
+                          <span
+                            className={`teacher-panel-x7k2-status ${exam.statusClass}`}
+                          >
+                            ثبت‌شده
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
