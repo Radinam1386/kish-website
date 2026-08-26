@@ -1,10 +1,9 @@
-import React, { useMemo, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
+import { useParams, Link, useLocation } from "react-router-dom";
 import {
   User,
   Phone,
   BookOpen,
-  CreditCard,
   CalendarDays,
   ClipboardCheck,
   ArrowRight,
@@ -18,115 +17,155 @@ import {
 import DashboardLayout from "../components/DashboardLayout";
 import StatCard from "../components/StatCard";
 import { AnimatedButton } from "../components/AnimatedButton";
+import { api, getFullName } from "../services/api";
 
 import "./AdminStudentDetails.css";
 
 function AdminStudentDetails() {
   const { id } = useParams();
+  const location = useLocation();
+  const isSecretary = location.pathname.includes("/secretary/");
 
-  const [student, setStudent] = useState({
-    id,
-    name: "علی محمدی",
-    phone: "۰۹۱۲۳۴۵۶۷۸۹",
-    studentCode: "ST-10024",
-    avatar: "ع",
-    age: 18,
-    gender: "آقا",
-    className: "English A2",
-    level: "Elementary",
-    teacher: "خانم رضایی",
-    classDays: "شنبه / دوشنبه",
-    classTime: "۱۷:۰۰",
-    semester: "ترم پاییز ۱۴۰۵",
-    tuition: {
-      total: 4500000,
-      paid: 4500000,
-      remaining: 0,
-      status: "paid",
-    },
-    attendance: {
-      total: 20,
-      present: 17,
-      absent: 2,
-      late: 1,
-    },
-    sessions: {
-      held: 12,
-      remaining: 8,
-      total: 20,
-    },
-    payments: [
-      {
-        id: 1,
-        title: "شهریه ترم پاییز",
-        amount: 4500000,
-        date: "۱۴۰۵/۰۵/۱۰",
-        status: "paid",
-      },
-    ],
-    attendanceHistory: [
-      {
-        id: 1,
-        date: "۱۴۰۵/۰۵/۲۲",
-        day: "شنبه",
-        status: "present",
-      },
-      {
-        id: 2,
-        date: "۱۴۰۵/۰۵/۲۴",
-        day: "دوشنبه",
-        status: "present",
-      },
-      {
-        id: 3,
-        date: "۱۴۰۵/۰۵/۲۹",
-        day: "شنبه",
-        status: "late",
-      },
-      {
-        id: 4,
-        date: "۱۴۰۵/۰۵/۳۱",
-        day: "دوشنبه",
-        status: "absent",
-      },
-    ],
-  });
+  const [studentUser, setStudentUser] = useState(null);
+  const [classroom, setClassroom] = useState(null);
+  const [attendanceRecords, setAttendanceRecords] = useState([]);
+  const [sessions, setSessions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const [isEditing, setIsEditing] = useState(false);
+  useEffect(() => {
+    let alive = true;
 
-  const attendancePercent = useMemo(() => {
-    if (!student.attendance.total) return 0;
+    async function loadData() {
+      if (!id) return;
+      try {
+        setLoading(true);
+        setError("");
+        const [userData, enrollmentsData, classroomsData, attendanceData, sessionsData] =
+          await Promise.all([
+            api.users.get(id),
+            api.enrollments.list(),
+            api.classrooms.list(),
+            api.attendance.list(),
+            api.sessions.list(),
+          ]);
 
-    return Math.round(
-      (student.attendance.present / student.attendance.total) * 100,
+        if (!alive) return;
+
+        setStudentUser(userData);
+
+        const studentEnrollment = (enrollmentsData || []).find(
+          (enr) => enr.student === Number(id) || enr.student?.id === Number(id),
+        );
+        if (studentEnrollment) {
+          const cls = (classroomsData || []).find(
+            (c) => c.id === studentEnrollment.classroom,
+          );
+          setClassroom(cls || null);
+        }
+
+        const studentRecords = (attendanceData || []).filter(
+          (rec) => rec.student === Number(id) || rec.student?.id === Number(id),
+        );
+        setAttendanceRecords(studentRecords);
+        setSessions(sessionsData || []);
+      } catch (err) {
+        if (alive) setError(err.message || "دریافت اطلاعات دانش‌آموز ناموفق بود.");
+      } finally {
+        if (alive) setLoading(false);
+      }
+    }
+
+    loadData();
+
+    return () => {
+      alive = false;
+    };
+  }, [id]);
+
+  const attendanceStats = useMemo(() => {
+    const present = attendanceRecords.filter(
+      (rec) => rec.status === "present",
+    ).length;
+    const late = attendanceRecords.filter(
+      (rec) => rec.status === "late",
+    ).length;
+    const absent = attendanceRecords.filter(
+      (rec) => rec.status === "absent",
+    ).length;
+    const excused = attendanceRecords.filter(
+      (rec) => rec.status === "excused",
+    ).length;
+    const total = attendanceRecords.length;
+
+    const percent = total > 0 ? Math.round(((present + late) / total) * 100) : 0;
+
+    return {
+      present,
+      late,
+      absent,
+      excused,
+      total,
+      percent,
+    };
+  }, [attendanceRecords]);
+
+  const attendanceHistory = useMemo(() => {
+    return attendanceRecords.map((rec) => {
+      const session = sessions.find((s) => s.id === rec.session);
+      return {
+        id: rec.id,
+        date: session?.date || "-",
+        day: session?.date ? "جلسه" : "-",
+        status: rec.status,
+        note: rec.note || "",
+      };
+    });
+  }, [attendanceRecords, sessions]);
+
+  const backUrl = isSecretary ? "/panel/secretary/students" : "/panel/admin/students";
+  const editUrl = isSecretary
+    ? `/panel/secretary/students/${id}/edit`
+    : `/panel/admin/students/${id}/edit`;
+  const menuType = isSecretary ? "secretary" : "admin";
+  const roleName = isSecretary ? "پنل منشی" : "پنل مدیریت";
+
+  const studentName = getFullName(studentUser);
+
+  if (loading) {
+    return (
+      <DashboardLayout role={roleName} title="جزئیات دانش‌آموز" menuType={menuType}>
+        <div className="admin-student-details-x9p4-root" style={{ padding: "2rem", textAlign: "center" }}>
+          در حال بارگذاری اطلاعات دانش‌آموز...
+        </div>
+      </DashboardLayout>
     );
-  }, [student.attendance]);
+  }
 
-  const sessionPercent = useMemo(() => {
-    if (!student.sessions.total) return 0;
-
-    return Math.round((student.sessions.held / student.sessions.total) * 100);
-  }, [student.sessions]);
-
-  const formatPrice = (value) => {
-    return new Intl.NumberFormat("fa-IR").format(value);
-  };
-
-  const handleEdit = () => {
-    setIsEditing((prev) => !prev);
-  };
+  if (error || !studentUser) {
+    return (
+      <DashboardLayout role={roleName} title="جزئیات دانش‌آموز" menuType={menuType}>
+        <div className="admin-student-details-x9p4-root" style={{ padding: "2rem", textAlign: "center" }}>
+          <p style={{ color: "var(--danger, #ef4444)", marginBottom: "1rem" }}>{error || "دانش‌آموز یافت نشد."}</p>
+          <Link to={backUrl}>
+            <AnimatedButton variant="primary">بازگشت به لیست</AnimatedButton>
+          </Link>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout
-      role="پنل مدیریت"
+      role={roleName}
       title="جزئیات دانش‌آموز"
-      menuType="admin"
+      menuType={menuType}
     >
       <div className="admin-student-details-x9p4-root">
         <div className="admin-student-details-x9p4-page-header">
           <div className="admin-student-details-x9p4-header-content">
             <Link
-              to="/panel/admin/students"
+              to={backUrl}
               className="admin-student-details-x9p4-back-link"
             >
               <ArrowRight size={18} />
@@ -135,64 +174,59 @@ function AdminStudentDetails() {
 
             <div className="admin-student-details-x9p4-heading">
               <div className="admin-student-details-x9p4-avatar">
-                {student.avatar}
+                {studentName.charAt(0)}
               </div>
 
               <div>
-                <h2>{student.name}</h2>
+                <h2>{studentName}</h2>
 
                 <div className="admin-student-details-x9p4-subtitle">
-                  <span>کد دانش‌آموزی: {student.studentCode}</span>
+                  <span>شناسه کاربری: {studentUser.username}</span>
 
                   <span className="admin-student-details-x9p4-dot">•</span>
 
-                  <span>{student.className}</span>
+                  <span>{classroom?.name || "بدون کلاس"}</span>
                 </div>
               </div>
             </div>
           </div>
-          <Link to={`/panel/secretary/students/:${student.id}/edit`}>
-            <AnimatedButton variant="primary" onClick={handleEdit}>
+          <Link to={editUrl}>
+            <AnimatedButton variant="primary">
               <Edit3 size={17} />
-              {isEditing ? "ذخیره اطلاعات" : "ویرایش اطلاعات"}
+              ویرایش اطلاعات
             </AnimatedButton>
           </Link>
         </div>
+
         <div className="admin-student-details-x9p4-stats">
           <StatCard
             title="درصد حضور"
-            value={`${attendancePercent}٪`}
-            hint={`${student.attendance.present} حضور از ${student.attendance.total} جلسه`}
+            value={`${attendanceStats.percent}٪`}
+            hint={`${attendanceStats.present} حضور از ${attendanceStats.total} جلسه`}
             icon={<ClipboardCheck />}
             color="green"
           />
 
           <StatCard
-            title="جلسات برگزار شده"
-            value={`${student.sessions.held} جلسه`}
-            hint={`${student.sessions.remaining} جلسه باقی‌مانده`}
+            title="جلسات ثبت‌شده"
+            value={`${attendanceStats.total} جلسه`}
+            hint="سوابق کلاسی"
             icon={<CalendarDays />}
             color="blue"
           />
 
           <StatCard
-            title="وضعیت شهریه"
-            value={
-              student.tuition.status === "paid" ? "پرداخت شده" : "در انتظار"
-            }
-            hint={
-              student.tuition.remaining === 0
-                ? "تسویه کامل"
-                : `${formatPrice(student.tuition.remaining)} تومان باقی‌مانده`
-            }
-            icon={<CreditCard />}
-            color="red"
+            title="وضعیت حساب"
+            value={studentUser.is_active ? "فعال" : "غیرفعال"}
+            hint={studentUser.role === "student" ? "دانش‌آموز" : studentUser.role}
+            icon={<User />}
+            color="green"
           />
 
           <StatCard
             title="کلاس فعلی"
-            value={student.className}
-            hint={student.teacher}
+            value={classroom?.name || "بدون کلاس"}
+            hint={getFullName(classroom?.teacher_detail) || "بدون مدرس"}
             icon={<BookOpen />}
             color="orange"
           />
@@ -223,7 +257,7 @@ function AdminStudentDetails() {
 
               <div>
                 <span>نام و نام خانوادگی</span>
-                <strong>{student.name}</strong>
+                <strong>{studentName}</strong>
               </div>
             </div>
 
@@ -235,7 +269,7 @@ function AdminStudentDetails() {
               <div>
                 <span>شماره تماس</span>
                 <strong className="admin-student-details-x9p4-phone">
-                  {student.phone}
+                  {studentUser.phone_number || "-"}
                 </strong>
               </div>
             </div>
@@ -246,8 +280,8 @@ function AdminStudentDetails() {
               </div>
 
               <div>
-                <span>جنسیت</span>
-                <strong>{student.gender}</strong>
+                <span>نام کاربری</span>
+                <strong>{studentUser.username}</strong>
               </div>
             </div>
 
@@ -257,8 +291,8 @@ function AdminStudentDetails() {
               </div>
 
               <div>
-                <span>سن</span>
-                <strong>{student.age} سال</strong>
+                <span>ایمیل</span>
+                <strong>{studentUser.email || "-"}</strong>
               </div>
             </div>
 
@@ -269,7 +303,7 @@ function AdminStudentDetails() {
 
               <div>
                 <span>کلاس</span>
-                <strong>{student.className}</strong>
+                <strong>{classroom?.name || "بدون کلاس"}</strong>
               </div>
             </div>
 
@@ -280,7 +314,7 @@ function AdminStudentDetails() {
 
               <div>
                 <span>استاد</span>
-                <strong>{student.teacher}</strong>
+                <strong>{getFullName(classroom?.teacher_detail) || "-"}</strong>
               </div>
             </div>
 
@@ -290,8 +324,8 @@ function AdminStudentDetails() {
               </div>
 
               <div>
-                <span>روزهای کلاس</span>
-                <strong>{student.classDays}</strong>
+                <span>ترم</span>
+                <strong>{classroom?.term ? `کد ترم: ${classroom.term}` : "-"}</strong>
               </div>
             </div>
 
@@ -301,70 +335,10 @@ function AdminStudentDetails() {
               </div>
 
               <div>
-                <span>ساعت کلاس</span>
-                <strong>{student.classTime}</strong>
+                <span>وضعیت حساب</span>
+                <strong>{studentUser.is_active ? "فعال" : "غیرفعال"}</strong>
               </div>
             </div>
-          </div>
-        </section>
-
-        {/* =====================================
-            Tuition
-        ====================================== */}
-
-        <section className="admin-student-details-x9p4-section">
-          <div className="admin-student-details-x9p4-section-header">
-            <div>
-              <h3 className="admin-student-details-x9p4-title">وضعیت شهریه</h3>
-
-              <p className="admin-student-details-x9p4-description">
-                وضعیت پرداخت شهریه ترم جاری
-              </p>
-            </div>
-
-            <span
-              className={`admin-student-details-x9p4-status ${
-                student.tuition.status === "paid" ? "paid" : "pending"
-              }`}
-            >
-              {student.tuition.status === "paid"
-                ? "تسویه شده"
-                : "در انتظار پرداخت"}
-            </span>
-          </div>
-
-          <div className="admin-student-details-x9p4-tuition-grid">
-            <div>
-              <span>مبلغ کل</span>
-              <strong>{formatPrice(student.tuition.total)} تومان</strong>
-            </div>
-
-            <div>
-              <span>پرداخت شده</span>
-              <strong className="paid-text">
-                {formatPrice(student.tuition.paid)} تومان
-              </strong>
-            </div>
-
-            <div>
-              <span>باقی‌مانده</span>
-              <strong className="remaining-text">
-                {formatPrice(student.tuition.remaining)} تومان
-              </strong>
-            </div>
-          </div>
-
-          <div className="admin-student-details-x9p4-progress">
-            <div
-              className="admin-student-details-x9p4-progress-fill"
-              style={{
-                width: `${
-                  student.tuition.total
-                    ? (student.tuition.paid / student.tuition.total) * 100
-                    : 0
-                }%`,
-              }}
-            />
           </div>
         </section>
 
@@ -385,7 +359,7 @@ function AdminStudentDetails() {
             </div>
 
             <span className="admin-student-details-x9p4-attendance-percent">
-              {attendancePercent}٪ حضور
+              {attendanceStats.percent}٪ حضور
             </span>
           </div>
 
@@ -395,7 +369,7 @@ function AdminStudentDetails() {
 
               <span>حضور</span>
 
-              <strong>{student.attendance.present}</strong>
+              <strong>{attendanceStats.present}</strong>
             </div>
 
             <div className="admin-student-details-x9p4-attendance-card warning">
@@ -403,7 +377,7 @@ function AdminStudentDetails() {
 
               <span>تاخیر</span>
 
-              <strong>{student.attendance.late}</strong>
+              <strong>{attendanceStats.late}</strong>
             </div>
 
             <div className="admin-student-details-x9p4-attendance-card danger">
@@ -411,7 +385,7 @@ function AdminStudentDetails() {
 
               <span>غیبت</span>
 
-              <strong>{student.attendance.absent}</strong>
+              <strong>{attendanceStats.absent}</strong>
             </div>
           </div>
 
@@ -419,105 +393,9 @@ function AdminStudentDetails() {
             <div
               className="admin-student-details-x9p4-progress-fill"
               style={{
-                width: `${attendancePercent}%`,
+                width: `${attendanceStats.percent}%`,
               }}
             />
-          </div>
-        </section>
-
-        {/* =====================================
-            Term Progress
-        ====================================== */}
-
-        <section className="admin-student-details-x9p4-section">
-          <div className="admin-student-details-x9p4-section-header">
-            <div>
-              <h3 className="admin-student-details-x9p4-title">پیشرفت ترم</h3>
-
-              <p className="admin-student-details-x9p4-description">
-                میزان جلسات برگزار شده و باقی‌مانده
-              </p>
-            </div>
-
-            <span className="admin-student-details-x9p4-capacity">
-              {sessionPercent}٪
-            </span>
-          </div>
-
-          <div className="admin-student-details-x9p4-session-info">
-            <div>
-              <span>برگزار شده</span>
-              <strong>{student.sessions.held} جلسه</strong>
-            </div>
-
-            <div>
-              <span>باقی‌مانده</span>
-              <strong>{student.sessions.remaining} جلسه</strong>
-            </div>
-
-            <div>
-              <span>کل ترم</span>
-              <strong>{student.sessions.total} جلسه</strong>
-            </div>
-          </div>
-
-          <div className="admin-student-details-x9p4-progress">
-            <div
-              className="admin-student-details-x9p4-progress-fill"
-              style={{
-                width: `${sessionPercent}%`,
-              }}
-            />
-          </div>
-        </section>
-
-        {/* =====================================
-            Payment History
-        ====================================== */}
-
-        <section className="admin-student-details-x9p4-section">
-          <div className="admin-student-details-x9p4-section-header">
-            <div>
-              <h3 className="admin-student-details-x9p4-title">سابقه پرداخت</h3>
-
-              <p className="admin-student-details-x9p4-description">
-                سوابق مالی دانش‌آموز
-              </p>
-            </div>
-          </div>
-
-          <div className="admin-student-details-x9p4-table-wrapper">
-            <table className="admin-student-details-x9p4-table">
-              <thead>
-                <tr>
-                  <th>عنوان</th>
-                  <th>مبلغ</th>
-                  <th>تاریخ</th>
-                  <th>وضعیت</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {student.payments.map((payment) => (
-                  <tr key={payment.id}>
-                    <td data-label="عنوان">{payment.title}</td>
-
-                    <td data-label="مبلغ">
-                      {formatPrice(payment.amount)} تومان
-                    </td>
-
-                    <td data-label="تاریخ">{payment.date}</td>
-
-                    <td data-label="وضعیت">
-                      <span className="admin-student-details-x9p4-payment-status">
-                        <CheckCircle2 size={15} />
-                        پرداخت شده
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
         </section>
 
@@ -531,58 +409,71 @@ function AdminStudentDetails() {
               <h3 className="admin-student-details-x9p4-title">سابقه حضور</h3>
 
               <p className="admin-student-details-x9p4-description">
-                آخرین وضعیت حضور و غیاب
+                آخرین وضعیت حضور و غیاب ثبت‌شده
               </p>
             </div>
           </div>
 
           <div className="admin-student-details-x9p4-table-wrapper">
-            <table className="admin-student-details-x9p4-table">
-              <thead>
-                <tr>
-                  <th>تاریخ</th>
-                  <th>روز</th>
-                  <th>وضعیت</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {student.attendanceHistory.map((item) => (
-                  <tr key={item.id}>
-                    <td data-label="تاریخ">{item.date}</td>
-
-                    <td data-label="روز">{item.day}</td>
-
-                    <td data-label="وضعیت">
-                      <span
-                        className={`admin-student-details-x9p4-attendance-status ${item.status}`}
-                      >
-                        {item.status === "present" && (
-                          <>
-                            <CheckCircle2 size={15} />
-                            حاضر
-                          </>
-                        )}
-
-                        {item.status === "late" && (
-                          <>
-                            <Clock3 size={15} />
-                            تاخیر
-                          </>
-                        )}
-
-                        {item.status === "absent" && (
-                          <>
-                            <AlertCircle size={15} />
-                            غایب
-                          </>
-                        )}
-                      </span>
-                    </td>
+            {attendanceHistory.length > 0 ? (
+              <table className="admin-student-details-x9p4-table">
+                <thead>
+                  <tr>
+                    <th>تاریخ</th>
+                    <th>وضعیت</th>
+                    <th>یادداشت</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+
+                <tbody>
+                  {attendanceHistory.map((item) => (
+                    <tr key={item.id}>
+                      <td data-label="تاریخ">{item.date}</td>
+
+                      <td data-label="وضعیت">
+                        <span
+                          className={`admin-student-details-x9p4-attendance-status ${item.status}`}
+                        >
+                          {item.status === "present" && (
+                            <>
+                              <CheckCircle2 size={15} />
+                              حاضر
+                            </>
+                          )}
+
+                          {item.status === "late" && (
+                            <>
+                              <Clock3 size={15} />
+                              تاخیر
+                            </>
+                          )}
+
+                          {item.status === "absent" && (
+                            <>
+                              <AlertCircle size={15} />
+                              غایب
+                            </>
+                          )}
+
+                          {item.status === "excused" && (
+                            <>
+                              <AlertCircle size={15} />
+                              غیبت موجه
+                            </>
+                          )}
+                        </span>
+                      </td>
+
+                      <td data-label="یادداشت">{item.note || "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <div style={{ textAlign: "center", padding: "1.5rem", color: "var(--muted, #888)" }}>
+                هنوز سابقه حضور و غیابی برای این دانش‌آموز ثبت نشده است.
+              </div>
+            )}
           </div>
         </section>
       </div>

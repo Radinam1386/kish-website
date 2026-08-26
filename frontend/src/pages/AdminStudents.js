@@ -257,10 +257,12 @@ function AdminStudents() {
                       </td>
 
                       <td data-label="عملیات">
-                        <AnimatedButton variant="secondary" size="small">
-                          <Eye size={16} />
-                          مشاهده
-                        </AnimatedButton>
+                        <Link to={`/panel/admin/students/${student.id}`}>
+                          <AnimatedButton variant="secondary" size="small">
+                            <Eye size={16} />
+                            مشاهده
+                          </AnimatedButton>
+                        </Link>
                       </td>
                     </tr>
                   ))

@@ -6,7 +6,6 @@ import DatabaseErrorHandler from "../components/DatabaseErrorHandler";
 import "./Login.css";
 
 export default function Login() {
-  const [role, setRole] = useState("student");
   const [phone, setPhone] = useState("");
   const [pass, setPass] = useState("");
   const [passvisibility, setPassvisibility] = useState(false);
@@ -30,13 +29,6 @@ export default function Login() {
       });
 
       storage.setSession(session);
-
-      if (session.user.role !== role) {
-        setError("نقش انتخاب‌شده با حساب کاربری واردشده همخوانی ندارد.");
-        storage.clearSession();
-        return;
-      }
-
       navigate(rolePanelPath(session.user.role));
     } catch (err) {
       setErrorObject(err);

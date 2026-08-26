@@ -218,10 +218,12 @@ function AdminPanel() {
                   </td>
 
                   <td data-label="عملیات">
-                    <AnimatedButton variant="secondary" size="small">
-                      <Eye size={16} />
-                      مشاهده
-                    </AnimatedButton>
+                    <Link to={`/panel/admin/students/${student.id}`}>
+                      <AnimatedButton variant="secondary" size="small">
+                        <Eye size={16} />
+                        مشاهده
+                      </AnimatedButton>
+                    </Link>
                   </td>
                 </tr>
               ))}
@@ -242,30 +244,36 @@ function AdminPanel() {
 
         <div className="admin-panel-x7k2-teacher-grid">
           {teachers.map((teacher) => (
-            <div className="admin-panel-x7k2-teacher-card" key={teacher.id}>
-              <div className="admin-panel-x7k2-teacher-avatar">
-                {teacher.avatar}
+            <Link
+              to={`/panel/admin/teachers/${teacher.id}`}
+              key={teacher.id}
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              <div className="admin-panel-x7k2-teacher-card">
+                <div className="admin-panel-x7k2-teacher-avatar">
+                  {teacher.avatar}
+                </div>
+
+                <div className="admin-panel-x7k2-teacher-info">
+                  <h4 className="admin-panel-x7k2-teacher-name">
+                    {teacher.name}
+                  </h4>
+
+                  <p className="admin-panel-x7k2-teacher-specialty">
+                    {teacher.specialty}
+                  </p>
+
+                  <span className="admin-panel-x7k2-teacher-classes">
+                    {teacher.activeClasses}
+                  </span>
+                </div>
+
+                <ChevronRight
+                  className="admin-panel-x7k2-teacher-arrow"
+                  size={20}
+                />
               </div>
-
-              <div className="admin-panel-x7k2-teacher-info">
-                <h4 className="admin-panel-x7k2-teacher-name">
-                  {teacher.name}
-                </h4>
-
-                <p className="admin-panel-x7k2-teacher-specialty">
-                  {teacher.specialty}
-                </p>
-
-                <span className="admin-panel-x7k2-teacher-classes">
-                  {teacher.activeClasses}
-                </span>
-              </div>
-
-              <ChevronRight
-                className="admin-panel-x7k2-teacher-arrow"
-                size={20}
-              />
-            </div>
+            </Link>
           ))}
         </div>
       </section>

@@ -18,7 +18,7 @@ import "./AdminStudentForm.css";
 import { AnimatedButton } from "../components/AnimatedButton";
 import { api } from "../services/api";
 
-function SecretaryStudentForm() {
+function AdminStudentForm() {
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -133,7 +133,7 @@ function SecretaryStudentForm() {
           : "دانش‌آموز با موفقیت ثبت شد.",
       );
 
-      navigate("/panel/secretary/students");
+      navigate("/panel/admin/students");
     } catch (error) {
       setDatabaseError(error);
     } finally {
@@ -439,7 +439,7 @@ function SecretaryStudentForm() {
             />
           )}
           <div className="secretary-student-form-actions">
-            <Link to="/panel/secretary/students">
+            <Link to="/panel/admin/students">
               <AnimatedButton variant="ghost">انصراف</AnimatedButton>
             </Link>
 
@@ -470,4 +470,4 @@ function SecretaryStudentForm() {
   );
 }
 
-export default SecretaryStudentForm;
+export default AdminStudentForm;

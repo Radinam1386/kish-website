@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useParams, Link } from "react-router-dom";
 import {
   ArrowRight,
   User,
@@ -12,149 +13,196 @@ import {
   TrendingUp,
   Edit3,
   GraduationCap,
-  CheckCircle2,
 } from "lucide-react";
 
 import DashboardLayout from "../components/DashboardLayout";
 import { AnimatedButton } from "../components/AnimatedButton";
+import { api, getFullName } from "../services/api";
 import "./AdminTeacherDetails.css";
 
 function AdminTeacherDetails() {
-  const [teacher, setTeacher] = useState({
-    id: "TCH-1024",
-    firstName: "خانم",
-    lastName: "رضایی",
-    fullName: "خانم رضایی",
-    specialty: "زبان عمومی",
-    phone: "۰۹۱۲۱۲۳۴۵۶۷",
-    email: "rezaei@example.com",
-    experience: "۸ سال",
-    status: "فعال",
-    statusClass: "active",
-    joinDate: "۱۴۰۱/۰۶/۱۵",
-    totalStudents: "۴۸",
-    totalClasses: "۴",
-    averageScore: "۱۸.۴",
-    attendanceRate: "۹۴٪",
-    classes: [
-      {
-        id: 1,
-        name: "English A2",
-        code: "کلاس ۱۰۲",
-        level: "A2",
-        students: "۱۸",
-        schedule: "شنبه / دوشنبه",
-        time: "۱۷:۰۰",
-        status: "در حال اجرا",
-      },
-      {
-        id: 2,
-        name: "English B1",
-        code: "کلاس ۲۰۵",
-        level: "B1",
-        students: "۱۵",
-        schedule: "یکشنبه / سه‌شنبه",
-        time: "۱۸:۳۰",
-        status: "در حال اجرا",
-      },
-      {
-        id: 3,
-        name: "Conversation B1",
-        code: "کلاس ۲۰۴",
-        level: "B1",
-        students: "۱۰",
-        schedule: "شنبه / چهارشنبه",
-        time: "۱۶:۰۰",
-        status: "در حال اجرا",
-      },
-      {
-        id: 4,
-        name: "Advanced English",
-        code: "کلاس ۳۰۱",
-        level: "C1",
-        students: "۵",
-        schedule: "پنج‌شنبه",
-        time: "۱۸:۰۰",
-        status: "در حال اجرا",
-      },
-    ],
-  });
+  const { teacherId } = useParams();
+
+  const [teacherUser, setTeacherUser] = useState(null);
+  const [classrooms, setClassrooms] = useState([]);
+  const [terms, setTerms] = useState([]);
+  const [submissions, setSubmissions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let alive = true;
+
+    async function loadData() {
+      if (!teacherId) return;
+
+      try {
+        setLoading(true);
+        setError("");
+
+        const [userData, classroomsData, termsData, submissionsData] =
+          await Promise.all([
+            api.users.get(teacherId),
+            api.classrooms.list(),
+            api.terms.list(),
+            api.submissions.list(),
+          ]);
+
+        if (!alive) return;
+
+        setTeacherUser(userData);
+        const teacherClasses = (classroomsData || []).filter(
+          (c) => c.teacher === Number(teacherId) || c.teacher?.id === Number(teacherId),
+        );
+        setClassrooms(teacherClasses);
+        setTerms(termsData || []);
+        setSubmissions(submissionsData || []);
+      } catch (err) {
+        if (alive) setError(err.message || "دریافت اطلاعات معلم ناموفق بود.");
+      } finally {
+        if (alive) setLoading(false);
+      }
+    }
+
+    loadData();
+
+    return () => {
+      alive = false;
+    };
+  }, [teacherId]);
+
+  const teacherClassesData = useMemo(() => {
+    return classrooms.map((cls) => {
+      const term = terms.find((t) => t.id === cls.term);
+      return {
+        id: cls.id,
+        name: cls.name,
+        code: `کلاس ${cls.id}`,
+        level: term?.name || "ترم جاری",
+        students: `${cls.student_count || 0}`,
+        schedule: "در مدل بک‌اند ثبت نشده",
+        time: "-",
+        status: term?.is_active ? "در حال اجرا" : "پایان یافته",
+      };
+    });
+  }, [classrooms, terms]);
+
+  const totalStudents = useMemo(() => {
+    return classrooms.reduce((total, cls) => total + (cls.student_count || 0), 0);
+  }, [classrooms]);
+
+  const averageScore = useMemo(() => {
+    const classIds = new Set(classrooms.map((c) => c.id));
+    const teacherSubmissions = submissions.filter((s) =>
+      classIds.has(s.exam?.classroom || s.classroom),
+    );
+    const graded = teacherSubmissions.filter(
+      (s) => s.total_score !== null && s.total_score !== undefined,
+    );
+    if (!graded.length) return "-";
+    const sum = graded.reduce((acc, s) => acc + Number(s.total_score || 0), 0);
+    return (sum / graded.length).toFixed(1);
+  }, [classrooms, submissions]);
+
+  const teacherName = getFullName(teacherUser);
 
   const stats = [
     {
       id: 1,
       title: "کلاس‌های فعال",
-      value: `${teacher.totalClasses} کلاس`,
+      value: `${classrooms.length} کلاس`,
       icon: <BookOpen size={22} />,
       type: "primary",
     },
     {
       id: 2,
       title: "دانش‌آموزان",
-      value: `${teacher.totalStudents} نفر`,
+      value: `${totalStudents} نفر`,
       icon: <Users size={22} />,
       type: "green",
     },
     {
       id: 3,
       title: "میانگین نمرات",
-      value: teacher.averageScore,
+      value: averageScore,
       icon: <Award size={22} />,
       type: "blue",
     },
     {
       id: 4,
-      title: "درصد حضور",
-      value: teacher.attendanceRate,
+      title: "وضعیت حساب",
+      value: teacherUser?.is_active ? "فعال" : "غیرفعال",
       icon: <TrendingUp size={22} />,
       type: "orange",
     },
   ];
 
+  if (loading) {
+    return (
+      <DashboardLayout role="پنل مدیریت" title="جزئیات معلم" menuType="admin">
+        <div style={{ padding: "2rem", textAlign: "center" }}>
+          در حال بارگذاری اطلاعات مدرس...
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error || !teacherUser) {
+    return (
+      <DashboardLayout role="پنل مدیریت" title="جزئیات معلم" menuType="admin">
+        <div style={{ padding: "2rem", textAlign: "center" }}>
+          <p style={{ color: "var(--danger, #ef4444)", marginBottom: "1rem" }}>{error || "معلم یافت نشد."}</p>
+          <Link to="/panel/admin/teachers">
+            <AnimatedButton variant="primary">بازگشت به لیست معلمان</AnimatedButton>
+          </Link>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout
       role="پنل مدیریت"
-      title={`جزئیات ${teacher.fullName}`}
+      title={`جزئیات ${teacherName}`}
       menuType="admin"
     >
       <div className="admin-teacher-details-x7k2-page">
-
         {/* ================= Header ================= */}
 
         <div className="admin-teacher-details-x7k2-header">
           <div className="admin-teacher-details-x7k2-header-right">
-            <button
-              type="button"
+            <Link
+              to="/panel/admin/teachers"
               className="admin-teacher-details-x7k2-back-button"
-              onClick={() => window.history.back()}
+              style={{ textDecoration: "none" }}
             >
               <ArrowRight size={18} />
-              بازگشت
-            </button>
+              بازگشت به لیست
+            </Link>
 
             <div className="admin-teacher-details-x7k2-avatar">
-              {teacher.lastName.charAt(0)}
+              {teacherName.charAt(0)}
             </div>
 
             <div className="admin-teacher-details-x7k2-heading">
               <div className="admin-teacher-details-x7k2-name-row">
-                <h2>{teacher.fullName}</h2>
-{/* 
-                <span
-                  className={`admin-teacher-details-x7k2-status admin-teacher-details-x7k2-status-${teacher.statusClass}`}
-                >
-                  <CheckCircle2 size={14} />
-                  {teacher.status}
-                </span> */}
+                <h2>{teacherName}</h2>
               </div>
 
-              <p>{teacher.specialty}</p>
+              <p>{teacherUser.email || "بدون ایمیل"}</p>
 
               <span className="admin-teacher-details-x7k2-teacher-id">
-                شناسه مدرس: {teacher.id}
+                شناسه کاربری: {teacherUser.username}
               </span>
             </div>
           </div>
+
+          <Link to={`/panel/admin/teachers/${teacherId}/edit`}>
+            <AnimatedButton variant="primary">
+              <Edit3 size={17} />
+              ویرایش اطلاعات
+            </AnimatedButton>
+          </Link>
         </div>
 
         {/* ================= Stats ================= */}
@@ -182,7 +230,6 @@ function AdminTeacherDetails() {
         {/* ================= Personal Information ================= */}
 
         <section className="admin-teacher-details-x7k2-section">
-
           <div className="admin-teacher-details-x7k2-section-header">
             <div>
               <h3>
@@ -197,7 +244,6 @@ function AdminTeacherDetails() {
           </div>
 
           <div className="admin-teacher-details-x7k2-info-grid">
-
             <div className="admin-teacher-details-x7k2-info-card">
               <div className="admin-teacher-details-x7k2-info-icon">
                 <User size={18} />
@@ -205,7 +251,7 @@ function AdminTeacherDetails() {
 
               <div>
                 <span>نام و نام خانوادگی</span>
-                <strong>{teacher.fullName}</strong>
+                <strong>{teacherName}</strong>
               </div>
             </div>
 
@@ -217,7 +263,7 @@ function AdminTeacherDetails() {
               <div>
                 <span>شماره تماس</span>
                 <strong className="admin-teacher-details-x7k2-ltr">
-                  {teacher.phone}
+                  {teacherUser.phone_number || "-"}
                 </strong>
               </div>
             </div>
@@ -230,7 +276,7 @@ function AdminTeacherDetails() {
               <div>
                 <span>ایمیل</span>
                 <strong className="admin-teacher-details-x7k2-email">
-                  {teacher.email}
+                  {teacherUser.email || "-"}
                 </strong>
               </div>
             </div>
@@ -241,8 +287,8 @@ function AdminTeacherDetails() {
               </div>
 
               <div>
-                <span>تخصص</span>
-                <strong>{teacher.specialty}</strong>
+                <span>نام کاربری</span>
+                <strong>{teacherUser.username}</strong>
               </div>
             </div>
 
@@ -252,8 +298,8 @@ function AdminTeacherDetails() {
               </div>
 
               <div>
-                <span>سابقه تدریس</span>
-                <strong>{teacher.experience}</strong>
+                <span>نقش سیستم</span>
+                <strong>{teacherUser.role === "teacher" ? "مدرس" : teacherUser.role}</strong>
               </div>
             </div>
 
@@ -263,18 +309,16 @@ function AdminTeacherDetails() {
               </div>
 
               <div>
-                <span>تاریخ عضویت</span>
-                <strong>{teacher.joinDate}</strong>
+                <span>وضعیت حساب</span>
+                <strong>{teacherUser.is_active ? "فعال" : "غیرفعال"}</strong>
               </div>
             </div>
-
           </div>
         </section>
 
         {/* ================= Classes ================= */}
 
         <section className="admin-teacher-details-x7k2-section">
-
           <div className="admin-teacher-details-x7k2-section-header">
             <div>
               <h3>
@@ -283,74 +327,71 @@ function AdminTeacherDetails() {
               </h3>
 
               <p>
-                لیست کلاس‌هایی که در حال حاضر توسط این مدرس برگزار می‌شوند
+                لیست کلاس‌هایی که توسط این مدرس برگزار می‌شوند
               </p>
             </div>
 
             <span className="admin-teacher-details-x7k2-count-badge">
-              {teacher.classes.length} کلاس
+              {teacherClassesData.length} کلاس
             </span>
           </div>
 
           <div className="admin-teacher-details-x7k2-class-grid">
+            {teacherClassesData.length > 0 ? (
+              teacherClassesData.map((item) => (
+                <div
+                  key={item.id}
+                  className="admin-teacher-details-x7k2-class-card"
+                >
+                  <div className="admin-teacher-details-x7k2-class-top">
+                    <div>
+                      <span className="admin-teacher-details-x7k2-class-level">
+                        {item.level}
+                      </span>
 
-            {teacher.classes.map((item) => (
-              <div
-                key={item.id}
-                className="admin-teacher-details-x7k2-class-card"
-              >
+                      <h4>{item.name}</h4>
 
-                <div className="admin-teacher-details-x7k2-class-top">
+                      <span className="admin-teacher-details-x7k2-class-code">
+                        {item.code}
+                      </span>
+                    </div>
 
-                  <div>
-                    <span className="admin-teacher-details-x7k2-class-level">
-                      {item.level}
-                    </span>
-
-                    <h4>{item.name}</h4>
-
-                    <span className="admin-teacher-details-x7k2-class-code">
-                      {item.code}
+                    <span className="admin-teacher-details-x7k2-class-status">
+                      {item.status}
                     </span>
                   </div>
 
-                  <span className="admin-teacher-details-x7k2-class-status">
-                    {item.status}
-                  </span>
+                  <div className="admin-teacher-details-x7k2-class-details">
+                    <div>
+                      <Users size={16} />
+                      <span>
+                        {item.students} دانش‌آموز
+                      </span>
+                    </div>
 
+                    <div>
+                      <CalendarDays size={16} />
+                      <span>
+                        {item.schedule}
+                      </span>
+                    </div>
+
+                    <div>
+                      <Clock3 size={16} />
+                      <span>
+                        {item.time}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-
-                <div className="admin-teacher-details-x7k2-class-details">
-
-                  <div>
-                    <Users size={16} />
-                    <span>
-                      {item.students} دانش‌آموز
-                    </span>
-                  </div>
-
-                  <div>
-                    <CalendarDays size={16} />
-                    <span>
-                      {item.schedule}
-                    </span>
-                  </div>
-
-                  <div>
-                    <Clock3 size={16} />
-                    <span>
-                      {item.time}
-                    </span>
-                  </div>
-
-                </div>
-
+              ))
+            ) : (
+              <div style={{ textAlign: "center", padding: "1.5rem", color: "var(--muted, #888)", gridColumn: "1 / -1" }}>
+                هیچ کلاسی برای این مدرس ثبت نشده است.
               </div>
-            ))}
-
+            )}
           </div>
         </section>
-
       </div>
     </DashboardLayout>
   );

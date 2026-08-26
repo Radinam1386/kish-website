@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   CalendarDays,
   ClipboardCheck,
@@ -10,96 +10,108 @@ import {
   Filter,
   BookOpen,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import DashboardLayout from "../components/DashboardLayout";
 import StatCard from "../components/StatCard";
 import { AnimatedButton } from "../components/AnimatedButton";
+import { api, getFullName } from "../services/api";
 
 import "./SecretaryPanel.css";
-import { Link } from "react-router-dom";
 
 function SecretaryPanel() {
-  /* ========================================
-     States
-  ======================================== */
-
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFee, setSelectedFee] = useState("all");
 
-  /* ========================================
-     Students State
-  ======================================== */
+  const [students, setStudents] = useState([]);
+  const [classes, setClasses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const [students, setStudents] = useState([
-    {
-      id: 1,
-      name: "علی محمدی",
-      phone: "۰۹۱۲۰۰۰۰۰۰۰",
-      cls: "English A2",
-      fee: "paid",
-      attendance: "منظم",
-      remaining: 8,
-    },
-    {
-      id: 2,
-      name: "سارا احمدی",
-      phone: "۰۹۱۲۱۱۱۱۱۱۱",
-      cls: "Kids Starter",
-      fee: "pending",
-      attendance: "۲ غیبت",
-      remaining: 10,
-    },
-    {
-      id: 3,
-      name: "رضا کریمی",
-      phone: "۰۹۱۲۲۲۲۲۲۲۲",
-      cls: "Conversation B1",
-      fee: "paid",
-      attendance: "منظم",
-      remaining: 6,
-    },
-    {
-      id: 4,
-      name: "مریم رضایی",
-      phone: "۰۹۱۲۳۳۳۳۳۳۳",
-      cls: "English A2",
-      fee: "pending",
-      attendance: "۱ غیبت",
-      remaining: 12,
-    },
-  ]);
+  useEffect(() => {
+    let alive = true;
 
-  /* ========================================
-     Classes State
-  ======================================== */
+    async function loadData() {
+      try {
+        setLoading(true);
+        setError("");
+        const [usersData, classroomsData, enrollmentsData, sessionsData, attendanceData] =
+          await Promise.all([
+            api.users.list(),
+            api.classrooms.list(),
+            api.enrollments.list(),
+            api.sessions.list(),
+            api.attendance.list(),
+          ]);
 
-  const [classes] = useState([
-    {
-      id: 1,
-      name: "English A2",
-      held: 12,
-      remaining: 8,
-      total: 20,
-    },
-    {
-      id: 2,
-      name: "Kids Starter",
-      held: 10,
-      remaining: 10,
-      total: 20,
-    },
-    {
-      id: 3,
-      name: "Conversation B1",
-      held: 14,
-      remaining: 6,
-      total: 20,
-    },
-  ]);
+        if (!alive) return;
 
-  /* ========================================
-     Statistics
-  ======================================== */
+        const studentUsers = (usersData || []).filter((u) => u.role === "student");
+        const classrooms = classroomsData || [];
+        const enrollments = enrollmentsData || [];
+        const sessions = sessionsData || [];
+        const attendance = attendanceData || [];
+
+        const studentList = studentUsers.map((u) => {
+          const studentEnrollment = enrollments.find(
+            (e) => e.student === u.id || e.student?.id === u.id,
+          );
+          const studentClass = studentEnrollment
+            ? classrooms.find((c) => c.id === studentEnrollment.classroom)
+            : null;
+
+          const studentRecords = attendance.filter(
+            (a) => a.student === u.id || a.student?.id === u.id,
+          );
+          const absents = studentRecords.filter((a) => a.status === "absent").length;
+          const attendanceStatus =
+            studentRecords.length === 0
+              ? "بدون سابقه"
+              : absents === 0
+              ? "منظم"
+              : `${absents} غیبت`;
+
+          return {
+            id: u.id,
+            name: getFullName(u),
+            phone: u.phone_number || "-",
+            cls: studentClass?.name || "بدون کلاس",
+            fee: u.is_active ? "paid" : "pending",
+            attendance: attendanceStatus,
+            remaining: 0,
+          };
+        });
+
+        const classList = classrooms.map((cls) => {
+          const classSessions = sessions.filter((s) => s.classroom === cls.id);
+          const held = classSessions.length;
+          const total = 20;
+          const remaining = Math.max(0, total - held);
+
+          return {
+            id: cls.id,
+            name: cls.name,
+            held,
+            remaining,
+            total,
+          };
+        });
+
+        setStudents(studentList);
+        setClasses(classList);
+      } catch (err) {
+        if (alive) setError(err.message || "خطا در دریافت اطلاعات");
+      } finally {
+        if (alive) setLoading(false);
+      }
+    }
+
+    loadData();
+
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const paidStudents = students.filter(
     (student) => student.fee === "paid",
@@ -112,42 +124,20 @@ function SecretaryPanel() {
     0,
   );
 
-  /* ========================================
-     Filter Students
-  ======================================== */
-
   const filteredStudents = useMemo(() => {
-    const normalizedSearch = searchTerm.trim();
+    const normalizedSearch = searchTerm.trim().toLowerCase();
 
     return students.filter((student) => {
       const matchesSearch =
-        student.name.includes(normalizedSearch) ||
+        student.name.toLowerCase().includes(normalizedSearch) ||
         student.phone.includes(normalizedSearch) ||
-        student.cls.toLowerCase().includes(normalizedSearch.toLowerCase());
+        student.cls.toLowerCase().includes(normalizedSearch);
 
       const matchesFee = selectedFee === "all" || student.fee === selectedFee;
 
       return matchesSearch && matchesFee;
     });
   }, [students, searchTerm, selectedFee]);
-
-  /* ========================================
-     Add Student
-  ======================================== */
-
-  const handleAddStudent = () => {
-    const newStudent = {
-      id: Date.now(),
-      name: "دانش‌آموز جدید",
-      phone: "۰۹۱۲۰۰۰۰۰۰۰",
-      cls: "English A2",
-      fee: "pending",
-      attendance: "منظم",
-      remaining: 20,
-    };
-
-    setStudents((prev) => [...prev, newStudent]);
-  };
 
   return (
     <DashboardLayout
@@ -156,27 +146,33 @@ function SecretaryPanel() {
       menuType="secretary"
     >
       <div className="secretary-panel-x8m4-root">
+        {error && (
+          <div style={{ color: "var(--danger, #ef4444)", marginBottom: "1rem", textAlign: "center" }}>
+            {error}
+          </div>
+        )}
+
         <div className="secretary-panel-x8m4-stats">
           <StatCard
             title="ثبت‌نامی‌ها"
             value={`${students.length} نفر`}
-            hint="ترم جاری"
+            hint="دانش‌آموزان ثبت‌شده"
             icon={<UsersRound />}
             color="red"
           />
 
           <StatCard
-            title="شهریه‌های پرداخت‌شده"
-            value={`${paidStudents} مورد`}
-            hint="از دانش‌آموزان"
+            title="حساب‌های فعال"
+            value={`${paidStudents} نفر`}
+            hint="دانش‌آموزان فعال"
             icon={<CreditCard />}
             color="green"
           />
 
           <StatCard
-            title="حضور ثبت‌شده"
-            value={`${totalAttendanceRecords} رکورد`}
-            hint="دانش‌آموزان منظم"
+            title="دانش‌آموزان منظم"
+            value={`${totalAttendanceRecords} نفر`}
+            hint="بدون غیبت"
             icon={<ClipboardCheck />}
             color="light-blue"
           />
@@ -189,6 +185,7 @@ function SecretaryPanel() {
             color="soft-red"
           />
         </div>
+
         <section className="secretary-panel-x8m4-section">
           <div className="secretary-panel-x8m4-section-header">
             <div>
@@ -219,22 +216,24 @@ function SecretaryPanel() {
             </AnimatedButton>
           </div>
         </section>
+
         <section className="secretary-panel-x8m4-section">
           <div className="secretary-panel-x8m4-section-header">
             <div>
               <h3 className="secretary-panel-x8m4-title">لیست دانش‌آموزان</h3>
 
               <p className="secretary-panel-x8m4-description">
-                مدیریت وضعیت ثبت‌نام، شهریه و حضور دانش‌آموزان
+                مدیریت وضعیت ثبت‌نام، حساب و حضور دانش‌آموزان
               </p>
             </div>
             <Link to={"/panel/secretary/students/new"}>
-              <AnimatedButton variant="primary" onClick={handleAddStudent}>
+              <AnimatedButton variant="primary">
                 <UserPlus size={18} />
                 افزودن دانش‌آموز
               </AnimatedButton>
             </Link>
           </div>
+
           <div className="secretary-panel-x8m4-filters">
             <div className="secretary-panel-x8m4-filter-wrapper">
               <Filter size={17} className="secretary-panel-x8m4-filter-icon" />
@@ -244,14 +243,15 @@ function SecretaryPanel() {
                 onChange={(event) => setSelectedFee(event.target.value)}
                 className="secretary-panel-x8m4-select"
               >
-                <option value="all">همه وضعیت‌های شهریه</option>
+                <option value="all">همه وضعیت‌های حساب</option>
 
-                <option value="paid">پرداخت شده</option>
+                <option value="paid">فعال</option>
 
-                <option value="pending">در انتظار پرداخت</option>
+                <option value="pending">در انتظار / غیرفعال</option>
               </select>
             </div>
           </div>
+
           <div className="secretary-panel-x8m4-table-wrapper">
             <table className="secretary-panel-x8m4-table">
               <thead>
@@ -259,15 +259,20 @@ function SecretaryPanel() {
                   <th>نام دانش‌آموز</th>
                   <th>شماره تماس</th>
                   <th>کلاس</th>
-                  <th>وضعیت شهریه</th>
+                  <th>وضعیت حساب</th>
                   <th>وضعیت حضور</th>
-                  <th>باقی‌مانده</th>
                   <th>عملیات</th>
                 </tr>
               </thead>
 
               <tbody>
-                {filteredStudents.length > 0 ? (
+                {loading ? (
+                  <tr>
+                    <td colSpan="6" style={{ textAlign: "center", padding: "2rem" }}>
+                      در حال بارگذاری دانش‌آموزان...
+                    </td>
+                  </tr>
+                ) : filteredStudents.length > 0 ? (
                   filteredStudents.map((student) => (
                     <tr key={student.id}>
                       <td data-label="دانش‌آموز">
@@ -290,7 +295,7 @@ function SecretaryPanel() {
                         <span className="class-badge">{student.cls}</span>
                       </td>
 
-                      <td data-label="وضعیت شهریه">
+                      <td data-label="وضعیت حساب">
                         <span
                           className={`status-badge ${
                             student.fee === "paid"
@@ -298,7 +303,7 @@ function SecretaryPanel() {
                               : "status-pending"
                           }`}
                         >
-                          {student.fee === "paid" ? "پرداخت شده" : "در انتظار"}
+                          {student.fee === "paid" ? "فعال" : "در انتظار"}
                         </span>
                       </td>
 
@@ -311,12 +316,6 @@ function SecretaryPanel() {
                           }
                         >
                           {student.attendance}
-                        </span>
-                      </td>
-
-                      <td data-label="باقی‌مانده">
-                        <span className="secretary-panel-x8m4-remaining">
-                          {student.remaining} جلسه
                         </span>
                       </td>
 
@@ -338,7 +337,7 @@ function SecretaryPanel() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="7" className="secretary-panel-x8m4-empty">
+                    <td colSpan="6" className="secretary-panel-x8m4-empty">
                       <UsersRound size={38} />
 
                       <strong>دانش‌آموزی پیدا نشد</strong>
@@ -351,20 +350,21 @@ function SecretaryPanel() {
             </table>
           </div>
         </section>
+
         <section className="secretary-panel-x8m4-section">
           <div className="secretary-panel-x8m4-section-header">
             <div>
-              <h3 className="secretary-panel-x8m4-title">وضعیت پیشرفت ترم</h3>
+              <h3 className="secretary-panel-x8m4-title">وضعیت برگزاری کلاس‌ها</h3>
 
               <p className="secretary-panel-x8m4-description">
-                میزان برگزاری جلسات کلاس‌های فعال
+                تعداد جلسات برگزار شده برای کلاس‌های تعریف‌شده
               </p>
             </div>
           </div>
 
           <div className="secretary-panel-x8m4-class-grid">
             {classes.map((cls) => {
-              const progress = Math.round((cls.held / cls.total) * 100);
+              const progress = Math.min(100, Math.round((cls.held / cls.total) * 100));
 
               return (
                 <article
@@ -392,13 +392,13 @@ function SecretaryPanel() {
 
                   <div className="secretary-panel-x8m4-class-meta">
                     <span>
-                      برگزار شده:
+                      جلسات ثبت‌شده:
                       <strong>{cls.held}</strong>
                     </span>
 
                     <span>
-                      باقی‌مانده:
-                      <strong>{cls.remaining}</strong>
+                      کد کلاس:
+                      <strong>{cls.id}</strong>
                     </span>
                   </div>
                 </article>

@@ -117,10 +117,22 @@ function App() {
 
         <Route path="/panel/admin" element={<AdminPanel />} />
         <Route path="/panel/admin/students" element={<AdminStudents />} />
+        <Route
+          path="/panel/admin/students/:id"
+          element={<AdminStudentDetails />}
+        />
+        <Route
+          path="/panel/admin/students/:id/edit"
+          element={<AdminStudentForm />}
+        />
         <Route path="/panel/admin/teachers" element={<AdminTeachers />} />
         <Route
           path="/panel/admin/teachers/:teacherId"
           element={<AdminTeacherDetails />}
+        />
+        <Route
+          path="/panel/admin/teachers/:id/edit"
+          element={<AdminTeacherForm />}
         />
         <Route path="/panel/admin/tuition" element={<AdminTuition />} />
         <Route
@@ -130,6 +142,10 @@ function App() {
         <Route
           path="/panel/admin/teachers/new"
           element={<AdminTeacherForm />}
+        />
+        <Route
+          path="/panel/teacher/attendance"
+          element={<TeacherPanel />}
         />
       </Routes>
       {!isDashboard && <Footer />}

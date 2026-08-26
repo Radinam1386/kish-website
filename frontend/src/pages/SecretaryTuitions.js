@@ -1,274 +1,363 @@
+import React, { useEffect, useMemo, useState } from "react";
 import {
-  DollarSign,
-  CheckCircle2,
-  AlertTriangle,
-  Receipt,
-  Download,
-  CalendarDays,
   CreditCard,
-  Hash,
+  Users,
+  CheckCircle2,
+  Clock3,
+  Search,
+  Filter,
+  Phone,
+  BookOpen,
+  Eye,
+  CircleDollarSign,
+  CalendarDays,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import DashboardLayout from "../components/DashboardLayout";
-import "./SecretaryTuitions.css";
+import { AnimatedButton } from "../components/AnimatedButton";
 import StatCard from "../components/StatCard";
-import { redirect } from "react-router-dom";
+import { api, getFullName } from "../services/api";
 
-function StudentTuition() {
-  const financeSummary = {
-    totalTuition: "۱۲,۵۰۰,۰۰۰ ریال",
-    paidAmount: "۸,۵۰۰,۰۰۰ ریال",
-    remainingDebt: "۴,۰۰۰,۰۰۰ ریال",
-    statusText: "بدهکار (نیاز به تسویه)",
-    statusClass: "debt-warning",
+import "./SecretaryTuitions.css";
+
+function SecretaryTuitions() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("all");
+
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let alive = true;
+
+    async function loadData() {
+      try {
+        setLoading(true);
+        setError("");
+        const [usersData, enrollmentsData, classroomsData] = await Promise.all([
+          api.users.list(),
+          api.enrollments.list(),
+          api.classrooms.list(),
+        ]);
+
+        if (!alive) return;
+
+        const studentUsers = (usersData || []).filter((u) => u.role === "student");
+        const classrooms = classroomsData || [];
+        const enrollments = enrollmentsData || [];
+
+        const studentList = studentUsers.map((u) => {
+          const studentEnrollment = enrollments.find(
+            (e) => e.student === u.id || e.student?.id === u.id,
+          );
+          const cls = studentEnrollment
+            ? classrooms.find((c) => c.id === studentEnrollment.classroom)
+            : null;
+
+          const isPaid = u.is_active;
+          const tuitionAmount = 4500000;
+          const paidAmount = isPaid ? 4500000 : 0;
+          const remainingAmount = isPaid ? 0 : 4500000;
+
+          return {
+            id: u.id,
+            name: getFullName(u),
+            phone: u.phone_number || "-",
+            className: cls?.name || "بدون کلاس",
+            tuition: tuitionAmount,
+            paid: paidAmount,
+            remaining: remainingAmount,
+            status: isPaid ? "پرداخت شده" : "پرداخت نشده",
+            statusType: isPaid ? "paid" : "unpaid",
+            paymentDate: isPaid ? "تسویه شده" : "-",
+          };
+        });
+
+        setStudents(studentList);
+      } catch (err) {
+        if (alive) setError(err.message || "خطا در دریافت اطلاعات مالی");
+      } finally {
+        if (alive) setLoading(false);
+      }
+    }
+
+    loadData();
+
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const totalTuition = students.reduce(
+    (total, student) => total + student.tuition,
+    0,
+  );
+
+  const totalPaid = students.reduce(
+    (total, student) => total + student.paid,
+    0,
+  );
+
+  const totalRemaining = students.reduce(
+    (total, student) => total + student.remaining,
+    0,
+  );
+
+  const paymentPercentage =
+    totalTuition > 0 ? Math.round((totalPaid / totalTuition) * 100) : 0;
+
+  const filteredStudents = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+
+    return students.filter((student) => {
+      const matchesSearch =
+        student.name.toLowerCase().includes(normalizedSearch) ||
+        student.phone.includes(normalizedSearch) ||
+        student.className.toLowerCase().includes(normalizedSearch);
+
+      const matchesStatus =
+        selectedStatus === "all" || student.statusType === selectedStatus;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [students, searchTerm, selectedStatus]);
+
+  const formatPrice = (price) => {
+    return price.toLocaleString("fa-IR");
   };
 
-  const invoices = [
-    {
-      id: "INV-40501",
-      title: "شهریه ترم بهار ۱۴۰۵",
-      course: "دوره English A2",
-      amount: "۷,۵۰۰,۰۰۰ ریال",
-      dueDate: "۱۴۰۵/۰۲/۱۵",
-      status: "پرداخت شده",
-      statusClass: "status-paid",
-    },
-    {
-      id: "INV-40502",
-      title: "شهریه ترم تابستان ۱۴۰۵",
-      course: "دوره Conversation B1",
-      amount: "۵,۰۰۰,۰۰۰ ریال",
-      dueDate: "۱۴۰۵/۰۵/۱۰",
-      status: "پرداخت ناموفق / معلق",
-      statusClass: "status-pending",
-    },
-  ];
+  const handlePayment = (studentId) => {
+    setStudents((prev) =>
+      prev.map((student) => {
+        if (student.id !== studentId) {
+          return student;
+        }
 
-  const transactions = [
-    {
-      id: "TRX-85021",
-      title: "پرداخت شهریه",
-      description: "شهریه ترم بهار ۱۴۰۵",
-      date: "۱۴۰۵/۰۲/۱۰",
-      method: "درگاه آنلاین",
-      amount: "۷,۵۰۰,۰۰۰ ریال",
-      status: "موفق",
-      statusClass: "status-paid",
-    },
-    {
-      id: "TRX-85022",
-      title: "پرداخت شهریه",
-      description: "بخشی از شهریه ترم تابستان",
-      date: "۱۴۰۵/۰۵/۰۸",
-      method: "درگاه آنلاین",
-      amount: "۱,۰۰۰,۰۰۰ ریال",
-      status: "موفق",
-      statusClass: "status-paid",
-    },
-  ];
+        return {
+          ...student,
+          paid: student.tuition,
+          remaining: 0,
+          status: "پرداخت شده",
+          statusType: "paid",
+          paymentDate: "امروز",
+        };
+      }),
+    );
+  };
 
   return (
-    <DashboardLayout
-      role="پنل منشی"
-      title="وضعیت شهریه و مالی"
-      menuType="secretary"
-    >
-      <div className="student-tuition-page">
-        <section className="tuition-stats-grid">
+    <DashboardLayout role="پنل منشی" title="مدیریت شهریه‌ها" menuType="secretary">
+      <div className="admin-tuition-x8p4-root">
+        {error && (
+          <div style={{ color: "var(--danger, #ef4444)", marginBottom: "1rem", textAlign: "center" }}>
+            {error}
+          </div>
+        )}
+
+        <div className="admin-tuition-x8p4-stats">
           <StatCard
-            title="کل شهریه ترم"
-            value={financeSummary.totalTuition}
-            icon={<DollarSign />}
+            title="کل شهریه"
+            value={`${formatPrice(totalTuition)} تومان`}
+            icon={<CreditCard size={23} />}
             color="red"
           />
           <StatCard
-            title="مجموع پرداخت‌شده"
-            value={financeSummary.paidAmount}
-            icon={<CheckCircle2 />}
+            title="دریافتی"
+            value={`${formatPrice(totalPaid)} تومان`}
+            icon={<CheckCircle2 size={23} />}
             color="green"
           />
           <StatCard
-            title="باقیمانده بدهی"
-            value={financeSummary.remainingDebt}
-            icon={<AlertTriangle />}
-            color="light-orange"
+            title="مانده"
+            value={`${formatPrice(totalRemaining)} تومان`}
+            icon={<Clock3 size={23} />}
+            color="orange"
           />
-        </section>
-        <section className="tuition-section">
-          <div className="tuition-section-header">
-            <div className="tuition-heading-box">
-              <span className="tuition-kicker">
-                <Receipt size={15} />
-                فاکتورها
-              </span>
+          <StatCard
+            title="درصد وصول"
+            value={`${paymentPercentage}٪`}
+            icon={<Users size={23} />}
+            color="blue"
+          />
+        </div>
 
-              <h3 className="tuition-section-title">فاکتورهای صادر شده</h3>
+        <section className="admin-tuition-x8p4-section">
+          <div className="admin-tuition-x8p4-section-header">
+            <div className="admin-tuition-x8p4-heading">
+              <h3 className="admin-tuition-x8p4-title">
+                لیست شهریه دانش‌آموزان
+              </h3>
 
-              <p className="tuition-section-desc">
-                لیست صورت‌حساب‌های آموزشی دوره شما
-              </p>
-            </div>
-
-            <span
-              className={`tuition-status-pill ${financeSummary.statusClass}`}
-            >
-              {financeSummary.statusText}
-            </span>
-          </div>
-
-          <div className="invoice-list">
-            {invoices.map((invoice) => (
-              <InvoiceCard key={invoice.id} invoice={invoice} />
-            ))}
-          </div>
-        </section>
-
-        {/* ==============================
-            Transactions
-        ============================== */}
-
-        <section className="tuition-section">
-          <div className="tuition-section-header">
-            <div className="tuition-heading-box">
-              <span className="tuition-kicker">
-                <CreditCard size={15} />
-                تراکنش‌ها
-              </span>
-
-              <h3 className="tuition-section-title">سوابق پرداخت</h3>
-
-              <p className="tuition-section-desc">
-                تاریخچه پرداخت‌های ثبت‌شده برای حساب شما
+              <p className="admin-tuition-x8p4-description">
+                مدیریت پرداخت‌ها، بدهی‌ها و وضعیت شهریه دانش‌آموزان
               </p>
             </div>
           </div>
 
-          <div className="transaction-list">
-            {transactions.map((transaction) => (
-              <TransactionCard key={transaction.id} transaction={transaction} />
-            ))}
+          <div className="admin-tuition-x8p4-filter-bar">
+            <div className="admin-tuition-x8p4-search-box">
+              <Search size={18} />
+
+              <input
+                type="text"
+                placeholder="جستجو با نام، شماره تماس یا کلاس..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+
+            <div className="admin-tuition-x8p4-status-filter">
+              <Filter size={18} />
+
+              <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+              >
+                <option value="all">همه وضعیت‌ها</option>
+                <option value="paid">پرداخت شده</option>
+                <option value="unpaid">پرداخت نشده</option>
+              </select>
+            </div>
           </div>
+
+          {loading ? (
+            <div style={{ textAlign: "center", padding: "2rem" }}>
+              در حال بارگذاری اطلاعات شهریه‌ها...
+            </div>
+          ) : filteredStudents.length > 0 ? (
+            <div className="admin-tuition-x8p4-table-wrapper">
+              <table className="admin-tuition-x8p4-table">
+                <thead>
+                  <tr>
+                    <th>دانش‌آموز</th>
+                    <th>شماره تماس</th>
+                    <th>کلاس</th>
+                    <th>مبلغ کل</th>
+                    <th>پرداختی</th>
+                    <th>مانده</th>
+                    <th>وضعیت</th>
+                    <th>تاریخ پرداخت</th>
+                    <th>عملیات</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {filteredStudents.map((student) => (
+                    <tr key={student.id}>
+                      <td data-label="دانش‌آموز">
+                        <div className="admin-tuition-x8p4-student-cell">
+                          <div className="admin-tuition-x8p4-avatar">
+                            {student.name.charAt(0)}
+                          </div>
+
+                          <div className="admin-tuition-x8p4-student-info">
+                            <strong>{student.name}</strong>
+
+                            <span>کد: {student.id}</span>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td data-label="شماره تماس">
+                        <span className="admin-tuition-x8p4-phone">
+                          <Phone size={14} />
+                          {student.phone}
+                        </span>
+                      </td>
+
+                      <td data-label="کلاس">
+                        <span className="admin-tuition-x8p4-class-badge">
+                          <BookOpen size={14} />
+                          {student.className}
+                        </span>
+                      </td>
+
+                      <td data-label="مبلغ کل">
+                        <strong className="admin-tuition-x8p4-total-price">
+                          {formatPrice(student.tuition)}
+                        </strong>
+
+                        <small>تومان</small>
+                      </td>
+
+                      <td data-label="پرداختی">
+                        <strong className="admin-tuition-x8p4-paid-price">
+                          {formatPrice(student.paid)}
+                        </strong>
+
+                        <small>تومان</small>
+                      </td>
+
+                      <td data-label="مانده">
+                        <strong
+                          className={
+                            student.remaining > 0
+                              ? "admin-tuition-x8p4-remaining-price"
+                              : "admin-tuition-x8p4-zero-price"
+                          }
+                        >
+                          {formatPrice(student.remaining)}
+                        </strong>
+
+                        <small>تومان</small>
+                      </td>
+
+                      <td data-label="وضعیت">
+                        <span
+                          className={`admin-tuition-x8p4-status ${student.statusType}`}
+                        >
+                          {student.status}
+                        </span>
+                      </td>
+
+                      <td data-label="تاریخ پرداخت">
+                        <span className="admin-tuition-x8p4-date">
+                          <CalendarDays size={14} />
+                          {student.paymentDate}
+                        </span>
+                      </td>
+
+                      <td data-label="عملیات">
+                        <div className="admin-tuition-x8p4-actions">
+                          {student.remaining > 0 && (
+                            <AnimatedButton
+                              variant="primary"
+                              size="small"
+                              onClick={() => handlePayment(student.id)}
+                            >
+                              <CircleDollarSign size={15} />
+                              ثبت پرداخت
+                            </AnimatedButton>
+                          )}
+
+                          <Link to={`/panel/secretary/students/${student.id}`}>
+                            <AnimatedButton variant="secondary" size="small">
+                              <Eye size={15} />
+                              مشاهده
+                            </AnimatedButton>
+                          </Link>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="admin-tuition-x8p4-empty">
+              <CreditCard size={42} />
+
+              <h4>موردی پیدا نشد</h4>
+
+              <p>عبارت جستجو یا وضعیت انتخابی را تغییر دهید.</p>
+            </div>
+          )}
         </section>
       </div>
     </DashboardLayout>
   );
 }
 
-/* =====================================================
-   Invoice Card
-===================================================== */
-
-function InvoiceCard({ invoice }) {
-  return (
-    <article className="invoice-card">
-      <div className="invoice-accent" />
-
-      <div className="invoice-head">
-        <div className="invoice-icon-wrap">
-          <Receipt size={22} />
-        </div>
-
-        <div className="invoice-title-box">
-          <h4>{invoice.title}</h4>
-
-          <span className="invoice-course">{invoice.course}</span>
-
-          <span className="invoice-id">
-            <Hash size={12} />
-            {invoice.id}
-          </span>
-        </div>
-      </div>
-
-      <div className="invoice-meta">
-        <div className="invoice-meta-item">
-          <span>
-            <DollarSign size={14} />
-            مبلغ فاکتور
-          </span>
-
-          <strong>{invoice.amount}</strong>
-        </div>
-
-        <div className="invoice-meta-item">
-          <span>
-            <CalendarDays size={14} />
-            مهلت پرداخت
-          </span>
-
-          <strong>{invoice.dueDate}</strong>
-        </div>
-      </div>
-
-      <div className="invoice-foot">
-        <span className={`status-badge ${invoice.statusClass}`}>
-          {invoice.status}
-        </span>
-
-        <button type="button" className="invoice-download-btn">
-          <Download size={15} />
-          دانلود فاکتور
-        </button>
-      </div>
-    </article>
-  );
-}
-
-/* =====================================================
-   Transaction Card
-===================================================== */
-
-function TransactionCard({ transaction }) {
-  return (
-    <article className="transaction-card">
-      <div className="transaction-main">
-        <div className="trx-icon-wrap">
-          <CreditCard size={21} />
-        </div>
-
-        <div className="trx-info">
-          <div className="trx-title-row">
-            <strong>{transaction.title}</strong>
-
-            <span className={`status-badge ${transaction.statusClass}`}>
-              {transaction.status}
-            </span>
-          </div>
-
-          <p>{transaction.description}</p>
-
-          <div className="trx-details">
-            <span>
-              <CalendarDays size={13} />
-              {transaction.date}
-            </span>
-
-            <span>
-              <CreditCard size={13} />
-              {transaction.method}
-            </span>
-
-            <span>
-              <Hash size={13} />
-              {transaction.id}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div className="trx-amount">
-        <strong>{transaction.amount}</strong>
-
-        <button
-          type="button"
-          className="icon-download-btn"
-          aria-label="دانلود رسید"
-        >
-          <Download size={17} />
-        </button>
-      </div>
-    </article>
-  );
-}
-
-export default StudentTuition;
+export default SecretaryTuitions;

@@ -23,7 +23,7 @@ function About() {
           <div className="story-grid">
             <div className="story-visual">
               <div className="story-img-wrap">
-                <img className="story-img-placeholder" src="logo.png"/>
+                <img className="story-img-placeholder" src="/logo.png" alt="آموزشگاه زبان کیش" />
                 <div className="story-badge">
                   <span className="badge-num">۱۸+</span>
                   <span className="badge-lbl">سال تجربه</span>

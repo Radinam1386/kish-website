@@ -42,7 +42,7 @@ function DashboardLayout({ role, title, children, menuType }) {
       {
         label: "حضور و غیاب",
         icon: <ClipboardCheck size={19} />,
-        to: "/panel/teacher/attendance/english-a2",
+        to: "/panel/teacher",
       },
       {
         label: "ایجاد امتحان",
@@ -57,7 +57,7 @@ function DashboardLayout({ role, title, children, menuType }) {
     ],
 
     secretary: [
-      { label: "نمای کلی", icon: <Home size={19} />, to: "/panel/secretary/" },
+      { label: "نمای کلی", icon: <Home size={19} />, to: "/panel/secretary" },
       {
         label: "کلاس‌ها",
         icon: <CalendarDays size={19} />,

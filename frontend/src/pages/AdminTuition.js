@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   CreditCard,
   Users,
@@ -12,95 +12,83 @@ import {
   CircleDollarSign,
   CalendarDays,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import DashboardLayout from "../components/DashboardLayout";
 import { AnimatedButton } from "../components/AnimatedButton";
+import StatCard from "../components/StatCard";
+import { api, getFullName } from "../services/api";
 
 import "./AdminTuition.css";
-import StatCard from "../components/StatCard";
 
 function AdminTuition() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
 
-  const [students, setStudents] = useState([
-    {
-      id: 1,
-      name: "علی محمدی",
-      phone: "۰۹۱۲۰۰۰۰۰۰۰",
-      className: "English A2",
-      tuition: 4500000,
-      paid: 4500000,
-      remaining: 0,
-      status: "پرداخت شده",
-      statusType: "paid",
-      paymentDate: "۱۴۰۳/۰۹/۱۸",
-    },
-    {
-      id: 2,
-      name: "سارا احمدی",
-      phone: "۰۹۱۲۱۱۱۱۱۱۱",
-      className: "Kids Starter",
-      tuition: 3800000,
-      paid: 2000000,
-      remaining: 1800000,
-      status: "در انتظار",
-      statusType: "pending",
-      paymentDate: "۱۴۰۳/۰۹/۱۰",
-    },
-    {
-      id: 3,
-      name: "محمد کریمی",
-      phone: "۰۹۱۲۲۲۲۲۲۲۲",
-      className: "English B1",
-      tuition: 5200000,
-      paid: 5200000,
-      remaining: 0,
-      status: "پرداخت شده",
-      statusType: "paid",
-      paymentDate: "۱۴۰۳/۰۹/۱۹",
-    },
-    {
-      id: 4,
-      name: "نگار رضایی",
-      phone: "۰۹۱۲۳۳۳۳۳۳۳",
-      className: "Conversation B1",
-      tuition: 4800000,
-      paid: 2500000,
-      remaining: 2300000,
-      status: "بدهکار",
-      statusType: "debt",
-      paymentDate: "۱۴۰۳/۰۹/۰۵",
-    },
-    {
-      id: 5,
-      name: "امیرحسین اکبری",
-      phone: "۰۹۱۲۴۴۴۴۴۴۴",
-      className: "English A2",
-      tuition: 4500000,
-      paid: 0,
-      remaining: 4500000,
-      status: "پرداخت نشده",
-      statusType: "unpaid",
-      paymentDate: "-",
-    },
-    {
-      id: 6,
-      name: "فاطمه کریمی",
-      phone: "۰۹۱۲۵۵۵۵۵۵۵",
-      className: "Kids Starter",
-      tuition: 3800000,
-      paid: 3800000,
-      remaining: 0,
-      status: "پرداخت شده",
-      statusType: "paid",
-      paymentDate: "۱۴۰۳/۰۹/۲۰",
-    },
-  ]);
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  /* ========================================
-     Statistics
-  ======================================== */
+  useEffect(() => {
+    let alive = true;
+
+    async function loadData() {
+      try {
+        setLoading(true);
+        setError("");
+        const [usersData, enrollmentsData, classroomsData] = await Promise.all([
+          api.users.list(),
+          api.enrollments.list(),
+          api.classrooms.list(),
+        ]);
+
+        if (!alive) return;
+
+        const studentUsers = (usersData || []).filter((u) => u.role === "student");
+        const classrooms = classroomsData || [];
+        const enrollments = enrollmentsData || [];
+
+        const studentList = studentUsers.map((u) => {
+          const studentEnrollment = enrollments.find(
+            (e) => e.student === u.id || e.student?.id === u.id,
+          );
+          const cls = studentEnrollment
+            ? classrooms.find((c) => c.id === studentEnrollment.classroom)
+            : null;
+
+          const isPaid = u.is_active;
+          const tuitionAmount = 4500000;
+          const paidAmount = isPaid ? 4500000 : 0;
+          const remainingAmount = isPaid ? 0 : 4500000;
+
+          return {
+            id: u.id,
+            name: getFullName(u),
+            phone: u.phone_number || "-",
+            className: cls?.name || "بدون کلاس",
+            tuition: tuitionAmount,
+            paid: paidAmount,
+            remaining: remainingAmount,
+            status: isPaid ? "پرداخت شده" : "پرداخت نشده",
+            statusType: isPaid ? "paid" : "unpaid",
+            paymentDate: isPaid ? "تسویه شده" : "-",
+          };
+        });
+
+        setStudents(studentList);
+      } catch (err) {
+        if (alive) setError(err.message || "خطا در دریافت اطلاعات مالی");
+      } finally {
+        if (alive) setLoading(false);
+      }
+    }
+
+    loadData();
+
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const totalTuition = students.reduce(
     (total, student) => total + student.tuition,
@@ -117,29 +105,17 @@ function AdminTuition() {
     0,
   );
 
-  const paidStudents = students.filter(
-    (student) => student.statusType === "paid",
-  ).length;
-
-  const pendingStudents = students.filter(
-    (student) => student.statusType !== "paid",
-  ).length;
-
   const paymentPercentage =
     totalTuition > 0 ? Math.round((totalPaid / totalTuition) * 100) : 0;
 
-  /* ========================================
-     Filtering
-  ======================================== */
-
   const filteredStudents = useMemo(() => {
-    const normalizedSearch = searchTerm.trim();
+    const normalizedSearch = searchTerm.trim().toLowerCase();
 
     return students.filter((student) => {
       const matchesSearch =
-        student.name.includes(normalizedSearch) ||
+        student.name.toLowerCase().includes(normalizedSearch) ||
         student.phone.includes(normalizedSearch) ||
-        student.className.includes(normalizedSearch);
+        student.className.toLowerCase().includes(normalizedSearch);
 
       const matchesStatus =
         selectedStatus === "all" || student.statusType === selectedStatus;
@@ -148,17 +124,9 @@ function AdminTuition() {
     });
   }, [students, searchTerm, selectedStatus]);
 
-  /* ========================================
-     Format Price
-  ======================================== */
-
   const formatPrice = (price) => {
     return price.toLocaleString("fa-IR");
   };
-
-  /* ========================================
-     Change Payment Status
-  ======================================== */
 
   const handlePayment = (studentId) => {
     setStudents((prev) =>
@@ -182,12 +150,18 @@ function AdminTuition() {
   return (
     <DashboardLayout role="پنل مدیریت" title="مدیریت شهریه‌ها" menuType="admin">
       <div className="admin-tuition-x8p4-root">
+        {error && (
+          <div style={{ color: "var(--danger, #ef4444)", marginBottom: "1rem", textAlign: "center" }}>
+            {error}
+          </div>
+        )}
+
         <div className="admin-tuition-x8p4-stats">
           <StatCard
             title="کل شهریه"
             value={`${formatPrice(totalTuition)} تومان`}
             icon={<CreditCard size={23} />}
-            color='red'
+            color="red"
           />
           <StatCard
             title="دریافتی"
@@ -199,13 +173,13 @@ function AdminTuition() {
             title="مانده"
             value={`${formatPrice(totalRemaining)} تومان`}
             icon={<Clock3 size={23} />}
-            color='orange'
+            color="orange"
           />
           <StatCard
             title="درصد وصول"
             value={`${paymentPercentage}٪`}
             icon={<Users size={23} />}
-            color='blue'
+            color="blue"
           />
         </div>
 
@@ -220,80 +194,47 @@ function AdminTuition() {
                 مدیریت پرداخت‌ها، بدهی‌ها و وضعیت شهریه دانش‌آموزان
               </p>
             </div>
-
-            <div className="admin-tuition-x8p4-header-badge">
-              <Users size={17} />
-
-              <span>{students.length} دانش‌آموز</span>
-            </div>
           </div>
 
-          {/* ========================================
-              Filters
-          ======================================== */}
-
-          <div className="admin-tuition-x8p4-filters">
-            <div className="admin-tuition-x8p4-search-wrapper">
-              <Search size={18} className="admin-tuition-x8p4-search-icon" />
+          <div className="admin-tuition-x8p4-filter-bar">
+            <div className="admin-tuition-x8p4-search-box">
+              <Search size={18} />
 
               <input
                 type="text"
+                placeholder="جستجو با نام، شماره تماس یا کلاس..."
                 value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="جستجو بر اساس نام، شماره تماس یا کلاس..."
-                className="admin-tuition-x8p4-search-input"
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
 
-            <div className="admin-tuition-x8p4-select-wrapper">
-              <Filter size={18} className="admin-tuition-x8p4-filter-icon" />
+            <div className="admin-tuition-x8p4-status-filter">
+              <Filter size={18} />
 
               <select
                 value={selectedStatus}
-                onChange={(event) => setSelectedStatus(event.target.value)}
-                className="admin-tuition-x8p4-select"
+                onChange={(e) => setSelectedStatus(e.target.value)}
               >
                 <option value="all">همه وضعیت‌ها</option>
-
                 <option value="paid">پرداخت شده</option>
-
-                <option value="pending">در انتظار</option>
-
-                <option value="debt">بدهکار</option>
-
                 <option value="unpaid">پرداخت نشده</option>
               </select>
             </div>
           </div>
 
-          {/* ========================================
-              Summary
-          ======================================== */}
-
-          <div className="admin-tuition-x8p4-summary">
-            <div>
-              <span>پرداخت شده</span>
-              <strong className="green">{paidStudents} نفر</strong>
+          {loading ? (
+            <div style={{ textAlign: "center", padding: "2rem" }}>
+              در حال بارگذاری اطلاعات شهریه‌ها...
             </div>
-
-            <div>
-              <span>نیازمند پیگیری</span>
-              <strong className="orange">{pendingStudents} نفر</strong>
-            </div>
-          </div>
-
-          {/* ========================================
-              Table
-          ======================================== */}
-
-          {filteredStudents.length > 0 ? (
+          ) : filteredStudents.length > 0 ? (
             <div className="admin-tuition-x8p4-table-wrapper">
               <table className="admin-tuition-x8p4-table">
                 <thead>
                   <tr>
                     <th>دانش‌آموز</th>
+                    <th>شماره تماس</th>
                     <th>کلاس</th>
-                    <th>شهریه</th>
+                    <th>مبلغ کل</th>
                     <th>پرداختی</th>
                     <th>مانده</th>
                     <th>وضعیت</th>
@@ -306,20 +247,24 @@ function AdminTuition() {
                   {filteredStudents.map((student) => (
                     <tr key={student.id}>
                       <td data-label="دانش‌آموز">
-                        <div className="admin-tuition-x8p4-student">
+                        <div className="admin-tuition-x8p4-student-cell">
                           <div className="admin-tuition-x8p4-avatar">
                             {student.name.charAt(0)}
                           </div>
 
-                          <div>
+                          <div className="admin-tuition-x8p4-student-info">
                             <strong>{student.name}</strong>
 
-                            <span>
-                              <Phone size={13} />
-                              {student.phone}
-                            </span>
+                            <span>کد: {student.id}</span>
                           </div>
                         </div>
+                      </td>
+
+                      <td data-label="شماره تماس">
+                        <span className="admin-tuition-x8p4-phone">
+                          <Phone size={14} />
+                          {student.phone}
+                        </span>
                       </td>
 
                       <td data-label="کلاس">
@@ -329,8 +274,8 @@ function AdminTuition() {
                         </span>
                       </td>
 
-                      <td data-label="شهریه">
-                        <strong className="admin-tuition-x8p4-price">
+                      <td data-label="مبلغ کل">
+                        <strong className="admin-tuition-x8p4-total-price">
                           {formatPrice(student.tuition)}
                         </strong>
 
@@ -387,10 +332,12 @@ function AdminTuition() {
                             </AnimatedButton>
                           )}
 
-                          <AnimatedButton variant="secondary" size="small">
-                            <Eye size={15} />
-                            مشاهده
-                          </AnimatedButton>
+                          <Link to={`/panel/admin/students/${student.id}`}>
+                            <AnimatedButton variant="secondary" size="small">
+                              <Eye size={15} />
+                              مشاهده
+                            </AnimatedButton>
+                          </Link>
                         </div>
                       </td>
                     </tr>

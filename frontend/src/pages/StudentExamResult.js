@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useParams, Link } from "react-router-dom";
 import {
   ArrowRight,
   CheckCircle2,
@@ -7,61 +8,194 @@ import {
   FileText,
   Award,
   Target,
-  BarChart3,
   CircleHelp,
-  ChevronDown,
 } from "lucide-react";
 import "./StudentExamResult.css";
 import DashboardLayout from "../components/DashboardLayout";
 import StatCard from "../components/StatCard";
+import { AnimatedButton } from "../components/AnimatedButton";
+import { api, getFullName } from "../services/api";
 
 const StudentExamResult = () => {
-  const exam = {
-    title: "آزمون میانترم",
-    subject: "English A2",
-    teacher: "استاد احمدی",
-    date: "۱۴۰۵/۰۵/۲۲",
-    duration: "۴۵ دقیقه",
-    score: 17.5,
-    totalScore: 20,
-    percentage: 87.5,
-    totalQuestions: 20,
-    correct: 17,
-    wrong: 2,
-    unanswered: 1,
-    status: "قبول شده",
-  };
+  const { examResultId } = useParams();
 
-  const questions = [
-    {
-      number: 1,
-      question: "حاصل عبارت زیر کدام است؟",
-      answer: "گزینه ۲",
-      correctAnswer: "گزینه ۲",
-      status: "correct",
-    },
-    {
-      number: 2,
-      question: "کدام گزینه یک عدد اول است؟",
-      answer: "گزینه ۳",
-      correctAnswer: "گزینه ۱",
-      status: "wrong",
-    },
-    {
-      number: 3,
-      question: "حاصل جمع دو عدد صحیح چیست؟",
-      answer: "گزینه ۱",
-      correctAnswer: "گزینه ۱",
-      status: "correct",
-    },
-    {
-      number: 4,
-      question: "کدام عبارت صحیح است؟",
-      answer: "بدون پاسخ",
-      correctAnswer: "گزینه ۴",
-      status: "unanswered",
-    },
-  ];
+  const [exam, setExam] = useState(null);
+  const [submission, setSubmission] = useState(null);
+  const [classroom, setClassroom] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let alive = true;
+
+    async function loadData() {
+      if (!examResultId) return;
+
+      try {
+        setLoading(true);
+        setError("");
+
+        const [submissionsData, classroomsData] = await Promise.all([
+          api.submissions.list(),
+          api.classrooms.list(),
+        ]);
+
+        const foundSubmission = (submissionsData || []).find(
+          (s) => s.exam === Number(examResultId) || s.id === Number(examResultId),
+        );
+
+        const examIdToFetch = foundSubmission ? foundSubmission.exam : Number(examResultId);
+
+        let examData = null;
+        try {
+          examData = await api.exams.get(examIdToFetch);
+        } catch {
+          examData = await api.exams.studentView(examIdToFetch);
+        }
+
+        if (!alive) return;
+
+        setSubmission(foundSubmission || null);
+        setExam(examData);
+
+        const cls = (classroomsData || []).find(
+          (c) => c.id === examData?.classroom,
+        );
+        setClassroom(cls || null);
+      } catch (err) {
+        if (alive) setError(err.message || "دریافت نتیجه آزمون ناموفق بود.");
+      } finally {
+        if (alive) setLoading(false);
+      }
+    }
+
+    loadData();
+
+    return () => {
+      alive = false;
+    };
+  }, [examResultId]);
+
+  const questionsAnalysis = useMemo(() => {
+    if (!exam || !exam.questions) return [];
+
+    const answers = submission?.answers || [];
+
+    return exam.questions.map((q, idx) => {
+      const studentAnswer = answers.find(
+        (a) => a.question === q.id || a.question?.id === q.id,
+      );
+
+      let studentAnswerText = "بدون پاسخ";
+      let correctAnswerText = "-";
+      let status = "unanswered";
+
+      if (q.question_type === "multiple_choice") {
+        const selectedChoice = q.choices?.find(
+          (c) => c.id === studentAnswer?.selected_choice,
+        );
+        if (selectedChoice) {
+          studentAnswerText = selectedChoice.text;
+        }
+
+        const correctChoice = q.choices?.find((c) => c.is_correct);
+        if (correctChoice) {
+          correctAnswerText = correctChoice.text;
+        }
+
+        if (!studentAnswer || !studentAnswer.selected_choice) {
+          status = "unanswered";
+        } else if (correctChoice && studentAnswer.selected_choice === correctChoice.id) {
+          status = "correct";
+        } else if (studentAnswer.score !== null && studentAnswer.score > 0) {
+          status = "correct";
+        } else {
+          status = "wrong";
+        }
+      } else {
+        studentAnswerText = studentAnswer?.text_answer || "بدون پاسخ";
+        correctAnswerText = "پاسخ تشریحی";
+        if (!studentAnswer?.text_answer) {
+          status = "unanswered";
+        } else if (studentAnswer.score !== null && studentAnswer.score > 0) {
+          status = "correct";
+        } else if (studentAnswer.score === 0) {
+          status = "wrong";
+        } else {
+          status = "unanswered";
+        }
+      }
+
+      return {
+        number: idx + 1,
+        question: q.text,
+        points: q.points,
+        score: studentAnswer?.score,
+        answer: studentAnswerText,
+        correctAnswer: correctAnswerText,
+        status,
+      };
+    });
+  }, [exam, submission]);
+
+  const stats = useMemo(() => {
+    const totalQuestions = questionsAnalysis.length;
+    const correct = questionsAnalysis.filter((q) => q.status === "correct").length;
+    const wrong = questionsAnalysis.filter((q) => q.status === "wrong").length;
+    const unanswered = questionsAnalysis.filter((q) => q.status === "unanswered").length;
+
+    const totalPossibleScore =
+      (exam?.questions || []).reduce(
+        (acc, q) => acc + Number(q.max_score || q.points || 1),
+        0,
+      ) || 20;
+
+    const actualScore =
+      submission?.total_score !== null && submission?.total_score !== undefined
+        ? Number(submission.total_score)
+        : correct;
+
+    const percentage = totalPossibleScore > 0 ? Math.round((actualScore / totalPossibleScore) * 100) : 0;
+
+    return {
+      totalQuestions,
+      correct,
+      wrong,
+      unanswered,
+      score: actualScore,
+      totalScore: totalPossibleScore,
+      percentage,
+      isGraded: submission?.is_graded,
+    };
+  }, [questionsAnalysis, exam, submission]);
+
+  if (loading) {
+    return (
+      <DashboardLayout role="پنل دانش‌آموز" title="نتیجه آزمون" menuType="student">
+        <div style={{ padding: "3rem", textAlign: "center" }}>
+          در حال بارگذاری نتایج آزمون...
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error || !exam) {
+    return (
+      <DashboardLayout role="پنل دانش‌آموز" title="نتیجه آزمون" menuType="student">
+        <div style={{ padding: "3rem", textAlign: "center" }}>
+          <p style={{ color: "var(--danger, #ef4444)", marginBottom: "1.5rem" }}>
+            {error || "آزمون یا نتیجه‌ای یافت نشد."}
+          </p>
+          <Link to="/panel/student/exams">
+            <AnimatedButton variant="primary">
+              <ArrowRight size={17} />
+              بازگشت به آزمون‌ها
+            </AnimatedButton>
+          </Link>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout
@@ -70,11 +204,20 @@ const StudentExamResult = () => {
       menuType="student"
     >
       <div className="student-exam-result-p">
+        <div style={{ marginBottom: "1.5rem" }}>
+          <Link to="/panel/student/exams" style={{ textDecoration: "none" }}>
+            <AnimatedButton variant="ghost" size="small">
+              <ArrowRight size={16} />
+              بازگشت به لیست آزمون‌ها
+            </AnimatedButton>
+          </Link>
+        </div>
+
         <section className="student-exam-result-p__score-card">
           <div className="student-exam-result-p__score-main">
             <div className="student-exam-result-p__score-circle">
               <div className="student-exam-result-p__score-circle-inner">
-                <strong>{exam.percentage}%</strong>
+                <strong>{stats.percentage}%</strong>
                 <span>درصد</span>
               </div>
             </div>
@@ -85,12 +228,16 @@ const StudentExamResult = () => {
               </span>
 
               <strong className="student-exam-result-p__score-number">
-                {exam.score}
-                <small> / {exam.totalScore}</small>
+                {stats.score}
+                <small> / {stats.totalScore}</small>
               </strong>
 
               <span className="student-exam-result-p__score-status">
-                عملکرد شما بسیار خوب بوده است.
+                {submission?.is_graded
+                  ? stats.percentage >= 60
+                    ? "آزمون با موفقیت پاس شد."
+                    : "نمره کمتر از حد نصاب قبولی است."
+                  : "آزمون ثبت شد (در انتظار تصحیح سوالات تشریحی)."}
               </span>
             </div>
           </div>
@@ -99,54 +246,56 @@ const StudentExamResult = () => {
             <div className="student-exam-result-p__meta-item">
               <FileText size={19} />
               <div>
-                <span>درس</span>
-                <strong>{exam.subject}</strong>
+                <span>آزمون</span>
+                <strong>{exam.title}</strong>
               </div>
             </div>
 
             <div className="student-exam-result-p__meta-item">
               <Clock3 size={19} />
               <div>
-                <span>مدت آزمون</span>
-                <strong>{exam.duration}</strong>
+                <span>کلاس</span>
+                <strong>{classroom?.name || `کلاس ${exam.classroom}`}</strong>
               </div>
             </div>
 
             <div className="student-exam-result-p__meta-item">
               <Award size={19} />
               <div>
-                <span>وضعیت</span>
-                <strong>{exam.status}</strong>
+                <span>مدرس</span>
+                <strong>{getFullName(classroom?.teacher_detail) || "-"}</strong>
               </div>
             </div>
           </div>
         </section>
+
         <div className="student-exam-result-p__stats">
           <StatCard
             title="کل سؤالات"
-            value={exam.totalQuestions}
+            value={stats.totalQuestions}
             icon={<CircleHelp />}
             color="light-blue"
           />
           <StatCard
             title="پاسخ صحیح"
-            value={exam.correct}
+            value={stats.correct}
             icon={<CheckCircle2 />}
             color="light-green"
           />
           <StatCard
             title="پاسخ غلط"
-            value={exam.wrong}
+            value={stats.wrong}
             icon={<XCircle />}
             color="red"
           />
           <StatCard
             title="بدون پاسخ"
-            value={exam.unanswered}
+            value={stats.unanswered}
             icon={<Target />}
             color="orange"
           />
         </div>
+
         <section className="student-exam-result-p__section">
           <div className="student-exam-result-p__section-header">
             <div>
@@ -161,7 +310,7 @@ const StudentExamResult = () => {
           </div>
 
           <div className="student-exam-result-p__questions">
-            {questions.map((item) => (
+            {questionsAnalysis.map((item) => (
               <div
                 key={item.number}
                 className={`student-exam-result-p__question ${item.status}`}
@@ -175,14 +324,14 @@ const StudentExamResult = () => {
 
                   <div className="student-exam-result-p__answers">
                     <span>
-                      پاسخ شما:
-                      <b>{item.answer}</b>
+                      پاسخ شما: <b>{item.answer}</b>
                     </span>
 
-                    <span>
-                      پاسخ صحیح:
-                      <b>{item.correctAnswer}</b>
-                    </span>
+                    {item.correctAnswer !== "-" && (
+                      <span>
+                        پاسخ صحیح: <b>{item.correctAnswer}</b>
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -208,11 +357,6 @@ const StudentExamResult = () => {
                     </>
                   )}
                 </div>
-
-                <ChevronDown
-                  className="student-exam-result-p__question-arrow"
-                  size={18}
-                />
               </div>
             ))}
           </div>
@@ -226,7 +370,7 @@ const StudentExamResult = () => {
           <div>
             <strong>نتیجه نهایی آزمون</strong>
             <span>
-              شما {exam.correct} سؤال از {exam.totalQuestions} سؤال را به درستی
+              شما {stats.correct} سؤال از {stats.totalQuestions} سؤال را به درستی
               پاسخ داده‌اید.
             </span>
           </div>
@@ -234,8 +378,8 @@ const StudentExamResult = () => {
           <div className="student-exam-result-p__footer-score">
             <span>نمره نهایی</span>
             <strong>
-              {exam.score}
-              <small> / {exam.totalScore}</small>
+              {stats.score}
+              <small> / {stats.totalScore}</small>
             </strong>
           </div>
         </div>

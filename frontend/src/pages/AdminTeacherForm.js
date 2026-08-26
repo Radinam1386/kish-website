@@ -131,7 +131,7 @@ function AdminTeacherForm() {
         id ? "اطلاعات معلم با موفقیت ویرایش شد." : "معلم با موفقیت ثبت شد.",
       );
 
-      navigate("/panel/secretary/teachers");
+      navigate("/panel/admin/teachers");
     } catch (error) {
       setDatabaseError(error);
     } finally {
@@ -430,7 +430,7 @@ function AdminTeacherForm() {
             />
           )}
           <div className="secretary-student-form-actions">
-            <Link to="/panel/secretary/teachers">
+            <Link to="/panel/admin/teachers">
               <AnimatedButton variant="ghost">انصراف</AnimatedButton>
             </Link>
 
