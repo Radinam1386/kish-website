@@ -1,0 +1,115 @@
+.jalali-datepicker-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  background: oklch(100% 0 0 / 0.88);
+  border: 1px solid oklch(0% 0 0 / 0.08);
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+  box-shadow: 0 4px 16px oklch(0% 0 0 / 0.02);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.jalali-datepicker-wrapper:focus-within {
+  border-color: oklch(60% 0.19 29 / 0.5);
+  box-shadow: 0 0 0 3px oklch(60% 0.19 29 / 0.1);
+}
+
+.jalali-datepicker-label {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: oklch(30% 0 0);
+}
+
+.jalali-datepicker-label .req-star {
+  color: var(--primary, oklch(55% 0.18 25));
+}
+
+.jalali-datepicker-controls {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr 1.1fr;
+  gap: 0.5rem;
+}
+
+.jdp-select-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.jdp-select-group label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: oklch(55% 0 0);
+}
+
+.jdp-select {
+  background: oklch(98% 0.003 29);
+  border: 1px solid oklch(0% 0 0 / 0.08);
+  color: oklch(25% 0 0);
+  padding: 0.55rem 0.65rem;
+  border-radius: 9px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  height: 38px;
+}
+
+.jdp-select:focus {
+  background: #ffffff;
+  border-color: oklch(60% 0.19 29 / 0.45);
+}
+
+.jdp-select option {
+  background: #ffffff;
+  color: oklch(25% 0 0);
+}
+
+.jalali-datepicker-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+  padding-top: 0.45rem;
+  border-top: 1px dashed oklch(0% 0 0 / 0.08);
+  flex-wrap: wrap;
+}
+
+.jdp-current-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--primary, oklch(55% 0.18 25));
+  font-weight: 700;
+}
+
+.jdp-quick-btns {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.jdp-quick-btn {
+  background: oklch(96% 0.005 29);
+  border: 1px solid oklch(0% 0 0 / 0.06);
+  color: oklch(45% 0 0);
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.jdp-quick-btn:hover {
+  background: var(--red-5, oklch(55.799% 0.17067 24.538));
+  color: #ffffff;
+  border-color: var(--red-5, oklch(55.799% 0.17067 24.538));
+}

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
 import {
   ArrowRight,
   User,
@@ -18,10 +18,17 @@ import {
 import DashboardLayout from "../components/DashboardLayout";
 import { AnimatedButton } from "../components/AnimatedButton";
 import { api, getFullName } from "../services/api";
+import { toPersianDigits } from "../utils/dateUtils";
 import "./AdminTeacherDetails.css";
 
 function AdminTeacherDetails() {
   const { teacherId } = useParams();
+  const location = useLocation();
+
+  const isSecretary = location.pathname.includes("/secretary");
+  const roleTitle = isSecretary ? "پنل منشی" : "پنل مدیریت";
+  const menuType = isSecretary ? "secretary" : "admin";
+  const basePath = isSecretary ? "/panel/secretary/teachers" : "/panel/admin/teachers";
 
   const [teacherUser, setTeacherUser] = useState(null);
   const [classrooms, setClassrooms] = useState([]);
@@ -149,10 +156,10 @@ function AdminTeacherDetails() {
 
   if (error || !teacherUser) {
     return (
-      <DashboardLayout role="پنل مدیریت" title="جزئیات معلم" menuType="admin">
+      <DashboardLayout role={roleTitle} title="جزئیات معلم" menuType={menuType}>
         <div style={{ padding: "2rem", textAlign: "center" }}>
           <p style={{ color: "var(--danger, #ef4444)", marginBottom: "1rem" }}>{error || "معلم یافت نشد."}</p>
-          <Link to="/panel/admin/teachers">
+          <Link to={basePath}>
             <AnimatedButton variant="primary">بازگشت به لیست معلمان</AnimatedButton>
           </Link>
         </div>
@@ -162,9 +169,9 @@ function AdminTeacherDetails() {
 
   return (
     <DashboardLayout
-      role="پنل مدیریت"
+      role={roleTitle}
       title={`جزئیات ${teacherName}`}
-      menuType="admin"
+      menuType={menuType}
     >
       <div className="admin-teacher-details-x7k2-page">
         {/* ================= Header ================= */}
@@ -172,7 +179,7 @@ function AdminTeacherDetails() {
         <div className="admin-teacher-details-x7k2-header">
           <div className="admin-teacher-details-x7k2-header-right">
             <Link
-              to="/panel/admin/teachers"
+              to={basePath}
               className="admin-teacher-details-x7k2-back-button"
               style={{ textDecoration: "none" }}
             >
@@ -197,7 +204,7 @@ function AdminTeacherDetails() {
             </div>
           </div>
 
-          <Link to={`/panel/admin/teachers/${teacherId}/edit`}>
+          <Link to={`${basePath}/${teacherId}/edit`}>
             <AnimatedButton variant="primary">
               <Edit3 size={17} />
               ویرایش اطلاعات
@@ -339,51 +346,54 @@ function AdminTeacherDetails() {
           <div className="admin-teacher-details-x7k2-class-grid">
             {teacherClassesData.length > 0 ? (
               teacherClassesData.map((item) => (
-                <div
+                <Link
                   key={item.id}
-                  className="admin-teacher-details-x7k2-class-card"
+                  to={`/panel/${menuType}/classes/${item.id}`}
+                  style={{ textDecoration: "none" }}
                 >
-                  <div className="admin-teacher-details-x7k2-class-top">
-                    <div>
-                      <span className="admin-teacher-details-x7k2-class-level">
-                        {item.level}
-                      </span>
+                  <div className="admin-teacher-details-x7k2-class-card">
+                    <div className="admin-teacher-details-x7k2-class-top">
+                      <div>
+                        <span className="admin-teacher-details-x7k2-class-level">
+                          {item.level}
+                        </span>
 
-                      <h4>{item.name}</h4>
+                        <h4>{item.name}</h4>
 
-                      <span className="admin-teacher-details-x7k2-class-code">
-                        {item.code}
+                        <span className="admin-teacher-details-x7k2-class-code">
+                          {item.code}
+                        </span>
+                      </div>
+
+                      <span className="admin-teacher-details-x7k2-class-status">
+                        {item.status}
                       </span>
                     </div>
 
-                    <span className="admin-teacher-details-x7k2-class-status">
-                      {item.status}
-                    </span>
+                    <div className="admin-teacher-details-x7k2-class-details">
+                      <div>
+                        <Users size={16} />
+                        <span>
+                          {toPersianDigits(item.students)} دانش‌آموز
+                        </span>
+                      </div>
+
+                      <div>
+                        <CalendarDays size={16} />
+                        <span>
+                          {item.schedule}
+                        </span>
+                      </div>
+
+                      <div>
+                        <Clock3 size={16} />
+                        <span>
+                          {item.time}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-
-                  <div className="admin-teacher-details-x7k2-class-details">
-                    <div>
-                      <Users size={16} />
-                      <span>
-                        {item.students} دانش‌آموز
-                      </span>
-                    </div>
-
-                    <div>
-                      <CalendarDays size={16} />
-                      <span>
-                        {item.schedule}
-                      </span>
-                    </div>
-
-                    <div>
-                      <Clock3 size={16} />
-                      <span>
-                        {item.time}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                </Link>
               ))
             ) : (
               <div style={{ textAlign: "center", padding: "1.5rem", color: "var(--muted, #888)", gridColumn: "1 / -1" }}>

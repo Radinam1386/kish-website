@@ -11,6 +11,8 @@ import {
   Menu,
   UsersRound,
   X,
+  Layers,
+  GraduationCap,
 } from "lucide-react";
 import "./DashboardLayout.css";
 import { storage } from "../services/api";
@@ -42,7 +44,7 @@ function DashboardLayout({ role, title, children, menuType }) {
       {
         label: "حضور و غیاب",
         icon: <ClipboardCheck size={19} />,
-        to: "/panel/teacher",
+        to: "/panel/teacher/attendance",
       },
       {
         label: "ایجاد امتحان",
@@ -64,6 +66,16 @@ function DashboardLayout({ role, title, children, menuType }) {
         to: "/panel/secretary/classes",
       },
       {
+        label: "مدیریت ترم‌ها",
+        icon: <Layers size={19} />,
+        to: "/panel/secretary/terms",
+      },
+      {
+        label: "مدیریت معلمان",
+        icon: <GraduationCap size={19} />,
+        to: "/panel/secretary/teachers",
+      },
+      {
         label: "دانش‌آموزان",
         icon: <UsersRound size={19} />,
         to: "/panel/secretary/students",
@@ -78,10 +90,25 @@ function DashboardLayout({ role, title, children, menuType }) {
         icon: <ClipboardCheck size={19} />,
         to: "/panel/secretary/attendance",
       },
+      {
+        label: "نظارت بر امتحانات",
+        icon: <FileText size={19} />,
+        to: "/panel/secretary/exams",
+      },
     ],
 
     admin: [
       { label: "نمای کلی", icon: <Home size={19} />, to: "/panel/admin" },
+      {
+        label: "کلاس‌ها",
+        icon: <CalendarDays size={19} />,
+        to: "/panel/admin/classes",
+      },
+      {
+        label: "مدیریت ترم‌ها",
+        icon: <Layers size={19} />,
+        to: "/panel/admin/terms",
+      },
       {
         label: "دانش‌آموزان",
         icon: <UsersRound size={19} />,
@@ -89,13 +116,18 @@ function DashboardLayout({ role, title, children, menuType }) {
       },
       {
         label: "معلمان",
-        icon: <BookOpen size={19} />,
+        icon: <GraduationCap size={19} />,
         to: "/panel/admin/teachers",
       },
       {
         label: "شهریه‌ها",
         icon: <CreditCard size={19} />,
         to: "/panel/admin/tuition",
+      },
+      {
+        label: "نظارت بر امتحانات",
+        icon: <FileText size={19} />,
+        to: "/panel/admin/exams",
       },
     ],
   };

@@ -1,93 +1,88 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   CalendarDays,
-  Filter,
   Search,
   UserCheck,
   UserX,
   Users,
   AlertCircle,
-  Save,
-  RotateCcw,
-  RefreshCw,
+  Clock,
+  ShieldCheck,
+  Eye,
+  BookOpen,
+  Info,
 } from "lucide-react";
 
 import DashboardLayout from "../components/DashboardLayout";
+import StatCard from "../components/StatCard";
+import JalaliDatePicker from "../components/JalaliDatePicker";
 import { AnimatedButton } from "../components/AnimatedButton";
 import { api, getFullName } from "../services/api";
+import { toJalaliDateString, toPersianDigits, getTodayJalali } from "../utils/dateUtils";
+
 import "./SecretaryAttendance.css";
 
 const statusMapping = {
-  present: "حاضر",
-  absent: "غایب",
-  excused: "موجه",
-  late: "دیرکرد",
+  present: { text: "حاضر", class: "present" },
+  absent: { text: "غایب", class: "absent" },
+  excused: { text: "موجه", class: "excused" },
+  late: { text: "دیرکرد", class: "late" },
+  not_recorded: { text: "ثبت نشده", class: "not-recorded" },
 };
-
-const reverseStatusMapping = {
-  حاضر: "present",
-  غایب: "absent",
-  موجه: "excused",
-  دیرکرد: "late",
-};
-
-function getTodayIsoDate() {
-  const d = new Date();
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
 
 function SecretaryAttendance() {
+  const today = getTodayJalali();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedClass, setSelectedClass] = useState("all");
-  const [selectedDate, setSelectedDate] = useState(getTodayIsoDate());
+  const [selectedDate, setSelectedDate] = useState(today.isoGregorian);
 
   const [classrooms, setClassrooms] = useState([]);
   const [users, setUsers] = useState([]);
   const [enrollments, setEnrollments] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [attendanceRecords, setAttendanceRecords] = useState([]);
-
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [saveSuccess, setSaveSuccess] = useState("");
-
-  const [attendanceState, setAttendanceState] = useState({});
-
-  async function loadData() {
-    try {
-      setLoading(true);
-      setError("");
-      const [classroomsData, usersData, enrollmentsData, sessionsData, attendanceData] =
-        await Promise.all([
-          api.classrooms.list(),
-          api.users.list(),
-          api.enrollments.list(),
-          api.sessions.list(),
-          api.attendance.list(),
-        ]);
-
-      setClassrooms(classroomsData || []);
-      setUsers(usersData || []);
-      setEnrollments(enrollmentsData || []);
-      setSessions(sessionsData || []);
-      setAttendanceRecords(attendanceData || []);
-
-      if (classroomsData?.length && selectedClass === "all") {
-        setSelectedClass(String(classroomsData[0].id));
-      }
-    } catch (err) {
-      setError(err.message || "خطا در دریافت اطلاعات از سرور");
-    } finally {
-      setLoading(false);
-    }
-  }
 
   useEffect(() => {
+    let alive = true;
+
+    async function loadData() {
+      try {
+        setLoading(true);
+        setError("");
+        const [classroomsData, usersData, enrollmentsData, sessionsData, attendanceData] =
+          await Promise.all([
+            api.classrooms.list(),
+            api.users.list(),
+            api.enrollments.list(),
+            api.sessions.list(),
+            api.attendance.list(),
+          ]);
+
+        if (!alive) return;
+        setClassrooms(classroomsData || []);
+        setUsers(usersData || []);
+        setEnrollments(enrollmentsData || []);
+        setSessions(sessionsData || []);
+        setAttendanceRecords(attendanceData || []);
+
+        if (classroomsData?.length && selectedClass === "all") {
+          setSelectedClass(String(classroomsData[0].id));
+        }
+      } catch (err) {
+        if (alive) setError(err.message || "خطا در دریافت اطلاعات از سرور");
+      } finally {
+        if (alive) setLoading(false);
+      }
+    }
+
     loadData();
+
+    return () => {
+      alive = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -114,404 +109,228 @@ function SecretaryAttendance() {
         const studentUser = users.find((u) => u.id === studentId);
         if (!studentUser) continue;
 
-        const recordKey = `${cls.id}-${studentId}`;
-        let existingRecord = null;
+        let record = null;
         if (existingSession) {
-          existingRecord = attendanceRecords.find(
-            (r) =>
-              (r.session === existingSession.id || r.session?.id === existingSession.id) &&
-              (r.student === studentId || r.student?.id === studentId),
+          record = attendanceRecords.find(
+            (a) =>
+              (a.session === existingSession.id || a.session?.id === existingSession.id) &&
+              (a.student === studentId || a.student?.id === studentId),
           );
         }
 
-        const currentLocal = attendanceState[recordKey];
-        const status = currentLocal?.status || (existingRecord ? statusMapping[existingRecord.status] || "حاضر" : "حاضر");
-        const note = currentLocal?.note !== undefined ? currentLocal.note : (existingRecord?.note || "");
-
         list.push({
-          key: recordKey,
           id: studentId,
-          recordId: existingRecord?.id || null,
-          sessionId: existingSession?.id || null,
+          name: getFullName(studentUser),
+          username: studentUser.username,
+          phone: studentUser.phone_number || "-",
           classId: cls.id,
           className: cls.name,
-          name: getFullName(studentUser),
-          phone: studentUser.phone_number || "-",
-          status,
-          note,
+          status: record ? record.status : existingSession ? "absent" : "not_recorded",
+          note: record?.note || "",
+          hasSession: Boolean(existingSession),
         });
       }
     }
 
     return list;
-  }, [classrooms, enrollments, users, sessions, attendanceRecords, selectedClass, selectedDate, attendanceState]);
-
-  const statusOptions = [
-    { value: "حاضر", className: "present" },
-    { value: "غایب", className: "absent" },
-    { value: "موجه", className: "excused" },
-    { value: "دیرکرد", className: "late" },
-  ];
+  }, [classrooms, enrollments, users, sessions, attendanceRecords, selectedClass, selectedDate]);
 
   const filteredStudents = useMemo(() => {
-    const normalizedSearch = searchTerm.trim().toLowerCase();
-
-    return studentsList.filter((student) => {
-      const matchesSearch =
-        !normalizedSearch ||
-        student.name.toLowerCase().includes(normalizedSearch) ||
-        String(student.id).includes(normalizedSearch) ||
-        student.phone.toLowerCase().includes(normalizedSearch);
-
-      return matchesSearch;
-    });
+    const s = searchTerm.trim().toLowerCase();
+    if (!s) return studentsList;
+    return studentsList.filter(
+      (st) =>
+        st.name.toLowerCase().includes(s) ||
+        st.username.toLowerCase().includes(s) ||
+        st.phone.includes(s) ||
+        st.className.toLowerCase().includes(s),
+    );
   }, [studentsList, searchTerm]);
 
-  const totalStudents = filteredStudents.length;
-  const presentCount = filteredStudents.filter((s) => s.status === "حاضر").length;
-  const absentCount = filteredStudents.filter((s) => s.status === "غایب").length;
-  const excusedCount = filteredStudents.filter((s) => s.status === "موجه").length;
-  const lateCount = filteredStudents.filter((s) => s.status === "دیرکرد").length;
-  const attendanceRate = totalStudents > 0 ? Math.round((presentCount / totalStudents) * 100) : 0;
+  const stats = useMemo(() => {
+    const total = studentsList.length;
+    const present = studentsList.filter((s) => s.status === "present").length;
+    const absent = studentsList.filter((s) => s.status === "absent").length;
+    const late = studentsList.filter((s) => s.status === "late").length;
+    const excused = studentsList.filter((s) => s.status === "excused").length;
+    const rate = total > 0 ? Math.round(((present + late) / total) * 100) : 0;
 
-  const handleStatusChange = (key, newStatus) => {
-    setAttendanceState((prev) => ({
-      ...prev,
-      [key]: {
-        ...(prev[key] || {}),
-        status: newStatus,
-      },
-    }));
-  };
-
-  const handleNoteChange = (key, newNote) => {
-    setAttendanceState((prev) => ({
-      ...prev,
-      [key]: {
-        ...(prev[key] || {}),
-        note: newNote,
-      },
-    }));
-  };
-
-  const handleSave = async () => {
-    try {
-      setSaving(true);
-      setError("");
-      setSaveSuccess("");
-
-      const groupedByClass = {};
-      for (const item of studentsList) {
-        if (!groupedByClass[item.classId]) {
-          groupedByClass[item.classId] = [];
-        }
-        groupedByClass[item.classId].push(item);
-      }
-
-      for (const [classIdStr, classStudents] of Object.entries(groupedByClass)) {
-        const classId = Number(classIdStr);
-        let session = sessions.find(
-          (s) => (s.classroom === classId || s.classroom?.id === classId) && s.date === selectedDate,
-        );
-
-        if (!session) {
-          session = await api.sessions.create({
-            classroom: classId,
-            date: selectedDate,
-          });
-        }
-
-        for (const st of classStudents) {
-          const backendStatus = reverseStatusMapping[st.status] || "present";
-          if (st.recordId) {
-            await api.attendance.update(st.recordId, {
-              session: session.id,
-              student: st.id,
-              status: backendStatus,
-              note: st.note,
-            });
-          } else {
-            await api.attendance.create({
-              session: session.id,
-              student: st.id,
-              status: backendStatus,
-              note: st.note,
-            });
-          }
-        }
-      }
-
-      setSaveSuccess("تغییرات حضور و غیاب با موفقیت در سیستم ذخیره شد.");
-      setAttendanceState({});
-      await loadData();
-    } catch (err) {
-      setError(err.message || "خطا در ذخیره‌سازی حضور و غیاب");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleResetFilters = () => {
-    setSearchTerm("");
-    if (classrooms.length > 0) setSelectedClass(String(classrooms[0].id));
-    setSelectedDate(getTodayIsoDate());
-    setAttendanceState({});
-  };
+    return { total, present, absent, late, excused, rate };
+  }, [studentsList]);
 
   return (
-    <DashboardLayout role="پنل منشی" title="حضور و غیاب" menuType="secretary">
+    <DashboardLayout role="پنل منشی" title="نظارت بر حضور و غیاب" menuType="secretary">
       <div className="secretary-attendance-page">
-        <section className="secretary-attendance-stats">
-          <AttendanceStatCard
+        {/* Info Banner */}
+        <div className="attendance-monitoring-banner">
+          <div className="banner-icon">
+            <ShieldCheck size={24} />
+          </div>
+          <div>
+            <h4>داشبورد نظارت بر حضور و غیاب آموزشگاه</h4>
+            <p>
+              در این بخش منشی می‌تواند وضعیت حضور و غیاب دانش‌آموزان را بر اساس تاریخ شمسی و کلاس مشاهده و نظارت کند.
+              (ثبت اولیه حضور و غیاب توسط اساتید محترم انجام می‌شود.)
+            </p>
+          </div>
+        </div>
+
+        {error && (
+          <div className="attendance-alert error">
+            <AlertCircle size={18} />
+            <span>{error}</span>
+          </div>
+        )}
+
+        {/* Stats Grid */}
+        <div className="attendance-stats-grid">
+          <StatCard
             title="کل دانش‌آموزان کلاس"
-            value={`${totalStudents} نفر`}
+            value={`${toPersianDigits(stats.total)} نفر`}
             icon={<Users size={22} />}
             color="blue"
           />
-
-          <AttendanceStatCard
-            title="حاضر"
-            value={`${presentCount} نفر`}
+          <StatCard
+            title="حاضرین"
+            value={`${toPersianDigits(stats.present)} نفر`}
             icon={<UserCheck size={22} />}
             color="green"
           />
-
-          <AttendanceStatCard
-            title="غایب"
-            value={`${absentCount} نفر`}
+          <StatCard
+            title="غایبین"
+            value={`${toPersianDigits(stats.absent)} نفر`}
             icon={<UserX size={22} />}
             color="red"
           />
-
-          <AttendanceStatCard
-            title="نرخ حضور"
-            value={`${attendanceRate}٪`}
-            icon={<AlertCircle size={22} />}
+          <StatCard
+            title="درصد حضور جلسه"
+            value={`${toPersianDigits(stats.rate)}٪`}
+            icon={<Clock size={22} />}
             color="orange"
           />
-        </section>
+        </div>
 
-        <section className="secretary-attendance-section">
-          <div className="secretary-attendance-section-header">
-            <div className="secretary-attendance-heading">
-              <span className="secretary-attendance-kicker">
-                <CalendarDays size={15} />
-                مدیریت حضور و غیاب
-              </span>
-
-              <h2>ثبت و مدیریت حضور دانش‌آموزان</h2>
-
-              <p>
-                وضعیت حضور دانش‌آموزان را بر اساس کلاس و تاریخ بررسی، ثبت و در سرور ذخیره کنید.
-              </p>
-            </div>
-
-            <div className="secretary-attendance-actions">
-              <button
-                type="button"
-                className="secretary-attendance-reset-btn"
-                onClick={handleResetFilters}
-              >
-                <RotateCcw size={16} />
-                بازنشانی
-              </button>
-
-              <AnimatedButton
-                variant="danger"
-                onClick={handleSave}
-                disabled={saving || loading}
-              >
-                {saving ? (
-                  <>
-                    <RefreshCw size={17} className="secretary-student-form-loading" />
-                    در حال ذخیره...
-                  </>
-                ) : (
-                  <>
-                    <Save size={17} />
-                    ذخیره تغییرات
-                  </>
-                )}
-              </AnimatedButton>
-            </div>
+        {/* Control Bar: Class & Jalali Date Picker */}
+        <div className="attendance-control-bar">
+          <div className="control-box class-picker-box">
+            <label className="control-label">
+              <BookOpen size={16} />
+              <span>انتخاب کلاس</span>
+            </label>
+            <select
+              value={selectedClass}
+              onChange={(e) => setSelectedClass(e.target.value)}
+              className="class-select"
+            >
+              <option value="all">همه کلاس‌ها</option>
+              {classrooms.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
           </div>
 
-          {error && (
-            <div style={{ color: "var(--danger, #ef4444)", padding: "0.8rem", background: "rgba(239, 68, 68, 0.1)", borderRadius: "8px", marginBottom: "1rem" }}>
-              {error}
-            </div>
-          )}
+          <div className="control-box datepicker-box">
+            <JalaliDatePicker
+              label="تاریخ جلسه (شمسی)"
+              value={selectedDate}
+              onChange={(iso) => setSelectedDate(iso)}
+            />
+          </div>
+        </div>
 
-          {saveSuccess && (
-            <div style={{ color: "var(--success, #22c55e)", padding: "0.8rem", background: "rgba(34, 197, 94, 0.1)", borderRadius: "8px", marginBottom: "1rem" }}>
-              {saveSuccess}
-            </div>
-          )}
+        {/* Search Bar */}
+        <div className="attendance-search-bar">
+          <Search size={18} />
+          <input
+            type="text"
+            placeholder="جستجوی نام دانش‌آموز، شماره تماس یا کلاس..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
 
-          <div className="secretary-attendance-filter-card">
-            <div className="secretary-attendance-search">
-              <Search size={18} className="secretary-attendance-input-icon" />
-
-              <input
-                type="search"
-                value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="جستجو بر اساس نام یا شماره تماس..."
-                className="secretary-attendance-input"
-              />
-            </div>
-
-            <div className="secretary-attendance-select">
-              <Filter size={17} className="secretary-attendance-input-icon" />
-
-              <select
-                value={selectedClass}
-                onChange={(event) => setSelectedClass(event.target.value)}
-                className="secretary-attendance-input"
-              >
-                <option value="all">همه کلاس‌ها</option>
-                {classrooms.map((c) => (
-                  <option key={c.id} value={String(c.id)}>
-                    {c.name} (کلاس {c.id})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="secretary-attendance-date">
-              <CalendarDays size={17} className="secretary-attendance-input-icon" />
-
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={(event) => setSelectedDate(event.target.value)}
-                className="secretary-attendance-input secretary-attendance-date-input"
-              />
-            </div>
+        {/* Attendance List Table */}
+        <div className="attendance-table-card">
+          <div className="card-header">
+            <h3>
+              لیست وضعیت حضور و غیاب - {toJalaliDateString(selectedDate)}
+            </h3>
+            <span className="selected-date-badge">
+              <CalendarDays size={14} />
+              تاریخ انتخاب شده: {toJalaliDateString(selectedDate)}
+            </span>
           </div>
 
-          <div className="secretary-attendance-summary">
-            <div>
-              نمایش <strong>{filteredStudents.length}</strong> دانش‌آموز در تاریخ <strong>{selectedDate}</strong>
+          {loading ? (
+            <div style={{ textAlign: "center", padding: "3rem" }}>
+              در حال بارگذاری اطلاعات حضور و غیاب...
             </div>
-
-            <div className="secretary-attendance-extra">
-              <span>
-                موجه: <strong>{excusedCount}</strong>
-              </span>
-
-              <span>
-                دیرکرد: <strong>{lateCount}</strong>
-              </span>
-            </div>
-          </div>
-
-          <div className="secretary-attendance-table-wrapper">
-            {loading ? (
-              <div style={{ textAlign: "center", padding: "2rem" }}>
-                در حال بارگذاری اطلاعات حضور و غیاب...
-              </div>
-            ) : filteredStudents.length > 0 ? (
-              <table className="secretary-attendance-table">
+          ) : filteredStudents.length > 0 ? (
+            <div className="table-responsive">
+              <table className="attendance-table">
                 <thead>
                   <tr>
                     <th>دانش‌آموز</th>
                     <th>شماره تماس</th>
                     <th>کلاس</th>
                     <th>وضعیت حضور</th>
-                    <th>یادداشت</th>
+                    <th>توضیحات / یادداشت</th>
+                    <th>پروفایل</th>
                   </tr>
                 </thead>
-
                 <tbody>
-                  {filteredStudents.map((student) => (
-                    <tr key={student.key}>
-                      <td>
-                        <div className="secretary-attendance-student">
-                          <div className="secretary-attendance-avatar">
-                            {student.name.charAt(0)}
+                  {filteredStudents.map((st) => {
+                    const statusInfo = statusMapping[st.status] || statusMapping.not_recorded;
+                    return (
+                      <tr key={`${st.classId}-${st.id}`}>
+                        <td>
+                          <div className="student-cell-info">
+                            <div className="student-avatar">{st.name.charAt(0)}</div>
+                            <div>
+                              <strong>{st.name}</strong>
+                              <small>نام کاربری: {st.username}</small>
+                            </div>
                           </div>
-
-                          <div className="secretary-attendance-student-info">
-                            <strong>{student.name}</strong>
-                            <span>شناسه: {student.id}</span>
-                          </div>
-                        </div>
-                      </td>
-
-                      <td>
-                        <span className="secretary-attendance-phone">
-                          {student.phone}
-                        </span>
-                      </td>
-
-                      <td>
-                        <span className="secretary-attendance-class">
-                          {student.className}
-                        </span>
-                      </td>
-
-                      <td>
-                        <div className="secretary-attendance-status-group">
-                          {statusOptions.map((statusItem) => (
-                            <button
-                              key={statusItem.value}
-                              type="button"
-                              onClick={() =>
-                                handleStatusChange(student.key, statusItem.value)
-                              }
-                              className={`secretary-attendance-status ${statusItem.className} ${
-                                student.status === statusItem.value ? "active" : ""
-                              }`}
-                            >
-                              {statusItem.value}
-                            </button>
-                          ))}
-                        </div>
-                      </td>
-
-                      <td>
-                        <input
-                          type="text"
-                          value={student.note || ""}
-                          placeholder="افزودن یادداشت..."
-                          onChange={(e) => handleNoteChange(student.key, e.target.value)}
-                          className="secretary-attendance-input"
-                          style={{ fontSize: "12px", padding: "4px 8px" }}
-                        />
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td>{st.phone}</td>
+                        <td>
+                          <span className="class-badge-tag">{st.className}</span>
+                        </td>
+                        <td>
+                          <span className={`status-pill ${statusInfo.class}`}>
+                            {statusInfo.text}
+                          </span>
+                        </td>
+                        <td>
+                          <span className="note-cell-text">
+                            {st.note || "-"}
+                          </span>
+                        </td>
+                        <td>
+                          <Link to={`/panel/secretary/students/${st.id}`}>
+                            <AnimatedButton variant="secondary" size="small">
+                              <Eye size={14} />
+                              مشاهده
+                            </AnimatedButton>
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
-            ) : (
-              <div className="secretary-attendance-empty">
-                <div className="secretary-attendance-empty-icon">
-                  <Users size={34} />
-                </div>
-
-                <strong>دانش‌آموزی در این کلاس یافت نشد</strong>
-
-                <span>کلاس دیگری را انتخاب کنید یا دانش‌آموزان را در کلاس ثبت‌نام نمایید.</span>
-              </div>
-            )}
-          </div>
-        </section>
+            </div>
+          ) : (
+            <div className="attendance-empty-state">
+              <Info size={40} />
+              <p>رکوردی برای این کلاس یا تاریخ یافت نشد.</p>
+            </div>
+          )}
+        </div>
       </div>
     </DashboardLayout>
-  );
-}
-
-function AttendanceStatCard({ title, value, icon, color }) {
-  return (
-    <article className="secretary-attendance-stat-card">
-      <div className={`secretary-attendance-stat-icon ${color}`}>{icon}</div>
-
-      <div className="secretary-attendance-stat-content">
-        <span>{title}</span>
-        <strong>{value}</strong>
-      </div>
-    </article>
   );
 }
 

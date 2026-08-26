@@ -132,18 +132,18 @@ function AdminPanel() {
     {
       id: 3,
       title: "شهریه‌ها",
-      value: "ثبت نشده",
-      hint: "endpoint ندارد",
+      value: "مدیریت مالی",
+      hint: "وضعیت پرداخت‌ها",
       icon: <CreditCard />,
-      color:"light-orange"
+      color: "light-orange"
     },
     {
       id: 4,
       title: "کلاس‌ها",
       value: `${classrooms.length} کلاس`,
-      hint: "در حال اجرا",
+      hint: "درحال برگزاری",
       icon: <CalendarDays />,
-      color:"red"
+      color: "red"
     },
   ];
 

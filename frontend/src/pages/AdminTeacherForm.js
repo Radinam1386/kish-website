@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   ArrowRight,
   Copy,
@@ -20,7 +20,13 @@ import { api } from "../services/api";
 
 function AdminTeacherForm() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { id } = useParams();
+
+  const isSecretary = location.pathname.includes("/secretary");
+  const roleTitle = isSecretary ? "پنل منشی" : "پنل مدیریت";
+  const menuType = isSecretary ? "secretary" : "admin";
+  const basePath = isSecretary ? "/panel/secretary/teachers" : "/panel/admin/teachers";
 
   const [showPassword, setShowPassword] = useState(false);
   const [passwordCopied, setPasswordCopied] = useState(false);
@@ -131,7 +137,7 @@ function AdminTeacherForm() {
         id ? "اطلاعات معلم با موفقیت ویرایش شد." : "معلم با موفقیت ثبت شد.",
       );
 
-      navigate("/panel/admin/teachers");
+      navigate(basePath);
     } catch (error) {
       setDatabaseError(error);
     } finally {
@@ -193,18 +199,18 @@ function AdminTeacherForm() {
 
   return (
     <DashboardLayout
-      role="مدیریت"
+      role={roleTitle}
       title={id ? "ویرایش معلم" : "افزودن معلم"}
-      menuType="admin"
+      menuType={menuType}
     >
       <div className="secretary-student-form-page">
         <div className="secretary-student-form-top">
           <Link
-            to="/panel/admin/teachers"
+            to={basePath}
             className="secretary-student-form-back"
           >
             <ArrowRight size={18} />
-            <span>بازگشت به معلمان</span>
+            <span>بازگشت به لیست معلمان</span>
           </Link>
         </div>
         <form className="secretary-student-form" onSubmit={handleSubmit}>

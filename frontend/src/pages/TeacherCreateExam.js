@@ -13,11 +13,14 @@ import {
 import DashboardLayout from "../components/DashboardLayout";
 import "./TeacherCreateExam.css";
 import { AnimatedButton } from "../components/AnimatedButton";
+import JalaliDatePicker from "../components/JalaliDatePicker";
 import { api } from "../services/api";
+import { getTodayJalali } from "../utils/dateUtils";
 
 function TeacherCreateExam() {
+  const today = getTodayJalali();
   const [examTitle, setExamTitle] = useState("");
-  const [examDate, setExamDate] = useState("");
+  const [examDate, setExamDate] = useState(today.isoGregorian);
   const [classroomId, setClassroomId] = useState("");
   const [classrooms, setClassrooms] = useState([]);
   const [questionType, setQuestionType] = useState("multiple");
@@ -279,14 +282,12 @@ function TeacherCreateExam() {
               />
             </div>
 
-            <div className="xqv-teacher-exam-field">
-              <label>تاریخ برگزاری</label>
-
-              <input
-                className="xqv-teacher-exam-input"
-                type="date"
+            <div className="xqv-teacher-exam-field full-width">
+              <JalaliDatePicker
+                label="تاریخ برگزاری آزمون (شمسی)"
                 value={examDate}
-                onChange={(event) => setExamDate(event.target.value)}
+                onChange={(iso) => setExamDate(iso)}
+                required
               />
             </div>
           </div>

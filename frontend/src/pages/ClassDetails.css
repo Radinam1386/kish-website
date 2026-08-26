@@ -1,0 +1,347 @@
+/* =========================================================
+   Class Details (Matches AdminStudentDetails / AdminTeacherDetails)
+   ========================================================= */
+
+.class-details-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  direction: rtl;
+}
+
+.class-details-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: oklch(100% 0 0 / 0.88);
+  border: 1px solid oklch(0% 0 0 / 0.055);
+  border-radius: 18px;
+  padding: 1.5rem 1.75rem;
+  box-shadow: 0 7px 28px oklch(0% 0 0 / 0.04);
+  backdrop-filter: blur(12px);
+  flex-wrap: wrap;
+}
+
+.class-details-title-box {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.class-details-badge-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: var(--red-5, oklch(55.799% 0.17067 24.538));
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 18px oklch(60% 0.19 29 / 0.25);
+  flex-shrink: 0;
+}
+
+.class-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.class-title-row h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: oklch(25% 0 0);
+  margin: 0;
+}
+
+.term-status-pill {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 20px;
+  font-weight: 700;
+}
+
+.term-status-pill.active {
+  background: oklch(95% 0.05 145 / 0.9);
+  color: oklch(35% 0.15 145);
+  border: 1px solid oklch(75% 0.15 145 / 0.3);
+}
+
+.term-status-pill.inactive {
+  background: oklch(94% 0 0);
+  color: oklch(45% 0 0);
+  border: 1px solid oklch(0% 0 0 / 0.08);
+}
+
+.class-term-name {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: oklch(55% 0 0);
+  margin: 0;
+}
+
+.class-details-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.class-details-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.class-details-main-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1.5rem;
+}
+
+.class-card {
+  background: oklch(100% 0 0 / 0.88);
+  border: 1px solid oklch(0% 0 0 / 0.055);
+  border-radius: 18px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  box-shadow: 0 7px 28px oklch(0% 0 0 / 0.04);
+  backdrop-filter: blur(12px);
+}
+
+.card-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: oklch(25% 0 0);
+  padding-bottom: 0.85rem;
+  margin: 0;
+  border-bottom: 1px solid oklch(0% 0 0 / 0.055);
+}
+
+.teacher-profile-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.65rem;
+  padding: 0.75rem 0;
+}
+
+.teacher-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--red-5, oklch(55.799% 0.17067 24.538));
+  color: #ffffff;
+  font-size: 1.6rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 18px oklch(60% 0.19 29 / 0.25);
+}
+
+.teacher-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: oklch(25% 0 0);
+  margin: 0;
+}
+
+.teacher-role-badge {
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: oklch(96% 0.02 29);
+  color: var(--primary, oklch(55% 0.18 25));
+  padding: 0.25rem 0.7rem;
+  border-radius: 12px;
+}
+
+.teacher-contacts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  width: 100%;
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed oklch(0% 0 0 / 0.08);
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: oklch(55% 0 0);
+}
+
+.view-teacher-link {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--primary, oklch(55% 0.18 25));
+  text-decoration: none;
+  margin-top: 0.5rem;
+}
+
+.view-teacher-link:hover {
+  text-decoration: underline;
+}
+
+.enrolled-students-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.add-student-shortcut-btn {
+  background: oklch(97% 0.02 29);
+  border: 1px solid oklch(60% 0.19 29 / 0.3);
+  color: var(--primary, oklch(55% 0.18 25));
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-student-shortcut-btn:hover {
+  background: var(--red-5, oklch(55.799% 0.17067 24.538));
+  color: #ffffff;
+}
+
+.enrolled-table-wrap,
+.sessions-table-wrap {
+  overflow-x: auto;
+}
+
+.enrolled-table,
+.sessions-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: right;
+}
+
+.enrolled-table th,
+.sessions-table th {
+  padding: 0.75rem 1rem;
+  font-size: 0.82rem;
+  color: oklch(55% 0 0);
+  font-weight: 700;
+  border-bottom: 1px solid oklch(0% 0 0 / 0.07);
+}
+
+.enrolled-table td,
+.sessions-table td {
+  padding: 0.85rem 1rem;
+  font-size: 0.88rem;
+  color: oklch(25% 0 0);
+  border-bottom: 1px solid oklch(0% 0 0 / 0.04);
+}
+
+.student-row-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.student-small-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: oklch(95% 0.03 29);
+  color: var(--primary, oklch(55% 0.18 25));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+.student-row-info small {
+  display: block;
+  font-size: 0.75rem;
+  color: oklch(55% 0 0);
+}
+
+.att-pill {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 12px;
+}
+
+.att-pill.high {
+  background: oklch(95% 0.05 145 / 0.8);
+  color: oklch(35% 0.15 145);
+}
+
+.att-pill.medium {
+  background: oklch(96% 0.08 85 / 0.8);
+  color: oklch(45% 0.15 85);
+}
+
+.att-pill.low {
+  background: oklch(95% 0.05 25 / 0.8);
+  color: oklch(45% 0.18 25);
+}
+
+.shamsi-date-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: oklch(35% 0 0);
+  background: oklch(97% 0.005 29);
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+}
+
+.present-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: oklch(40% 0.15 145);
+  font-weight: 700;
+}
+
+.absent-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: oklch(45% 0.18 25);
+  font-weight: 700;
+}
+
+.empty-students-box,
+.empty-sessions-box,
+.no-teacher-assigned {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  color: oklch(55% 0 0);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+@media (max-width: 900px) {
+  .class-details-main-grid {
+    grid-template-columns: 1fr;
+  }
+}

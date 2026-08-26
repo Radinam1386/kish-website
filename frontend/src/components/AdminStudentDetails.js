@@ -18,6 +18,7 @@ import DashboardLayout from "../components/DashboardLayout";
 import StatCard from "../components/StatCard";
 import { AnimatedButton } from "../components/AnimatedButton";
 import { api, getFullName } from "../services/api";
+import { toJalaliDateString } from "../utils/dateUtils";
 
 import "./AdminStudentDetails.css";
 
@@ -115,8 +116,8 @@ function AdminStudentDetails() {
       const session = sessions.find((s) => s.id === rec.session);
       return {
         id: rec.id,
-        date: session?.date || "-",
-        day: session?.date ? "جلسه" : "-",
+        date: session?.date ? toJalaliDateString(session.date) : "-",
+        day: session?.date ? "جلسه کلاسی" : "-",
         status: rec.status,
         note: rec.note || "",
       };

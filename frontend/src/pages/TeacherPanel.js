@@ -12,6 +12,7 @@ import StatCard from "../components/StatCard";
 import "./TeacherPanel.css";
 import { AnimatedButton } from "../components/AnimatedButton";
 import { api, getFullName } from "../services/api";
+import { toJalaliDateString, toPersianDigits } from "../utils/dateUtils";
 
 function TeacherPanel() {
   const [classes, setClasses] = useState([]);
@@ -140,29 +141,31 @@ function TeacherPanel() {
                     classes.map((cls) => (
                       <tr key={cls.id}>
                         <td>
-                          <span className="teacher-panel-x7k2-class-tag teacher-panel-x7k2-class-tag--highlight">
-                            {cls.name}
-                          </span>
+                          <Link to={`/panel/teacher/classes/${cls.id}`} style={{ textDecoration: "none" }}>
+                            <span className="teacher-panel-x7k2-class-tag teacher-panel-x7k2-class-tag--highlight">
+                              {cls.name}
+                            </span>
+                          </Link>
                         </td>
 
                         <td>
                           <span className="teacher-panel-x7k2-count">
-                            {cls.student_count || 0} نفر
+                            {toPersianDigits(cls.student_count || 0)} نفر
                           </span>
                         </td>
 
                         <td>
                           <span className="teacher-panel-x7k2-time">
-                            {cls.term}
+                            کد {cls.id}
                           </span>
                         </td>
 
                         <td>
-                          {
+                          {toPersianDigits(
                             sessions.filter(
                               (session) => session.classroom === cls.id,
                             ).length
-                          }{" "}
+                          )}{" "}
                           جلسه
                         </td>
 
@@ -173,14 +176,14 @@ function TeacherPanel() {
                         </td>
 
                         <td>
-                          <AnimatedButton variant="danger">
-                            <Link
-                              to={`/panel/teacher/attendance/${cls.id}`}
-                              className="teacher-panel-x7k2-action-link"
-                            >
+                          <Link
+                            to={`/panel/teacher/attendance/${cls.id}`}
+                            className="teacher-panel-x7k2-action-link"
+                          >
+                            <AnimatedButton variant="primary" size="small">
                               حضور و غیاب
-                            </Link>
-                          </AnimatedButton>
+                            </AnimatedButton>
+                          </Link>
                         </td>
                       </tr>
                     ))}
@@ -202,7 +205,7 @@ function TeacherPanel() {
                   <tr>
                     <th>عنوان</th>
                     <th>کلاس</th>
-                    <th>تاریخ</th>
+                    <th>تاریخ (شمسی)</th>
                     <th>شرکت‌کنندگان</th>
                     <th>وضعیت</th>
                   </tr>
@@ -233,7 +236,7 @@ function TeacherPanel() {
 
                         <td>
                           <span className="teacher-panel-x7k2-count">
-                            {exam.date}
+                            {toJalaliDateString(exam.date)}
                           </span>
                         </td>
 

@@ -367,41 +367,44 @@ function SecretaryPanel() {
               const progress = Math.min(100, Math.round((cls.held / cls.total) * 100));
 
               return (
-                <article
+                <Link
                   key={cls.id}
-                  className="secretary-panel-x8m4-class-card"
+                  to={`/panel/secretary/classes/${cls.id}`}
+                  style={{ textDecoration: "none" }}
                 >
-                  <div className="secretary-panel-x8m4-class-header">
-                    <div className="secretary-panel-x8m4-class-icon">
-                      <BookOpen size={20} />
+                  <article className="secretary-panel-x8m4-class-card">
+                    <div className="secretary-panel-x8m4-class-header">
+                      <div className="secretary-panel-x8m4-class-icon">
+                        <BookOpen size={20} />
+                      </div>
+
+                      <h4>{cls.name}</h4>
+
+                      <span className="capacity-badge">{progress}٪</span>
                     </div>
 
-                    <h4>{cls.name}</h4>
+                    <div className="secretary-panel-x8m4-progress">
+                      <div
+                        className="secretary-panel-x8m4-progress-fill"
+                        style={{
+                          width: `${progress}%`,
+                        }}
+                      />
+                    </div>
 
-                    <span className="capacity-badge">{progress}٪</span>
-                  </div>
+                    <div className="secretary-panel-x8m4-class-meta">
+                      <span>
+                        جلسات ثبت‌شده:
+                        <strong>{cls.held}</strong>
+                      </span>
 
-                  <div className="secretary-panel-x8m4-progress">
-                    <div
-                      className="secretary-panel-x8m4-progress-fill"
-                      style={{
-                        width: `${progress}%`,
-                      }}
-                    />
-                  </div>
-
-                  <div className="secretary-panel-x8m4-class-meta">
-                    <span>
-                      جلسات ثبت‌شده:
-                      <strong>{cls.held}</strong>
-                    </span>
-
-                    <span>
-                      کد کلاس:
-                      <strong>{cls.id}</strong>
-                    </span>
-                  </div>
-                </article>
+                      <span>
+                        کد کلاس:
+                        <strong>{cls.id}</strong>
+                      </span>
+                    </div>
+                  </article>
+                </Link>
               );
             })}
           </div>

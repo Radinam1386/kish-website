@@ -17,6 +17,7 @@ import DashboardLayout from "../components/DashboardLayout";
 import StatCard from "../components/StatCard";
 import { Link } from "react-router-dom";
 import { api, getFullName } from "../services/api";
+import { toJalaliDateString } from "../utils/dateUtils";
 
 function StudentExams() {
   const [activeTab, setActiveTab] = useState("active");
@@ -258,8 +259,8 @@ function StudentExams() {
                       <CalendarDays size={15} />
 
                       <div>
-                        <span>تاریخ</span>
-                        <strong>{exam.date}</strong>
+                        <span>تاریخ (شمسی)</span>
+                        <strong>{toJalaliDateString(exam.date)}</strong>
                       </div>
                     </div>
 

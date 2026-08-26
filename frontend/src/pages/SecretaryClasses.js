@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   BookOpen,
   CalendarDays,
@@ -19,35 +20,41 @@ import StatCard from "../components/StatCard";
 import { AnimatedButton } from "../components/AnimatedButton";
 
 import "./SecretaryClasses.css";
-import { api, getFullName } from "../services/api";
+import { api, getFullName, storage } from "../services/api";
+import { toJalaliDateString, toPersianDigits } from "../utils/dateUtils";
 
 function SecretaryClasses() {
+  const currentUser = storage.getUser();
+  const role = currentUser?.role === "admin" ? "admin" : "secretary";
+  const basePath = `/panel/${role}`;
+
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [levelFilter, setLevelFilter] = useState("all");
 
   const [rawClasses, setRawClasses] = useState([]);
   const [terms, setTerms] = useState([]);
-  const [teachers, setTeachers] = useState([]);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let alive = true;
 
     async function loadData() {
       try {
-        const [classroomsData, termsData, usersData] = await Promise.all([
+        setLoading(true);
+        const [classroomsData, termsData] = await Promise.all([
           api.classrooms.list(),
           api.terms.list(),
-          api.users.list(),
         ]);
 
         if (!alive) return;
-        setRawClasses(classroomsData);
-        setTerms(termsData);
-        setTeachers(usersData.filter((user) => user.role === "teacher"));
+        setRawClasses(classroomsData || []);
+        setTerms(termsData || []);
       } catch (err) {
         if (alive) setError(err.message || "دریافت کلاس‌ها ناموفق بود.");
+      } finally {
+        if (alive) setLoading(false);
       }
     }
 
@@ -57,6 +64,19 @@ function SecretaryClasses() {
       alive = false;
     };
   }, []);
+
+  const handleDeleteClass = async (classId) => {
+    if (!window.confirm("آیا از حذف این کلاس اطمینان دارید؟ تمامی ثبت‌نام‌های این کلاس حذف خواهند شد.")) {
+      return;
+    }
+
+    try {
+      await api.classrooms.delete(classId);
+      setRawClasses((prev) => prev.filter((c) => c.id !== classId));
+    } catch (err) {
+      alert(err.message || "خطا در حذف کلاس");
+    }
+  };
 
   const classes = useMemo(
     () =>
@@ -71,12 +91,12 @@ function SecretaryClasses() {
           category: term?.name || "ترم نامشخص",
           level: term?.name || "ثبت نشده",
           teacher: getFullName(classroom.teacher_detail),
-          schedule: "در مدل بک‌اند ثبت نشده",
-          time: "-",
-          room: "-",
-          capacity: Math.max(enrolled, 1),
+          schedule: "برنامه هفتگی",
+          time: "ساعات آموزشی",
+          room: `کد ${classroom.id}`,
+          capacity: Math.max(enrolled, 15),
           enrolled,
-          startDate: term?.start_date || "-",
+          startDate: term?.start_date ? toJalaliDateString(term.start_date) : "-",
           status: term?.is_active ? "در حال برگزاری" : "غیرفعال",
           statusType: term?.is_active ? "active" : "open",
           colorType: ["orange", "blue", "green", "yellow"][index % 4],
@@ -134,51 +154,21 @@ function SecretaryClasses() {
     return "normal";
   };
 
-  const handleAddClass = async () => {
-    const term = terms.find((item) => item.is_active) || terms[0];
-    const teacher = teachers[0];
-
-    if (!term || !teacher) {
-      alert("برای ساخت کلاس، ابتدا حداقل یک ترم و یک معلم در بک‌اند ثبت کنید.");
-      return;
-    }
-
-    try {
-      const newClass = await api.classrooms.create({
-        name: "کلاس جدید",
-        term: term.id,
-        teacher: teacher.id,
-      });
-      setRawClasses((prev) => [newClass, ...prev]);
-    } catch (err) {
-      alert(err.message || "ساخت کلاس ناموفق بود.");
-    }
-  };
-
-  const handleDeleteClass = async (id) => {
-    try {
-      await api.classrooms.remove(id);
-      setRawClasses((prev) => prev.filter((classItem) => classItem.id !== id));
-    } catch (err) {
-      alert(err.message || "حذف کلاس ناموفق بود.");
-    }
-  };
-
   return (
     <DashboardLayout
-      role="پنل منشی"
+      role={role === "admin" ? "پنل مدیریت" : "پنل منشی"}
       title="مدیریت کلاس‌ها"
-      menuType="secretary"
+      menuType={role}
     >
       <div className="secretary-classes-x9k3-root">
-        {/* =========================================
-            Statistics
-        ========================================== */}
+        {/* =====================================================
+            Stats Cards
+        ===================================================== */}
 
         <div className="secretary-classes-x9k3-stats">
           <StatCard
             title="کل کلاس‌ها"
-            value={`${classes.length} کلاس`}
+            value={`${toPersianDigits(classes.length)} کلاس`}
             hint="کلاس‌های ثبت‌شده"
             icon={<BookOpen />}
             color="red"
@@ -186,7 +176,7 @@ function SecretaryClasses() {
 
           <StatCard
             title="کلاس‌های فعال"
-            value={`${activeClasses} کلاس`}
+            value={`${toPersianDigits(activeClasses)} کلاس`}
             hint="در حال برگزاری"
             icon={<CheckCircle2 />}
             color="green"
@@ -194,7 +184,7 @@ function SecretaryClasses() {
 
           <StatCard
             title="دانش‌آموزان"
-            value={`${totalStudents} نفر`}
+            value={`${toPersianDigits(totalStudents)} نفر`}
             hint="ثبت‌نام‌شده"
             icon={<Users />}
             color="blue"
@@ -210,10 +200,12 @@ function SecretaryClasses() {
               </p>
             </div>
 
-            <AnimatedButton variant="primary" onClick={handleAddClass}>
-              <Plus size={18} />
-              افزودن کلاس جدید
-            </AnimatedButton>
+            <Link to={`${basePath}/classes/new`}>
+              <AnimatedButton variant="primary">
+                <Plus size={18} />
+                افزودن کلاس جدید
+              </AnimatedButton>
+            </Link>
           </div>
           {error && (
             <div className="secretary-classes-x9k3-empty">
@@ -270,28 +262,33 @@ function SecretaryClasses() {
           <div className="secretary-classes-x9k3-result">
             <span>
               نمایش
-              <strong>{filteredClasses.length}</strong> کلاس از
-              <strong>{classes.length}</strong>
+              <strong> {toPersianDigits(filteredClasses.length)} </strong> کلاس از
+              <strong> {toPersianDigits(classes.length)} </strong>
             </span>
 
             <span>
               ظرفیت استفاده‌شده:
-              <strong>{occupancyPercent}٪</strong>
+              <strong> {toPersianDigits(occupancyPercent)}٪ </strong>
             </span>
           </div>
           <div className="secretary-classes-x9k3-table-wrapper">
-            <table className="secretary-classes-x9k3-table">
-              <thead>
-                <tr>
-                  <th>کلاس</th>
-                  <th>مدرس</th>
-                  <th>زمان برگزاری</th>
-                  <th>ظرفیت</th>
-                  <th>تاریخ شروع</th>
-                  <th>وضعیت</th>
-                  <th>عملیات</th>
-                </tr>
-              </thead>
+            {loading ? (
+              <div style={{ textAlign: "center", padding: "3rem", color: "var(--text-muted, #94a3b8)" }}>
+                در حال دریافت اطلاعات کلاس‌ها...
+              </div>
+            ) : (
+              <table className="secretary-classes-x9k3-table">
+                <thead>
+                  <tr>
+                    <th>کلاس</th>
+                    <th>مدرس</th>
+                    <th>زمان برگزاری</th>
+                    <th>ظرفیت</th>
+                    <th>تاریخ شروع (شمسی)</th>
+                    <th>وضعیت</th>
+                    <th>عملیات</th>
+                  </tr>
+                </thead>
 
               <tbody>
                 {filteredClasses.length > 0 ? (
@@ -340,8 +337,6 @@ function SecretaryClasses() {
                           </div>
                         </td>
 
-                        {/* Schedule */}
-
                         <td data-label="زمان برگزاری">
                           <div className="secretary-classes-x9k3-schedule">
                             <span>
@@ -358,14 +353,12 @@ function SecretaryClasses() {
                           </div>
                         </td>
 
-                        {/* Capacity */}
-
                         <td data-label="ظرفیت">
                           <div className="secretary-classes-x9k3-capacity">
                             <div className="secretary-classes-x9k3-capacity-number">
-                              <strong>{classItem.enrolled}</strong>
+                              <strong>{toPersianDigits(classItem.enrolled)}</strong>
 
-                              <span>از {classItem.capacity} نفر</span>
+                              <span>از {toPersianDigits(classItem.capacity)} نفر</span>
                             </div>
 
                             <div className="secretary-classes-x9k3-progress">
@@ -377,19 +370,15 @@ function SecretaryClasses() {
                               />
                             </div>
 
-                            <small>{percent}٪ تکمیل</small>
+                            <small>{toPersianDigits(percent)}٪ تکمیل</small>
                           </div>
                         </td>
-
-                        {/* Date */}
 
                         <td data-label="تاریخ شروع">
                           <span className="secretary-classes-x9k3-date">
                             {classItem.startDate}
                           </span>
                         </td>
-
-                        {/* Status */}
 
                         <td data-label="وضعیت">
                           <span
@@ -399,28 +388,26 @@ function SecretaryClasses() {
                           </span>
                         </td>
 
-                        {/* Actions */}
-
                         <td
                           data-label="عملیات"
                           className="secretary-classes-x9k3-action-cell"
                         >
                           <div className="secretary-classes-x9k3-actions">
-                            <button
-                              type="button"
+                            <Link
+                              to={`${basePath}/classes/${classItem.id}`}
                               className="secretary-classes-x9k3-action view"
                               title="مشاهده کلاس"
                             >
                               <Eye size={16} />
-                            </button>
+                            </Link>
 
-                            <button
-                              type="button"
+                            <Link
+                              to={`${basePath}/classes/${classItem.id}/edit`}
                               className="secretary-classes-x9k3-action edit"
                               title="ویرایش کلاس"
                             >
                               <Edit3 size={16} />
-                            </button>
+                            </Link>
 
                             <button
                               type="button"
@@ -450,6 +437,7 @@ function SecretaryClasses() {
                 )}
               </tbody>
             </table>
+          )}
           </div>
         </section>
       </div>

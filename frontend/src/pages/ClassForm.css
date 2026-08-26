@@ -1,0 +1,309 @@
+/* =========================================================
+   Class Form (Matches SecretaryStudentForm design)
+   ========================================================= */
+
+.class-form-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  direction: rtl;
+}
+
+.class-form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: oklch(100% 0 0 / 0.88);
+  border: 1px solid oklch(0% 0 0 / 0.055);
+  border-radius: 18px;
+  box-shadow: 0 7px 28px oklch(0% 0 0 / 0.04);
+  backdrop-filter: blur(12px);
+}
+
+.class-form-heading {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.class-form-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--red-5, oklch(55.799% 0.17067 24.538));
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 18px oklch(60% 0.19 29 / 0.25);
+}
+
+.class-form-heading h3 {
+  margin: 0 0 0.25rem;
+  color: oklch(25% 0 0);
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.class-form-heading p {
+  margin: 0;
+  color: oklch(55% 0 0);
+  font-size: 0.82rem;
+}
+
+.class-form-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.class-form-alert.error {
+  background: oklch(95% 0.05 25 / 0.8);
+  border: 1px solid oklch(75% 0.15 25 / 0.3);
+  color: oklch(45% 0.18 25);
+}
+
+.class-form-alert.success {
+  background: oklch(95% 0.05 145 / 0.8);
+  border: 1px solid oklch(75% 0.15 145 / 0.3);
+  color: oklch(40% 0.15 145);
+}
+
+.class-form-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.class-form-card {
+  padding: 1.5rem;
+  background: oklch(100% 0 0 / 0.88);
+  border: 1px solid oklch(0% 0 0 / 0.055);
+  border-radius: 18px;
+  box-shadow: 0 7px 28px oklch(0% 0 0 / 0.04);
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1rem;
+  font-weight: 800;
+  color: oklch(25% 0 0);
+  margin: 0;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid oklch(0% 0 0 / 0.055);
+}
+
+.card-header-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid oklch(0% 0 0 / 0.055);
+}
+
+.card-subtitle {
+  font-size: 0.82rem;
+  color: oklch(55% 0 0);
+  margin-top: 0.25rem;
+}
+
+.card-subtitle strong {
+  color: var(--primary, oklch(55% 0.18 25));
+}
+
+.select-all-btn {
+  background: oklch(97% 0.005 29);
+  border: 1px solid oklch(0% 0 0 / 0.08);
+  color: oklch(35% 0 0);
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.select-all-btn:hover {
+  background: var(--red-5, oklch(55.799% 0.17067 24.538));
+  color: #ffffff;
+  border-color: var(--red-5, oklch(55.799% 0.17067 24.538));
+}
+
+.class-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.class-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.class-form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.class-form-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: oklch(35% 0 0);
+}
+
+.class-form-group label .req {
+  color: var(--primary, oklch(55% 0.18 25));
+}
+
+.class-form-group input,
+.class-form-group select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.75rem 0.85rem;
+  color: oklch(25% 0 0);
+  background: oklch(98% 0.003 29);
+  border: 1px solid oklch(0% 0 0 / 0.08);
+  border-radius: 10px;
+  outline: none;
+  font-family: inherit;
+  font-size: 0.85rem;
+  height: 44px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.class-form-group input:focus,
+.class-form-group select:focus {
+  background: #ffffff;
+  border-color: oklch(60% 0.19 29 / 0.45);
+  box-shadow: 0 0 0 3px oklch(60% 0.19 29 / 0.12);
+}
+
+.class-form-group select option {
+  background: #ffffff;
+  color: oklch(25% 0 0);
+}
+
+.student-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: oklch(98% 0.003 29);
+  border: 1px solid oklch(0% 0 0 / 0.08);
+  border-radius: 10px;
+  padding: 0.6rem 0.85rem;
+  color: oklch(55% 0 0);
+}
+
+.student-search-bar input {
+  background: transparent;
+  border: none;
+  color: oklch(25% 0 0);
+  font-size: 0.88rem;
+  font-family: inherit;
+  width: 100%;
+  outline: none;
+}
+
+.students-checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+  max-height: 320px;
+  overflow-y: auto;
+  padding-left: 0.5rem;
+}
+
+.student-check-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: oklch(98% 0.003 29);
+  border: 1px solid oklch(0% 0 0 / 0.06);
+  border-radius: 10px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.student-check-item:hover {
+  background: #ffffff;
+  border-color: oklch(60% 0.19 29 / 0.3);
+  box-shadow: 0 4px 12px oklch(0% 0 0 / 0.03);
+}
+
+.student-check-item.selected {
+  background: oklch(97% 0.02 29);
+  border-color: var(--primary, oklch(55% 0.18 25));
+}
+
+.check-box-icon {
+  display: flex;
+  align-items: center;
+  color: oklch(60% 0 0);
+}
+
+.checked-icon {
+  color: var(--primary, oklch(55% 0.18 25));
+}
+
+.student-check-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  overflow: hidden;
+}
+
+.student-check-info strong {
+  font-size: 0.88rem;
+  color: oklch(25% 0 0);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.student-check-info small {
+  font-size: 0.75rem;
+  color: oklch(55% 0 0);
+}
+
+.no-students-found {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 2rem;
+  color: oklch(55% 0 0);
+}
+
+.class-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .class-form-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -36,6 +36,10 @@ import StudentExams from "./pages/StudentExams";
 import StudentExamResult from "./pages/StudentExamResult";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
+import ClassForm from "./pages/ClassForm";
+import ClassDetails from "./pages/ClassDetails";
+import SecretaryTerms from "./pages/SecretaryTerms";
+import SecretaryExams from "./pages/SecretaryExams";
 
 function App() {
   const location = useLocation();
@@ -94,6 +98,14 @@ function App() {
           element={<AdminStudentDetails />}
         />
         <Route path="/panel/secretary/classes" element={<SecretaryClasses />} />
+        <Route path="/panel/secretary/classes/new" element={<ClassForm />} />
+        <Route path="/panel/secretary/classes/:id" element={<ClassDetails />} />
+        <Route path="/panel/secretary/classes/:id/edit" element={<ClassForm />} />
+        <Route path="/panel/secretary/terms" element={<SecretaryTerms />} />
+        <Route path="/panel/secretary/teachers" element={<AdminTeachers />} />
+        <Route path="/panel/secretary/teachers/new" element={<AdminTeacherForm />} />
+        <Route path="/panel/secretary/teachers/:teacherId" element={<AdminTeacherDetails />} />
+        <Route path="/panel/secretary/teachers/:id/edit" element={<AdminTeacherForm />} />
         <Route
           path="/panel/secretary/students"
           element={<SecretaryStudents />}
@@ -114,8 +126,17 @@ function App() {
           path="/panel/secretary/tuition"
           element={<SecretaryTuitions />}
         />
+        <Route
+          path="/panel/secretary/exams"
+          element={<SecretaryExams />}
+        />
 
         <Route path="/panel/admin" element={<AdminPanel />} />
+        <Route path="/panel/admin/classes" element={<SecretaryClasses />} />
+        <Route path="/panel/admin/classes/new" element={<ClassForm />} />
+        <Route path="/panel/admin/classes/:id" element={<ClassDetails />} />
+        <Route path="/panel/admin/classes/:id/edit" element={<ClassForm />} />
+        <Route path="/panel/admin/terms" element={<SecretaryTerms />} />
         <Route path="/panel/admin/students" element={<AdminStudents />} />
         <Route
           path="/panel/admin/students/:id"
@@ -144,8 +165,16 @@ function App() {
           element={<AdminTeacherForm />}
         />
         <Route
+          path="/panel/admin/exams"
+          element={<SecretaryExams />}
+        />
+        <Route
+          path="/panel/teacher/classes/:id"
+          element={<ClassDetails />}
+        />
+        <Route
           path="/panel/teacher/attendance"
-          element={<TeacherPanel />}
+          element={<TeacherAttendance />}
         />
       </Routes>
       {!isDashboard && <Footer />}

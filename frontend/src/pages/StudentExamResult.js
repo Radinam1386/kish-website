@@ -15,6 +15,7 @@ import DashboardLayout from "../components/DashboardLayout";
 import StatCard from "../components/StatCard";
 import { AnimatedButton } from "../components/AnimatedButton";
 import { api, getFullName } from "../services/api";
+import { toJalaliDateString } from "../utils/dateUtils";
 
 const StudentExamResult = () => {
   const { examResultId } = useParams();
@@ -264,6 +265,14 @@ const StudentExamResult = () => {
               <div>
                 <span>مدرس</span>
                 <strong>{getFullName(classroom?.teacher_detail) || "-"}</strong>
+              </div>
+            </div>
+
+            <div className="student-exam-result-p__meta-item">
+              <Clock3 size={19} />
+              <div>
+                <span>تاریخ برگزاری</span>
+                <strong>{toJalaliDateString(exam.date)}</strong>
               </div>
             </div>
           </div>
