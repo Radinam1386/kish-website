@@ -10,38 +10,48 @@ import {
   Trophy,
   UserRound,
   XCircle,
+  Award,
 } from "lucide-react";
 
 import "./StudentExams.css";
 import DashboardLayout from "../components/DashboardLayout";
 import StatCard from "../components/StatCard";
 import { Link } from "react-router-dom";
-import { api, getFullName } from "../services/api";
-import { toJalaliDateString } from "../utils/dateUtils";
+import { api, getFullName, storage } from "../services/api";
+import { toJalaliDateString, toPersianDigits } from "../utils/dateUtils";
 
 function StudentExams() {
   const [activeTab, setActiveTab] = useState("active");
   const [exams, setExams] = useState([]);
   const [classrooms, setClassrooms] = useState([]);
+  const [terms, setTerms] = useState([]);
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const currentUser = storage.getUser();
 
   useEffect(() => {
     let alive = true;
 
     async function loadData() {
       try {
-        const [examsData, classroomsData, submissionsData] = await Promise.all([
-          api.exams.list(),
-          api.classrooms.list(),
-          api.submissions.list(),
-        ]);
+        setLoading(true);
+        setError("");
+
+        const [examsData, classroomsData, termsData, submissionsData] =
+          await Promise.all([
+            api.exams.list(),
+            api.classrooms.list(),
+            api.terms.list(),
+            api.submissions.list(),
+          ]);
 
         if (!alive) return;
-        setExams(examsData);
-        setClassrooms(classroomsData);
-        setSubmissions(submissionsData);
+        setExams(examsData || []);
+        setClassrooms(classroomsData || []);
+        setTerms(termsData || []);
+        setSubmissions(submissionsData || []);
       } catch (err) {
         if (alive) setError(err.message || "دریافت آزمون‌ها ناموفق بود.");
       } finally {
@@ -56,28 +66,56 @@ function StudentExams() {
     };
   }, []);
 
+  // Active term and class filtering
+  const activeClassIds = useMemo(() => {
+    const activeTermIds = terms.filter((t) => t.is_active).map((t) => t.id);
+    const enrolledActive = classrooms.filter((c) =>
+      activeTermIds.includes(c.term || c.term?.id),
+    );
+
+    if (enrolledActive.length > 0) {
+      return enrolledActive.map((c) => c.id);
+    }
+    return classrooms.map((c) => c.id);
+  }, [terms, classrooms]);
+
   const examsData = useMemo(
     () =>
-      exams.map((exam) => {
-        const classroom = classrooms.find((item) => item.id === exam.classroom);
-        const submission = submissions.find((item) => item.exam === exam.id);
+      exams
+        .filter((exam) => activeClassIds.includes(exam.classroom || exam.classroom?.id))
+        .map((exam) => {
+          const classroom = classrooms.find(
+            (item) => item.id === exam.classroom || item.id === exam.classroom?.id,
+          );
+          const submission = submissions.find(
+            (item) =>
+              (item.exam === exam.id || item.exam?.id === exam.id) &&
+              (item.student === currentUser?.id || item.student?.id === currentUser?.id),
+          );
 
-        return {
-          ...exam,
-          subject: classroom?.name || `کلاس ${exam.classroom}`,
-          teacher: getFullName(classroom?.teacher_detail),
-          questionsCount: exam.questions?.length || 0,
-          status: submission ? "completed" : "active",
-          score:
-            submission?.total_score !== null && submission?.total_score !== undefined
-              ? `${submission.total_score}`
-              : submission
-                ? "در انتظار تصحیح"
-                : "",
-          description: `${exam.title} - ${classroom?.name || "کلاس"}`,
-        };
-      }),
-    [exams, classrooms, submissions],
+          const maxScore = (exam.questions || []).reduce(
+            (acc, q) => acc + (q.max_score || 1),
+            0,
+          ) || 20;
+
+          return {
+            ...exam,
+            subject: classroom?.name || `کلاس ${exam.classroom}`,
+            teacher: getFullName(classroom?.teacher_detail) || "استاد آکادمی",
+            questionsCount: exam.questions?.length || 0,
+            status: submission ? "completed" : "active",
+            isGraded: submission?.is_graded,
+            maxScore,
+            score:
+              submission?.total_score !== null && submission?.total_score !== undefined
+                ? `${toPersianDigits(submission.total_score)} از ${toPersianDigits(maxScore)}`
+                : submission
+                  ? "در انتظار تصحیح"
+                  : "",
+            description: `${exam.title} - ${classroom?.name || "کلاس"}`,
+          };
+        }),
+    [exams, classrooms, submissions, activeClassIds, currentUser],
   );
 
   const activeExams = useMemo(
@@ -93,34 +131,35 @@ function StudentExams() {
   const currentExams = activeTab === "active" ? activeExams : completedExams;
 
   return (
-    <DashboardLayout role="پنل دانش‌آموز" title="آزمون ها" menuType="student">
+    <DashboardLayout role="پنل دانش‌آموز" title="آزمون‌ها" menuType="student">
       <div className="student-exams-page">
         <div className="student-exams-stats">
           <StatCard
             title="آزمون‌های فعال"
-            value={activeExams.length}
-            icon={<Timer />}
+            value={`${toPersianDigits(activeExams.length)} آزمون`}
+            icon={<Timer size={22} />}
             color="red"
           />
           <StatCard
-            title="کل آزمون‌ها"
-            value={examsData.length}
-            icon={<FileQuestion />}
+            title="کل آزمون‌های کلاس"
+            value={`${toPersianDigits(examsData.length)} آزمون`}
+            icon={<FileQuestion size={22} />}
             color="blue"
           />
           <StatCard
             title="آزمون‌های داده‌شده"
-            value={completedExams.length}
-            icon={<CheckCircle2 />}
+            value={`${toPersianDigits(completedExams.length)} آزمون`}
+            icon={<CheckCircle2 size={22} />}
             color="green"
           />
           <StatCard
             title="آخرین نتیجه"
-            value={completedExams[0]?.score || "-"}
-            icon={<Trophy />}
+            value={completedExams[0]?.score || "هنوز ثبت نشده"}
+            icon={<Trophy size={22} />}
             color="orange"
           />
         </div>
+
         <section className="student-exams-section">
           <div className="student-exams-section-header">
             <div className="student-exams-heading">
@@ -131,22 +170,19 @@ function StudentExams() {
 
               <h2>
                 {activeTab === "active"
-                  ? "آزمون‌های فعال"
+                  ? "آزمون‌های فعال کلاس"
                   : "آزمون‌های داده‌شده"}
               </h2>
 
               <p>
                 {activeTab === "active"
-                  ? "آزمون‌هایی که در حال حاضر امکان شرکت در آن‌ها وجود دارد."
-                  : "لیست آزمون‌هایی که قبلاً در آن‌ها شرکت کرده‌اید."}
+                  ? "آزمون‌های کلاس جاری که در حال حاضر امکان شرکت در آن‌ها وجود دارد."
+                  : "لیست آزمون‌های کلاس فعال که قبلاً در آن‌ها شرکت کرده‌اید."}
               </p>
             </div>
           </div>
 
-          {/* =====================================================
-            Tabs
-        ===================================================== */}
-
+          {/* Tabs */}
           <div className="student-exams-tabs">
             <button
               type="button"
@@ -157,7 +193,7 @@ function StudentExams() {
             >
               <Timer size={17} />
               آزمون‌های فعال
-              <span>{activeExams.length}</span>
+              <span>{toPersianDigits(activeExams.length)}</span>
             </button>
 
             <button
@@ -169,14 +205,11 @@ function StudentExams() {
             >
               <CheckCircle2 size={17} />
               آزمون‌های داده‌شده
-              <span>{completedExams.length}</span>
+              <span>{toPersianDigits(completedExams.length)}</span>
             </button>
           </div>
 
-          {/* =====================================================
-            Exams Grid
-        ===================================================== */}
-
+          {/* Exams Grid */}
           {loading ? (
             <div className="student-exams-empty">
               <strong>در حال دریافت آزمون‌ها...</strong>
@@ -191,7 +224,6 @@ function StudentExams() {
               {currentExams.map((exam) => (
                 <article className="student-exams-card" key={exam.id}>
                   {/* Card Top */}
-
                   <div className="student-exams-card-top">
                     <div className="student-exams-card-subject">
                       {exam.subject}
@@ -200,7 +232,7 @@ function StudentExams() {
                     {exam.status === "active" ? (
                       <span className="student-exams-status active">
                         <span className="student-exams-status-dot" />
-                        فعال
+                        آماده شروع
                       </span>
                     ) : (
                       <span className="student-exams-status completed">
@@ -211,7 +243,6 @@ function StudentExams() {
                   </div>
 
                   {/* Title */}
-
                   <div className="student-exams-card-title">
                     <div className="student-exams-card-icon">
                       <FileQuestion size={21} />
@@ -219,63 +250,59 @@ function StudentExams() {
 
                     <div>
                       <h3>{exam.title}</h3>
-
                       <p>{exam.description}</p>
                     </div>
                   </div>
 
                   {/* Teacher */}
-
                   <div className="student-exams-teacher">
                     <UserRound size={15} />
-
                     <span>مدرس:</span>
-
                     <strong>{exam.teacher}</strong>
                   </div>
 
                   {/* Details */}
-
                   <div className="student-exams-details">
                     <div className="student-exams-detail">
                       <FileQuestion size={15} />
-
                       <div>
                         <span>تعداد سوال</span>
-                        <strong>{exam.questionsCount} سوال</strong>
+                        <strong>{toPersianDigits(exam.questionsCount)} سوال</strong>
                       </div>
                     </div>
 
                     <div className="student-exams-detail">
                       <Clock3 size={15} />
-
                       <div>
-                        <span>زمان آزمون</span>
-                        <strong>طبق اعلام مدرس</strong>
+                        <span>بارم کل</span>
+                        <strong>{toPersianDigits(exam.maxScore)} نمره</strong>
                       </div>
                     </div>
 
                     <div className="student-exams-detail">
                       <CalendarDays size={15} />
-
                       <div>
-                        <span>تاریخ (شمسی)</span>
+                        <span>تاریخ برگزاری</span>
                         <strong>{toJalaliDateString(exam.date)}</strong>
                       </div>
                     </div>
 
                     <div className="student-exams-detail">
-                      <Timer size={15} />
-
+                      <Award size={15} />
                       <div>
-                        <span>ساعت</span>
-                        <strong>-</strong>
+                        <span>وضعیت</span>
+                        <strong>
+                          {exam.status === "active"
+                            ? "شروع نشده"
+                            : exam.isGraded
+                              ? "تصحیح نهایی"
+                              : "منتظر نمره"}
+                        </strong>
                       </div>
                     </div>
                   </div>
 
                   {/* Result */}
-
                   {exam.status === "completed" && (
                     <div className="student-exams-result">
                       <div className="student-exams-result-icon">
@@ -307,7 +334,7 @@ function StudentExams() {
                           className="student-exams-review-btn"
                         >
                           <History size={16} />
-                          مشاهده نتیجه
+                          مشاهده کارنامه و پاسخ‌برگ
                         </button>
                       </Link>
                     )}
@@ -323,13 +350,13 @@ function StudentExams() {
 
               <strong>
                 {activeTab === "active"
-                  ? "آزمون فعالی وجود ندارد"
-                  : "هنوز آزمونی داده نشده است"}
+                  ? "آزمون فعالی در این کلاس وجود ندارد"
+                  : "هنوز در آزمونی شرکت نکرده‌اید"}
               </strong>
 
               <span>
                 {activeTab === "active"
-                  ? "در حال حاضر آزمون جدیدی برای شما فعال نشده است."
+                  ? "در حال حاضر آزمون جدیدی برای کلاس فعال شما ثبت نشده است."
                   : "آزمون‌هایی که در آن‌ها شرکت کنید در این قسمت نمایش داده می‌شوند."}
               </span>
             </div>

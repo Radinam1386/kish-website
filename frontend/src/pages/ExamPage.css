@@ -325,6 +325,30 @@
   transform: translateX(-3px);
 }
 
+.question-essay-input {
+  width: 100%;
+  padding: 16px 18px;
+  border: 1px solid rgba(38, 50, 56, 0.12);
+  border-radius: var(--exam-radius-md);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--exam-text);
+  font-size: 0.95rem;
+  font-family: inherit;
+  line-height: 1.7;
+  outline: none;
+  resize: vertical;
+  min-height: 120px;
+  direction: rtl;
+  text-align: right;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.question-essay-input:focus {
+  border-color: var(--exam-red);
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.15);
+  background: #ffffff;
+}
+
 /* =====================================================
    Submit Card
 ===================================================== */

@@ -62,7 +62,9 @@ class ExamSubmission(models.Model):
 
         for answer in self.answers.select_related('question', 'selected_choice'):
             if answer.question.question_type == 'multiple_choice':
-                if answer.selected_choice and answer.selected_choice.is_correct:
+                if answer.score is not None:
+                    total += answer.score
+                elif answer.selected_choice and answer.selected_choice.is_correct:
                     total += answer.question.max_score
             else:  # essay
                 if answer.score is not None:

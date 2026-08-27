@@ -14,6 +14,7 @@ import {
   Layers,
   GraduationCap,
   UserCheck,
+  Award,
 } from "lucide-react";
 import "./DashboardLayout.css";
 import { storage } from "../services/api";
@@ -46,6 +47,11 @@ function DashboardLayout({ role, title, children, menuType }) {
         label: "حضور و غیاب",
         icon: <ClipboardCheck size={19} />,
         to: "/panel/teacher/attendance",
+      },
+      {
+        label: "امتحانات و نمره‌دهی",
+        icon: <Award size={19} />,
+        to: "/panel/teacher/exams",
       },
       {
         label: "ایجاد امتحان",

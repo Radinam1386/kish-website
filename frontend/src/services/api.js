@@ -87,16 +87,34 @@ export const api = {
     remove(id) {
       return request(`/accounts/users/${id}/`, { method: "DELETE" });
     },
+    delete(id) {
+      return request(`/accounts/users/${id}/`, { method: "DELETE" });
+    },
   },
   terms: {
     list() {
       return request("/classes/terms/");
+    },
+    get(id) {
+      return request(`/classes/terms/${id}/`);
     },
     create(payload) {
       return request("/classes/terms/", {
         method: "POST",
         body: json(payload),
       });
+    },
+    update(id, payload) {
+      return request(`/classes/terms/${id}/`, {
+        method: "PATCH",
+        body: json(payload),
+      });
+    },
+    remove(id) {
+      return request(`/classes/terms/${id}/`, { method: "DELETE" });
+    },
+    delete(id) {
+      return request(`/classes/terms/${id}/`, { method: "DELETE" });
     },
   },
   classrooms: {
@@ -112,7 +130,16 @@ export const api = {
         body: json(payload),
       });
     },
+    update(id, payload) {
+      return request(`/classes/classrooms/${id}/`, {
+        method: "PATCH",
+        body: json(payload),
+      });
+    },
     remove(id) {
+      return request(`/classes/classrooms/${id}/`, { method: "DELETE" });
+    },
+    delete(id) {
       return request(`/classes/classrooms/${id}/`, { method: "DELETE" });
     },
   },
@@ -120,16 +147,34 @@ export const api = {
     list() {
       return request("/classes/enrollments/");
     },
+    get(id) {
+      return request(`/classes/enrollments/${id}/`);
+    },
     create(payload) {
       return request("/classes/enrollments/", {
         method: "POST",
         body: json(payload),
       });
     },
+    update(id, payload) {
+      return request(`/classes/enrollments/${id}/`, {
+        method: "PATCH",
+        body: json(payload),
+      });
+    },
+    remove(id) {
+      return request(`/classes/enrollments/${id}/`, { method: "DELETE" });
+    },
+    delete(id) {
+      return request(`/classes/enrollments/${id}/`, { method: "DELETE" });
+    },
   },
   sessions: {
     list() {
       return request("/attendance/sessions/");
+    },
+    get(id) {
+      return request(`/attendance/sessions/${id}/`);
     },
     create(payload) {
       return request("/attendance/sessions/", {
@@ -137,10 +182,25 @@ export const api = {
         body: json(payload),
       });
     },
+    update(id, payload) {
+      return request(`/attendance/sessions/${id}/`, {
+        method: "PATCH",
+        body: json(payload),
+      });
+    },
+    remove(id) {
+      return request(`/attendance/sessions/${id}/`, { method: "DELETE" });
+    },
+    delete(id) {
+      return request(`/attendance/sessions/${id}/`, { method: "DELETE" });
+    },
   },
   attendance: {
     list() {
       return request("/attendance/records/");
+    },
+    get(id) {
+      return request(`/attendance/records/${id}/`);
     },
     create(payload) {
       return request("/attendance/records/", {
@@ -153,6 +213,38 @@ export const api = {
         method: "PATCH",
         body: json(payload),
       });
+    },
+    remove(id) {
+      return request(`/attendance/records/${id}/`, { method: "DELETE" });
+    },
+    delete(id) {
+      return request(`/attendance/records/${id}/`, { method: "DELETE" });
+    },
+  },
+  attendances: {
+    list() {
+      return request("/attendance/records/");
+    },
+    get(id) {
+      return request(`/attendance/records/${id}/`);
+    },
+    create(payload) {
+      return request("/attendance/records/", {
+        method: "POST",
+        body: json(payload),
+      });
+    },
+    update(id, payload) {
+      return request(`/attendance/records/${id}/`, {
+        method: "PATCH",
+        body: json(payload),
+      });
+    },
+    remove(id) {
+      return request(`/attendance/records/${id}/`, { method: "DELETE" });
+    },
+    delete(id) {
+      return request(`/attendance/records/${id}/`, { method: "DELETE" });
     },
   },
   exams: {
@@ -171,18 +263,51 @@ export const api = {
         body: json(payload),
       });
     },
+    update(id, payload) {
+      return request(`/exams/exams/${id}/`, {
+        method: "PATCH",
+        body: json(payload),
+      });
+    },
+    remove(id) {
+      return request(`/exams/exams/${id}/`, { method: "DELETE" });
+    },
+    delete(id) {
+      return request(`/exams/exams/${id}/`, { method: "DELETE" });
+    },
   },
   questions: {
+    list() {
+      return request("/exams/questions/");
+    },
+    get(id) {
+      return request(`/exams/questions/${id}/`);
+    },
     create(payload) {
       return request("/exams/questions/", {
         method: "POST",
         body: json(payload),
       });
     },
+    update(id, payload) {
+      return request(`/exams/questions/${id}/`, {
+        method: "PATCH",
+        body: json(payload),
+      });
+    },
+    remove(id) {
+      return request(`/exams/questions/${id}/`, { method: "DELETE" });
+    },
+    delete(id) {
+      return request(`/exams/questions/${id}/`, { method: "DELETE" });
+    },
   },
   submissions: {
     list() {
       return request("/exams/submissions/");
+    },
+    get(id) {
+      return request(`/exams/submissions/${id}/`);
     },
     create(payload) {
       return request("/exams/submissions/", {
@@ -190,16 +315,46 @@ export const api = {
         body: json(payload),
       });
     },
+    update(id, payload) {
+      return request(`/exams/submissions/${id}/`, {
+        method: "PATCH",
+        body: json(payload),
+      });
+    },
+    remove(id) {
+      return request(`/exams/submissions/${id}/`, { method: "DELETE" });
+    },
+    delete(id) {
+      return request(`/exams/submissions/${id}/`, { method: "DELETE" });
+    },
     grade(id) {
       return request(`/exams/submissions/${id}/grade/`, { method: "POST" });
     },
   },
   answers: {
+    list() {
+      return request("/exams/answers/");
+    },
+    get(id) {
+      return request(`/exams/answers/${id}/`);
+    },
     create(payload) {
       return request("/exams/answers/", {
         method: "POST",
         body: json(payload),
       });
+    },
+    update(id, payload) {
+      return request(`/exams/answers/${id}/`, {
+        method: "PATCH",
+        body: json(payload),
+      });
+    },
+    remove(id) {
+      return request(`/exams/answers/${id}/`, { method: "DELETE" });
+    },
+    delete(id) {
+      return request(`/exams/answers/${id}/`, { method: "DELETE" });
     },
   },
 };

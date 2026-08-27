@@ -58,6 +58,11 @@ class AnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Answer
         fields = ('id', 'submission', 'question', 'selected_choice', 'essay_text', 'score')
+        extra_kwargs = {
+            'selected_choice': {'required': False, 'allow_null': True},
+            'essay_text': {'required': False, 'allow_blank': True},
+            'score': {'required': False, 'allow_null': True},
+        }
 
 
 class ExamSubmissionSerializer(serializers.ModelSerializer):
@@ -67,6 +72,9 @@ class ExamSubmissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExamSubmission
         fields = ('id', 'exam', 'student', 'student_detail', 'answers', 'total_score', 'is_graded', 'submitted_at')
+        extra_kwargs = {
+            'student': {'required': False},
+        }
 
 
 class AnswerStudentSerializer(serializers.ModelSerializer):
@@ -74,3 +82,7 @@ class AnswerStudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Answer
         fields = ('id', 'submission', 'question', 'selected_choice', 'essay_text')
+        extra_kwargs = {
+            'selected_choice': {'required': False, 'allow_null': True},
+            'essay_text': {'required': False, 'allow_blank': True},
+        }

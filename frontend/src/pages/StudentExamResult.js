@@ -114,9 +114,9 @@ const StudentExamResult = () => {
           status = "wrong";
         }
       } else {
-        studentAnswerText = studentAnswer?.text_answer || "بدون پاسخ";
+        studentAnswerText = studentAnswer?.essay_text || "بدون پاسخ";
         correctAnswerText = "پاسخ تشریحی";
-        if (!studentAnswer?.text_answer) {
+        if (!studentAnswer?.essay_text || !studentAnswer.essay_text.trim()) {
           status = "unanswered";
         } else if (studentAnswer.score !== null && studentAnswer.score > 0) {
           status = "correct";
@@ -130,7 +130,7 @@ const StudentExamResult = () => {
       return {
         number: idx + 1,
         question: q.text,
-        points: q.points,
+        points: q.max_score || 1,
         score: studentAnswer?.score,
         answer: studentAnswerText,
         correctAnswer: correctAnswerText,

@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState, useMemo } from "react";
+import { useParams, Link } from "react-router-dom";
 import {
   CheckCircle2,
   Clock3,
@@ -8,38 +8,54 @@ import {
   FileCheck2,
   CircleHelp,
   BadgeCheck,
+  Award,
 } from "lucide-react";
 import DashboardLayout from "../components/DashboardLayout";
 import { AnimatedButton } from "../components/AnimatedButton";
-import "./ExamPage.css";
 import StatCard from "../components/StatCard";
 import { api, storage } from "../services/api";
+import { toPersianDigits, toJalaliDateString } from "../utils/dateUtils";
+import "./ExamPage.css";
 
-function ExamPage() {
+function StudentExam() {
   const { examId } = useParams();
   const [answers, setAnswers] = useState({});
   const [exam, setExam] = useState(null);
   const [questions, setQuestions] = useState([]);
+  const [existingSubmission, setExistingSubmission] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-
-  const answeredCount = Object.keys(answers).length;
-  const totalQuestions = questions.length;
-  const isAllAnswered = answeredCount === totalQuestions;
 
   useEffect(() => {
     let alive = true;
 
     async function loadExam() {
       try {
-        const data = await api.exams.studentView(examId);
+        setLoading(true);
+        setError("");
+
+        const [examData, submissionsData] = await Promise.all([
+          api.exams.studentView(examId).catch(() => api.exams.get(examId)),
+          api.submissions.list().catch(() => []),
+        ]);
+
         if (!alive) return;
-        setExam(data.exam);
-        setQuestions(data.questions || []);
+
+        const currentExam = examData.exam || examData;
+        setExam(currentExam);
+        setQuestions(examData.questions || currentExam.questions || []);
+
+        const sub = (submissionsData || []).find(
+          (s) => s.exam === Number(examId) || s.exam?.id === Number(examId),
+        );
+
+        if (sub) {
+          setExistingSubmission(sub);
+        }
       } catch (err) {
-        if (alive) setError(err.message || "دریافت آزمون ناموفق بود.");
+        if (alive) setError(err.message || "دریافت اطلاعات آزمون ناموفق بود.");
       } finally {
         if (alive) setLoading(false);
       }
@@ -53,41 +69,80 @@ function ExamPage() {
   }, [examId]);
 
   function handleSelect(questionId, value) {
-    if (submitted) return;
+    if (submitted || existingSubmission) return;
     setAnswers((prev) => ({
       ...prev,
       [questionId]: value,
     }));
   }
 
+  const totalQuestions = questions.length;
+  const answeredCount = useMemo(() => {
+    return questions.filter((q) => {
+      const val = answers[q.id];
+      if (val === undefined || val === null) return false;
+      if (typeof val === "string" && !val.trim()) return false;
+      return true;
+    }).length;
+  }, [questions, answers]);
+
+  const isAllAnswered = totalQuestions > 0 && answeredCount === totalQuestions;
+
   async function handleSubmit() {
-    if (!isAllAnswered) return;
+    if (answeredCount === 0) {
+      alert("لطفاً حداقل به یک سوال پاسخ دهید.");
+      return;
+    }
+
+    if (!isAllAnswered) {
+      const confirmSubmit = window.confirm(
+        `شما به ${toPersianDigits(answeredCount)} سوال از ${toPersianDigits(
+          totalQuestions,
+        )} سوال پاسخ داده‌اید. آیا از ثبت نهایی پاسخ‌ها اطمینان دارید؟`,
+      );
+      if (!confirmSubmit) return;
+    }
+
     setSaving(true);
     setError("");
 
     try {
       const user = storage.getUser();
-      const submission = await api.submissions.create({
+      const submissionPayload = {
         exam: Number(examId),
-        ...(user?.role === "student" ? {} : { student: user?.id }),
-      });
+      };
+      if (user?.id) {
+        submissionPayload.student = user.id;
+      }
 
+      const submission = await api.submissions.create(submissionPayload);
+
+      // Submit answers for all questions
       await Promise.all(
         questions.map((question) => {
-          const answer = answers[question.id];
-          return api.answers.create({
+          const ans = answers[question.id];
+          const isMultiple = question.question_type === "multiple_choice";
+
+          const answerPayload = {
             submission: submission.id,
             question: question.id,
-            selected_choice:
-              question.question_type === "multiple_choice" ? answer : null,
-            essay_text: question.question_type === "essay" ? answer : "",
-          });
+          };
+
+          if (isMultiple) {
+            if (ans !== undefined && ans !== null && ans !== "") {
+              answerPayload.selected_choice = Number(ans);
+            }
+          } else {
+            answerPayload.essay_text = ans ? String(ans) : "";
+          }
+
+          return api.answers.create(answerPayload);
         }),
       );
 
       setSubmitted(true);
     } catch (err) {
-      setError(err.message || "ثبت پاسخ‌ها ناموفق بود.");
+      setError(err.message || "ثبت پاسخ‌ها ناموفق بود. لطفاً مجدداً تلاش نمایید.");
     } finally {
       setSaving(false);
     }
@@ -96,7 +151,63 @@ function ExamPage() {
   if (loading) {
     return (
       <DashboardLayout role="پنل دانش‌آموز" title="آزمون" menuType="student">
-        <div className="exam-page">در حال دریافت آزمون...</div>
+        <div style={{ textAlign: "center", padding: "4rem", color: "oklch(50% 0 0)" }}>
+          در حال بارگذاری سوالات آزمون...
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error && !exam) {
+    return (
+      <DashboardLayout role="پنل دانش‌آموز" title="آزمون" menuType="student">
+        <div style={{ textAlign: "center", padding: "4rem" }}>
+          <p style={{ color: "var(--danger, #ef4444)", marginBottom: "1.5rem" }}>{error}</p>
+          <Link to="/panel/student/exams">
+            <AnimatedButton variant="primary">بازگشت به لیست آزمون‌ها</AnimatedButton>
+          </Link>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // If the student already completed this exam previously:
+  if (existingSubmission && !submitted) {
+    return (
+      <DashboardLayout
+        role="پنل دانش‌آموز"
+        title={`آزمون: ${exam?.title || ""}`}
+        menuType="student"
+      >
+        <div className="exam-page">
+          <section className="exam-result-hero">
+            <div className="exam-result-icon">
+              <CheckCircle2 size={44} />
+            </div>
+
+            <span className="exam-result-kicker">آزمون تکمیل‌شده</span>
+            <h2>شما قبلاً در این آزمون شرکت کرده‌اید</h2>
+            <p>
+              پاسخ‌های شما برای آزمون «{exam?.title}» در تاریخ{" "}
+              {toJalaliDateString(existingSubmission.submitted_at?.split("T")[0])} ثبت شده است.
+            </p>
+
+            <div style={{ marginTop: "1.5rem", display: "flex", gap: "1rem", justifyContent: "center" }}>
+              <Link to={`/panel/student/examresult/${examId}`}>
+                <AnimatedButton variant="primary">
+                  <Award size={18} />
+                  مشاهده کارنامه و نتیجه آزمون
+                </AnimatedButton>
+              </Link>
+
+              <Link to="/panel/student/exams">
+                <AnimatedButton variant="secondary">
+                  بازگشت به آزمون‌ها
+                </AnimatedButton>
+              </Link>
+            </div>
+          </section>
+        </div>
       </DashboardLayout>
     );
   }
@@ -112,24 +223,38 @@ function ExamPage() {
           <>
             <section className="exam-stats-grid">
               <StatCard
-                title="زمان باقی‌مانده"
-                value="۴۵ دقیقه"
+                title="تعداد کل سوالات"
+                value={`${toPersianDigits(totalQuestions)} سوال`}
                 icon={<Clock3 size={23} />}
                 color="red"
               />
               <StatCard
                 title="وضعیت پاسخ‌دهی"
-                value={`${answeredCount} از ${totalQuestions} سوال`}
+                value={`${toPersianDigits(answeredCount)} از ${toPersianDigits(totalQuestions)}`}
                 icon={<Eye size={23} />}
                 color="blue"
               />
               <StatCard
                 title="وضعیت آزمون"
-                value={isAllAnswered ? "آماده ثبت نهایی" : "در حال تکمیل"}
+                value={isAllAnswered ? "آماده ثبت نهایی" : "در حال پاسخ‌دهی"}
                 icon={<FileCheck2 size={23} />}
                 color="orange"
               />
             </section>
+
+            {error && (
+              <div style={{
+                background: "oklch(95% 0.05 25 / 0.8)",
+                border: "1px solid oklch(75% 0.15 25 / 0.3)",
+                color: "oklch(45% 0.18 25)",
+                padding: "0.85rem 1.25rem",
+                borderRadius: "14px",
+                marginBottom: "1.5rem",
+                fontWeight: "700"
+              }}>
+                {error}
+              </div>
+            )}
 
             <section className="exam-questions-list">
               {questions.map((question, questionIndex) => (
@@ -148,31 +273,33 @@ function ExamPage() {
                 {!isAllAnswered ? (
                   <>
                     <AlertTriangle size={18} />
-                    <span>لطفاً برای ثبت نهایی به همه سوالات پاسخ دهید.</span>
+                    <span>
+                      {answeredCount === 0
+                        ? "لطفاً به سوالات آزمون پاسخ دهید."
+                        : `به ${toPersianDigits(answeredCount)} سوال از ${toPersianDigits(
+                            totalQuestions,
+                          )} سوال پاسخ داده‌اید.`}
+                    </span>
                   </>
                 ) : (
                   <>
                     <BadgeCheck size={18} />
-                    <span>
-                      همه سوالات پاسخ داده شده‌اند و آزمون آماده ثبت است.
-                    </span>
+                    <span>همه سوالات پاسخ داده شده‌اند و آزمون آماده ثبت است.</span>
                   </>
                 )}
               </div>
 
               <div className="exam-submit-actions">
                 <div className="exam-progress-chip">
-                  {answeredCount} / {totalQuestions}
+                  {toPersianDigits(answeredCount)} / {toPersianDigits(totalQuestions)}
                 </div>
 
-                {error && <div className="exam-progress-chip">{error}</div>}
-
                 <AnimatedButton
-                  variant={isAllAnswered ? "primary" : "soft"}
-                  disabled={!isAllAnswered || saving}
+                  variant={answeredCount > 0 ? "primary" : "soft"}
+                  disabled={answeredCount === 0 || saving}
                   onClick={handleSubmit}
                 >
-                  {saving ? "در حال ثبت..." : "ثبت و پایان آزمون"}
+                  {saving ? "در حال ثبت نهایی..." : "ثبت و پایان آزمون"}
                 </AnimatedButton>
               </div>
             </section>
@@ -185,16 +312,30 @@ function ExamPage() {
               </div>
 
               <span className="exam-result-kicker">ثبت موفق</span>
-
               <h2>آزمون با موفقیت ثبت شد</h2>
-
               <p>
-                پاسخ‌های شما ذخیره شد. نتیجه نهایی پس از تصحیح سوال‌های
-                تشریحی در بخش نتایج نمایش داده می‌شود.
+                پاسخ‌های شما ذخیره شد. نتیجه نهایی پس از تصحیح سوال‌های تشریحی
+                توسط مدرس در بخش نتایج نمایش داده می‌شود.
               </p>
 
               <div className="exam-score-pill">
-                تعداد پاسخ‌های ثبت‌شده: {answeredCount} از {totalQuestions}
+                تعداد پاسخ‌های ثبت‌شده: {toPersianDigits(answeredCount)} از{" "}
+                {toPersianDigits(totalQuestions)}
+              </div>
+
+              <div style={{ marginTop: "1.5rem", display: "flex", gap: "1rem", justifyContent: "center" }}>
+                <Link to={`/panel/student/examresult/${examId}`}>
+                  <AnimatedButton variant="primary">
+                    <Award size={18} />
+                    مشاهده نتیجه و کارنامه
+                  </AnimatedButton>
+                </Link>
+
+                <Link to="/panel/student/exams">
+                  <AnimatedButton variant="secondary">
+                    بازگشت به آزمون‌ها
+                  </AnimatedButton>
+                </Link>
               </div>
             </section>
 
@@ -217,8 +358,8 @@ function ExamPage() {
                   const userAnswer = answers[question.id];
                   const userAnswerText =
                     question.question_type === "multiple_choice"
-                      ? question.choices.find((choice) => choice.id === userAnswer)
-                          ?.text || "بدون پاسخ"
+                      ? question.choices?.find((choice) => choice.id === userAnswer)?.text ||
+                        "بدون پاسخ"
                       : userAnswer || "بدون پاسخ";
 
                   return (
@@ -233,17 +374,13 @@ function ExamPage() {
                           </div>
 
                           <div>
-                            <h4>سوال {questionIndex + 1}</h4>
-                            <span>پاسخ شما ثبت شد</span>
+                            <h4>سوال {toPersianDigits(questionIndex + 1)}</h4>
+                            <span>{userAnswer ? "پاسخ شما ثبت شد" : "پاسخی ثبت نشد"}</span>
                           </div>
                         </div>
 
-                        <span
-                          className={`review-status-badge ${
-                            "is-correct"
-                          }`}
-                        >
-                          ثبت‌شده
+                        <span className="review-status-badge is-correct">
+                          {userAnswer ? "ثبت‌شده" : "بدون پاسخ"}
                         </span>
                       </div>
 
@@ -252,9 +389,7 @@ function ExamPage() {
                       <div className="review-answer-boxes">
                         <div className="review-answer-item">
                           <span className="label">پاسخ شما</span>
-                          <strong>
-                            {userAnswerText}
-                          </strong>
+                          <strong>{userAnswerText}</strong>
                         </div>
                       </div>
                     </article>
@@ -271,53 +406,61 @@ function ExamPage() {
 
 function QuestionCard({ question, questionIndex, selectedAnswer, onSelect }) {
   const isEssay = question.question_type === "essay";
+  const isAnswered =
+    selectedAnswer !== undefined &&
+    selectedAnswer !== null &&
+    (typeof selectedAnswer !== "string" || selectedAnswer.trim() !== "");
 
   return (
     <article className="question-card">
       <div className="question-card-header">
-        <div className="question-number-badge">سوال {questionIndex + 1}</div>
+        <div className="question-number-badge">
+          سوال {toPersianDigits(questionIndex + 1)}
+          {question.max_score && ` (${toPersianDigits(question.max_score)} نمره)`}
+        </div>
 
-        <div className="question-status-dot">
-          {selectedAnswer ? "پاسخ داده شده" : "بدون پاسخ"}
+        <div className={`question-status-dot ${isAnswered ? "answered" : ""}`}>
+          {isAnswered ? "پاسخ داده شده" : "بدون پاسخ"}
         </div>
       </div>
 
-      <h3 className="question-text" dir="ltr">
+      <h3 className="question-text" dir="rtl">
         {question.text}
       </h3>
 
       {isEssay ? (
         <textarea
-          className="question-option-btn"
+          className="question-essay-input"
           rows="5"
           value={selectedAnswer || ""}
           onChange={(event) => onSelect(question.id, event.target.value)}
-          placeholder="پاسخ تشریحی خود را وارد کنید..."
+          placeholder="پاسخ تشریحی خود را اینجا تایپ کنید..."
         />
       ) : (
         <div className="question-options-grid">
-        {question.choices.map((option, optionIndex) => {
-          const isSelected = selectedAnswer === option.id;
+          {(question.choices || []).map((option, optionIndex) => {
+            const isSelected = selectedAnswer === option.id;
 
-          return (
-            <button
-              key={option.id}
-              type="button"
-              className={`question-option-btn ${isSelected ? "selected" : ""}`}
-              onClick={() => onSelect(question.id, option.id)}
-            >
-              <span className="option-label" dir="ltr">{option.text}</span>
-              {/* <ChevronLeft size={18} className="option-arrow" /> */}
-              <span className="option-letter">
-                {String.fromCharCode(65 + optionIndex)}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+            return (
+              <button
+                key={option.id}
+                type="button"
+                className={`question-option-btn ${isSelected ? "selected" : ""}`}
+                onClick={() => onSelect(question.id, option.id)}
+              >
+                <span className="option-label" dir="rtl">
+                  {option.text}
+                </span>
+                <span className="option-letter">
+                  {String.fromCharCode(65 + optionIndex)}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       )}
     </article>
   );
 }
 
-export default ExamPage;
+export default StudentExam;

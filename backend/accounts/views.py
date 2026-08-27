@@ -34,8 +34,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         # مدیر و منشی می‌تونن کاربر بسازن/ویرایش/حذف کنن
-        # ولی حذف منشی فقط با مدیره (این رو تو get_queryset یا perform_destroy جدا کنترل می‌کنیم)
-        if self.action in ('create', 'update', 'partial_update', 'destroy', 'list', 'retrieve'):
+        # ولی خواندن لیست/اطلاعات برای همه کاربران لاگین‌شده مجازه
+        if self.action in ('create', 'update', 'partial_update', 'destroy'):
             return [IsAuthenticated(), IsAdminOrSecretary()]
         return [IsAuthenticated()]
 

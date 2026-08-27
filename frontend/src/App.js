@@ -43,6 +43,7 @@ import SecretaryExams from "./pages/SecretaryExams";
 import AdminSecretaries from "./pages/AdminSecretaries";
 import AdminSecretaryForm from "./pages/AdminSecretaryForm";
 import AdminSecretaryDetails from "./pages/AdminSecretaryDetails";
+import TeacherExams from "./pages/TeacherExams";
 
 function App() {
   const location = useLocation();
@@ -85,6 +86,7 @@ function App() {
         <Route path="/panel/student/exam/:examId" element={<StudentExam />} />
 
         <Route path="/panel/teacher" element={<TeacherPanel />} />
+        <Route path="/panel/teacher/exams" element={<TeacherExams />} />
         <Route
           path="/panel/teacher/create-exam"
           element={<TeacherCreateExam />}

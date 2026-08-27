@@ -127,6 +127,7 @@ class AnswerViewSet(viewsets.ModelViewSet):
             from rest_framework.exceptions import PermissionDenied
             raise PermissionDenied("شما فقط می‌توانید برای امتحان خودتان پاسخ ثبت کنید.")
         serializer.save()
+        submission.calculate_score()
 
     def perform_update(self, serializer):
         user = self.request.user
@@ -140,3 +141,4 @@ class AnswerViewSet(viewsets.ModelViewSet):
                 from rest_framework.exceptions import PermissionDenied
                 raise PermissionDenied("این امتحان قبلاً تصحیح شده و قابل ویرایش نیست.")
         serializer.save()
+        instance.submission.calculate_score()
