@@ -2,9 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import {
   BookOpen,
   CalendarDays,
-  CreditCard,
   UsersRound,
   UserPlus,
+  UserCheck,
   Eye,
   ChevronRight,
 } from "lucide-react";
@@ -13,6 +13,7 @@ import DashboardLayout from "../components/DashboardLayout";
 import StatCard from "../components/StatCard";
 import { AnimatedButton } from "../components/AnimatedButton";
 import { api, getFullName } from "../services/api";
+import { toPersianDigits } from "../utils/dateUtils";
 
 import "./AdminPanel.css";
 import { Link } from "react-router-dom";
@@ -116,7 +117,7 @@ function AdminPanel() {
     {
       id: 1,
       title: "کل دانش‌آموزان",
-      value: `${users.filter((user) => user.role === "student").length} نفر`,
+      value: `${toPersianDigits(users.filter((user) => user.role === "student").length)} نفر`,
       hint: "فعال و ثبت‌نامی",
       icon: <UsersRound />,
       color: "green",
@@ -124,26 +125,26 @@ function AdminPanel() {
     {
       id: 2,
       title: "معلمان",
-      value: `${users.filter((user) => user.role === "teacher").length} نفر`,
-      hint: "اساتید فعال",
+      value: `${toPersianDigits(users.filter((user) => user.role === "teacher").length)} نفر`,
+      hint: "اساتید آکادمی",
       icon: <BookOpen />,
-      color :"blue"
+      color: "blue",
     },
     {
       id: 3,
-      title: "شهریه‌ها",
-      value: "مدیریت مالی",
-      hint: "وضعیت پرداخت‌ها",
-      icon: <CreditCard />,
-      color: "light-orange"
+      title: "منشی‌ها",
+      value: `${toPersianDigits(users.filter((user) => user.role === "secretary").length)} نفر`,
+      hint: "پرسنل اداری",
+      icon: <UserCheck />,
+      color: "light-orange",
     },
     {
       id: 4,
       title: "کلاس‌ها",
-      value: `${classrooms.length} کلاس`,
+      value: `${toPersianDigits(classrooms.length)} کلاس`,
       hint: "درحال برگزاری",
       icon: <CalendarDays />,
-      color: "red"
+      color: "red",
     },
   ];
 

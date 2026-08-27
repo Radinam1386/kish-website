@@ -13,6 +13,7 @@ import {
   X,
   Layers,
   GraduationCap,
+  UserCheck,
 } from "lucide-react";
 import "./DashboardLayout.css";
 import { storage } from "../services/api";
@@ -120,9 +121,19 @@ function DashboardLayout({ role, title, children, menuType }) {
         to: "/panel/admin/teachers",
       },
       {
+        label: "منشی‌ها",
+        icon: <UserCheck size={19} />,
+        to: "/panel/admin/secretaries",
+      },
+      {
         label: "شهریه‌ها",
         icon: <CreditCard size={19} />,
         to: "/panel/admin/tuition",
+      },
+      {
+        label: "حضور و غیاب",
+        icon: <ClipboardCheck size={19} />,
+        to: "/panel/admin/attendance",
       },
       {
         label: "نظارت بر امتحانات",

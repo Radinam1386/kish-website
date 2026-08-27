@@ -40,6 +40,9 @@ import ClassForm from "./pages/ClassForm";
 import ClassDetails from "./pages/ClassDetails";
 import SecretaryTerms from "./pages/SecretaryTerms";
 import SecretaryExams from "./pages/SecretaryExams";
+import AdminSecretaries from "./pages/AdminSecretaries";
+import AdminSecretaryForm from "./pages/AdminSecretaryForm";
+import AdminSecretaryDetails from "./pages/AdminSecretaryDetails";
 
 function App() {
   const location = useLocation();
@@ -155,14 +158,31 @@ function App() {
           path="/panel/admin/teachers/:id/edit"
           element={<AdminTeacherForm />}
         />
-        <Route path="/panel/admin/tuition" element={<AdminTuition />} />
-        <Route
-          path="/panel/admin/students/new"
-          element={<AdminStudentForm />}
-        />
         <Route
           path="/panel/admin/teachers/new"
           element={<AdminTeacherForm />}
+        />
+        <Route path="/panel/admin/secretaries" element={<AdminSecretaries />} />
+        <Route
+          path="/panel/admin/secretaries/new"
+          element={<AdminSecretaryForm />}
+        />
+        <Route
+          path="/panel/admin/secretaries/:secretaryId"
+          element={<AdminSecretaryDetails />}
+        />
+        <Route
+          path="/panel/admin/secretaries/:id/edit"
+          element={<AdminSecretaryForm />}
+        />
+        <Route path="/panel/admin/tuition" element={<AdminTuition />} />
+        <Route
+          path="/panel/admin/attendance"
+          element={<SecretaryAttendance />}
+        />
+        <Route
+          path="/panel/admin/students/new"
+          element={<AdminStudentForm />}
         />
         <Route
           path="/panel/admin/exams"
