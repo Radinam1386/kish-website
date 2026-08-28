@@ -26,17 +26,22 @@ function TeacherStudents() {
 
     async function loadData() {
       try {
-        const [classroomsData, attendanceData, submissionsData] =
+        const [classroomsData, termsData, attendanceData, submissionsData] =
           await Promise.all([
             api.classrooms.list(),
+            api.terms.list(),
             api.attendance.list(),
             api.submissions.list(),
           ]);
 
         if (!alive) return;
-        setClassrooms(classroomsData);
-        setAttendanceRecords(attendanceData);
-        setSubmissions(submissionsData);
+        const activeTermIds = (termsData || []).filter((t) => t.is_active).map((t) => t.id);
+        const activeClasses = (classroomsData || []).filter(
+          (c) => activeTermIds.length === 0 || activeTermIds.includes(c.term || c.term?.id),
+        );
+        setClassrooms(activeClasses || []);
+        setAttendanceRecords(attendanceData || []);
+        setSubmissions(submissionsData || []);
       } catch {
         if (alive) setClassrooms([]);
       }

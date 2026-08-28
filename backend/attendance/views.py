@@ -16,9 +16,9 @@ class SessionViewSet(viewsets.ModelViewSet):
         qs = Session.objects.all()
 
         if user.role == 'teacher':
-            qs = qs.filter(classroom__teacher=user)
+            qs = qs.filter(classroom__teacher=user, classroom__term__is_active=True)
         elif user.role == 'student':
-            qs = qs.filter(classroom__enrollments__student=user)
+            qs = qs.filter(classroom__enrollments__student=user, classroom__term__is_active=True)
 
         return qs.distinct()
 
@@ -43,9 +43,9 @@ class AttendanceRecordViewSet(viewsets.ModelViewSet):
         qs = AttendanceRecord.objects.all()
 
         if user.role == 'teacher':
-            qs = qs.filter(session__classroom__teacher=user)
+            qs = qs.filter(session__classroom__teacher=user, session__classroom__term__is_active=True)
         elif user.role == 'student':
-            qs = qs.filter(student=user)
+            qs = qs.filter(student=user, session__classroom__term__is_active=True)
 
         return qs
 

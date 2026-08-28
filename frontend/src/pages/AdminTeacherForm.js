@@ -5,7 +5,6 @@ import {
   Copy,
   Eye,
   EyeOff,
-  KeyRound,
   Lock,
   RefreshCw,
   Save,
@@ -14,6 +13,7 @@ import {
 
 import DashboardLayout from "../components/DashboardLayout";
 import DatabaseErrorHandler from "../components/DatabaseErrorHandler";
+import JalaliDatePicker from "../components/JalaliDatePicker";
 import "./AdminStudentForm.css";
 import { AnimatedButton } from "../components/AnimatedButton";
 import { api } from "../services/api";
@@ -30,11 +30,7 @@ function AdminTeacherForm() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [passwordCopied, setPasswordCopied] = useState(false);
-
-  // خطاهای API / دیتابیس
   const [databaseError, setDatabaseError] = useState(null);
-
-  // وضعیت ثبت فرم
   const [submitting, setSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -54,12 +50,9 @@ function AdminTeacherForm() {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-
-    // با تغییر فرم، خطای قبلی پاک شود
     if (databaseError) {
       setDatabaseError(null);
     }
-
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -74,7 +67,6 @@ function AdminTeacherForm() {
 
       try {
         setDatabaseError(null);
-
         const user = await api.users.get(id);
 
         if (!alive) return;
@@ -90,7 +82,6 @@ function AdminTeacherForm() {
         }));
       } catch (error) {
         if (!alive) return;
-
         setDatabaseError(error);
       }
     }
@@ -134,7 +125,9 @@ function AdminTeacherForm() {
       }
 
       alert(
-        id ? "اطلاعات معلم با موفقیت ویرایش شد." : "معلم با موفقیت ثبت شد.",
+        id
+          ? "اطلاعات معلم با موفقیت ویرایش شد."
+          : "معلم با موفقیت ثبت شد.",
       );
 
       navigate(basePath);
@@ -186,9 +179,7 @@ function AdminTeacherForm() {
 
     try {
       await navigator.clipboard.writeText(formData.password);
-
       setPasswordCopied(true);
-
       setTimeout(() => {
         setPasswordCopied(false);
       }, 1800);
@@ -210,9 +201,10 @@ function AdminTeacherForm() {
             className="secretary-student-form-back"
           >
             <ArrowRight size={18} />
-            <span>بازگشت به لیست معلمان</span>
+            <span>بازگشت به معلمان</span>
           </Link>
         </div>
+
         <form className="secretary-student-form" onSubmit={handleSubmit}>
           <section className="secretary-student-form-card">
             <div className="secretary-student-form-card-header">
@@ -222,7 +214,7 @@ function AdminTeacherForm() {
 
               <div>
                 <h2>اطلاعات شخصی</h2>
-                <p>اطلاعات اصلی معلم را وارد کنید.</p>
+                <p>اطلاعات هویتی و تاریخ تولد مدرس را وارد کنید.</p>
               </div>
             </div>
 
@@ -231,7 +223,6 @@ function AdminTeacherForm() {
                 <span>
                   نام <b>*</b>
                 </span>
-
                 <input
                   name="firstName"
                   value={formData.firstName}
@@ -245,7 +236,6 @@ function AdminTeacherForm() {
                 <span>
                   نام خانوادگی <b>*</b>
                 </span>
-
                 <input
                   name="lastName"
                   value={formData.lastName}
@@ -257,7 +247,6 @@ function AdminTeacherForm() {
 
               <label className="secretary-student-form-field">
                 <span>کد ملی</span>
-
                 <input
                   name="nationalId"
                   value={formData.nationalId}
@@ -269,22 +258,9 @@ function AdminTeacherForm() {
               </label>
 
               <label className="secretary-student-form-field">
-                <span>تاریخ تولد</span>
-
-                <input
-                  type="text"
-                  name="birthDate"
-                  value={formData.birthDate}
-                  onChange={handleChange}
-                  placeholder="۱۴۰۵/۰۵/۰۵"
-                />
-              </label>
-
-              <label className="secretary-student-form-field">
                 <span>
                   شماره موبایل <b>*</b>
                 </span>
-
                 <input
                   name="phone"
                   value={formData.phone}
@@ -295,9 +271,22 @@ function AdminTeacherForm() {
                 />
               </label>
 
+              {/* Persian Date Picker for Teacher Birth Date */}
+              <div className="secretary-student-form-field full" style={{ marginTop: "0.25rem" }}>
+                <JalaliDatePicker
+                  label="تاریخ تولد (شمسی)"
+                  value={formData.birthDate}
+                  onChange={(iso, jalali) =>
+                    setFormData((prev) => ({ ...prev, birthDate: jalali }))
+                  }
+                  minYear={1340}
+                  maxYear={1400}
+                  showQuickButtons={false}
+                />
+              </div>
+
               <label className="secretary-student-form-field full">
                 <span>آدرس</span>
-
                 <textarea
                   name="address"
                   value={formData.address}
@@ -326,98 +315,41 @@ function AdminTeacherForm() {
                 <span>
                   نام کاربری <b>*</b>
                 </span>
-
                 <input
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
-                  placeholder="مثلاً ali.mohammadi"
+                  placeholder="مثلاً teacher.ali"
                   dir="ltr"
                   required
                 />
               </label>
 
               <label className="secretary-student-form-field">
-                <span>سطح زبان</span>
-
-                <select
-                  name="level"
-                  value={formData.level}
+                <span>ایمیل</span>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
                   onChange={handleChange}
-                >
-                  <option value="">انتخاب سطح</option>
-                  <option value="Elementary">Elementary</option>
-                  <option value="Pre-Intermediate">Pre-Intermediate</option>
-                  <option value="Intermediate">Intermediate</option>
-                  <option value="Upper-Intermediate">Upper-Intermediate</option>
-                  <option value="Advanced">Advanced</option>
-                </select>
+                  placeholder="teacher@domain.com"
+                  dir="ltr"
+                />
               </label>
 
               <label className="secretary-student-form-field">
-                <span>رمز عبور {!id && <b>*</b>}</span>
-
-                <div className="secretary-student-password">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="رمز عبور"
-                    dir="ltr"
-                    required={!id}
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((prev) => !prev)}
-                    aria-label={
-                      showPassword ? "مخفی کردن رمز عبور" : "نمایش رمز عبور"
-                    }
-                    className="secretary-student-password-icon"
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-
-                <div className="secretary-student-password-tools">
-                  <button
-                    type="button"
-                    className="secretary-student-password-generate"
-                    onClick={generatePassword}
-                  >
-                    <RefreshCw size={16} />
-                    <span>تولید رمز قوی</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    className="secretary-student-password-copy"
-                    onClick={copyPassword}
-                    disabled={!formData.password}
-                  >
-                    {passwordCopied ? (
-                      <>
-                        <KeyRound size={16} />
-                        <span>کپی شد</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy size={16} />
-                        <span>کپی</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-
-                <small className="secretary-student-password-hint">
-                  رمز پیشنهادی شامل حروف بزرگ و کوچک، عدد و کاراکتر ویژه است.
-                </small>
+                <span>مدرک و تخصص</span>
+                <input
+                  type="text"
+                  name="level"
+                  value={formData.level}
+                  onChange={handleChange}
+                  placeholder="مثلاً کارشناسی ارشد آموزش زبان انگلیسی"
+                />
               </label>
 
               <label className="secretary-student-form-field">
                 <span>وضعیت حساب</span>
-
                 <select
                   name="status"
                   value={formData.status}
@@ -427,38 +359,99 @@ function AdminTeacherForm() {
                   <option value="inactive">غیرفعال</option>
                 </select>
               </label>
+
+              {!id && (
+                <>
+                  <div className="secretary-student-form-field">
+                    <span>
+                      رمز عبور <b>*</b>
+                    </span>
+
+                    <div className="secretary-student-form-password-wrapper">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        placeholder="حداقل ۶ کاراکتر"
+                        dir="ltr"
+                        required
+                      />
+
+                      <button
+                        type="button"
+                        className="secretary-student-form-icon-btn"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        title={showPassword ? "مخفی کردن" : "نمایش رمز"}
+                      >
+                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="secretary-student-form-field">
+                    <span>
+                      تکرار رمز عبور <b>*</b>
+                    </span>
+
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name="confirmPassword"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      placeholder="تکرار رمز عبور"
+                      dir="ltr"
+                      required
+                    />
+                  </div>
+
+                  <div className="secretary-student-form-password-actions full">
+                    <button
+                      type="button"
+                      className="secretary-student-form-action-btn"
+                      onClick={generatePassword}
+                    >
+                      <RefreshCw size={15} />
+                      <span>تولید رمز تصادفی</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className={`secretary-student-form-action-btn ${passwordCopied ? "copied" : ""}`}
+                      onClick={copyPassword}
+                      disabled={!formData.password}
+                    >
+                      <Copy size={15} />
+                      <span>{passwordCopied ? "کپی شد" : "کپی رمز"}</span>
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </section>
+
           {databaseError && (
             <DatabaseErrorHandler
               error={databaseError}
               onClose={() => setDatabaseError(null)}
             />
           )}
+
           <div className="secretary-student-form-actions">
-            <Link to="/panel/admin/teachers">
-              <AnimatedButton variant="ghost">انصراف</AnimatedButton>
+            <Link
+              to={basePath}
+              className="secretary-student-form-cancel"
+            >
+              انصراف
             </Link>
 
             <AnimatedButton
               variant="primary"
               type="submit"
               disabled={submitting}
+              icon={<Save size={18} />}
             >
-              {submitting ? (
-                <>
-                  <RefreshCw
-                    size={18}
-                    className="secretary-student-form-loading"
-                  />
-                  <span>در حال ثبت...</span>
-                </>
-              ) : (
-                <>
-                  <Save size={18} />
-                  <span>ثبت معلم</span>
-                </>
-              )}
+              {submitting ? "در حال ثبت..." : id ? "ذخیره تغییرات" : "ثبت معلم"}
             </AnimatedButton>
           </div>
         </form>

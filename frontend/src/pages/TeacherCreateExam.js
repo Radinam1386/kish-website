@@ -41,10 +41,17 @@ function TeacherCreateExam() {
 
     async function loadClasses() {
       try {
-        const data = await api.classrooms.list();
+        const [classes, terms] = await Promise.all([
+          api.classrooms.list(),
+          api.terms.list(),
+        ]);
         if (!alive) return;
-        setClassrooms(data);
-        setClassroomId(data[0]?.id || "");
+        const activeTermIds = (terms || []).filter((t) => t.is_active).map((t) => t.id);
+        const activeClasses = (classes || []).filter(
+          (c) => activeTermIds.length === 0 || activeTermIds.includes(c.term || c.term?.id),
+        );
+        setClassrooms(activeClasses || []);
+        setClassroomId(activeClasses[0]?.id || "");
       } catch (err) {
         if (alive) setMessage(err.message || "دریافت کلاس‌ها ناموفق بود.");
       }

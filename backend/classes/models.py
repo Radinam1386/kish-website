@@ -22,6 +22,7 @@ class ClassRoom(models.Model):
         related_name='classes_taught',
         limit_choices_to={'role': 'teacher'},
     )
+    tuition_fee = models.PositiveIntegerField(default=2500000, verbose_name="شهریه کلاس (تومان)")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -36,6 +37,9 @@ class Enrollment(models.Model):
         limit_choices_to={'role': 'student'},
     )
     classroom = models.ForeignKey(ClassRoom, on_delete=models.CASCADE, related_name='enrollments')
+    is_paid = models.BooleanField(default=False, verbose_name="وضعیت پرداخت شهریه")
+    paid_at = models.DateTimeField(null=True, blank=True, verbose_name="تاریخ و زمان پرداخت")
+    payment_notes = models.CharField(max_length=255, blank=True, verbose_name="توضیحات و یادداشت پرداخت")
     enrolled_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -26,15 +26,18 @@ class ClassRoomViewSet(viewsets.ModelViewSet):
         user = self.request.user
         qs = ClassRoom.objects.all()
 
-        # معلم فقط کلاس‌های خودش رو می‌بینه
+        # معلم فقط کلاس‌های ترم فعال خودش رو می‌بینه
         if user.role == 'teacher':
-            qs = qs.filter(teacher=user)
+            qs = qs.filter(teacher=user, term__is_active=True)
 
-        # دانش‌آموز فقط کلاس‌هایی که توشون ثبت‌نامه رو می‌بینه
+        # دانش‌آموز فقط کلاس‌های ترم فعال که توشون ثبت‌نامه رو می‌بینه
         elif user.role == 'student':
-            qs = qs.filter(enrollments__student=user)
+            qs = qs.filter(enrollments__student=user, term__is_active=True)
 
         return qs.distinct()
+
+
+from django.utils import timezone
 
 
 class EnrollmentViewSet(viewsets.ModelViewSet):
@@ -47,11 +50,28 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        qs = Enrollment.objects.all()
+        qs = Enrollment.objects.all().select_related('student', 'classroom', 'classroom__term')
 
         if user.role == 'teacher':
-            qs = qs.filter(classroom__teacher=user)
+            qs = qs.filter(classroom__teacher=user, classroom__term__is_active=True)
         elif user.role == 'student':
-            qs = qs.filter(student=user)
+            qs = qs.filter(student=user, classroom__term__is_active=True)
 
         return qs
+
+    def perform_create(self, serializer):
+        is_paid = serializer.validated_data.get('is_paid', False)
+        paid_at = serializer.validated_data.get('paid_at', None)
+        if is_paid and not paid_at:
+            paid_at = timezone.now()
+        serializer.save(is_paid=is_paid, paid_at=paid_at)
+
+    def perform_update(self, serializer):
+        instance = serializer.instance
+        is_paid = serializer.validated_data.get('is_paid', instance.is_paid)
+        paid_at = serializer.validated_data.get('paid_at', instance.paid_at)
+        if is_paid and not paid_at:
+            paid_at = timezone.now()
+        elif not is_paid:
+            paid_at = None
+        serializer.save(is_paid=is_paid, paid_at=paid_at)

@@ -17,8 +17,10 @@ export default function JalaliDatePicker({
   onChange,
   label,
   required = false,
-  minYear = 1400,
-  maxYear = 1410,
+  minYear = 1330,
+  maxYear = 1415,
+  showQuickButtons = true,
+  placeholder = "انتخاب تاریخ...",
 }) {
   const today = getTodayJalali();
 
@@ -138,84 +140,81 @@ export default function JalaliDatePicker({
       )}
 
       <div className="jalali-datepicker-controls">
-        {/* Day Select */}
-        <div className="jdp-select-group">
-          <label>روز</label>
-          <select
-            value={selectedDay}
-            onChange={(e) => handleDayChange(e.target.value)}
-            className="jdp-select"
-          >
-            {days.map((d) => (
-              <option key={d} value={d}>
-                {toPersianDigits(d)}
-              </option>
-            ))}
-          </select>
-        </div>
+        {/* Day Picker */}
+        <select
+          value={selectedDay}
+          onChange={(e) => handleDayChange(e.target.value)}
+          className="date-select day-select"
+          aria-label="روز"
+        >
+          {days.map((d) => (
+            <option key={d} value={d}>
+              {toPersianDigits(d)}
+            </option>
+          ))}
+        </select>
 
-        {/* Month Select */}
-        <div className="jdp-select-group month-group">
-          <label>ماه</label>
-          <select
-            value={selectedMonth}
-            onChange={(e) => handleMonthChange(e.target.value)}
-            className="jdp-select"
-          >
-            {MONTHS.map((m, idx) => (
-              <option key={idx + 1} value={idx + 1}>
-                {m}
-              </option>
-            ))}
-          </select>
-        </div>
+        {/* Month Picker */}
+        <select
+          value={selectedMonth}
+          onChange={(e) => handleMonthChange(e.target.value)}
+          className="date-select month-select"
+          aria-label="ماه"
+        >
+          {MONTHS.map((m, idx) => (
+            <option key={idx + 1} value={idx + 1}>
+              {m}
+            </option>
+          ))}
+        </select>
 
-        {/* Year Select */}
-        <div className="jdp-select-group">
-          <label>سال</label>
-          <select
-            value={selectedYear}
-            onChange={(e) => handleYearChange(e.target.value)}
-            className="jdp-select"
-          >
-            {years.map((y) => (
-              <option key={y} value={y}>
-                {toPersianDigits(y)}
-              </option>
-            ))}
-          </select>
-        </div>
+        {/* Year Picker */}
+        <select
+          value={selectedYear}
+          onChange={(e) => handleYearChange(e.target.value)}
+          className="date-select year-select"
+          aria-label="سال"
+        >
+          {years.map((y) => (
+            <option key={y} value={y}>
+              {toPersianDigits(y)}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="jalali-datepicker-footer">
-        <div className="jdp-current-badge">
-          <Sparkles size={14} />
-          <span>{formattedDisplay}</span>
+        <div className="formatted-preview">
+          <Sparkles size={14} className="preview-icon" />
+          <span>تاریخ انتخابی:</span>
+          <strong>{formattedDisplay}</strong>
         </div>
 
-        <div className="jdp-quick-btns">
-          <button
-            type="button"
-            className="jdp-quick-btn"
-            onClick={handleSetToday}
-          >
-            امروز
-          </button>
-          <button
-            type="button"
-            className="jdp-quick-btn"
-            onClick={handleSetTomorrow}
-          >
-            فردا
-          </button>
-          <button
-            type="button"
-            className="jdp-quick-btn"
-            onClick={handleSetNextWeek}
-          >
-            هفته آینده
-          </button>
-        </div>
+        {showQuickButtons && (
+          <div className="quick-presets">
+            <button
+              type="button"
+              className="preset-btn"
+              onClick={handleSetToday}
+            >
+              امروز
+            </button>
+            <button
+              type="button"
+              className="preset-btn"
+              onClick={handleSetTomorrow}
+            >
+              فردا
+            </button>
+            <button
+              type="button"
+              className="preset-btn"
+              onClick={handleSetNextWeek}
+            >
+              هفته بعد
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,309 +1,317 @@
 /* =========================================================
-   Class Form (Matches SecretaryStudentForm design)
+   Class Form Styling
+   100% matched with SecretaryStudentForm & AdminTeacherForm
    ========================================================= */
 
-.class-form-page {
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
+.class-form-page-container {
   width: 100%;
-  max-width: 1100px;
+  max-width: 1300px;
   margin: 0 auto;
   direction: rtl;
 }
 
-.class-form-header {
-  display: flex;
+/* =========================================================
+   Top Navigation
+   ========================================================= */
+
+.class-form-top-nav {
+  margin-bottom: 1.5rem;
+}
+
+.class-form-back-btn {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1.25rem 1.5rem;
-  background: oklch(100% 0 0 / 0.88);
-  border: 1px solid oklch(0% 0 0 / 0.055);
-  border-radius: 18px;
-  box-shadow: 0 7px 28px oklch(0% 0 0 / 0.04);
-  backdrop-filter: blur(12px);
-}
-
-.class-form-heading {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.class-form-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: var(--red-5, oklch(55.799% 0.17067 24.538));
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 6px 18px oklch(60% 0.19 29 / 0.25);
-}
-
-.class-form-heading h3 {
-  margin: 0 0 0.25rem;
-  color: oklch(25% 0 0);
-  font-size: 1.15rem;
-  font-weight: 800;
-}
-
-.class-form-heading p {
-  margin: 0;
-  color: oklch(55% 0 0);
-  font-size: 0.82rem;
-}
-
-.class-form-alert {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.85rem 1.25rem;
-  border-radius: 12px;
+  gap: 0.5rem;
+  color: var(--primary);
   font-size: 0.88rem;
-  font-weight: 600;
-}
-
-.class-form-alert.error {
-  background: oklch(95% 0.05 25 / 0.8);
-  border: 1px solid oklch(75% 0.15 25 / 0.3);
-  color: oklch(45% 0.18 25);
-}
-
-.class-form-alert.success {
-  background: oklch(95% 0.05 145 / 0.8);
-  border: 1px solid oklch(75% 0.15 145 / 0.3);
-  color: oklch(40% 0.15 145);
-}
-
-.class-form-main {
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-}
-
-.class-form-card {
-  padding: 1.5rem;
-  background: oklch(100% 0 0 / 0.88);
-  border: 1px solid oklch(0% 0 0 / 0.055);
-  border-radius: 18px;
-  box-shadow: 0 7px 28px oklch(0% 0 0 / 0.04);
-  backdrop-filter: blur(12px);
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-}
-
-.card-title {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-size: 1rem;
-  font-weight: 800;
-  color: oklch(25% 0 0);
-  margin: 0;
-  padding-bottom: 0.85rem;
-  border-bottom: 1px solid oklch(0% 0 0 / 0.055);
-}
-
-.card-header-flex {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
-  padding-bottom: 0.85rem;
-  border-bottom: 1px solid oklch(0% 0 0 / 0.055);
-}
-
-.card-subtitle {
-  font-size: 0.82rem;
-  color: oklch(55% 0 0);
-  margin-top: 0.25rem;
-}
-
-.card-subtitle strong {
-  color: var(--primary, oklch(55% 0.18 25));
-}
-
-.select-all-btn {
-  background: oklch(97% 0.005 29);
-  border: 1px solid oklch(0% 0 0 / 0.08);
-  color: oklch(35% 0 0);
-  padding: 0.45rem 0.85rem;
-  border-radius: 8px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  cursor: pointer;
+  font-weight: 700;
+  text-decoration: none;
   transition: all 0.2s ease;
 }
 
-.select-all-btn:hover {
-  background: var(--red-5, oklch(55.799% 0.17067 24.538));
-  color: #ffffff;
-  border-color: var(--red-5, oklch(55.799% 0.17067 24.538));
+.class-form-back-btn:hover {
+  transform: translateX(4px);
 }
 
-.class-form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
+/* =========================================================
+   Form Container
+   ========================================================= */
 
-.class-form-group {
+.class-form-element {
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 1.5rem;
 }
 
-.class-form-group.full-width {
+/* =========================================================
+   Card Section
+   ========================================================= */
+
+.class-form-card-section {
+  background: #ffffff;
+  border: 1px solid #eceff3;
+  border-radius: 22px;
+  padding: 2rem;
+  box-shadow: 0 8px 25px rgba(37, 41, 45, 0.04);
+}
+
+.class-form-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 2px solid #f3f4f6;
+}
+
+.class-form-card-header.flex-header {
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.class-form-card-icon {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 6px 16px rgba(231, 76, 60, 0.2);
+}
+
+.class-form-card-icon.users-icon {
+  background: linear-gradient(135deg, #3578c8, #205493);
+  box-shadow: 0 6px 16px rgba(53, 120, 200, 0.2);
+}
+
+.class-form-card-header h2 {
+  margin: 0;
+  color: #2d3436;
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.class-form-card-header p {
+  margin: 0.25rem 0 0;
+  color: #7f8c8d;
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   Form Grid & Fields
+   ========================================================= */
+
+.class-form-grid-layout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+@media (max-width: 768px) {
+  .class-form-grid-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.class-form-field-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.class-form-field-wrapper.full-col {
   grid-column: 1 / -1;
 }
 
-.class-form-group label {
+.class-form-field-wrapper span {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  font-size: 0.82rem;
+  color: #2d3436;
+  font-size: 0.86rem;
   font-weight: 700;
-  color: oklch(35% 0 0);
 }
 
-.class-form-group label .req {
-  color: var(--primary, oklch(55% 0.18 25));
+.class-form-field-wrapper span b {
+  color: var(--primary);
+  margin-right: 0.25rem;
 }
 
-.class-form-group input,
-.class-form-group select {
+.class-form-field-wrapper input,
+.class-form-field-wrapper select {
   width: 100%;
-  box-sizing: border-box;
-  padding: 0.75rem 0.85rem;
-  color: oklch(25% 0 0);
-  background: oklch(98% 0.003 29);
-  border: 1px solid oklch(0% 0 0 / 0.08);
-  border-radius: 10px;
-  outline: none;
-  font-family: inherit;
-  font-size: 0.85rem;
-  height: 44px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-}
-
-.class-form-group input:focus,
-.class-form-group select:focus {
-  background: #ffffff;
-  border-color: oklch(60% 0.19 29 / 0.45);
-  box-shadow: 0 0 0 3px oklch(60% 0.19 29 / 0.12);
-}
-
-.class-form-group select option {
-  background: #ffffff;
-  color: oklch(25% 0 0);
-}
-
-.student-search-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  background: oklch(98% 0.003 29);
-  border: 1px solid oklch(0% 0 0 / 0.08);
-  border-radius: 10px;
-  padding: 0.6rem 0.85rem;
-  color: oklch(55% 0 0);
-}
-
-.student-search-bar input {
-  background: transparent;
-  border: none;
-  color: oklch(25% 0 0);
-  font-size: 0.88rem;
-  font-family: inherit;
-  width: 100%;
-  outline: none;
-}
-
-.students-checkbox-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 0.75rem;
-  max-height: 320px;
-  overflow-y: auto;
-  padding-left: 0.5rem;
-}
-
-.student-check-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  min-height: 46px;
   padding: 0.75rem 1rem;
-  background: oklch(98% 0.003 29);
-  border: 1px solid oklch(0% 0 0 / 0.06);
+  background: #ffffff;
+  color: #2d3436;
+  border: 1px solid #eceff3;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.class-form-field-wrapper select {
+  cursor: pointer;
+  appearance: auto;
+}
+
+.class-form-field-wrapper input:focus,
+.class-form-field-wrapper select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.09);
+}
+
+.tuition-preview-badge {
+  color: var(--primary);
+  font-size: 0.82rem;
+  font-weight: 800;
+  margin-top: 0.35rem;
+  display: block;
+}
+
+/* =========================================================
+   Student Picker
+   ========================================================= */
+
+.student-search-input-wrapper {
+  position: relative;
+  min-width: 260px;
+  display: flex;
+  align-items: center;
+}
+
+.student-search-input-wrapper .search-icon {
+  position: absolute;
+  right: 0.85rem;
+  color: #7f8c8d;
+  pointer-events: none;
+}
+
+.student-search-input-wrapper input {
+  width: 100%;
+  min-height: 40px;
+  padding: 0.55rem 2.4rem 0.55rem 0.85rem;
+  background: #f8f9fa;
+  border: 1px solid #eceff3;
   border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.84rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.student-search-input-wrapper input:focus {
+  background: #ffffff;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.08);
+}
+
+.student-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+  max-height: 420px;
+  overflow-y: auto;
+  padding: 0.5rem 0.25rem;
+}
+
+.student-card-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  background: #fdfefe;
+  border: 1px solid #eceff3;
+  border-radius: 14px;
   cursor: pointer;
   user-select: none;
   transition: all 0.2s ease;
 }
 
-.student-check-item:hover {
-  background: #ffffff;
-  border-color: oklch(60% 0.19 29 / 0.3);
-  box-shadow: 0 4px 12px oklch(0% 0 0 / 0.03);
+.student-card-item:hover {
+  background: #fff8f7;
+  border-color: rgba(231, 76, 60, 0.25);
+  transform: translateY(-1px);
 }
 
-.student-check-item.selected {
-  background: oklch(97% 0.02 29);
-  border-color: var(--primary, oklch(55% 0.18 25));
+.student-card-item.selected {
+  background: #fff1ef;
+  border-color: rgba(231, 76, 60, 0.4);
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.08);
 }
 
-.check-box-icon {
+.card-checkbox {
   display: flex;
   align-items: center;
-  color: oklch(60% 0 0);
+  justify-content: center;
 }
 
-.checked-icon {
-  color: var(--primary, oklch(55% 0.18 25));
+.card-checkbox .check-active {
+  color: var(--primary);
 }
 
-.student-check-info {
+.card-checkbox .check-inactive {
+  color: #bdc3c7;
+}
+
+.student-info-col {
   display: flex;
   flex-direction: column;
+  min-width: 0;
   gap: 0.15rem;
-  overflow: hidden;
 }
 
-.student-check-info strong {
+.student-info-col strong {
   font-size: 0.88rem;
-  color: oklch(25% 0 0);
+  color: #2d3436;
   white-space: nowrap;
-  text-overflow: ellipsis;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.student-check-info small {
-  font-size: 0.75rem;
-  color: oklch(55% 0 0);
+.student-info-col .user-tag {
+  font-size: 0.76rem;
+  color: #7f8c8d;
 }
 
-.no-students-found {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 2rem;
-  color: oklch(55% 0 0);
+.student-info-col .phone-tag {
+  font-size: 0.74rem;
+  color: #95a5a6;
 }
 
-.class-form-actions {
+/* =========================================================
+   Actions Row
+   ========================================================= */
+
+.class-form-submit-actions {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 1rem;
-  margin-top: 0.5rem;
+  margin-top: 1rem;
 }
 
-@media (max-width: 768px) {
-  .class-form-grid {
-    grid-template-columns: 1fr;
-  }
+.class-form-cancel-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  background: #f8f9fa;
+  color: #495057;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.class-form-cancel-btn:hover {
+  background: #e9ecef;
 }

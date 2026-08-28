@@ -5,18 +5,21 @@ import {
   Copy,
   Eye,
   EyeOff,
-  KeyRound,
   Lock,
   RefreshCw,
   Save,
   UserRound,
+  BookOpen,
 } from "lucide-react";
 
 import DashboardLayout from "../components/DashboardLayout";
 import DatabaseErrorHandler from "../components/DatabaseErrorHandler";
-import "./AdminStudentForm.css";
+import JalaliDatePicker from "../components/JalaliDatePicker";
 import { AnimatedButton } from "../components/AnimatedButton";
 import { api } from "../services/api";
+import { toPersianDigits } from "../utils/dateUtils";
+
+import "./AdminStudentForm.css";
 
 function AdminStudentForm() {
   const navigate = useNavigate();
@@ -24,12 +27,12 @@ function AdminStudentForm() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [passwordCopied, setPasswordCopied] = useState(false);
-
-  // خطای API / دیتابیس
   const [databaseError, setDatabaseError] = useState(null);
-
-  // وضعیت ثبت یا ویرایش
   const [submitting, setSubmitting] = useState(false);
+
+  const [classrooms, setClassrooms] = useState([]);
+  const [selectedClassId, setSelectedClassId] = useState("");
+  const [initialIsPaid, setInitialIsPaid] = useState(false);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -48,12 +51,9 @@ function AdminStudentForm() {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-
-    // با تغییر اطلاعات، خطای قبلی پاک شود
     if (databaseError) {
       setDatabaseError(null);
     }
-
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -63,33 +63,42 @@ function AdminStudentForm() {
   useEffect(() => {
     let alive = true;
 
-    async function loadStudent() {
-      if (!id) return;
-
+    async function loadData() {
       try {
         setDatabaseError(null);
-
-        const user = await api.users.get(id);
+        const [classroomsData, termsData] = await Promise.all([
+          api.classrooms.list(),
+          api.terms.list(),
+        ]);
 
         if (!alive) return;
+        const activeTermIds = (termsData || []).filter((t) => t.is_active).map((t) => t.id);
+        const activeClasses = (classroomsData || []).filter(
+          (c) => activeTermIds.length === 0 || activeTermIds.includes(c.term || c.term?.id),
+        );
+        setClassrooms(activeClasses);
 
-        setFormData((prev) => ({
-          ...prev,
-          firstName: user.first_name || "",
-          lastName: user.last_name || "",
-          phone: user.phone_number || "",
-          email: user.email || "",
-          username: user.username || "",
-          status: user.is_active ? "active" : "inactive",
-        }));
+        if (id) {
+          const user = await api.users.get(id);
+          if (!alive) return;
+
+          setFormData((prev) => ({
+            ...prev,
+            firstName: user.first_name || "",
+            lastName: user.last_name || "",
+            phone: user.phone_number || "",
+            email: user.email || "",
+            username: user.username || "",
+            status: user.is_active ? "active" : "inactive",
+          }));
+        }
       } catch (error) {
         if (!alive) return;
-
         setDatabaseError(error);
       }
     }
 
-    loadStudent();
+    loadData();
 
     return () => {
       alive = false;
@@ -121,10 +130,23 @@ function AdminStudentForm() {
       if (id) {
         await api.users.update(id, payload);
       } else {
-        await api.users.create({
+        const createdUser = await api.users.create({
           ...payload,
           password: formData.password,
         });
+
+        // Optionally enroll in selected class
+        if (selectedClassId) {
+          try {
+            await api.enrollments.create({
+              student: createdUser.id,
+              classroom: Number(selectedClassId),
+              is_paid: initialIsPaid,
+            });
+          } catch (enrErr) {
+            console.error("Enrollment creation failed:", enrErr);
+          }
+        }
       }
 
       alert(
@@ -182,9 +204,7 @@ function AdminStudentForm() {
 
     try {
       await navigator.clipboard.writeText(formData.password);
-
       setPasswordCopied(true);
-
       setTimeout(() => {
         setPasswordCopied(false);
       }, 1800);
@@ -219,7 +239,7 @@ function AdminStudentForm() {
 
               <div>
                 <h2>اطلاعات شخصی</h2>
-                <p>اطلاعات اصلی دانش‌آموز را وارد کنید.</p>
+                <p>اطلاعات هویتی و تاریخ تولد دانش‌آموز را وارد کنید.</p>
               </div>
             </div>
 
@@ -228,7 +248,6 @@ function AdminStudentForm() {
                 <span>
                   نام <b>*</b>
                 </span>
-
                 <input
                   name="firstName"
                   value={formData.firstName}
@@ -242,7 +261,6 @@ function AdminStudentForm() {
                 <span>
                   نام خانوادگی <b>*</b>
                 </span>
-
                 <input
                   name="lastName"
                   value={formData.lastName}
@@ -254,7 +272,6 @@ function AdminStudentForm() {
 
               <label className="secretary-student-form-field">
                 <span>کد ملی</span>
-
                 <input
                   name="nationalId"
                   value={formData.nationalId}
@@ -266,22 +283,9 @@ function AdminStudentForm() {
               </label>
 
               <label className="secretary-student-form-field">
-                <span>تاریخ تولد</span>
-
-                <input
-                  type="text"
-                  name="birthDate"
-                  value={formData.birthDate}
-                  onChange={handleChange}
-                  placeholder="۱۴۰۵/۰۵/۰۵"
-                />
-              </label>
-
-              <label className="secretary-student-form-field">
                 <span>
                   شماره موبایل <b>*</b>
                 </span>
-
                 <input
                   name="phone"
                   value={formData.phone}
@@ -292,9 +296,22 @@ function AdminStudentForm() {
                 />
               </label>
 
+              {/* Persian Date Picker for Birth Date */}
+              <div className="secretary-student-form-field full" style={{ marginTop: "0.25rem" }}>
+                <JalaliDatePicker
+                  label="تاریخ تولد (شمسی)"
+                  value={formData.birthDate}
+                  onChange={(iso, jalali) =>
+                    setFormData((prev) => ({ ...prev, birthDate: jalali }))
+                  }
+                  minYear={1350}
+                  maxYear={1410}
+                  showQuickButtons={false}
+                />
+              </div>
+
               <label className="secretary-student-form-field full">
                 <span>آدرس</span>
-
                 <textarea
                   name="address"
                   value={formData.address}
@@ -305,6 +322,51 @@ function AdminStudentForm() {
               </label>
             </div>
           </section>
+
+          {/* Class Assignment (on creation) */}
+          {!id && (
+            <section className="secretary-student-form-card">
+              <div className="secretary-student-form-card-header">
+                <div className="secretary-student-form-card-icon" style={{ background: "var(--primary)" }}>
+                  <BookOpen size={20} />
+                </div>
+                <div>
+                  <h2>تعیین کلاس اولیه</h2>
+                  <p>کلاس آموزشی ترم جاری را برای دانش‌آموز تعیین کنید (اختیاری)</p>
+                </div>
+              </div>
+
+              <div className="secretary-student-form-grid">
+                <label className="secretary-student-form-field full">
+                  <span>انتخاب کلاس آموزشی</span>
+                  <select
+                    value={selectedClassId}
+                    onChange={(e) => setSelectedClassId(e.target.value)}
+                  >
+                    <option value="">بدون کلاس فعلاً (بعداً در پرونده تعیین شود)</option>
+                    {classrooms.map((cls) => (
+                      <option key={cls.id} value={cls.id}>
+                        {cls.name} (شهریه: {toPersianDigits((cls.tuition_fee || 2500000).toLocaleString("fa-IR"))} تومان)
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                {selectedClassId && (
+                  <div className="secretary-student-form-field full">
+                    <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", fontWeight: "700" }}>
+                      <input
+                        type="checkbox"
+                        checked={initialIsPaid}
+                        onChange={(e) => setInitialIsPaid(e.target.checked)}
+                      />
+                      <span>شهریه این کلاس هم‌اکنون به صورت نقدی/کارتخوان در دفتر تسویه شد.</span>
+                    </label>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
 
           <section className="secretary-student-form-card">
             <div className="secretary-student-form-card-header">
@@ -323,7 +385,6 @@ function AdminStudentForm() {
                 <span>
                   نام کاربری <b>*</b>
                 </span>
-
                 <input
                   name="username"
                   value={formData.username}
@@ -335,91 +396,35 @@ function AdminStudentForm() {
               </label>
 
               <label className="secretary-student-form-field">
-                <span>سطح زبان</span>
+                <span>ایمیل</span>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="example@domain.com"
+                  dir="ltr"
+                />
+              </label>
 
+              <label className="secretary-student-form-field">
+                <span>سطح زبان</span>
                 <select
                   name="level"
                   value={formData.level}
                   onChange={handleChange}
                 >
                   <option value="">انتخاب سطح</option>
-
                   <option value="Elementary">Elementary</option>
-
                   <option value="Pre-Intermediate">Pre-Intermediate</option>
-
                   <option value="Intermediate">Intermediate</option>
-
                   <option value="Upper-Intermediate">Upper-Intermediate</option>
-
                   <option value="Advanced">Advanced</option>
                 </select>
               </label>
 
               <label className="secretary-student-form-field">
-                <span>رمز عبور {!id && <b>*</b>}</span>
-
-                <div className="secretary-student-password">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="رمز عبور"
-                    dir="ltr"
-                    required={!id}
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((prev) => !prev)}
-                    aria-label={
-                      showPassword ? "مخفی کردن رمز عبور" : "نمایش رمز عبور"
-                    }
-                    className="secretary-student-password-icon"
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-
-                <div className="secretary-student-password-tools">
-                  <button
-                    type="button"
-                    className="secretary-student-password-generate"
-                    onClick={generatePassword}
-                  >
-                    <RefreshCw size={16} />
-                    <span>تولید رمز قوی</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    className="secretary-student-password-copy"
-                    onClick={copyPassword}
-                    disabled={!formData.password}
-                  >
-                    {passwordCopied ? (
-                      <>
-                        <KeyRound size={16} />
-                        <span>کپی شد</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy size={16} />
-                        <span>کپی</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-
-                <small className="secretary-student-password-hint">
-                  رمز پیشنهادی شامل حروف بزرگ و کوچک، عدد و کاراکتر ویژه است.
-                </small>
-              </label>
-
-              <label className="secretary-student-form-field">
                 <span>وضعیت حساب</span>
-
                 <select
                   name="status"
                   value={formData.status}
@@ -429,6 +434,74 @@ function AdminStudentForm() {
                   <option value="inactive">غیرفعال</option>
                 </select>
               </label>
+
+              {!id && (
+                <>
+                  <div className="secretary-student-form-field">
+                    <span>
+                      رمز عبور <b>*</b>
+                    </span>
+
+                    <div className="secretary-student-form-password-wrapper">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        placeholder="حداقل ۶ کاراکتر"
+                        dir="ltr"
+                        required
+                      />
+
+                      <button
+                        type="button"
+                        className="secretary-student-form-icon-btn"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        title={showPassword ? "مخفی کردن" : "نمایش رمز"}
+                      >
+                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="secretary-student-form-field">
+                    <span>
+                      تکرار رمز عبور <b>*</b>
+                    </span>
+
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name="confirmPassword"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      placeholder="تکرار رمز عبور"
+                      dir="ltr"
+                      required
+                    />
+                  </div>
+
+                  <div className="secretary-student-form-password-actions full">
+                    <button
+                      type="button"
+                      className="secretary-student-form-action-btn"
+                      onClick={generatePassword}
+                    >
+                      <RefreshCw size={15} />
+                      <span>تولید رمز تصادفی</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className={`secretary-student-form-action-btn ${passwordCopied ? "copied" : ""}`}
+                      onClick={copyPassword}
+                      disabled={!formData.password}
+                    >
+                      <Copy size={15} />
+                      <span>{passwordCopied ? "کپی شد" : "کپی رمز"}</span>
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </section>
 
@@ -438,30 +511,22 @@ function AdminStudentForm() {
               onClose={() => setDatabaseError(null)}
             />
           )}
+
           <div className="secretary-student-form-actions">
-            <Link to="/panel/admin/students">
-              <AnimatedButton variant="ghost">انصراف</AnimatedButton>
+            <Link
+              to="/panel/admin/students"
+              className="secretary-student-form-cancel"
+            >
+              انصراف
             </Link>
 
             <AnimatedButton
               variant="primary"
               type="submit"
               disabled={submitting}
+              icon={<Save size={18} />}
             >
-              {submitting ? (
-                <>
-                  <RefreshCw
-                    size={18}
-                    className="secretary-student-form-loading"
-                  />
-                  <span>در حال ثبت...</span>
-                </>
-              ) : (
-                <>
-                  <Save size={18} />
-                  <span>ثبت دانش‌آموز</span>
-                </>
-              )}
+              {submitting ? "در حال ثبت..." : id ? "ذخیره تغییرات" : "ثبت دانش‌آموز"}
             </AnimatedButton>
           </div>
         </form>

@@ -12,6 +12,7 @@ import {
   Square,
   AlertCircle,
   Sparkles,
+  CreditCard,
 } from "lucide-react";
 
 import DashboardLayout from "../components/DashboardLayout";
@@ -27,11 +28,13 @@ export default function ClassForm() {
   const navigate = useNavigate();
   const currentUser = storage.getUser();
   const role = currentUser?.role === "admin" ? "admin" : "secretary";
+  const roleTitle = role === "admin" ? "پنل مدیریت" : "پنل منشی";
   const basePath = `/panel/${role}`;
 
   const [name, setName] = useState("");
   const [termId, setTermId] = useState("");
   const [teacherId, setTeacherId] = useState("");
+  const [tuitionFee, setTuitionFee] = useState(2500000);
   const [selectedStudentIds, setSelectedStudentIds] = useState([]);
   const [studentSearch, setStudentSearch] = useState("");
 
@@ -83,13 +86,15 @@ export default function ClassForm() {
           setName(cls.name || "");
           setTermId(cls.term || "");
           setTeacherId(cls.teacher || "");
+          setTuitionFee(cls.tuition_fee !== undefined ? cls.tuition_fee : 2500000);
 
           const enrollments = cls.enrollments || [];
           setExistingEnrollments(enrollments);
           setSelectedStudentIds(enrollments.map((e) => e.student || e.student_detail?.id));
         }
       } catch (err) {
-        if (alive) setError(err.message || "خطا در دریافت اطلاعات فرم");
+        if (!alive) return;
+        setError(err.message || "خطا در دریافت اطلاعات فرم");
       } finally {
         if (alive) setLoading(false);
       }
@@ -103,17 +108,6 @@ export default function ClassForm() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, isEdit]);
 
-  const filteredStudents = useMemo(() => {
-    const s = studentSearch.trim().toLowerCase();
-    if (!s) return allStudents;
-    return allStudents.filter(
-      (student) =>
-        getFullName(student).toLowerCase().includes(s) ||
-        (student.username && student.username.toLowerCase().includes(s)) ||
-        (student.phone_number && student.phone_number.includes(s)),
-    );
-  }, [allStudents, studentSearch]);
-
   const toggleStudent = (studentId) => {
     setSelectedStudentIds((prev) =>
       prev.includes(studentId)
@@ -122,29 +116,31 @@ export default function ClassForm() {
     );
   };
 
-  const handleSelectAllFiltered = () => {
-    const filteredIds = filteredStudents.map((st) => st.id);
-    const allSelected = filteredIds.every((fid) => selectedStudentIds.includes(fid));
+  const filteredStudents = useMemo(() => {
+    const q = studentSearch.trim().toLowerCase();
+    if (!q) return allStudents;
 
-    if (allSelected) {
-      setSelectedStudentIds((prev) => prev.filter((sid) => !filteredIds.includes(sid)));
-    } else {
-      setSelectedStudentIds((prev) => Array.from(new Set([...prev, ...filteredIds])));
-    }
-  };
+    return allStudents.filter(
+      (s) =>
+        getFullName(s).toLowerCase().includes(q) ||
+        s.username?.toLowerCase().includes(q) ||
+        s.phone_number?.includes(q),
+    );
+  }, [allStudents, studentSearch]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!name.trim()) {
       setError("لطفاً نام کلاس را وارد کنید.");
       return;
     }
     if (!termId) {
-      setError("لطفاً ترم را انتخاب کنید.");
+      setError("لطفاً ترم تحصیلی را انتخاب کنید.");
       return;
     }
     if (!teacherId) {
-      setError("لطفاً استاد کلاس را انتخاب کنید.");
+      setError("لطفاً استاد مربوطه را انتخاب کنید.");
       return;
     }
 
@@ -156,6 +152,7 @@ export default function ClassForm() {
         name: name.trim(),
         term: Number(termId),
         teacher: Number(teacherId),
+        tuition_fee: Number(tuitionFee) || 0,
       };
 
       let classroomId = id;
@@ -182,6 +179,7 @@ export default function ClassForm() {
             await api.enrollments.create({
               classroom: Number(id),
               student: Number(stId),
+              is_paid: false,
             });
           }
         }
@@ -194,6 +192,7 @@ export default function ClassForm() {
           await api.enrollments.create({
             classroom: Number(classroomId),
             student: Number(stId),
+            is_paid: false,
           });
         }
       }
@@ -211,75 +210,69 @@ export default function ClassForm() {
 
   return (
     <DashboardLayout
-      role={role === "admin" ? "پنل مدیریت" : "پنل منشی"}
-      title={isEdit ? "ویرایش کلاس" : "ایجاد کلاس جدید"}
+      role={roleTitle}
+      title={isEdit ? "ویرایش کلاس" : "افزودن کلاس جدید"}
       menuType={role}
     >
-      <div className="class-form-page">
-        <div className="class-form-header">
-          <div className="class-form-heading">
-            <div className="class-form-avatar">
-              <BookOpen size={24} />
-            </div>
-            <div>
-              <h3>{isEdit ? "ویرایش کلاس" : "ایجاد کلاس جدید"}</h3>
-              <p>مشخصات دوره آموزشی، استاد و دانش‌آموزان ثبت‌نامی را وارد کنید.</p>
-            </div>
-          </div>
-
-          <Link to={`${basePath}/classes`}>
-            <AnimatedButton variant="secondary" size="small">
-              <ArrowRight size={16} />
-              بازگشت به کلاس‌ها
-            </AnimatedButton>
+      <div className="class-form-page-container">
+        <div className="class-form-top-nav">
+          <Link to={`${basePath}/classes`} className="class-form-back-btn">
+            <ArrowRight size={18} />
+            <span>بازگشت به لیست کلاس‌ها</span>
           </Link>
         </div>
 
         {error && (
-          <div className="class-form-alert error">
+          <div className="classes-alert error" style={{ marginBottom: "1.25rem" }}>
             <AlertCircle size={18} />
             <span>{error}</span>
           </div>
         )}
 
         {successMsg && (
-          <div className="class-form-alert success">
+          <div className="classes-alert success" style={{ marginBottom: "1.25rem" }}>
             <Sparkles size={18} />
             <span>{successMsg}</span>
           </div>
         )}
 
         {loading ? (
-          <div style={{ textAlign: "center", padding: "3rem" }}>
+          <div style={{ textAlign: "center", padding: "3.5rem", color: "oklch(50% 0 0)" }}>
             در حال بارگذاری اطلاعات فرم...
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="class-form-main">
-            <div className="class-form-card">
-              <h4 className="card-title">
-                <BookOpen size={18} />
-                مشخصات اصلی کلاس
-              </h4>
+          <form onSubmit={handleSubmit} className="class-form-element">
+            {/* Card 1: Main & Financial Details */}
+            <section className="class-form-card-section">
+              <div className="class-form-card-header">
+                <div className="class-form-card-icon">
+                  <BookOpen size={20} />
+                </div>
+                <div>
+                  <h2>مشخصات اصلی و مالی کلاس</h2>
+                  <p>نام دوره، ترم تحصیلی، مدرس و مبلغ مصوب شهریه را مشخص کنید.</p>
+                </div>
+              </div>
 
-              <div className="class-form-grid">
-                <div className="class-form-group full-width">
-                  <label>
-                    نام کلاس و روز برگزاری <span className="req">*</span>
-                  </label>
+              <div className="class-form-grid-layout">
+                <label className="class-form-field-wrapper full-col">
+                  <span>
+                    نام کلاس و روز برگزاری <b>*</b>
+                  </span>
                   <input
                     type="text"
-                    placeholder="مثال: English A2 - شنبه و چهارشنبه ساعت ۱۸"
+                    placeholder="مثال: English Intermediate 2 - شنبه و چهارشنبه ساعت ۱۸"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
                   />
-                </div>
+                </label>
 
-                <div className="class-form-group">
-                  <label>
-                    <Calendar size={15} />
-                    ترم تحصیلی <span className="req">*</span>
-                  </label>
+                <label className="class-form-field-wrapper">
+                  <span>
+                    <Calendar size={14} style={{ marginLeft: "4px" }} />
+                    ترم تحصیلی <b>*</b>
+                  </span>
                   <select
                     value={termId}
                     onChange={(e) => setTermId(e.target.value)}
@@ -288,17 +281,17 @@ export default function ClassForm() {
                     <option value="">انتخاب ترم...</option>
                     {terms.map((t) => (
                       <option key={t.id} value={t.id}>
-                        {t.name} {t.is_active ? "(فعال)" : "(غیرفعال)"}
+                        {t.name} {t.is_active ? "(ترم فعال)" : "(بایگانی)"}
                       </option>
                     ))}
                   </select>
-                </div>
+                </label>
 
-                <div className="class-form-group">
-                  <label>
-                    <GraduationCap size={15} />
-                    استاد / مدرس <span className="req">*</span>
-                  </label>
+                <label className="class-form-field-wrapper">
+                  <span>
+                    <GraduationCap size={14} style={{ marginLeft: "4px" }} />
+                    استاد / مدرس دوره <b>*</b>
+                  </span>
                   <select
                     value={teacherId}
                     onChange={(e) => setTeacherId(e.target.value)}
@@ -311,87 +304,100 @@ export default function ClassForm() {
                       </option>
                     ))}
                   </select>
+                </label>
+
+                <label className="class-form-field-wrapper full-col">
+                  <span>
+                    <CreditCard size={14} style={{ marginLeft: "4px" }} />
+                    مبلغ مصوب شهریه کلاس (تومان) <b>*</b>
+                  </span>
+                  <input
+                    type="number"
+                    min="0"
+                    step="50000"
+                    placeholder="مثال: 2500000"
+                    value={tuitionFee}
+                    onChange={(e) => setTuitionFee(e.target.value)}
+                    required
+                  />
+                  <small className="tuition-preview-badge">
+                    مبلغ شهریه: {tuitionFee ? `${toPersianDigits(Number(tuitionFee).toLocaleString("fa-IR"))} تومان` : "۰ تومان"}
+                  </small>
+                </label>
+              </div>
+            </section>
+
+            {/* Card 2: Student Assignment */}
+            <section className="class-form-card-section">
+              <div className="class-form-card-header flex-header">
+                <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
+                  <div className="class-form-card-icon users-icon">
+                    <Users size={20} />
+                  </div>
+                  <div>
+                    <h2>انتخاب دانش‌آموزان کلاس</h2>
+                    <p>
+                      دانش‌آموزانی که در این کلاس شرکت می‌کنند را انتخاب نمایید (
+                      {toPersianDigits(selectedStudentIds.length)} نفر انتخاب‌شده).
+                    </p>
+                  </div>
+                </div>
+
+                <div className="student-search-input-wrapper">
+                  <Search size={16} className="search-icon" />
+                  <input
+                    type="text"
+                    placeholder="جستجوی نام یا شماره دانش‌آموز..."
+                    value={studentSearch}
+                    onChange={(e) => setStudentSearch(e.target.value)}
+                  />
                 </div>
               </div>
-            </div>
 
-            {/* Enrolled Students Picker */}
-            <div className="class-form-card">
-              <div className="card-header-flex">
-                <div>
-                  <h4 className="card-title">
-                    <Users size={18} />
-                    دانش‌آموزان ثبت‌نامی در این کلاس
-                  </h4>
-                  <p className="card-subtitle">
-                    تعداد دانش‌آموزان انتخاب‌شده:{" "}
-                    <strong>{toPersianDigits(selectedStudentIds.length)}</strong> نفر
-                  </p>
-                </div>
+              <div className="student-picker-grid">
+                {filteredStudents.map((student) => {
+                  const isSelected = selectedStudentIds.includes(student.id);
 
-                <button
-                  type="button"
-                  className="select-all-btn"
-                  onClick={handleSelectAllFiltered}
-                >
-                  انتخاب / لغو همه نتایج جستجو
-                </button>
-              </div>
-
-              <div className="student-search-bar">
-                <Search size={16} />
-                <input
-                  type="text"
-                  placeholder="جستجوی نام یا شماره دانش‌آموز..."
-                  value={studentSearch}
-                  onChange={(e) => setStudentSearch(e.target.value)}
-                />
-              </div>
-
-              <div className="students-checkbox-grid">
-                {filteredStudents.length > 0 ? (
-                  filteredStudents.map((st) => {
-                    const isSelected = selectedStudentIds.includes(st.id);
-                    return (
-                      <div
-                        key={st.id}
-                        className={`student-check-item ${isSelected ? "selected" : ""}`}
-                        onClick={() => toggleStudent(st.id)}
-                      >
-                        <div className="check-box-icon">
-                          {isSelected ? (
-                            <CheckSquare size={19} className="checked-icon" />
-                          ) : (
-                            <Square size={19} />
-                          )}
-                        </div>
-                        <div className="student-check-info">
-                          <strong>{getFullName(st)}</strong>
-                          <small>{st.phone_number || st.username}</small>
-                        </div>
+                  return (
+                    <div
+                      key={student.id}
+                      className={`student-card-item ${isSelected ? "selected" : ""}`}
+                      onClick={() => toggleStudent(student.id)}
+                    >
+                      <div className="card-checkbox">
+                        {isSelected ? (
+                          <CheckSquare size={19} className="check-active" />
+                        ) : (
+                          <Square size={19} className="check-inactive" />
+                        )}
                       </div>
-                    );
-                  })
-                ) : (
-                  <div className="no-students-found">دانش‌آموزی با این مشخصات پیدا نشد.</div>
-                )}
-              </div>
-            </div>
 
-            <div className="class-form-actions">
-              <Link to={`${basePath}/classes`}>
-                <AnimatedButton variant="secondary" type="button">
-                  انصراف
-                </AnimatedButton>
+                      <div className="student-info-col">
+                        <strong>{getFullName(student)}</strong>
+                        <span className="user-tag">{student.username}</span>
+                        {student.phone_number && (
+                          <small className="phone-tag">{student.phone_number}</small>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* Form Actions */}
+            <div className="class-form-submit-actions">
+              <Link to={`${basePath}/classes`} className="class-form-cancel-btn">
+                انصراف
               </Link>
 
               <AnimatedButton
                 variant="primary"
                 type="submit"
                 disabled={saving}
+                icon={<Save size={18} />}
               >
-                <Save size={18} />
-                {saving ? "در حال ذخیره‌سازی..." : isEdit ? "بروزرسانی کلاس" : "ثبت و ایجاد کلاس"}
+                {saving ? "در حال ذخیره‌سازی..." : isEdit ? "ذخیره تغییرات کلاس" : "ثبت و ایجاد کلاس"}
               </AnimatedButton>
             </div>
           </form>

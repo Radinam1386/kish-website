@@ -14,12 +14,12 @@ import {
   BookOpen,
   Info,
   Check,
-  BarChart3,
+  Layers,
+  Sparkles,
 } from "lucide-react";
 
 import DashboardLayout from "../components/DashboardLayout";
 import StatCard from "../components/StatCard";
-import { AnimatedButton } from "../components/AnimatedButton";
 import { api, getFullName } from "../services/api";
 import { toJalaliDateString, toPersianDigits } from "../utils/dateUtils";
 
@@ -33,12 +33,14 @@ export default function SecretaryExams() {
 
   const [exams, setExams] = useState([]);
   const [classrooms, setClassrooms] = useState([]);
+  const [terms, setTerms] = useState([]);
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedTermId, setSelectedTermId] = useState("");
   const [selectedClass, setSelectedClass] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
 
@@ -56,17 +58,29 @@ export default function SecretaryExams() {
         setLoading(true);
         setError("");
 
-        const [examsData, classroomsData, submissionsData] = await Promise.all([
+        const [examsData, classroomsData, termsData, submissionsData] = await Promise.all([
           api.exams.list(),
           api.classrooms.list(),
+          api.terms.list(),
           api.submissions.list(),
         ]);
 
         if (!alive) return;
 
+        const allTerms = termsData || [];
         setExams(examsData || []);
         setClassrooms(classroomsData || []);
+        setTerms(allTerms);
         setSubmissions(submissionsData || []);
+
+        const active = allTerms.find((t) => t.is_active);
+        if (active) {
+          setSelectedTermId(String(active.id));
+        } else if (allTerms.length > 0) {
+          setSelectedTermId(String(allTerms[0].id));
+        } else {
+          setSelectedTermId("all");
+        }
       } catch (err) {
         if (alive) setError(err.message || "خطا در دریافت اطلاعات امتحانات");
       } finally {
@@ -81,182 +95,258 @@ export default function SecretaryExams() {
     };
   }, []);
 
-  const processedExams = useMemo(() => {
-    return exams.map((exam) => {
-      const cls = classrooms.find((c) => c.id === exam.classroom || c.id === exam.classroom?.id);
-      const examSubs = submissions.filter((s) => s.exam === exam.id || s.exam?.id === exam.id);
-      const gradedSubs = examSubs.filter((s) => s.is_graded);
-      const pendingSubs = examSubs.filter((s) => !s.is_graded);
+  const activeTermObj = useMemo(() => {
+    if (selectedTermId === "all") return null;
+    return terms.find((t) => String(t.id) === String(selectedTermId));
+  }, [terms, selectedTermId]);
 
-      const totalScore = examSubs.reduce((sum, s) => sum + (s.total_score || 0), 0);
-      const avgScore = gradedSubs.length > 0 ? (totalScore / gradedSubs.length).toFixed(1) : "-";
+  // Classrooms belonging to the selected term
+  const termClassrooms = useMemo(() => {
+    if (selectedTermId === "all") return classrooms;
+    return classrooms.filter(
+      (c) => String(c.term || c.term?.id) === String(selectedTermId),
+    );
+  }, [classrooms, selectedTermId]);
 
-      const maxExamScore = (exam.questions || []).reduce(
-        (sum, q) => sum + (q.max_score || 1),
-        0,
-      );
+  // Map and calculate statistics for exams
+  const examsWithStats = useMemo(() => {
+    const termClassIds = termClassrooms.map((c) => c.id);
 
-      return {
-        ...exam,
-        classroomName: cls?.name || `کلاس ${exam.classroom}`,
-        teacherName: getFullName(cls?.teacher_detail) || "استاد نامشخص",
-        enrolledCount: cls?.student_count || cls?.enrollments?.length || 0,
-        submissionsCount: examSubs.length,
-        gradedCount: gradedSubs.length,
-        pendingCount: pendingSubs.length,
-        avgScore,
-        maxScore: maxExamScore || exam.questions?.length || 0,
-        submissionsList: examSubs,
-      };
-    });
-  }, [exams, classrooms, submissions]);
+    return exams
+      .filter((exam) => {
+        if (selectedTermId === "all") return true;
+        const examClassId = exam.classroom || exam.classroom_detail?.id;
+        return termClassIds.includes(examClassId);
+      })
+      .map((exam) => {
+        const cls = classrooms.find(
+          (c) => c.id === (exam.classroom || exam.classroom_detail?.id),
+        );
+        const examSubs = submissions.filter(
+          (s) => s.exam === exam.id || s.exam?.id === exam.id,
+        );
 
+        const gradedSubs = examSubs.filter((s) => s.score !== null && s.score !== undefined);
+        const pendingSubs = examSubs.filter((s) => s.score === null || s.score === undefined);
+
+        let avgScore = "-";
+        if (gradedSubs.length > 0) {
+          const sum = gradedSubs.reduce((acc, curr) => acc + Number(curr.score), 0);
+          avgScore = (sum / gradedSubs.length).toFixed(1);
+        }
+
+        const enrolledCount = cls?.enrollments?.length || cls?.student_count || 0;
+
+        return {
+          ...exam,
+          classroomName: cls?.name || "کلاس نامشخص",
+          teacherName: getFullName(cls?.teacher_detail) || "استاد نامشخص",
+          enrolledCount,
+          submissionsCount: examSubs.length,
+          gradedCount: gradedSubs.length,
+          pendingCount: pendingSubs.length,
+          avgScore,
+          submissionsList: examSubs,
+        };
+      });
+  }, [exams, termClassrooms, selectedTermId, classrooms, submissions]);
+
+  // Filtered exams by search, class and status
   const filteredExams = useMemo(() => {
-    const q = searchTerm.trim().toLowerCase();
-
-    return processedExams.filter((exam) => {
-      const matchSearch =
+    return examsWithStats.filter((exam) => {
+      const q = searchTerm.trim().toLowerCase();
+      const matchesSearch =
         !q ||
-        exam.title?.toLowerCase().includes(q) ||
-        exam.classroomName?.toLowerCase().includes(q) ||
-        exam.teacherName?.toLowerCase().includes(q);
+        exam.title.toLowerCase().includes(q) ||
+        exam.classroomName.toLowerCase().includes(q) ||
+        exam.teacherName.toLowerCase().includes(q);
 
-      const matchClass = selectedClass === "all" || String(exam.classroom) === String(selectedClass);
+      const examClassId = exam.classroom || exam.classroom_detail?.id;
+      const matchesClass =
+        selectedClass === "all" || String(examClassId) === String(selectedClass);
 
-      const matchStatus =
-        statusFilter === "all" ||
-        (statusFilter === "graded" && exam.pendingCount === 0 && exam.submissionsCount > 0) ||
-        (statusFilter === "pending" && exam.pendingCount > 0) ||
-        (statusFilter === "no_subs" && exam.submissionsCount === 0);
+      let matchesStatus = true;
+      if (statusFilter === "pending") {
+        matchesStatus = exam.pendingCount > 0;
+      } else if (statusFilter === "graded") {
+        matchesStatus = exam.submissionsCount > 0 && exam.pendingCount === 0;
+      } else if (statusFilter === "no_subs") {
+        matchesStatus = exam.submissionsCount === 0;
+      }
 
-      return matchSearch && matchClass && matchStatus;
+      return matchesSearch && matchesClass && matchesStatus;
     });
-  }, [processedExams, searchTerm, selectedClass, statusFilter]);
+  }, [examsWithStats, searchTerm, selectedClass, statusFilter]);
 
+  // Overall Statistics
   const stats = useMemo(() => {
-    const totalExams = exams.length;
-    const totalSubmissions = submissions.length;
-    const totalGraded = submissions.filter((s) => s.is_graded).length;
-    const totalPending = totalSubmissions - totalGraded;
+    const totalExams = examsWithStats.length;
+    const totalSubmissions = examsWithStats.reduce((acc, e) => acc + e.submissionsCount, 0);
+    const totalGraded = examsWithStats.reduce((acc, e) => acc + e.gradedCount, 0);
+    const totalPending = examsWithStats.reduce((acc, e) => acc + e.pendingCount, 0);
 
     return { totalExams, totalSubmissions, totalGraded, totalPending };
-  }, [exams, submissions]);
+  }, [examsWithStats]);
 
   return (
     <DashboardLayout role={roleTitle} title="نظارت بر امتحانات" menuType={menuType}>
-      <div className="secretary-exams-page">
-        {/* Banner */}
-        <div className="exams-monitoring-banner">
-          <div className="banner-icon">
-            <BarChart3 size={24} />
+      <div className="secretary-exams-page-container">
+        {/* Term Selector Header Banner */}
+        <div className="term-selector-banner" style={{ marginBottom: "1.75rem" }}>
+          <div className="term-banner-info">
+            <div className="term-icon-circle">
+              <Layers size={22} />
+            </div>
+            <div>
+              <h3 style={{ margin: "0 0 0.25rem", fontSize: "1.1rem", fontWeight: "800" }}>
+                ترم تحصیلی انتخابی:{" "}
+                <span className="term-highlight-text" style={{ color: "var(--primary)" }}>
+                  {activeTermObj
+                    ? activeTermObj.name
+                    : selectedTermId === "all"
+                    ? "همه ترم‌ها"
+                    : "ترم نامشخص"}
+                </span>
+              </h3>
+              <p style={{ margin: 0, fontSize: "0.8rem", color: "oklch(55% 0 0)" }}>
+                {activeTermObj?.is_active
+                  ? "آزمون‌ها و نتایج مربوط به ترم فعال جاری در حال نمایش است."
+                  : activeTermObj
+                  ? "آزمون‌ها و نتایج مربوط به این ترم بایگانی‌شده در حال نمایش است."
+                  : "نمایش آزمون‌های تمامی دوره‌ها"}
+              </p>
+            </div>
           </div>
-          <div>
-            <h4>داشبورد نظارت بر امتحانات و نمرات</h4>
-            <p>
-              مشاهده وضعیت برگزاری آزمون‌ها، نمرات ثبت‌شده توسط اساتید و بررسی پاسخ‌برگ‌های
-              دانش‌آموزان به صورت نظارتی.
-            </p>
+
+          <div className="term-dropdown-wrapper" style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+            <label style={{ fontSize: "0.84rem", fontWeight: "700" }}>انتخاب ترم:</label>
+            <select
+              value={selectedTermId}
+              onChange={(e) => setSelectedTermId(e.target.value)}
+              className="term-select-input"
+            >
+              {terms.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name} {t.is_active ? "(ترم فعال جاری)" : "(به پایان رسیده)"}
+                </option>
+              ))}
+              <option value="all">همه ترم‌ها (مشاهده کامل)</option>
+            </select>
           </div>
         </div>
 
         {error && (
-          <div className="exams-alert error">
+          <div className="secretary-exams-alert error" style={{ marginBottom: "1.5rem" }}>
             <AlertCircle size={18} />
             <span>{error}</span>
           </div>
         )}
 
-        {/* Stats */}
+        {/* Stats Grid */}
         <div className="secretary-exams-stats-grid">
           <StatCard
-            title="کل آزمون‌های برگزارشده"
+            title="آزمون‌های ترم"
             value={`${toPersianDigits(stats.totalExams)} آزمون`}
-            icon={<FileText size={20} />}
+            hint={activeTermObj?.name || "ترم انتخابی"}
+            icon={<FileText size={22} />}
+            color="red"
+          />
+          <StatCard
+            title="پاسخ‌برگ‌های دریافتی"
+            value={`${toPersianDigits(stats.totalSubmissions)} برگه`}
+            hint="تحویل داده شده"
+            icon={<Users size={22} />}
             color="blue"
           />
           <StatCard
-            title="کل پاسخ‌برگ‌های دریافتی"
-            value={`${toPersianDigits(stats.totalSubmissions)} برگه`}
-            icon={<Users size={20} />}
-            color="orange"
-          />
-          <StatCard
-            title="پاسخ‌برگ‌های تصحیح‌شده"
+            title="برگه‌های تصحیح‌شده"
             value={`${toPersianDigits(stats.totalGraded)} برگه`}
-            icon={<CheckCircle2 size={20} />}
+            hint="نمره‌دهی قطعی"
+            icon={<CheckCircle2 size={22} />}
             color="green"
           />
           <StatCard
-            title="در انتظار تصحیح مدرس"
+            title="در انتظار تصحیح استاد"
             value={`${toPersianDigits(stats.totalPending)} برگه`}
-            icon={<Clock3 size={20} />}
-            color="red"
+            hint="نیازمند نمره مدرس"
+            icon={<Clock3 size={22} />}
+            color="orange"
           />
         </div>
 
-        {/* Filters */}
-        <div className="secretary-exams-filters-bar">
-          <div className="search-field-box">
-            <Search size={18} />
-            <input
-              type="text"
-              placeholder="جستجوی آزمون، نام کلاس یا مدرس..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+        {/* Main Section */}
+        <section className="secretary-exams-main-section">
+          <div className="secretary-exams-section-header">
+            <div className="secretary-exams-heading">
+              <h3 className="secretary-exams-section-title">
+                لیست آزمون‌های {activeTermObj ? `«${activeTermObj.name}»` : "آموزشگاه"}
+              </h3>
+              <p className="secretary-exams-section-desc">
+                نظارت بر روند برگزاری امتحانات، تعداد پاسخ‌برگ‌ها و نمرات ثبت‌شده توسط مدرسین
+              </p>
+            </div>
           </div>
 
-          <div className="select-field-box">
-            <BookOpen size={16} />
-            <select
-              value={selectedClass}
-              onChange={(e) => setSelectedClass(e.target.value)}
-            >
-              <option value="all">همه کلاس‌ها</option>
-              {classrooms.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
+          {/* Filters Bar */}
+          <div className="secretary-exams-filters-row">
+            <div className="exams-search-wrapper">
+              <Search size={18} className="exams-search-icon" />
+              <input
+                type="text"
+                placeholder="جستجو بر اساس عنوان آزمون، کلاس یا مدرس..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="exams-search-input"
+              />
+            </div>
+
+            <div className="exams-select-wrapper">
+              <BookOpen size={16} className="exams-filter-icon" />
+              <select
+                value={selectedClass}
+                onChange={(e) => setSelectedClass(e.target.value)}
+                className="exams-select"
+              >
+                <option value="all">همه کلاس‌های ترم</option>
+                {termClassrooms.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="exams-select-wrapper">
+              <Filter size={16} className="exams-filter-icon" />
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="exams-select"
+              >
+                <option value="all">همه وضعیت‌ها</option>
+                <option value="pending">دارای برگه منتظر تصحیح</option>
+                <option value="graded">کاملاً تصحیح‌شده</option>
+                <option value="no_subs">بدون شرکت‌کننده</option>
+              </select>
+            </div>
           </div>
 
-          <div className="select-field-box">
-            <Filter size={16} />
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
-              <option value="all">همه وضعیت‌ها</option>
-              <option value="graded">کاملاً تصحیح‌شده</option>
-              <option value="pending">دارای برگه در انتظار تصحیح</option>
-              <option value="no_subs">بدون شرکت‌کننده</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Exams Table */}
-        <div className="secretary-exams-card">
-          <div className="card-header">
-            <h3>لیست آزمون‌های آموزشگاه</h3>
-            <span className="count-badge">
-              {toPersianDigits(filteredExams.length)} آزمون
-            </span>
-          </div>
-
+          {/* Exams Table */}
           {loading ? (
-            <div className="exams-empty-state">در حال دریافت لیست امتحانات...</div>
+            <div style={{ textAlign: "center", padding: "3rem", color: "oklch(50% 0 0)" }}>
+              در حال دریافت اطلاعات آزمون‌ها...
+            </div>
           ) : filteredExams.length > 0 ? (
-            <div className="table-responsive">
-              <table className="exams-table">
+            <div className="secretary-exams-table-wrapper">
+              <table className="secretary-exams-table">
                 <thead>
                   <tr>
                     <th>عنوان آزمون</th>
-                    <th>کلاس</th>
-                    <th>مدرس</th>
-                    <th>تاریخ (شمسی)</th>
-                    <th>تعداد سوال</th>
-                    <th>شرکت‌کنندگان</th>
+                    <th>کلاس مربوطه</th>
+                    <th>مدرس دوره</th>
+                    <th>تاریخ برگزاری</th>
+                    <th>بارم کل</th>
+                    <th>نسبت تحویل</th>
                     <th>میانگین نمرات</th>
                     <th>وضعیت تصحیح</th>
                     <th>عملیات</th>
@@ -272,7 +362,7 @@ export default function SecretaryExams() {
                           </div>
                           <div>
                             <strong>{exam.title}</strong>
-                            <small>بارم کل: {toPersianDigits(exam.maxScore)} نمره</small>
+                            <small>{toPersianDigits(exam.questions?.length || 0)} سوال</small>
                           </div>
                         </div>
                       </td>
@@ -282,53 +372,51 @@ export default function SecretaryExams() {
                       </td>
 
                       <td>
-                        <span className="teacher-name-tag">{exam.teacherName}</span>
+                        <strong className="teacher-name-text">{exam.teacherName}</strong>
                       </td>
 
                       <td>
-                        <span className="shamsi-date-pill">
-                          {toJalaliDateString(exam.date)}
-                        </span>
+                        <span className="shamsi-date-pill">{toJalaliDateString(exam.date)}</span>
                       </td>
 
                       <td>
-                        <strong>{toPersianDigits(exam.questions?.length || 0)} سوال</strong>
+                        <span className="max-score-badge">{toPersianDigits(exam.maxScore)} نمره</span>
                       </td>
 
                       <td>
-                        <div className="submissions-count-cell">
-                          <strong>{toPersianDigits(exam.submissionsCount)}</strong>
+                        <div className="submissions-ratio-cell">
+                          <strong className="subs-active">{toPersianDigits(exam.submissionsCount)}</strong>
                           <span>/ {toPersianDigits(exam.enrolledCount)} نفر</span>
                         </div>
                       </td>
 
                       <td>
-                        <span className="avg-score-badge">
-                          {exam.avgScore !== "-" ? toPersianDigits(exam.avgScore) : "-"}
-                        </span>
+                        <strong className="avg-score-text">
+                          {exam.avgScore !== "-" ? `${toPersianDigits(exam.avgScore)}` : "-"}
+                        </strong>
                       </td>
 
                       <td>
                         {exam.submissionsCount === 0 ? (
-                          <span className="exam-status-pill no-subs">بدون شرکت‌کننده</span>
+                          <span className="exam-status-pill no-subs">بدون پاسخ‌برگ</span>
                         ) : exam.pendingCount === 0 ? (
                           <span className="exam-status-pill graded">تصحیح شده</span>
                         ) : (
                           <span className="exam-status-pill pending">
-                            {toPersianDigits(exam.pendingCount)} برگه منتظر تصحیح
+                            {toPersianDigits(exam.pendingCount)} برگه در انتظار نمره
                           </span>
                         )}
                       </td>
 
                       <td>
-                        <AnimatedButton
-                          size="small"
-                          variant="primary"
-                          icon={<Eye size={15} />}
+                        <button
+                          type="button"
+                          className="exam-action-btn view"
                           onClick={() => setInspectedExam(exam)}
                         >
-                          نظارت بر نتایج
-                        </AnimatedButton>
+                          <Eye size={15} />
+                          <span>مشاهده برگه‌ها</span>
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -337,30 +425,28 @@ export default function SecretaryExams() {
             </div>
           ) : (
             <div className="exams-empty-state">
-              <FileText size={36} />
-              <p>آزمونی با این مشخصات یافت نشد.</p>
+              <FileText size={44} />
+              <h4>آزمونی در این ترم یافت نشد</h4>
+              <p>در حال حاضر برای این ترم آزمونی تعریف نشده است.</p>
             </div>
           )}
-        </div>
+        </section>
 
-        {/* Modal 1: Inspected Exam Submissions List */}
+        {/* Modal 1: Submissions list for inspected Exam */}
         {inspectedExam && (
           <div className="exam-modal-backdrop" onClick={() => setInspectedExam(null)}>
-            <div
-              className="exam-modal-container large"
-              onClick={(e) => e.stopPropagation()}
-            >
+            <div className="exam-modal-container" onClick={(e) => e.stopPropagation()}>
               <div className="exam-modal-header">
                 <div className="modal-header-info">
-                  <div className="exam-icon-circle">
+                  <div className="exam-modal-icon-badge">
                     <Award size={22} />
                   </div>
                   <div>
-                    <h4>نتایج و پاسخ‌برگ‌های «{inspectedExam.title}»</h4>
+                    <h4>پاسخ‌برگ‌های آزمون «{inspectedExam.title}»</h4>
                     <p>
                       کلاس: <strong>{inspectedExam.classroomName}</strong> | مدرس:{" "}
-                      <strong>{inspectedExam.teacherName}</strong> | تاریخ:{" "}
-                      <strong>{toJalaliDateString(inspectedExam.date)}</strong>
+                      <strong>{inspectedExam.teacherName}</strong> | بارم کل:{" "}
+                      <strong>{toPersianDigits(inspectedExam.maxScore)} نمره</strong>
                     </p>
                   </div>
                 </div>
@@ -374,142 +460,120 @@ export default function SecretaryExams() {
               </div>
 
               <div className="exam-modal-body">
-                {/* Quick stats row in modal */}
-                <div className="modal-stats-bar">
-                  <div className="modal-stat-box">
-                    <span>کل برگه‌ها</span>
-                    <strong>{toPersianDigits(inspectedExam.submissionsCount)}</strong>
-                  </div>
-                  <div className="modal-stat-box">
-                    <span>تصحیح شده</span>
-                    <strong>{toPersianDigits(inspectedExam.gradedCount)}</strong>
-                  </div>
-                  <div className="modal-stat-box">
-                    <span>در انتظار تصحیح</span>
-                    <strong>{toPersianDigits(inspectedExam.pendingCount)}</strong>
-                  </div>
-                  <div className="modal-stat-box">
-                    <span>میانگین نمرات</span>
-                    <strong>{toPersianDigits(inspectedExam.avgScore)}</strong>
-                  </div>
-                </div>
-
-                {/* Submissions List Table */}
-                {inspectedExam.submissionsList.length > 0 ? (
-                  <div className="table-responsive">
-                    <table className="modal-submissions-table">
+                {inspectedExam.submissionsList?.length > 0 ? (
+                  <div className="secretary-exams-table-wrapper">
+                    <table className="secretary-exams-table modal-table">
                       <thead>
                         <tr>
-                          <th>دانش‌آموز</th>
-                          <th>زمان تحویل (شمسی)</th>
-                          <th>نمره کل</th>
+                          <th>نام دانش‌آموز</th>
+                          <th>شماره کاربری</th>
+                          <th>زمان تحویل</th>
+                          <th>نمره ثبت‌شده</th>
                           <th>وضعیت تصحیح</th>
-                          <th>پاسخ‌برگ</th>
+                          <th>بررسی برگه</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {inspectedExam.submissionsList.map((sub) => (
-                          <tr key={sub.id}>
-                            <td>
-                              <div className="student-modal-cell">
-                                <div className="student-avatar-small">
-                                  {getFullName(sub.student_detail).charAt(0) || "د"}
-                                </div>
-                                <div>
-                                  <strong>{getFullName(sub.student_detail)}</strong>
-                                  <small>{sub.student_detail?.username}</small>
-                                </div>
-                              </div>
-                            </td>
+                        {inspectedExam.submissionsList.map((sub) => {
+                          const student = sub.student_detail;
+                          const hasScore = sub.score !== null && sub.score !== undefined;
 
-                            <td>
-                              <span className="date-sub-text">
-                                {toJalaliDateString(sub.submitted_at?.split("T")[0])}
-                              </span>
-                            </td>
-
-                            <td>
-                              <strong className="score-highlight">
-                                {sub.total_score !== null && sub.total_score !== undefined
-                                  ? `${toPersianDigits(sub.total_score)} / ${toPersianDigits(
-                                      inspectedExam.maxScore,
-                                    )}`
-                                  : "ثبت نشده"}
-                              </strong>
-                            </td>
-
-                            <td>
-                              <span
-                                className={`sub-status-tag ${
-                                  sub.is_graded ? "graded" : "pending"
-                                }`}
-                              >
-                                {sub.is_graded ? "تصحیح نهایی" : "منتظر نمره معلم"}
-                              </span>
-                            </td>
-
-                            <td>
-                              <button
-                                type="button"
-                                className="view-answers-btn"
-                                onClick={() => setSelectedSubmission({ ...sub, examDetails: inspectedExam })}
-                              >
-                                <Eye size={14} />
-                                <span>مشاهده برگه</span>
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
+                          return (
+                            <tr key={sub.id}>
+                              <td>
+                                <strong>{getFullName(student)}</strong>
+                              </td>
+                              <td>
+                                <span className="user-code-tag">{student?.username}</span>
+                              </td>
+                              <td>
+                                <span className="shamsi-date-pill">
+                                  {sub.submitted_at
+                                    ? toJalaliDateString(sub.submitted_at)
+                                    : "نامشخص"}
+                                </span>
+                              </td>
+                              <td>
+                                {hasScore ? (
+                                  <strong className="score-highlight">
+                                    {toPersianDigits(sub.score)} از{" "}
+                                    {toPersianDigits(inspectedExam.maxScore)}
+                                  </strong>
+                                ) : (
+                                  <span className="no-score-tag">ثبت نشده</span>
+                                )}
+                              </td>
+                              <td>
+                                {hasScore ? (
+                                  <span className="exam-status-pill graded">
+                                    <Check size={13} style={{ marginLeft: "3px" }} />
+                                    نمره داده شد
+                                  </span>
+                                ) : (
+                                  <span className="exam-status-pill pending">
+                                    <Clock3 size={13} style={{ marginLeft: "3px" }} />
+                                    منتظر تصحیح استاد
+                                  </span>
+                                )}
+                              </td>
+                              <td>
+                                <button
+                                  type="button"
+                                  className="exam-action-btn view"
+                                  onClick={() => setSelectedSubmission(sub)}
+                                >
+                                  <Eye size={14} />
+                                  <span>بررسی پاسخ‌ها</span>
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
                 ) : (
-                  <div className="empty-modal-state">
-                    <Users size={32} />
-                    <p>هنوز دانش‌آموزی در این آزمون شرکت نکرده است.</p>
+                  <div className="exams-empty-state">
+                    <Users size={36} />
+                    <h4>هیچ پاسخ‌برگی تحویل داده نشده است</h4>
+                    <p>دانش‌آموزان هنوز در این آزمون شرکت نکرده‌اند.</p>
                   </div>
                 )}
               </div>
 
               <div className="exam-modal-footer">
-                <AnimatedButton
-                  variant="secondary"
+                <button
+                  type="button"
+                  className="modal-cancel-btn"
                   onClick={() => setInspectedExam(null)}
                 >
                   بستن پنجره
-                </AnimatedButton>
+                </button>
               </div>
             </div>
           </div>
         )}
 
-        {/* Modal 2: Student Detailed Answer Sheet (پاسخ‌برگ تشریحی و تستی) */}
-        {selectedSubmission && (
-          <div
-            className="exam-modal-backdrop secondary-backdrop"
-            onClick={() => setSelectedSubmission(null)}
-          >
-            <div
-              className="exam-modal-container answer-sheet-container"
-              onClick={(e) => e.stopPropagation()}
-            >
+        {/* Modal 2: Single Submission Detailed Answer Sheet */}
+        {selectedSubmission && inspectedExam && (
+          <div className="exam-modal-backdrop sub-modal" onClick={() => setSelectedSubmission(null)}>
+            <div className="exam-modal-container large" onClick={(e) => e.stopPropagation()}>
               <div className="exam-modal-header">
                 <div className="modal-header-info">
-                  <div className="student-avatar-small">
-                    {getFullName(selectedSubmission.student_detail).charAt(0) || "د"}
+                  <div className="exam-modal-icon-badge" style={{ background: "linear-gradient(135deg, #3578c8, #205493)" }}>
+                    <Info size={22} />
                   </div>
                   <div>
                     <h4>
-                      پاسخ‌برگ {getFullName(selectedSubmission.student_detail)}
+                      پاسخ‌برگ: {getFullName(selectedSubmission.student_detail)} (
+                      {selectedSubmission.student_detail?.username})
                     </h4>
                     <p>
-                      آزمون: <strong>{selectedSubmission.examDetails?.title}</strong> |
-                      نمره کل:{" "}
+                      آزمون: <strong>{inspectedExam.title}</strong> | نمره نهایی:{" "}
                       <strong>
-                        {selectedSubmission.total_score !== null &&
-                        selectedSubmission.total_score !== undefined
-                          ? toPersianDigits(selectedSubmission.total_score)
-                          : "در انتظار تصحیح"}
+                        {selectedSubmission.score !== null && selectedSubmission.score !== undefined
+                          ? `${toPersianDigits(selectedSubmission.score)} از ${toPersianDigits(inspectedExam.maxScore)}`
+                          : "هنوز نمره‌دهی نشده"}
                       </strong>
                     </p>
                   </div>
@@ -523,88 +587,48 @@ export default function SecretaryExams() {
                 </button>
               </div>
 
-              <div className="exam-modal-body answer-sheet-body">
-                <div className="sheet-monitoring-notice">
-                  <Info size={16} />
-                  <span>
-                    این صفحه صرفاً جهت نظارت منشی بر پاسخ‌های ارسال‌شده دانش‌آموز و نمرات
-                    معلم می‌باشد.
-                  </span>
-                </div>
+              <div className="exam-modal-body modal-scrollable">
+                {selectedSubmission.feedback && (
+                  <div className="submission-feedback-box">
+                    <strong>
+                      <Sparkles size={16} style={{ marginLeft: "4px" }} />
+                      توضیحات و بازخورد استاد:
+                    </strong>
+                    <p>{selectedSubmission.feedback}</p>
+                  </div>
+                )}
 
-                <div className="answers-list">
-                  {(selectedSubmission.examDetails?.questions || []).map((q, idx) => {
-                    const ans = (selectedSubmission.answers || []).find(
-                      (a) => a.question === q.id || a.question?.id === q.id,
-                    );
-
-                    const isMultiple = q.question_type === "multiple_choice";
+                <div className="submission-questions-list">
+                  {(inspectedExam.questions || []).map((question, qIdx) => {
+                    const studentAns = selectedSubmission.answers?.[question.id];
 
                     return (
-                      <div key={q.id || idx} className="question-answer-card">
-                        <div className="question-card-head">
-                          <span className="q-number">سوال {toPersianDigits(idx + 1)}</span>
-                          <span className="q-type-badge">
-                            {isMultiple ? "چهار گزینه‌ای (تستی)" : "تشریحی"}
-                          </span>
-                          <span className="q-score-badge">
-                            بارم: {toPersianDigits(q.max_score || 1)} نمره
+                      <div key={question.id || qIdx} className="submission-q-card">
+                        <div className="submission-q-header">
+                          <span className="q-number-pill">سوال {toPersianDigits(qIdx + 1)}</span>
+                          <span className="q-score-tag">
+                            بارم: {toPersianDigits(question.score || 1)} نمره
                           </span>
                         </div>
 
-                        <p className="q-text">{q.text}</p>
+                        <p className="submission-q-text">{question.text}</p>
 
-                        {/* Multiple Choice inspection */}
-                        {isMultiple && (
-                          <div className="choices-review-grid">
-                            {(q.choices || []).map((choice) => {
-                              const isSelected =
-                                ans?.selected_choice === choice.id ||
-                                ans?.selected_choice?.id === choice.id;
-                              const isCorrect = choice.is_correct;
-
-                              let choiceClass = "choice-item";
-                              if (isSelected && isCorrect) choiceClass += " correct-selected";
-                              else if (isSelected && !isCorrect) choiceClass += " wrong-selected";
-                              else if (isCorrect) choiceClass += " correct-target";
-
-                              return (
-                                <div key={choice.id} className={choiceClass}>
-                                  <div className="choice-indicator">
-                                    {isSelected && <Check size={14} />}
-                                  </div>
-                                  <span className="choice-text">{choice.text}</span>
-                                  {isCorrect && (
-                                    <span className="correct-label">(پاسخ صحیح)</span>
-                                  )}
-                                  {isSelected && (
-                                    <span className="user-selected-label">
-                                      [انتخاب دانش‌آموز]
-                                    </span>
-                                  )}
-                                </div>
-                              );
-                            })}
+                        <div className="student-ans-block">
+                          <span className="ans-label">پاسخ ثبت‌شده دانش‌آموز:</span>
+                          <div className="ans-content-box">
+                            {studentAns !== undefined && studentAns !== "" ? (
+                              question.type === "multiple_choice" ? (
+                                <strong>گزینه انتخابی: {studentAns}</strong>
+                              ) : (
+                                <p style={{ margin: 0, whiteSpace: "pre-wrap" }}>{studentAns}</p>
+                              )
+                            ) : (
+                              <span style={{ color: "#95a5a6", fontStyle: "italic" }}>
+                                پاسخی ثبت نشده است (سفید)
+                              </span>
+                            )}
                           </div>
-                        )}
-
-                        {/* Essay inspection */}
-                        {!isMultiple && (
-                          <div className="essay-review-box">
-                            <label>پاسخ ثبت‌شده دانش‌آموز:</label>
-                            <div className="essay-content">
-                              {ans?.essay_text || "بدون پاسخ"}
-                            </div>
-                            <div className="essay-score-row">
-                              <span>نمره اختصاص‌داده‌شده توسط معلم:</span>
-                              <strong>
-                                {ans?.score !== null && ans?.score !== undefined
-                                  ? `${toPersianDigits(ans.score)} نمره`
-                                  : "هنوز تصحیح نشده"}
-                              </strong>
-                            </div>
-                          </div>
-                        )}
+                        </div>
                       </div>
                     );
                   })}
@@ -612,12 +636,13 @@ export default function SecretaryExams() {
               </div>
 
               <div className="exam-modal-footer">
-                <AnimatedButton
-                  variant="primary"
+                <button
+                  type="button"
+                  className="modal-cancel-btn"
                   onClick={() => setSelectedSubmission(null)}
                 >
-                  بازگشت به لیست نتایج
-                </AnimatedButton>
+                  بازگشت به لیست برگه‌ها
+                </button>
               </div>
             </div>
           </div>

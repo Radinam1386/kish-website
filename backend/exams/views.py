@@ -26,9 +26,9 @@ class ExamViewSet(viewsets.ModelViewSet):
         qs = Exam.objects.all()
 
         if user.role == 'teacher':
-            qs = qs.filter(classroom__teacher=user)
+            qs = qs.filter(classroom__teacher=user, classroom__term__is_active=True)
         elif user.role == 'student':
-            qs = qs.filter(classroom__enrollments__student=user)
+            qs = qs.filter(classroom__enrollments__student=user, classroom__term__is_active=True)
 
         return qs.distinct()
 
@@ -62,7 +62,7 @@ class QuestionViewSet(viewsets.ModelViewSet):
         user = self.request.user
         qs = Question.objects.all()
         if user.role == 'teacher':
-            qs = qs.filter(exam__classroom__teacher=user)
+            qs = qs.filter(exam__classroom__teacher=user, exam__classroom__term__is_active=True)
         return qs
 
 
@@ -75,9 +75,9 @@ class ExamSubmissionViewSet(viewsets.ModelViewSet):
         qs = ExamSubmission.objects.all()
 
         if user.role == 'teacher':
-            qs = qs.filter(exam__classroom__teacher=user)
+            qs = qs.filter(exam__classroom__teacher=user, exam__classroom__term__is_active=True)
         elif user.role == 'student':
-            qs = qs.filter(student=user)
+            qs = qs.filter(student=user, exam__classroom__term__is_active=True)
 
         return qs
 
@@ -113,9 +113,9 @@ class AnswerViewSet(viewsets.ModelViewSet):
         qs = Answer.objects.all()
 
         if user.role == 'teacher':
-            qs = qs.filter(submission__exam__classroom__teacher=user)
+            qs = qs.filter(submission__exam__classroom__teacher=user, submission__exam__classroom__term__is_active=True)
         elif user.role == 'student':
-            qs = qs.filter(submission__student=user)
+            qs = qs.filter(submission__student=user, submission__exam__classroom__term__is_active=True)
 
         return qs
 

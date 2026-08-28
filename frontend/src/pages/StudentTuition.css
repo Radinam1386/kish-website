@@ -1,1232 +1,262 @@
 /* =========================================================
-   Student Tuition
-   Responsive / Mobile First Override
+   Student Tuition Page Styles
 ========================================================= */
 
-.student-tuition-stats,
-.tuition-invoices-section,
-.tuition-section-header,
-.tuition-table-wrapper,
-.tuition-table {
-  box-sizing: border-box;
-}
-
-.student-tuition-stats *,
-.tuition-invoices-section *,
-.tuition-table-wrapper *,
-.tuition-table * {
-  box-sizing: border-box;
-}
-
-
-/* =========================================================
-   Stats
-========================================================= */
-
-.student-tuition-stats {
+.student-tuition-page {
   width: 100%;
-  max-width: 100%;
   min-width: 0;
-
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
-
-  margin: 0 0 1.25rem;
+  direction: rtl;
 }
-
-
-/* اجازه نده StatCard عرض اضافی ایجاد کند */
-.student-tuition-stats > * {
-  min-width: 0;
-  max-width: 100%;
-}
-
 
 /* =========================================================
-   Invoice Section
+   Notice Banner
 ========================================================= */
 
-.tuition-invoices-section {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-
-  overflow: hidden;
+.student-tuition-notice-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  background: oklch(98% 0.02 240 / 0.85);
+  border: 1px solid oklch(85% 0.08 240);
+  border-radius: 18px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.75rem;
+  box-shadow: 0 4px 20px oklch(0% 0 0 / 0.03);
 }
 
-
-/* =========================================================
-   Section Header
-========================================================= */
-
-.tuition-section-header {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-
+.notice-banner-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: oklch(50% 0.18 240);
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  margin-bottom: 1.25rem;
-}
-
-
-.tuition-section-heading {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  gap: 0.75rem;
-
-  text-align: center;
-}
-
-
-.tuition-section-heading > div:last-child {
-  min-width: 0;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-
-.tuition-section-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 43px;
-  height: 43px;
-  min-width: 43px;
-
-  flex: 0 0 43px;
-
-  border-radius: 13px;
-
-  color: var(--primary-dark);
-  background: oklch(95% 0.04 29);
-
-  box-shadow: 0 5px 14px rgba(231, 76, 60, 0.08);
-}
-
-
-.tuition-section-heading .admin-section-title {
-  max-width: 100%;
-
-  margin: 0 !important;
-
-  color: oklch(25% 0 0);
-
-  font-size: 1.05rem;
-  font-weight: 900;
-
-  line-height: 1.6;
-}
-
-
-.tuition-section-heading .admin-section-description {
-  max-width: 100%;
-
-  margin: 0.25rem 0 0 !important;
-
-  color: oklch(58% 0 0);
-
-  font-size: 0.76rem;
-}
-
-
-/* =========================================================
-   Table Wrapper
-========================================================= */
-
-.tuition-table-wrapper {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-
-  overflow-x: auto;
-  overflow-y: hidden;
-
-  border: 1px solid oklch(92% 0 0);
-  border-radius: var(--radius-lg);
-
-  background: white;
-
-  -webkit-overflow-scrolling: touch;
-
-  scrollbar-width: thin;
-}
-
-
-/* =========================================================
-   Desktop Table
-========================================================= */
-
-.tuition-table {
-  width: 100%;
-
-  /*
-     مهم:
-     در دسکتاپ جدول حداقل عرض دارد،
-     ولی این مقدار فقط داخل wrapper است.
-  */
-  min-width: 850px;
-
-  border-collapse: separate;
-  border-spacing: 0;
-
-  table-layout: auto;
-}
-
-
-.tuition-table thead th {
-  padding: 0.9rem 0.9rem;
-
-  background: oklch(98.5% 0.008 29);
-
-  border-bottom: 1px solid oklch(91% 0 0);
-
-  color: oklch(48% 0 0);
-
-  font-size: 0.74rem;
-  font-weight: 800;
-
-  white-space: nowrap;
-  text-align: right;
-}
-
-
-.tuition-table thead th:first-child {
-  border-top-right-radius: var(--radius-lg);
-}
-
-
-.tuition-table thead th:last-child {
-  border-top-left-radius: var(--radius-lg);
-}
-
-
-.tuition-table tbody tr {
-  transition:
-    background 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-
-.tuition-table tbody tr:hover {
-  background: oklch(99.3% 0.012 29);
-}
-
-
-.tuition-table tbody td {
-  padding: 0.9rem;
-
-  border-bottom: 1px solid oklch(94% 0 0);
-
-  color: oklch(35% 0 0);
-
-  vertical-align: middle;
-}
-
-
-.tuition-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-
-/* =========================================================
-   Invoice Cell
-========================================================= */
-
-.tuition-invoice-cell {
-  display: flex;
-  align-items: center;
-
-  gap: 0.7rem;
-
-  min-width: 220px;
-  max-width: 100%;
-}
-
-
-.tuition-invoice-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 38px;
-  height: 38px;
-
-  min-width: 38px;
-  flex: 0 0 38px;
-
-  border-radius: 11px;
-
-  background: oklch(96% 0.035 29);
-  color: var(--primary);
-
-  transition:
-    transform 0.2s ease,
-    background 0.2s ease;
-}
-
-
-.tuition-table tbody tr:hover .tuition-invoice-icon {
-  background: oklch(94% 0.05 29);
-
-  transform: translateY(-1px);
-}
-
-
-.tuition-invoice-cell > div:last-child {
-  min-width: 0;
-
-  display: flex;
-  flex-direction: column;
-
-  gap: 0.2rem;
-}
-
-
-.tuition-invoice-cell strong {
-  display: block;
-
-  max-width: 250px;
-
-  overflow: hidden;
-
-  color: oklch(25% 0 0);
-
-  font-size: 0.8rem;
-  font-weight: 800;
-
-  line-height: 1.5;
-
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-
-.tuition-invoice-cell span {
-  color: oklch(60% 0 0);
-
-  font-family: "Vazirmatn", sans-serif;
-
-  font-size: 0.66rem;
-
-  white-space: nowrap;
-}
-
-
-/* =========================================================
-   Course
-========================================================= */
-
-.tuition-course {
-  display: inline-flex;
-  align-items: center;
-
-  max-width: 100%;
-
-  padding: 0.32rem 0.6rem;
-
-  border-radius: 8px;
-
-  background: oklch(97% 0.015 29);
-  color: oklch(48% 0 0);
-
-  font-size: 0.7rem;
-
-  white-space: nowrap;
-}
-
-
-/* =========================================================
-   Amount
-========================================================= */
-
-.tuition-amount {
-  color: oklch(27% 0 0);
-
-  font-family: "Vazirmatn", sans-serif;
-
-  font-size: 0.78rem;
-  font-weight: 800;
-
-  white-space: nowrap;
-}
-
-
-/* =========================================================
-   Date
-========================================================= */
-
-.tuition-date {
-  color: oklch(45% 0 0);
-
-  font-family: "Vazirmatn", sans-serif;
-
-  font-size: 0.72rem;
-
-  white-space: nowrap;
-}
-
-
-/* =========================================================
-   Status
-========================================================= */
-
-.tuition-table .status-paid {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  min-height: 28px;
-
-  padding: 0.3rem 0.6rem;
-
-  border-radius: 999px;
-
-  background: oklch(94% 0.05 150);
-  color: oklch(42% 0.14 150);
-
-  font-size: 0.68rem;
-  font-weight: 800;
-
-  white-space: nowrap;
-}
-
-
-.tuition-table .status-pending {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  min-height: 28px;
-
-  padding: 0.3rem 0.6rem;
-
-  border-radius: 999px;
-
-  background: oklch(96% 0.04 45);
-  color: oklch(50% 0.15 45);
-
-  font-size: 0.68rem;
-  font-weight: 800;
-
-  white-space: nowrap;
-}
-
-
-.tuition-section-header .debt-warning {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  min-height: 32px;
-
-  padding: 0.35rem 0.75rem;
-
-  border-radius: 999px;
-
-  background: oklch(96% 0.04 45);
-  color: oklch(50% 0.15 45);
-
-  font-size: 0.7rem;
-  font-weight: 800;
-}
-
-
-/* =========================================================
-   View Button
-========================================================= */
-
-.tuition-view-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  gap: 0.35rem;
-
-  min-height: 32px;
-
-  padding: 0.35rem 0.65rem;
-
-  border: 1px solid oklch(90% 0 0);
-
-  border-radius: var(--radius-sm);
-
-  background: white;
-  color: oklch(48% 0.16 250);
-
-  font-family: inherit;
-  font-size: 0.68rem;
-  font-weight: 700;
-
-  cursor: pointer;
-
-  white-space: nowrap;
-
-  transition:
-    transform 0.2s ease,
-    background 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease;
-}
-
-
-.tuition-view-btn:hover {
-  border-color: oklch(80% 0.08 250);
-
-  background: oklch(96% 0.025 250);
-
-  transform: translateY(-1px);
-}
-
-
-.tuition-view-btn svg {
   flex-shrink: 0;
 }
 
+.student-tuition-notice-banner h4 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: oklch(25% 0 0);
+  margin: 0 0 0.35rem;
+}
+
+.student-tuition-notice-banner p {
+  font-size: 0.84rem;
+  color: oklch(45% 0 0);
+  line-height: 1.6;
+  margin: 0;
+}
 
 /* =========================================================
-   Scrollbar
+   Stats Grid
 ========================================================= */
 
-.tuition-table-wrapper::-webkit-scrollbar {
-  height: 6px;
+.student-tuition-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
 }
-
-
-.tuition-table-wrapper::-webkit-scrollbar-track {
-  background: oklch(97% 0 0);
-}
-
-
-.tuition-table-wrapper::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  background: oklch(82% 0 0);
-}
-
-
-.tuition-table-wrapper::-webkit-scrollbar-thumb:hover {
-  background: oklch(70% 0 0);
-}
-
-
-/* =========================================================
-   1100px
-========================================================= */
-
-@media (max-width: 1100px) {
-  .student-tuition-stats {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.8rem;
-  }
-
-  .tuition-table {
-    min-width: 800px;
-  }
-
-  .tuition-table thead th,
-  .tuition-table tbody td {
-    padding: 0.75rem;
-  }
-}
-
-
-/* =========================================================
-   900px
-========================================================= */
-
-@media (max-width: 900px) {
-  .student-tuition-stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .student-tuition-stats > :last-child {
-    grid-column: 1 / -1;
-  }
-
-  .tuition-table {
-    min-width: 760px;
-  }
-}
-
-
-/* =========================================================
-   768px
-   Tablet / Mobile
-========================================================= */
 
 @media (max-width: 768px) {
-
-  /* ---------- Stats ---------- */
-
-  .student-tuition-stats {
-    width: 100%;
-    max-width: 100%;
-
+  .student-tuition-stats-grid {
     grid-template-columns: 1fr;
-
-    gap: 0.75rem;
-
-    margin-bottom: 1rem;
-  }
-
-
-  .student-tuition-stats > :last-child {
-    grid-column: auto;
-  }
-
-
-  /* ---------- Section ---------- */
-
-  .tuition-invoices-section {
-    width: 100%;
-    max-width: 100%;
-
-    padding-left: 0;
-    padding-right: 0;
-  }
-
-
-  .tuition-section-header {
-    width: 100%;
-
-    margin-bottom: 1rem;
-  }
-
-
-  .tuition-section-heading {
-    gap: 0.55rem;
-  }
-
-
-  .tuition-section-icon {
-    width: 40px;
-    height: 40px;
-
-    min-width: 40px;
-    flex-basis: 40px;
-
-    border-radius: 12px;
-  }
-
-
-  .tuition-section-heading .admin-section-title {
-    font-size: 1rem;
-  }
-
-
-  .tuition-section-heading .admin-section-description {
-    font-size: 0.7rem;
-  }
-
-
-  /* ---------- Table Wrapper ---------- */
-
-  .tuition-table-wrapper {
-    width: 100%;
-    max-width: 100%;
-
-    overflow: visible;
-
-    border: none;
-
-    background: transparent;
-  }
-
-
-  /* =====================================================
-     تبدیل جدول به کارت
-  ===================================================== */
-
-  .tuition-table {
-    width: 100%;
-    min-width: 0 !important;
-
-    display: block;
-
-    border: none;
-    border-spacing: 0;
-  }
-
-
-  .tuition-table thead {
-    display: none;
-  }
-
-
-  .tuition-table tbody {
-    width: 100%;
-
-    display: flex;
-    flex-direction: column;
-
-    gap: 0.75rem;
-  }
-
-
-  .tuition-table tbody tr {
-    width: 100%;
-    min-width: 0;
-
-    display: grid;
-
-    grid-template-columns: 1fr 1fr;
-
-    gap: 0;
-
-    padding: 0.85rem;
-
-    border: 1px solid oklch(92% 0 0);
-
-    border-radius: var(--radius-lg);
-
-    background: white;
-
-    box-shadow: var(--shadow-sm);
-
-    overflow: hidden;
-  }
-
-
-  .tuition-table tbody tr:hover {
-    background: white;
-
-    box-shadow: var(--shadow-md);
-  }
-
-
-  .tuition-table tbody td {
-    width: 100%;
-    min-width: 0;
-
-    display: flex;
-    align-items: center;
-
-    padding: 0.55rem;
-
-    border: none;
-
-    overflow: hidden;
-  }
-
-
-  /* =====================================================
-     ردیف اول: فاکتور
-  ===================================================== */
-
-  .tuition-table tbody td:nth-child(1) {
-    grid-column: 1 / -1;
-
-    padding-top: 0.15rem;
-    padding-bottom: 0.75rem;
-
-    border-bottom: 1px solid oklch(94% 0 0);
-  }
-
-
-  .tuition-invoice-cell {
-    width: 100%;
-    min-width: 0;
-
-    gap: 0.6rem;
-  }
-
-
-  .tuition-invoice-icon {
-    width: 36px;
-    height: 36px;
-
-    min-width: 36px;
-    flex-basis: 36px;
-  }
-
-
-  .tuition-invoice-cell strong {
-    max-width: 100%;
-
-    font-size: 0.77rem;
-
-    white-space: normal;
-
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-
-    text-overflow: ellipsis;
-  }
-
-
-  .tuition-invoice-cell span {
-    font-size: 0.62rem;
-  }
-
-
-  /* =====================================================
-     Course
-  ===================================================== */
-
-  .tuition-table tbody td:nth-child(2) {
-    grid-column: 1 / -1;
-
-    padding-top: 0.7rem;
-  }
-
-
-  .tuition-table tbody td:nth-child(2)::before {
-    content: "دوره";
-
-    margin-left: auto;
-    margin-right: 0;
-
-    color: oklch(58% 0 0);
-
-    font-size: 0.66rem;
-    font-weight: 700;
-  }
-
-
-  .tuition-course {
-    margin-right: 0.5rem;
-
-    font-size: 0.65rem;
-  }
-
-
-  /* =====================================================
-     Amount
-  ===================================================== */
-
-  .tuition-table tbody td:nth-child(3) {
-    display: flex;
-    flex-direction: column;
-
-    align-items: flex-start;
-
-    gap: 0.25rem;
-  }
-
-
-  .tuition-table tbody td:nth-child(3)::before {
-    content: "مبلغ";
-
-    color: oklch(58% 0 0);
-
-    font-size: 0.65rem;
-    font-weight: 700;
-  }
-
-
-  .tuition-amount {
-    font-size: 0.7rem;
-  }
-
-
-  /* =====================================================
-     Date
-  ===================================================== */
-
-  .tuition-table tbody td:nth-child(4) {
-    display: flex;
-    flex-direction: column;
-
-    align-items: flex-start;
-
-    gap: 0.25rem;
-  }
-
-
-  .tuition-table tbody td:nth-child(4)::before {
-    content: "مهلت پرداخت";
-
-    color: oklch(58% 0 0);
-
-    font-size: 0.65rem;
-    font-weight: 700;
-  }
-
-
-  .tuition-date {
-    font-size: 0.67rem;
-  }
-
-
-  /* =====================================================
-     Status
-  ===================================================== */
-
-  .tuition-table tbody td:nth-child(5) {
-    display: flex;
-    align-items: center;
-
-    padding-top: 0.7rem;
-  }
-
-
-  .tuition-table tbody td:nth-child(5)::before {
-    content: "وضعیت";
-
-    margin-left: 0.5rem;
-
-    color: oklch(58% 0 0);
-
-    font-size: 0.65rem;
-    font-weight: 700;
-  }
-
-
-  .tuition-table .status-paid,
-  .tuition-table .status-pending {
-    min-height: 25px;
-
-    padding: 0.25rem 0.5rem;
-
-    font-size: 0.6rem;
-  }
-
-
-  /* =====================================================
-     Action
-  ===================================================== */
-
-  .tuition-table tbody td:nth-child(6) {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-
-    padding-top: 0.7rem;
-  }
-
-
-  .tuition-view-btn {
-    min-height: 30px;
-
-    padding: 0.3rem 0.55rem;
-
-    font-size: 0.62rem;
   }
 }
-
 
 /* =========================================================
-   600px
+   Classes Tuition Section
 ========================================================= */
 
-@media (max-width: 600px) {
-
-  .student-tuition-stats {
-    gap: 0.65rem;
-  }
-
-
-  .tuition-section-heading {
-    flex-direction: column;
-
-    gap: 0.45rem;
-  }
-
-
-  .tuition-section-icon {
-    width: 38px;
-    height: 38px;
-
-    min-width: 38px;
-    flex-basis: 38px;
-  }
-
-
-  .tuition-section-heading .admin-section-title {
-    font-size: 0.95rem;
-  }
-
-
-  .tuition-section-heading .admin-section-description {
-    font-size: 0.68rem;
-  }
-
-
-  .tuition-table tbody tr {
-    padding: 0.7rem;
-  }
-
-
-  .tuition-table tbody td {
-    padding: 0.45rem;
-  }
-
-
-  .tuition-invoice-cell {
-    gap: 0.5rem;
-  }
-
-
-  .tuition-invoice-icon {
-    width: 34px;
-    height: 34px;
-
-    min-width: 34px;
-    flex-basis: 34px;
-
-    border-radius: 10px;
-  }
-
-
-  .tuition-invoice-cell strong {
-    font-size: 0.72rem;
-  }
-
-
-  .tuition-invoice-cell span {
-    font-size: 0.58rem;
-  }
-
-
-  .tuition-course {
-    font-size: 0.6rem;
-  }
-
-
-  .tuition-amount {
-    font-size: 0.66rem;
-  }
-
-
-  .tuition-date {
-    font-size: 0.63rem;
-  }
+.student-tuition-classes-section {
+  background: oklch(100% 0 0);
+  border: 1px solid oklch(0% 0 0 / 0.06);
+  border-radius: 20px;
+  padding: 1.75rem;
+  box-shadow: 0 6px 28px oklch(0% 0 0 / 0.04);
 }
 
+.tuition-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid oklch(0% 0 0 / 0.05);
+}
+
+.tuition-section-header h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: oklch(25% 0 0);
+  margin: 0 0 0.25rem;
+}
+
+.tuition-section-header p {
+  font-size: 0.82rem;
+  color: oklch(55% 0 0);
+  margin: 0;
+}
 
 /* =========================================================
-   480px
+   Cards Grid
 ========================================================= */
 
-@media (max-width: 480px) {
-
-  .student-tuition-stats {
-    width: 100%;
-  }
-
-
-  .tuition-invoices-section {
-    width: 100%;
-  }
-
-
-  .tuition-section-header {
-    margin-bottom: 0.8rem;
-  }
-
-
-  .tuition-table tbody {
-    gap: 0.6rem;
-  }
-
-
-  .tuition-table tbody tr {
-    grid-template-columns: 1fr 1fr;
-
-    width: 100%;
-    max-width: 100%;
-
-    padding: 0.6rem;
-
-    border-radius: 15px;
-  }
-
-
-  .tuition-table tbody td {
-    padding: 0.4rem;
-  }
-
-
-  .tuition-table tbody td:nth-child(1) {
-    padding-bottom: 0.65rem;
-  }
-
-
-  .tuition-table tbody td:nth-child(2) {
-    padding-top: 0.6rem;
-    padding-bottom: 0.5rem;
-  }
-
-
-  .tuition-table tbody td:nth-child(2)::before {
-    font-size: 0.6rem;
-  }
-
-
-  .tuition-course {
-    font-size: 0.58rem;
-  }
-
-
-  .tuition-table tbody td:nth-child(3)::before,
-  .tuition-table tbody td:nth-child(4)::before,
-  .tuition-table tbody td:nth-child(5)::before {
-    font-size: 0.58rem;
-  }
-
-
-  .tuition-amount {
-    font-size: 0.62rem;
-  }
-
-
-  .tuition-date {
-    font-size: 0.6rem;
-  }
-
-
-  .tuition-table .status-paid,
-  .tuition-table .status-pending {
-    font-size: 0.55rem;
-  }
-
-
-  .tuition-view-btn {
-    min-height: 28px;
-
-    padding: 0.25rem 0.45rem;
-
-    font-size: 0.58rem;
-  }
-
-
-  .tuition-view-btn svg {
-    width: 13px;
-    height: 13px;
-  }
+.student-tuition-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
 }
 
-
-/* =========================================================
-   380px
-   گوشی‌های خیلی کوچک
-========================================================= */
-
-@media (max-width: 380px) {
-
-  .student-tuition-stats {
-    gap: 0.55rem;
-  }
-
-
-  .tuition-table tbody tr {
-    padding: 0.5rem;
-  }
-
-
-  .tuition-table tbody td {
-    padding: 0.35rem;
-  }
-
-
-  .tuition-invoice-icon {
-    width: 32px;
-    height: 32px;
-
-    min-width: 32px;
-    flex-basis: 32px;
-  }
-
-
-  .tuition-invoice-icon svg {
-    width: 15px;
-    height: 15px;
-  }
-
-
-  .tuition-invoice-cell strong {
-    font-size: 0.68rem;
-  }
-
-
-  .tuition-invoice-cell span {
-    font-size: 0.55rem;
-  }
-
-
-  .tuition-course {
-    padding: 0.25rem 0.4rem;
-
-    font-size: 0.54rem;
-  }
-
-
-  .tuition-amount {
-    font-size: 0.58rem;
-  }
-
-
-  .tuition-date {
-    font-size: 0.56rem;
-  }
-
-
-  .tuition-view-btn span {
-    display: none;
-  }
-
-
-  .tuition-view-btn {
-    width: 29px;
-    height: 29px;
-
-    padding: 0;
-  }
+.student-tuition-item-card {
+  background: oklch(99% 0 0);
+  border: 1px solid oklch(0% 0 0 / 0.07);
+  border-radius: 18px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.25s ease;
 }
 
-
-/* =========================================================
-   Prevent Horizontal Page Overflow
-   این بخش خیلی مهم است
-========================================================= */
-
-html,
-body {
-  max-width: 100%;
-  overflow-x: hidden;
+.student-tuition-item-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px oklch(0% 0 0 / 0.05);
+  border-color: oklch(0% 0 0 / 0.12);
 }
 
-
-#root {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  overflow-x: hidden;
+.tuition-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
 }
 
-
-.student-tuition-stats,
-.tuition-invoices-section {
-  max-width: 100vw;
+.class-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
+.class-icon-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--red-5);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
 
-/* =========================================================
-   Reduced Motion
-========================================================= */
+.class-title-group h4 {
+  font-size: 1rem;
+  font-weight: 800;
+  color: oklch(25% 0 0);
+  margin: 0 0 0.2rem;
+}
 
-@media (prefers-reduced-motion: reduce) {
+.term-subtext {
+  font-size: 0.78rem;
+  color: oklch(55% 0 0);
+}
 
-  .student-tuition-stats *,
-  .tuition-invoices-section *,
-  .tuition-table * {
-    animation: none !important;
+.tuition-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
 
-    transition: none !important;
+.tuition-status-badge.paid {
+  background: oklch(93% 0.12 145);
+  color: oklch(30% 0.18 145);
+  border: 1px solid oklch(80% 0.15 145);
+}
 
-    scroll-behavior: auto !important;
-  }
+.tuition-status-badge.pending {
+  background: oklch(95% 0.08 25);
+  color: oklch(40% 0.2 25);
+  border: 1px solid oklch(85% 0.12 25);
+}
+
+.tuition-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 0;
+  border-top: 1px dashed oklch(0% 0 0 / 0.08);
+  border-bottom: 1px dashed oklch(0% 0 0 / 0.08);
+  margin-bottom: 1.25rem;
+}
+
+.tuition-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.88rem;
+}
+
+.tuition-info-row .label {
+  color: oklch(50% 0 0);
+}
+
+.tuition-info-row .val {
+  font-weight: 700;
+  color: oklch(30% 0 0);
+}
+
+.tuition-info-row .val.amount {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--primary);
+}
+
+.tuition-info-row .val.notes {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.82rem;
+  color: oklch(45% 0 0);
+}
+
+.tuition-card-footer {
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.paid-confirmation-text {
+  color: oklch(40% 0.16 145);
+}
+
+.pending-warning-text {
+  color: oklch(48% 0.18 25);
+}
+
+.student-tuition-empty {
+  text-align: center;
+  padding: 3.5rem 1.5rem;
+  color: oklch(55% 0 0);
+}
+
+.student-tuition-empty h4 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: oklch(35% 0 0);
+  margin: 1rem 0 0.5rem;
+}
+
+.student-tuition-empty p {
+  font-size: 0.85rem;
+  margin: 0;
 }

@@ -53,11 +53,18 @@ function TeacherAttendance() {
 
     async function loadTeacherClasses() {
       try {
-        const classes = await api.classrooms.list();
+        const [classes, terms] = await Promise.all([
+          api.classrooms.list(),
+          api.terms.list(),
+        ]);
         if (!alive) return;
-        setClassrooms(classes || []);
-        if (!selectedClassId && classes?.length) {
-          setSelectedClassId(String(classes[0].id));
+        const activeTermIds = (terms || []).filter((t) => t.is_active).map((t) => t.id);
+        const activeClasses = (classes || []).filter(
+          (c) => activeTermIds.length === 0 || activeTermIds.includes(c.term || c.term?.id),
+        );
+        setClassrooms(activeClasses || []);
+        if (!selectedClassId && activeClasses?.length) {
+          setSelectedClassId(String(activeClasses[0].id));
         }
       } catch (err) {
         if (alive) setErrorMessage(err.message || "خطا در دریافت لیست کلاس‌ها");

@@ -7,6 +7,51 @@
   min-width: 0;
 }
 
+.tuition-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.tuition-action-btn.pay {
+  background: oklch(93% 0.1 145);
+  color: oklch(35% 0.15 145);
+  border-color: oklch(80% 0.12 145);
+}
+
+.tuition-action-btn.pay:hover {
+  background: oklch(88% 0.15 145);
+}
+
+.tuition-action-btn.revert {
+  background: oklch(95% 0.05 25);
+  color: oklch(45% 0.15 25);
+  border-color: oklch(85% 0.1 25);
+}
+
+.tuition-action-btn.revert:hover {
+  background: oklch(90% 0.1 25);
+}
+
+.tuition-action-btn.delete {
+  background: oklch(96% 0 0);
+  color: oklch(40% 0 0);
+  padding: 0.45rem 0.6rem;
+}
+
+.tuition-action-btn.delete:hover {
+  background: oklch(92% 0.08 25);
+  color: var(--danger, #ef4444);
+}
+
 /* ========================================
    Page Header
 ======================================== */

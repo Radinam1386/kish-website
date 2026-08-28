@@ -56,16 +56,26 @@ export default function TeacherExams() {
       setLoading(true);
       setError("");
 
-      const [examsData, classroomsData, submissionsData, usersData] =
+      const [examsData, classroomsData, termsData, submissionsData, usersData] =
         await Promise.all([
           api.exams.list(),
           api.classrooms.list(),
+          api.terms.list(),
           api.submissions.list(),
           api.users.list(),
         ]);
 
-      setExams(examsData || []);
-      setClassrooms(classroomsData || []);
+      const activeTermIds = (termsData || []).filter((t) => t.is_active).map((t) => t.id);
+      const activeClasses = (classroomsData || []).filter(
+        (c) => activeTermIds.length === 0 || activeTermIds.includes(c.term || c.term?.id),
+      );
+      const activeClassIds = activeClasses.map((c) => c.id);
+      const activeExams = (examsData || []).filter((e) =>
+        activeClassIds.includes(e.classroom || e.classroom?.id),
+      );
+
+      setExams(activeExams || []);
+      setClassrooms(activeClasses || []);
       setSubmissions(submissionsData || []);
       setUsers(usersData || []);
     } catch (err) {
