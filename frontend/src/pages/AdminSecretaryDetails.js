@@ -64,7 +64,9 @@ function AdminSecretaryDetails() {
       const nextStatus = !secretaryUser.is_active;
       await api.users.update(secretaryUser.id, { is_active: nextStatus });
       setSecretaryUser((prev) => ({ ...prev, is_active: nextStatus }));
-      setSuccessMsg(`وضعیت حساب به ${nextStatus ? "فعال" : "غیرفعال"} تغییر یافت.`);
+      setSuccessMsg(
+        `وضعیت حساب به ${nextStatus ? "فعال" : "غیرفعال"} تغییر یافت.`,
+      );
       setTimeout(() => setSuccessMsg(""), 3500);
     } catch (err) {
       alert(err.message || "خطا در تغییر وضعیت حساب");
@@ -73,7 +75,11 @@ function AdminSecretaryDetails() {
 
   const handleDelete = async () => {
     if (!secretaryUser) return;
-    if (!window.confirm(`آیا از حذف حساب کاربری منشی «${getFullName(secretaryUser)}» اطمینان دارید؟`)) {
+    if (
+      !window.confirm(
+        `آیا از حذف حساب کاربری منشی «${getFullName(secretaryUser)}» اطمینان دارید؟`,
+      )
+    ) {
       return;
     }
 
@@ -85,12 +91,19 @@ function AdminSecretaryDetails() {
     }
   };
 
-  const secretaryName = getFullName(secretaryUser) || secretaryUser?.username || "منشی";
+  const secretaryName =
+    getFullName(secretaryUser) || secretaryUser?.username || "منشی";
 
   if (loading) {
     return (
       <DashboardLayout role="پنل مدیریت" title="جزئیات منشی" menuType="admin">
-        <div style={{ padding: "3rem", textAlign: "center", color: "oklch(55% 0 0)" }}>
+        <div
+          style={{
+            padding: "3rem",
+            textAlign: "center",
+            color: "oklch(55% 0 0)",
+          }}
+        >
           در حال بارگذاری اطلاعات منشی...
         </div>
       </DashboardLayout>
@@ -105,7 +118,9 @@ function AdminSecretaryDetails() {
             {error || "منشی مورد نظر یافت نشد."}
           </p>
           <Link to="/panel/admin/secretaries">
-            <AnimatedButton variant="primary">بازگشت به لیست منشی‌ها</AnimatedButton>
+            <AnimatedButton variant="primary">
+              بازگشت به لیست منشی‌ها
+            </AnimatedButton>
           </Link>
         </div>
       </DashboardLayout>
@@ -119,16 +134,16 @@ function AdminSecretaryDetails() {
       menuType="admin"
     >
       <div className="admin-teacher-details-x7k2-page">
-        {/* Header */}
         <div className="admin-teacher-details-x7k2-header">
           <div className="admin-teacher-details-x7k2-header-right">
             <Link
               to="/panel/admin/secretaries"
-              className="admin-teacher-details-x7k2-back-button"
               style={{ textDecoration: "none" }}
             >
-              <ArrowRight size={18} />
-              بازگشت به لیست منشی‌ها
+              <AnimatedButton
+                variant="secondary"
+                icon={<ArrowRight size={22} />}
+              ></AnimatedButton>
             </Link>
 
             <div className="admin-teacher-details-x7k2-avatar">
@@ -159,17 +174,19 @@ function AdminSecretaryDetails() {
         </div>
 
         {successMsg && (
-          <div style={{
-            background: "oklch(95% 0.05 145 / 0.85)",
-            border: "1px solid oklch(75% 0.15 145 / 0.3)",
-            color: "oklch(35% 0.15 145)",
-            padding: "0.85rem 1.25rem",
-            borderRadius: "12px",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            fontWeight: "700"
-          }}>
+          <div
+            style={{
+              background: "oklch(95% 0.05 145 / 0.85)",
+              border: "1px solid oklch(75% 0.15 145 / 0.3)",
+              color: "oklch(35% 0.15 145)",
+              padding: "0.85rem 1.25rem",
+              borderRadius: "12px",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              fontWeight: "700",
+            }}
+          >
             <Sparkles size={18} />
             <span>{successMsg}</span>
           </div>
@@ -226,7 +243,13 @@ function AdminSecretaryDetails() {
               </div>
               <div>
                 <span>وضعیت حساب</span>
-                <strong style={{ color: secretaryUser.is_active ? "oklch(40% 0.15 145)" : "oklch(45% 0.18 25)" }}>
+                <strong
+                  style={{
+                    color: secretaryUser.is_active
+                      ? "oklch(40% 0.15 145)"
+                      : "oklch(45% 0.18 25)",
+                  }}
+                >
                   {secretaryUser.is_active ? "فعال" : "غیرفعال"}
                 </strong>
               </div>
@@ -246,35 +269,47 @@ function AdminSecretaryDetails() {
             </div>
           </div>
 
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            gap: "1rem"
-          }}>
-            <div style={{
-              background: "oklch(100% 0 0 / 0.88)",
-              border: "1px solid oklch(0% 0 0 / 0.055)",
-              borderRadius: "16px",
-              padding: "1.25rem",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.75rem",
-              boxShadow: "0 4px 16px oklch(0% 0 0 / 0.02)"
-            }}>
-              <div style={{
-                width: "40px",
-                height: "40px",
-                borderRadius: "10px",
-                background: "oklch(96% 0.02 29)",
-                color: "var(--primary)",
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+              gap: "1rem",
+            }}
+          >
+            <div
+              style={{
+                background: "oklch(100% 0 0 / 0.88)",
+                border: "1px solid oklch(0% 0 0 / 0.055)",
+                borderRadius: "16px",
+                padding: "1.25rem",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center"
-              }}>
+                gap: "0.75rem",
+                boxShadow: "0 4px 16px oklch(0% 0 0 / 0.02)",
+              }}
+            >
+              <div
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "10px",
+                  background: "oklch(96% 0.02 29)",
+                  color: "var(--primary)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 <CalendarDays size={20} />
               </div>
               <div>
-                <strong style={{ fontSize: "0.95rem", color: "oklch(25% 0 0)", display: "block" }}>
+                <strong
+                  style={{
+                    fontSize: "0.95rem",
+                    color: "oklch(25% 0 0)",
+                    display: "block",
+                  }}
+                >
                   مدیریت کلاس‌ها و ترم‌ها
                 </strong>
                 <span style={{ fontSize: "0.75rem", color: "oklch(55% 0 0)" }}>
@@ -283,30 +318,40 @@ function AdminSecretaryDetails() {
               </div>
             </div>
 
-            <div style={{
-              background: "oklch(100% 0 0 / 0.88)",
-              border: "1px solid oklch(0% 0 0 / 0.055)",
-              borderRadius: "16px",
-              padding: "1.25rem",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.75rem",
-              boxShadow: "0 4px 16px oklch(0% 0 0 / 0.02)"
-            }}>
-              <div style={{
-                width: "40px",
-                height: "40px",
-                borderRadius: "10px",
-                background: "oklch(96% 0.02 29)",
-                color: "var(--primary)",
+            <div
+              style={{
+                background: "oklch(100% 0 0 / 0.88)",
+                border: "1px solid oklch(0% 0 0 / 0.055)",
+                borderRadius: "16px",
+                padding: "1.25rem",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center"
-              }}>
+                gap: "0.75rem",
+                boxShadow: "0 4px 16px oklch(0% 0 0 / 0.02)",
+              }}
+            >
+              <div
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "10px",
+                  background: "oklch(96% 0.02 29)",
+                  color: "var(--primary)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 <Users size={20} />
               </div>
               <div>
-                <strong style={{ fontSize: "0.95rem", color: "oklch(25% 0 0)", display: "block" }}>
+                <strong
+                  style={{
+                    fontSize: "0.95rem",
+                    color: "oklch(25% 0 0)",
+                    display: "block",
+                  }}
+                >
                   ثبت‌نام دانش‌آموزان و اساتید
                 </strong>
                 <span style={{ fontSize: "0.75rem", color: "oklch(55% 0 0)" }}>
@@ -315,30 +360,40 @@ function AdminSecretaryDetails() {
               </div>
             </div>
 
-            <div style={{
-              background: "oklch(100% 0 0 / 0.88)",
-              border: "1px solid oklch(0% 0 0 / 0.055)",
-              borderRadius: "16px",
-              padding: "1.25rem",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.75rem",
-              boxShadow: "0 4px 16px oklch(0% 0 0 / 0.02)"
-            }}>
-              <div style={{
-                width: "40px",
-                height: "40px",
-                borderRadius: "10px",
-                background: "oklch(96% 0.02 29)",
-                color: "var(--primary)",
+            <div
+              style={{
+                background: "oklch(100% 0 0 / 0.88)",
+                border: "1px solid oklch(0% 0 0 / 0.055)",
+                borderRadius: "16px",
+                padding: "1.25rem",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center"
-              }}>
+                gap: "0.75rem",
+                boxShadow: "0 4px 16px oklch(0% 0 0 / 0.02)",
+              }}
+            >
+              <div
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "10px",
+                  background: "oklch(96% 0.02 29)",
+                  color: "var(--primary)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 <CreditCard size={20} />
               </div>
               <div>
-                <strong style={{ fontSize: "0.95rem", color: "oklch(25% 0 0)", display: "block" }}>
+                <strong
+                  style={{
+                    fontSize: "0.95rem",
+                    color: "oklch(25% 0 0)",
+                    display: "block",
+                  }}
+                >
                   امور شهریه‌ها و مالی
                 </strong>
                 <span style={{ fontSize: "0.75rem", color: "oklch(55% 0 0)" }}>
@@ -347,30 +402,40 @@ function AdminSecretaryDetails() {
               </div>
             </div>
 
-            <div style={{
-              background: "oklch(100% 0 0 / 0.88)",
-              border: "1px solid oklch(0% 0 0 / 0.055)",
-              borderRadius: "16px",
-              padding: "1.25rem",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.75rem",
-              boxShadow: "0 4px 16px oklch(0% 0 0 / 0.02)"
-            }}>
-              <div style={{
-                width: "40px",
-                height: "40px",
-                borderRadius: "10px",
-                background: "oklch(96% 0.02 29)",
-                color: "var(--primary)",
+            <div
+              style={{
+                background: "oklch(100% 0 0 / 0.88)",
+                border: "1px solid oklch(0% 0 0 / 0.055)",
+                borderRadius: "16px",
+                padding: "1.25rem",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center"
-              }}>
+                gap: "0.75rem",
+                boxShadow: "0 4px 16px oklch(0% 0 0 / 0.02)",
+              }}
+            >
+              <div
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "10px",
+                  background: "oklch(96% 0.02 29)",
+                  color: "var(--primary)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 <ClipboardCheck size={20} />
               </div>
               <div>
-                <strong style={{ fontSize: "0.95rem", color: "oklch(25% 0 0)", display: "block" }}>
+                <strong
+                  style={{
+                    fontSize: "0.95rem",
+                    color: "oklch(25% 0 0)",
+                    display: "block",
+                  }}
+                >
                   نظارت بر حضور و آزمون‌ها
                 </strong>
                 <span style={{ fontSize: "0.75rem", color: "oklch(55% 0 0)" }}>
@@ -381,15 +446,17 @@ function AdminSecretaryDetails() {
           </div>
 
           {/* Danger zone actions */}
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-end",
-            gap: "0.75rem",
-            marginTop: "1.5rem",
-            paddingTop: "1.25rem",
-            borderTop: "1px solid oklch(0% 0 0 / 0.06)"
-          }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
+              gap: "0.75rem",
+              marginTop: "1.5rem",
+              paddingTop: "1.25rem",
+              borderTop: "1px solid oklch(0% 0 0 / 0.06)",
+            }}
+          >
             <button
               type="button"
               onClick={handleToggleStatus}
@@ -397,18 +464,26 @@ function AdminSecretaryDetails() {
                 padding: "0.55rem 1rem",
                 borderRadius: "10px",
                 border: "1px solid oklch(0% 0 0 / 0.1)",
-                background: secretaryUser.is_active ? "oklch(96% 0.08 85 / 0.7)" : "oklch(95% 0.05 145 / 0.7)",
-                color: secretaryUser.is_active ? "oklch(45% 0.15 85)" : "oklch(35% 0.15 145)",
+                background: secretaryUser.is_active
+                  ? "oklch(96% 0.08 85 / 0.7)"
+                  : "oklch(95% 0.05 145 / 0.7)",
+                color: secretaryUser.is_active
+                  ? "oklch(45% 0.15 85)"
+                  : "oklch(35% 0.15 145)",
                 fontSize: "0.85rem",
                 fontWeight: "700",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
-                gap: "0.4rem"
+                gap: "0.4rem",
               }}
             >
               <Power size={16} />
-              <span>{secretaryUser.is_active ? "غیرفعال‌سازی حساب منشی" : "فعال‌سازی حساب منشی"}</span>
+              <span>
+                {secretaryUser.is_active
+                  ? "غیرفعال‌سازی حساب منشی"
+                  : "فعال‌سازی حساب منشی"}
+              </span>
             </button>
 
             <button
@@ -425,7 +500,7 @@ function AdminSecretaryDetails() {
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
-                gap: "0.4rem"
+                gap: "0.4rem",
               }}
             >
               <Trash2 size={16} />

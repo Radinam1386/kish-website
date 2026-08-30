@@ -67,11 +67,6 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  gap: 0.4rem;
-
-  padding: 0.65rem 0.9rem;
-
   background: #ffffff;
 
   color:
@@ -79,8 +74,9 @@
 
   border: 1px solid
     var(--admin-teacher-details-x7k2-border);
-
-  border-radius: 10px;
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
 
   font-family: inherit;
   font-size: 0.8rem;
@@ -745,8 +741,9 @@
   }
 
   .admin-teacher-details-x7k2-back-button {
-    order: 3;
-    width: 100%;
+    /* order: 3; */
+    width: 30px;
+    height: 30px;
   }
 
   .admin-teacher-details-x7k2-avatar {

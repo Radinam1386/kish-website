@@ -11,7 +11,6 @@ import {
   GraduationCap,
   ChevronLeft,
 } from "lucide-react";
-
 import DashboardLayout from "../components/DashboardLayout";
 import StatCard from "../components/StatCard";
 import { AnimatedButton } from "../components/AnimatedButton";
@@ -34,6 +33,7 @@ function AdminPanel() {
     async function loadData() {
       try {
         setLoading(true);
+
         const [usersData, classroomsData, enrollmentsData, termsData] =
           await Promise.all([
             api.users.list(),
@@ -43,29 +43,35 @@ function AdminPanel() {
           ]);
 
         if (!alive) return;
+
         const allTerms = termsData || [];
+
         setUsers(usersData || []);
         setClassrooms(classroomsData || []);
         setEnrollments(enrollmentsData || []);
         setTerms(allTerms);
 
-        const active = allTerms.find((t) => t.is_active);
-        if (active) {
-          setSelectedTermId(String(active.id));
-        } else if (allTerms.length > 0) {
+        const activeTerm = allTerms.find((term) => term.is_active);
+
+        if (activeTerm) {
+          setSelectedTermId(String(activeTerm.id));
+        } else if (allTerms.length) {
           setSelectedTermId(String(allTerms[0].id));
         } else {
           setSelectedTermId("all");
         }
       } catch {
-        if (alive) {
-          setUsers([]);
-          setClassrooms([]);
-          setEnrollments([]);
-          setTerms([]);
-        }
+        if (!alive) return;
+
+        setUsers([]);
+        setClassrooms([]);
+        setEnrollments([]);
+        setTerms([]);
+        setSelectedTermId("all");
       } finally {
-        if (alive) setLoading(false);
+        if (alive) {
+          setLoading(false);
+        }
       }
     }
 
@@ -78,51 +84,81 @@ function AdminPanel() {
 
   const activeTermObj = useMemo(() => {
     if (selectedTermId === "all") return null;
-    return terms.find((t) => String(t.id) === String(selectedTermId));
+
+    return terms.find((term) => String(term.id) === String(selectedTermId));
   }, [terms, selectedTermId]);
 
-  // Filtered Classrooms by Term
   const termClassrooms = useMemo(() => {
-    if (selectedTermId === "all") return classrooms;
-    return classrooms.filter(
-      (c) => String(c.term || c.term?.id) === String(selectedTermId),
-    );
+    if (selectedTermId === "all") {
+      return classrooms;
+    }
+
+    return classrooms.filter((classroom) => {
+      const termId =
+        typeof classroom.term === "object"
+          ? classroom.term?.id
+          : classroom.term;
+
+      return String(termId) === String(selectedTermId);
+    });
   }, [classrooms, selectedTermId]);
 
   const termClassIds = useMemo(
-    () => termClassrooms.map((c) => c.id),
+    () => termClassrooms.map((classroom) => classroom.id),
     [termClassrooms],
   );
 
   const termEnrollments = useMemo(() => {
-    if (selectedTermId === "all") return enrollments;
-    return enrollments.filter((e) =>
-      termClassIds.includes(e.classroom || e.classroom?.id),
-    );
+    if (selectedTermId === "all") {
+      return enrollments;
+    }
+
+    return enrollments.filter((enrollment) => {
+      const classroomId =
+        typeof enrollment.classroom === "object"
+          ? enrollment.classroom?.id
+          : enrollment.classroom;
+
+      return termClassIds.includes(classroomId);
+    });
   }, [enrollments, termClassIds, selectedTermId]);
 
   const students = useMemo(() => {
     const studentUsers = users.filter((user) => user.role === "student");
 
     let targetStudents = studentUsers;
+
     if (selectedTermId !== "all") {
-      const enrolledStudentIds = termEnrollments.map(
-        (e) => e.student || e.student?.id,
+      const enrolledStudentIds = termEnrollments.map((enrollment) =>
+        typeof enrollment.student === "object"
+          ? enrollment.student?.id
+          : enrollment.student,
       );
-      const enrolledOnly = studentUsers.filter((u) =>
-        enrolledStudentIds.includes(u.id),
+
+      const enrolledStudents = studentUsers.filter((user) =>
+        enrolledStudentIds.includes(user.id),
       );
-      if (enrolledOnly.length > 0) {
-        targetStudents = enrolledOnly;
+
+      if (enrolledStudents.length) {
+        targetStudents = enrolledStudents;
       }
     }
 
     return targetStudents.slice(0, 6).map((user) => {
-      const enrollment = termEnrollments.find(
-        (item) => item.student === user.id || item.student?.id === user.id,
-      );
+      const enrollment = termEnrollments.find((item) => {
+        const studentId =
+          typeof item.student === "object" ? item.student?.id : item.student;
+
+        return studentId === user.id;
+      });
+
+      const enrollmentClassroomId =
+        typeof enrollment?.classroom === "object"
+          ? enrollment.classroom?.id
+          : enrollment?.classroom;
+
       const classroom = termClassrooms.find(
-        (item) => item.id === (enrollment?.classroom || enrollment?.classroom?.id),
+        (item) => item.id === enrollmentClassroomId,
       );
 
       return {
@@ -143,17 +179,23 @@ function AdminPanel() {
       .filter((user) => user.role === "teacher")
       .slice(0, 6)
       .map((user) => {
-        const activeClasses = termClassrooms.filter(
-          (classroom) =>
-            classroom.teacher === user.id ||
-            classroom.teacher?.id === user.id ||
-            classroom.teacher_detail?.id === user.id,
-        ).length;
+        const activeClasses = termClassrooms.filter((classroom) => {
+          const teacherId =
+            typeof classroom.teacher === "object"
+              ? classroom.teacher?.id
+              : classroom.teacher;
+
+          return (
+            teacherId === user.id || classroom.teacher_detail?.id === user.id
+          );
+        }).length;
+
+        const teacherName = getFullName(user);
 
         return {
           id: user.id,
-          name: getFullName(user),
-          avatar: getFullName(user).charAt(0),
+          name: teacherName,
+          avatar: teacherName.charAt(0),
           specialty: user.email || "استاد آکادمی",
           activeClasses: `${toPersianDigits(activeClasses)} کلاس در ترم`,
         };
@@ -169,15 +211,22 @@ function AdminPanel() {
     }));
   }, [termClassrooms]);
 
+  const studentCount = useMemo(() => {
+    if (selectedTermId === "all") {
+      return users.filter((user) => user.role === "student").length;
+    }
+
+    return (
+      termEnrollments.length ||
+      users.filter((user) => user.role === "student").length
+    );
+  }, [users, termEnrollments, selectedTermId]);
+
   const stats = [
     {
       id: 1,
       title: "دانش‌آموزان ترم",
-      value: `${toPersianDigits(
-        selectedTermId === "all"
-          ? users.filter((user) => user.role === "student").length
-          : termEnrollments.length || users.filter((user) => user.role === "student").length,
-      )} نفر`,
+      value: `${toPersianDigits(studentCount)} نفر`,
       hint: activeTermObj?.name || "ترم انتخابی",
       icon: <UsersRound />,
       color: "green",
@@ -185,7 +234,9 @@ function AdminPanel() {
     {
       id: 2,
       title: "معلمان",
-      value: `${toPersianDigits(users.filter((user) => user.role === "teacher").length)} نفر`,
+      value: `${toPersianDigits(
+        users.filter((user) => user.role === "teacher").length,
+      )} نفر`,
       hint: "اساتید آکادمی",
       icon: <BookOpen />,
       color: "blue",
@@ -193,7 +244,9 @@ function AdminPanel() {
     {
       id: 3,
       title: "منشی‌ها",
-      value: `${toPersianDigits(users.filter((user) => user.role === "secretary").length)} نفر`,
+      value: `${toPersianDigits(
+        users.filter((user) => user.role === "secretary").length,
+      )} نفر`,
       hint: "پرسنل اداری",
       icon: <UserCheck />,
       color: "light-orange",
@@ -209,51 +262,57 @@ function AdminPanel() {
   ];
 
   return (
-    <DashboardLayout role="پنل مدیریت" title="مدیریت کل آموزشگاه" menuType="admin">
-      {/* Term Selector Top Banner */}
-      <div className="term-selector-banner" style={{ marginBottom: "1.75rem" }}>
+    <DashboardLayout
+      role="پنل مدیریت"
+      title="مدیریت کل آموزشگاه"
+      menuType="admin"
+    >
+      <div className="term-selector-banner">
         <div className="term-banner-info">
           <div className="term-icon-circle">
             <Layers size={22} />
           </div>
-          <div>
+          <div className="term-banner-content">
             <h3>
-              ترم تحصیلی انتخابی:{" "}
-              <span className="term-highlight-text" style={{ color: "var(--primary)" }}>
+              ترم تحصیلی انتخابی:
+              <span className="term-highlight-text">
                 {activeTermObj
                   ? activeTermObj.name
                   : selectedTermId === "all"
-                  ? "همه ترم‌ها"
-                  : "ترم نامشخص"}
+                    ? "همه ترم‌ها"
+                    : "ترم نامشخص"}
               </span>
             </h3>
+
             <p>
               {activeTermObj?.is_active
                 ? "آمار و اطلاعات مربوط به ترم فعال جاری در حال نمایش است."
                 : activeTermObj
-                ? "اطلاعات مربوط به این ترم بایگانی‌شده در حال نمایش است."
-                : "نمایش کلیه اطلاعات تمامی ترم‌ها"}
+                  ? "اطلاعات مربوط به این ترم بایگانی‌شده در حال نمایش است."
+                  : "نمایش کلیه اطلاعات تمامی ترم‌ها"}
             </p>
           </div>
         </div>
+        <div className="term-dropdown-wrapper">
+          <label htmlFor="admin-term-select">انتخاب ترم</label>
 
-        <div className="term-dropdown-wrapper" style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-          <label style={{ fontSize: "0.84rem", fontWeight: "700" }}>انتخاب ترم:</label>
           <select
+            id="admin-term-select"
             value={selectedTermId}
-            onChange={(e) => setSelectedTermId(e.target.value)}
+            onChange={(event) => setSelectedTermId(event.target.value)}
             className="term-select-input"
           >
-            {terms.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.name} {t.is_active ? "(ترم فعال جاری)" : "(به پایان رسیده)"}
+            {terms.map((term) => (
+              <option key={term.id} value={term.id}>
+                {term.name}
+                {term.is_active ? "(ترم فعال جاری)" : "(به پایان رسیده)"}
               </option>
             ))}
+
             <option value="all">همه ترم‌ها (مشاهده تجمیعی)</option>
           </select>
         </div>
       </div>
-
       <div className="admin-panel-x7k2-stats-grid">
         {stats.map((stat) => (
           <StatCard
@@ -266,12 +325,14 @@ function AdminPanel() {
           />
         ))}
       </div>
-
-      {/* Students Table Section */}
-      <section className="admin-panel-x7k2-section">
+      <section className="admin-panel-x7k2-section admin-panel-students-section">
         <div className="admin-panel-x7k2-section-header">
           <h3 className="admin-panel-x7k2-section-title">دانش‌آموزان ترم</h3>
-          <Link to={"/panel/admin/students/new"}>
+
+          <Link
+            to="/panel/admin/students/new"
+            className="admin-panel-add-student-link"
+          >
             <AnimatedButton variant="primary" icon={<UserPlus size={18} />}>
               افزودن دانش‌آموز جدید
             </AnimatedButton>
@@ -293,7 +354,7 @@ function AdminPanel() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan="5" style={{ textAlign: "center", padding: "2rem" }}>
+                  <td colSpan="5" className="admin-panel-loading-state">
                     در حال دریافت اطلاعات...
                   </td>
                 </tr>
@@ -301,7 +362,7 @@ function AdminPanel() {
 
               {!loading && students.length === 0 && (
                 <tr>
-                  <td colSpan="5" style={{ textAlign: "center", padding: "2rem", color: "oklch(55% 0 0)" }}>
+                  <td colSpan="5" className="admin-panel-empty-state">
                     دانش‌آموزی در این ترم یافت نشد.
                   </td>
                 </tr>
@@ -328,7 +389,7 @@ function AdminPanel() {
                       </span>
                     </td>
 
-                    <td data-label="شهریه">
+                    <td data-label="وضعیت حساب">
                       <span
                         className={`admin-panel-x7k2-status-badge ${student.tuitionStatusClass}`}
                       >
@@ -337,14 +398,17 @@ function AdminPanel() {
                     </td>
 
                     <td data-label="عملیات">
-                      <Link to={`/panel/admin/students/${student.id}`}>
-                        <button
-                          type="button"
-                          className="admin-panel-x7k2-action-btn"
+                      <Link
+                        to={`/panel/admin/students/${student.id}`}
+                        className="admin-panel-student-action-link"
+                      >
+                        <AnimatedButton
+                          variant="secondary"
+                          icon={<Eye size={16} />}
+                          size="small"
                         >
-                          <Eye size={16} />
-                          مشاهده پرونده
-                        </button>
+                          <span>مشاهده پرونده</span>
+                        </AnimatedButton>
                       </Link>
                     </td>
                   </tr>
@@ -353,25 +417,24 @@ function AdminPanel() {
           </table>
         </div>
       </section>
-
-      {/* Bottom Grid: Teachers & Term Classes */}
       <div className="admin-panel-x7k2-bottom-grid">
-        {/* Teachers Widget */}
         <section className="admin-panel-x7k2-section">
           <div className="admin-panel-x7k2-section-header">
             <h3 className="admin-panel-x7k2-section-title">معلمان و اساتید</h3>
-            <Link to="/panel/admin/teachers">
-              <span className="admin-panel-section-link">
+
+            <Link
+              to="/panel/admin/teachers"
+              className="admin-panel-section-link"
+            >
+              <AnimatedButton variant="primary" size="small">
                 مدیریت معلمان ←
-              </span>
+              </AnimatedButton>
             </Link>
           </div>
 
           <div className="admin-panel-teachers-list-container">
             {teachers.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "2rem", color: "#7f8c8d" }}>
-                مدرسی ثبت نشده است.
-              </div>
+              <div className="admin-panel-empty-state">مدرسی ثبت نشده است.</div>
             ) : (
               teachers.map((teacher) => (
                 <Link
@@ -387,6 +450,7 @@ function AdminPanel() {
                     <h4 className="admin-panel-teacher-name-text">
                       {teacher.name}
                     </h4>
+
                     <span className="admin-panel-teacher-sub-text">
                       {teacher.specialty}
                     </span>
@@ -403,20 +467,23 @@ function AdminPanel() {
           </div>
         </section>
 
-        {/* Classes Widget */}
         <section className="admin-panel-x7k2-section">
           <div className="admin-panel-x7k2-section-header">
             <h3 className="admin-panel-x7k2-section-title">کلاس‌های این ترم</h3>
-            <Link to="/panel/admin/classes">
-              <span className="admin-panel-section-link">
+
+            <Link
+              to="/panel/admin/classes"
+              className="admin-panel-section-link"
+            >
+              <AnimatedButton variant="primary" size="small">
                 مدیریت کلاس‌ها ←
-              </span>
+              </AnimatedButton>
             </Link>
           </div>
 
           <div className="admin-panel-classes-list-container">
             {schedule.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "2rem", color: "#7f8c8d" }}>
+              <div className="admin-panel-empty-state">
                 کلاسی در این ترم ثبت نشده است.
               </div>
             ) : (
@@ -434,13 +501,14 @@ function AdminPanel() {
                     <h4 className="admin-panel-class-name-text">
                       {item.className}
                     </h4>
+
                     <span className="admin-panel-class-teacher-text">
                       مدرس: {item.teacher}
                     </span>
                   </div>
 
                   <div className="admin-panel-class-capacity-badge">
-                    <span>{item.capacity}</span>
+                    {item.capacity}
                   </div>
 
                   <ChevronLeft size={16} className="admin-panel-arrow-icon" />

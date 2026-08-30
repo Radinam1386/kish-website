@@ -20,6 +20,7 @@ import { AnimatedButton } from "../components/AnimatedButton";
 import { api, getFullName } from "../services/api";
 import { toPersianDigits } from "../utils/dateUtils";
 import "./AdminTeacherDetails.css";
+import StatCard from "../components/StatCard";
 
 function AdminTeacherDetails() {
   const { teacherId } = useParams();
@@ -28,7 +29,9 @@ function AdminTeacherDetails() {
   const isSecretary = location.pathname.includes("/secretary");
   const roleTitle = isSecretary ? "پنل منشی" : "پنل مدیریت";
   const menuType = isSecretary ? "secretary" : "admin";
-  const basePath = isSecretary ? "/panel/secretary/teachers" : "/panel/admin/teachers";
+  const basePath = isSecretary
+    ? "/panel/secretary/teachers"
+    : "/panel/admin/teachers";
 
   const [teacherUser, setTeacherUser] = useState(null);
   const [classrooms, setClassrooms] = useState([]);
@@ -59,7 +62,9 @@ function AdminTeacherDetails() {
 
         setTeacherUser(userData);
         const teacherClasses = (classroomsData || []).filter(
-          (c) => c.teacher === Number(teacherId) || c.teacher?.id === Number(teacherId),
+          (c) =>
+            c.teacher === Number(teacherId) ||
+            c.teacher?.id === Number(teacherId),
         );
         setClassrooms(teacherClasses);
         setTerms(termsData || []);
@@ -95,7 +100,10 @@ function AdminTeacherDetails() {
   }, [classrooms, terms]);
 
   const totalStudents = useMemo(() => {
-    return classrooms.reduce((total, cls) => total + (cls.student_count || 0), 0);
+    return classrooms.reduce(
+      (total, cls) => total + (cls.student_count || 0),
+      0,
+    );
   }, [classrooms]);
 
   const averageScore = useMemo(() => {
@@ -119,7 +127,7 @@ function AdminTeacherDetails() {
       title: "کلاس‌های فعال",
       value: `${classrooms.length} کلاس`,
       icon: <BookOpen size={22} />,
-      type: "primary",
+      type: "red",
     },
     {
       id: 2,
@@ -158,9 +166,13 @@ function AdminTeacherDetails() {
     return (
       <DashboardLayout role={roleTitle} title="جزئیات معلم" menuType={menuType}>
         <div style={{ padding: "2rem", textAlign: "center" }}>
-          <p style={{ color: "var(--danger, #ef4444)", marginBottom: "1rem" }}>{error || "معلم یافت نشد."}</p>
+          <p style={{ color: "var(--danger, #ef4444)", marginBottom: "1rem" }}>
+            {error || "معلم یافت نشد."}
+          </p>
           <Link to={basePath}>
-            <AnimatedButton variant="primary">بازگشت به لیست معلمان</AnimatedButton>
+            <AnimatedButton variant="primary">
+              بازگشت به لیست معلمان
+            </AnimatedButton>
           </Link>
         </div>
       </DashboardLayout>
@@ -174,17 +186,16 @@ function AdminTeacherDetails() {
       menuType={menuType}
     >
       <div className="admin-teacher-details-x7k2-page">
-        {/* ================= Header ================= */}
-
         <div className="admin-teacher-details-x7k2-header">
           <div className="admin-teacher-details-x7k2-header-right">
             <Link
               to={basePath}
-              className="admin-teacher-details-x7k2-back-button"
-              style={{ textDecoration: "none" }}
             >
-              <ArrowRight size={18} />
-              بازگشت به لیست
+              <AnimatedButton
+                variant="secondary"
+                size="small"
+                icon={<ArrowRight size={18} />}
+              ></AnimatedButton>
             </Link>
 
             <div className="admin-teacher-details-x7k2-avatar">
@@ -211,26 +222,16 @@ function AdminTeacherDetails() {
             </AnimatedButton>
           </Link>
         </div>
-
-        {/* ================= Stats ================= */}
-
         <div className="admin-teacher-details-x7k2-stats">
           {stats.map((stat) => (
-            <div
+            <StatCard
               key={stat.id}
-              className="admin-teacher-details-x7k2-stat-card"
-            >
-              <div
-                className={`admin-teacher-details-x7k2-stat-icon admin-teacher-details-x7k2-stat-${stat.type}`}
-              >
-                {stat.icon}
-              </div>
-
-              <div className="admin-teacher-details-x7k2-stat-content">
-                <span>{stat.title}</span>
-                <strong>{stat.value}</strong>
-              </div>
-            </div>
+              title={stat.title}
+              value={stat.value}
+              hint={stat.hint}
+              icon={stat.icon}
+              color={stat.type}
+            />
           ))}
         </div>
 
@@ -244,9 +245,7 @@ function AdminTeacherDetails() {
                 اطلاعات مدرس
               </h3>
 
-              <p>
-                اطلاعات شخصی و ارتباطی مدرس
-              </p>
+              <p>اطلاعات شخصی و ارتباطی مدرس</p>
             </div>
           </div>
 
@@ -306,7 +305,9 @@ function AdminTeacherDetails() {
 
               <div>
                 <span>نقش سیستم</span>
-                <strong>{teacherUser.role === "teacher" ? "مدرس" : teacherUser.role}</strong>
+                <strong>
+                  {teacherUser.role === "teacher" ? "مدرس" : teacherUser.role}
+                </strong>
               </div>
             </div>
 
@@ -333,9 +334,7 @@ function AdminTeacherDetails() {
                 کلاس‌های مدرس
               </h3>
 
-              <p>
-                لیست کلاس‌هایی که توسط این مدرس برگزار می‌شوند
-              </p>
+              <p>لیست کلاس‌هایی که توسط این مدرس برگزار می‌شوند</p>
             </div>
 
             <span className="admin-teacher-details-x7k2-count-badge">
@@ -373,30 +372,31 @@ function AdminTeacherDetails() {
                     <div className="admin-teacher-details-x7k2-class-details">
                       <div>
                         <Users size={16} />
-                        <span>
-                          {toPersianDigits(item.students)} دانش‌آموز
-                        </span>
+                        <span>{toPersianDigits(item.students)} دانش‌آموز</span>
                       </div>
 
                       <div>
                         <CalendarDays size={16} />
-                        <span>
-                          {item.schedule}
-                        </span>
+                        <span>{item.schedule}</span>
                       </div>
 
                       <div>
                         <Clock3 size={16} />
-                        <span>
-                          {item.time}
-                        </span>
+                        <span>{item.time}</span>
                       </div>
                     </div>
                   </div>
                 </Link>
               ))
             ) : (
-              <div style={{ textAlign: "center", padding: "1.5rem", color: "var(--muted, #888)", gridColumn: "1 / -1" }}>
+              <div
+                style={{
+                  textAlign: "center",
+                  padding: "1.5rem",
+                  color: "var(--muted, #888)",
+                  gridColumn: "1 / -1",
+                }}
+              >
                 هیچ کلاسی برای این مدرس ثبت نشده است.
               </div>
             )}

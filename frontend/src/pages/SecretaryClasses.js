@@ -108,12 +108,21 @@ function SecretaryClasses() {
       rawClasses
         .filter((classroom) => {
           if (selectedTermId === "all") return true;
-          return String(classroom.term || classroom.term?.id) === String(selectedTermId);
+          return (
+            String(classroom.term || classroom.term?.id) ===
+            String(selectedTermId)
+          );
         })
         .map((classroom) => {
-          const term = terms.find((item) => item.id === (classroom.term || classroom.term?.id));
-          const enrolled = classroom.student_count || classroom.enrollments?.length || 0;
-          const tuitionFee = classroom.tuition_fee !== undefined ? classroom.tuition_fee : 2500000;
+          const term = terms.find(
+            (item) => item.id === (classroom.term || classroom.term?.id),
+          );
+          const enrolled =
+            classroom.student_count || classroom.enrollments?.length || 0;
+          const tuitionFee =
+            classroom.tuition_fee !== undefined
+              ? classroom.tuition_fee
+              : 2500000;
 
           return {
             id: classroom.id,
@@ -124,7 +133,9 @@ function SecretaryClasses() {
             capacity: Math.max(enrolled, 15),
             enrolled,
             tuitionFee,
-            startDate: term?.start_date ? toJalaliDateString(term.start_date) : "-",
+            startDate: term?.start_date
+              ? toJalaliDateString(term.start_date)
+              : "-",
             status: term?.is_active ? "در حال برگزاری" : "به پایان رسیده",
             statusType: term?.is_active ? "active" : "inactive",
           };
@@ -154,41 +165,64 @@ function SecretaryClasses() {
   }, [classes]);
 
   const activeClassesCount = useMemo(() => {
-    return classes.filter((classItem) => classItem.statusType === "active").length;
+    return classes.filter((classItem) => classItem.statusType === "active")
+      .length;
   }, [classes]);
 
   return (
     <DashboardLayout role={roleTitle} title="مدیریت کلاس‌ها" menuType={role}>
       <div className="secretary-classes-page-container">
-        {/* Term Selector Header Banner */}
-        <div className="term-selector-banner" style={{ marginBottom: "1.75rem" }}>
+        <div
+          className="term-selector-banner"
+          style={{ marginBottom: "1.75rem" }}
+        >
           <div className="term-banner-info">
             <div className="term-icon-circle">
               <Layers size={22} />
             </div>
             <div>
-              <h3 style={{ margin: "0 0 0.25rem", fontSize: "1.1rem", fontWeight: "800" }}>
+              <h3
+                style={{
+                  margin: "0 0 0.25rem",
+                  fontSize: "1.1rem",
+                  fontWeight: "800",
+                }}
+              >
                 ترم تحصیلی انتخابی:{" "}
-                <span className="term-highlight-text" style={{ color: "var(--primary)" }}>
+                <span
+                  className="term-highlight-text"
+                  style={{ color: "var(--primary)" }}
+                >
                   {activeTermObj
                     ? activeTermObj.name
                     : selectedTermId === "all"
-                    ? "همه ترم‌ها"
-                    : "ترم نامشخص"}
+                      ? "همه ترم‌ها"
+                      : "ترم نامشخص"}
                 </span>
               </h3>
-              <p style={{ margin: 0, fontSize: "0.8rem", color: "oklch(55% 0 0)" }}>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "0.8rem",
+                  color: "oklch(55% 0 0)",
+                }}
+              >
                 {activeTermObj?.is_active
                   ? "کلاس‌های مربوط به ترم فعال جاری در حال نمایش است."
                   : activeTermObj
-                  ? "کلاس‌های مربوط به این ترم بایگانی‌شده در حال نمایش است."
-                  : "نمایش کلاس‌های تمامی دوره‌ها"}
+                    ? "کلاس‌های مربوط به این ترم بایگانی‌شده در حال نمایش است."
+                    : "نمایش کلاس‌های تمامی دوره‌ها"}
               </p>
             </div>
           </div>
 
-          <div className="term-dropdown-wrapper" style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-            <label style={{ fontSize: "0.84rem", fontWeight: "700" }}>انتخاب ترم:</label>
+          <div
+            className="term-dropdown-wrapper"
+            style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}
+          >
+            <label style={{ fontSize: "0.84rem", fontWeight: "700" }}>
+              انتخاب ترم:
+            </label>
             <select
               value={selectedTermId}
               onChange={(e) => setSelectedTermId(e.target.value)}
@@ -196,7 +230,8 @@ function SecretaryClasses() {
             >
               {terms.map((t) => (
                 <option key={t.id} value={t.id}>
-                  {t.name} {t.is_active ? "(ترم فعال جاری)" : "(به پایان رسیده)"}
+                  {t.name}{" "}
+                  {t.is_active ? "(ترم فعال جاری)" : "(به پایان رسیده)"}
                 </option>
               ))}
               <option value="all">همه ترم‌ها (مشاهده کامل)</option>
@@ -204,7 +239,6 @@ function SecretaryClasses() {
           </div>
         </div>
 
-        {/* Stats Cards */}
         <div className="secretary-classes-stats-grid">
           <StatCard
             title="کلاس‌های ترم"
@@ -232,18 +266,21 @@ function SecretaryClasses() {
         </div>
 
         {successMsg && (
-          <div className="classes-alert success" style={{ marginBottom: "1.5rem" }}>
+          <div
+            className="classes-alert success"
+            style={{ marginBottom: "1.5rem" }}
+          >
             <Sparkles size={18} />
             <span>{successMsg}</span>
           </div>
         )}
 
-        {/* Main Section */}
         <section className="secretary-classes-main-section">
           <div className="secretary-classes-section-header">
             <div className="secretary-classes-heading">
               <h3 className="secretary-classes-section-title">
-                لیست کلاس‌های {activeTermObj ? `«${activeTermObj.name}»` : "آموزشگاه"}
+                لیست کلاس‌های{" "}
+                {activeTermObj ? `«${activeTermObj.name}»` : "آموزشگاه"}
               </h3>
               <p className="secretary-classes-section-desc">
                 مدیریت کلاس‌ها، مدرس‌ها، شهریه مصوب و لیست دانش‌آموزان
@@ -292,7 +329,13 @@ function SecretaryClasses() {
 
           {/* Classes Cards Grid */}
           {loading ? (
-            <div style={{ textAlign: "center", padding: "3rem", color: "oklch(50% 0 0)" }}>
+            <div
+              style={{
+                textAlign: "center",
+                padding: "3rem",
+                color: "oklch(50% 0 0)",
+              }}
+            >
               در حال دریافت اطلاعات کلاس‌ها...
             </div>
           ) : filteredClasses.length > 0 ? (
@@ -337,7 +380,10 @@ function SecretaryClasses() {
                       <CreditCard size={16} className="info-icon" />
                       <span className="info-label">شهریه مصوب:</span>
                       <strong className="info-val tuition">
-                        {toPersianDigits(classItem.tuitionFee.toLocaleString("fa-IR"))} تومان
+                        {toPersianDigits(
+                          classItem.tuitionFee.toLocaleString("fa-IR"),
+                        )}{" "}
+                        تومان
                       </strong>
                     </div>
 
@@ -371,7 +417,9 @@ function SecretaryClasses() {
                     <button
                       type="button"
                       className="class-btn-action delete"
-                      onClick={() => handleDeleteClass(classItem.id, classItem.title)}
+                      onClick={() =>
+                        handleDeleteClass(classItem.id, classItem.title)
+                      }
                     >
                       <Trash2 size={15} />
                     </button>
@@ -383,7 +431,10 @@ function SecretaryClasses() {
             <div className="classes-empty-state">
               <BookOpen size={44} />
               <h4>کلاسی در این ترم یافت نشد</h4>
-              <p>برای شروع دوره جدید، با استفاده از دکمه «افزودن کلاس جدید» کلاس را تعریف نمایید.</p>
+              <p>
+                برای شروع دوره جدید، با استفاده از دکمه «افزودن کلاس جدید» کلاس
+                را تعریف نمایید.
+              </p>
             </div>
           )}
         </section>

@@ -6,14 +6,25 @@ import {
   UsersRound,
   PlusCircle,
   Award,
+  ChevronLeft,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+
 import DashboardLayout from "../components/DashboardLayout";
 import StatCard from "../components/StatCard";
-import "./TeacherPanel.css";
 import { AnimatedButton } from "../components/AnimatedButton";
 import { api, getFullName } from "../services/api";
 import { toJalaliDateString, toPersianDigits } from "../utils/dateUtils";
+
+import "./TeacherPanel.css";
+
+function getEntityId(value) {
+  if (value && typeof value === "object") {
+    return value.id;
+  }
+
+  return value;
+}
 
 function TeacherPanel() {
   const [classes, setClasses] = useState([]);
@@ -21,6 +32,7 @@ function TeacherPanel() {
   const [exams, setExams] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [submissions, setSubmissions] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -30,47 +42,66 @@ function TeacherPanel() {
     async function loadData() {
       try {
         setLoading(true);
-        const [classroomsData, termsData, examsData, sessionsData, submissionsData] =
-          await Promise.all([
-            api.classrooms.list(),
-            api.terms.list(),
-            api.exams.list(),
-            api.sessions.list(),
-            api.submissions.list(),
-          ]);
+        setError("");
+
+        const [
+          classroomsData,
+          termsData,
+          examsData,
+          sessionsData,
+          submissionsData,
+        ] = await Promise.all([
+          api.classrooms.list(),
+          api.terms.list(),
+          api.exams.list(),
+          api.sessions.list(),
+          api.submissions.list(),
+        ]);
 
         if (!alive) return;
 
         const allTerms = termsData || [];
-        const activeTermIds = allTerms.filter((t) => t.is_active).map((t) => t.id);
+        const classrooms = classroomsData || [];
+        const allExams = examsData || [];
+        const allSessions = sessionsData || [];
+        const allSubmissions = submissionsData || [];
 
-        // Filter ONLY classes belonging to active terms
-        const activeClasses = (classroomsData || []).filter((c) =>
-          activeTermIds.length > 0
-            ? activeTermIds.includes(c.term || c.term?.id)
-            : true,
+        const activeTermIds = new Set(
+          allTerms.filter((term) => term.is_active).map((term) => term.id),
         );
 
-        const activeClassIds = activeClasses.map((c) => c.id);
+        const activeClasses =
+          activeTermIds.size > 0
+            ? classrooms.filter((classroom) =>
+                activeTermIds.has(getEntityId(classroom.term)),
+              )
+            : classrooms;
 
-        // Filter exams and sessions to active classes only
-        const activeExams = (examsData || []).filter((e) =>
-          activeClassIds.includes(e.classroom || e.classroom?.id),
+        const activeClassIds = new Set(
+          activeClasses.map((classroom) => classroom.id),
         );
 
-        const activeSessions = (sessionsData || []).filter((s) =>
-          activeClassIds.includes(s.classroom || s.classroom?.id),
+        const activeExams = allExams.filter((exam) =>
+          activeClassIds.has(getEntityId(exam.classroom)),
+        );
+
+        const activeSessions = allSessions.filter((session) =>
+          activeClassIds.has(getEntityId(session.classroom)),
         );
 
         setTerms(allTerms);
         setClasses(activeClasses);
         setExams(activeExams);
         setSessions(activeSessions);
-        setSubmissions(submissionsData || []);
+        setSubmissions(allSubmissions);
       } catch (err) {
-        if (alive) setError(err.message || "دریافت اطلاعات پنل ناموفق بود.");
+        if (alive) {
+          setError(err?.message || "دریافت اطلاعات پنل ناموفق بود.");
+        }
       } finally {
-        if (alive) setLoading(false);
+        if (alive) {
+          setLoading(false);
+        }
       }
     }
 
@@ -81,18 +112,61 @@ function TeacherPanel() {
     };
   }, []);
 
-  const activeTerm = useMemo(() => {
-    return terms.find((t) => t.is_active);
-  }, [terms]);
+  const activeTerm = useMemo(
+    () => terms.find((term) => term.is_active),
+    [terms],
+  );
 
   const totalStudents = useMemo(
-    () => classes.reduce((total, cls) => total + (cls.student_count || 0), 0),
+    () =>
+      classes.reduce(
+        (total, classroom) => total + Number(classroom.student_count || 0),
+        0,
+      ),
     [classes],
   );
+
+  const sessionsByClass = useMemo(() => {
+    const result = {};
+
+    sessions.forEach((session) => {
+      const classroomId = getEntityId(session.classroom);
+
+      if (!classroomId) return;
+
+      result[classroomId] = (result[classroomId] || 0) + 1;
+    });
+
+    return result;
+  }, [sessions]);
+
+  const submissionsByExam = useMemo(() => {
+    const result = {};
+
+    submissions.forEach((submission) => {
+      const examId = getEntityId(submission.exam);
+
+      if (!examId) return;
+
+      result[examId] = (result[examId] || 0) + 1;
+    });
+
+    return result;
+  }, [submissions]);
+
+  const getClassByExam = (exam) => {
+    const classroomId = getEntityId(exam.classroom);
+
+    return classes.find((classroom) => classroom.id === classroomId);
+  };
 
   return (
     <DashboardLayout role="پنل استاد" title="پنل استاد" menuType="teacher">
       <div className="teacher-panel-x7k2-root">
+        {/* =========================
+            Statistics
+        ========================== */}
+
         <div className="teacher-panel-x7k2-stat-grid">
           <StatCard
             title="کلاس‌های فعال"
@@ -127,23 +201,34 @@ function TeacherPanel() {
           />
         </div>
 
+        {/* =========================
+            Classes
+        ========================== */}
+
         <section className="teacher-panel-x7k2-section">
           <div className="teacher-panel-x7k2-section-head">
-            <div>
+            <div className="teacher-panel-x7k2-section-heading">
               <h3 className="teacher-panel-x7k2-section-title">
-                کلاس‌های من در {activeTerm?.name ? `«${activeTerm.name}»` : "ترم جاری"}
+                کلاس‌های من در{" "}
+                {activeTerm?.name ? `«${activeTerm.name}»` : "ترم جاری"}
               </h3>
-              <p style={{ fontSize: "0.8rem", color: "oklch(55% 0 0)", margin: "0.2rem 0 0" }}>
-                تنها کلاس‌های مربوط به ترم‌های فعال در این بخش نمایش داده می‌شوند.
+
+              <p className="teacher-panel-x7k2-section-description">
+                تنها کلاس‌های مربوط به ترم‌های فعال در این بخش نمایش داده
+                می‌شوند.
               </p>
             </div>
 
-            <div style={{ display: "flex", gap: "0.75rem" }}>
+            <div className="teacher-panel-x7k2-actions">
               <Link
                 to="/panel/teacher/exams"
                 className="teacher-panel-x7k2-action-link"
               >
-                <AnimatedButton variant="secondary" icon={<Award size={17} />}>
+                <AnimatedButton
+                  variant="secondary"
+                  icon={<Award size={17} />}
+                  size="small"
+                >
                   میز نمره‌دهی و تصحیح
                 </AnimatedButton>
               </Link>
@@ -152,7 +237,11 @@ function TeacherPanel() {
                 to="/panel/teacher/create-exam"
                 className="teacher-panel-x7k2-action-link"
               >
-                <AnimatedButton variant="danger" icon={<PlusCircle size={18} />}>
+                <AnimatedButton
+                  variant="danger"
+                  icon={<PlusCircle size={18} />}
+                  size="small"
+                >
                   ایجاد آزمون جدید
                 </AnimatedButton>
               </Link>
@@ -161,7 +250,7 @@ function TeacherPanel() {
 
           <div className="teacher-panel-x7k2-table-shell">
             <div className="teacher-panel-x7k2-table-scroll">
-              <table className="teacher-panel-x7k2-table">
+              <table className="teacher-panel-x7k2-table teacher-panel-x7k2-table--classes">
                 <thead>
                   <tr>
                     <th>نام کلاس</th>
@@ -175,110 +264,129 @@ function TeacherPanel() {
 
                 <tbody>
                   {loading && (
-                    <tr>
-                      <td colSpan="6" style={{ textAlign: "center", padding: "2rem" }}>
-                        در حال دریافت اطلاعات...
+                    <tr className="teacher-panel-x7k2-state-row">
+                      <td colSpan="6">
+                        <div className="teacher-panel-x7k2-loading">
+                          <span className="teacher-panel-x7k2-spinner" />
+                          <span>در حال دریافت اطلاعات...</span>
+                        </div>
                       </td>
                     </tr>
                   )}
 
                   {!loading && error && (
-                    <tr>
-                      <td colSpan="6" style={{ textAlign: "center", color: "var(--danger)" }}>
-                        {error}
+                    <tr className="teacher-panel-x7k2-state-row">
+                      <td colSpan="6">
+                        <div className="teacher-panel-x7k2-error">{error}</div>
                       </td>
                     </tr>
                   )}
 
                   {!loading && !error && classes.length === 0 && (
-                    <tr>
-                      <td colSpan="6" style={{ textAlign: "center", padding: "2.5rem", color: "oklch(55% 0 0)" }}>
-                        در حال حاضر کلاس فعالی برای شما در ترم جاری ثبت نشده است.
+                    <tr className="teacher-panel-x7k2-state-row">
+                      <td colSpan="6">
+                        <div className="teacher-panel-x7k2-empty">
+                          <BookOpen size={24} />
+                          <span>
+                            در حال حاضر کلاس فعالی برای شما در ترم جاری ثبت نشده
+                            است.
+                          </span>
+                        </div>
                       </td>
                     </tr>
                   )}
 
                   {!loading &&
                     !error &&
-                    classes.map((cls) => (
-                      <tr key={cls.id}>
-                        <td>
-                          <span className="teacher-panel-x7k2-class-tag teacher-panel-x7k2-class-tag--highlight">
-                            {cls.name}
-                          </span>
-                        </td>
+                    classes.map((classroom) => {
+                      const classSessions = sessionsByClass[classroom.id] || 0;
 
-                        <td>
-                          <span className="teacher-panel-x7k2-count">
-                            {toPersianDigits(cls.student_count || 0)} نفر
-                          </span>
-                        </td>
+                      return (
+                        <tr key={classroom.id}>
+                          <td data-label="کلاس">
+                            <span className="teacher-panel-x7k2-class-tag teacher-panel-x7k2-class-tag--highlight">
+                              {classroom.name}
+                            </span>
+                          </td>
 
-                        <td>
-                          <span className="teacher-panel-x7k2-capacity">
-                            {getFullName(cls.teacher_detail)}
-                          </span>
-                        </td>
+                          <td data-label="تعداد">
+                            <span className="teacher-panel-x7k2-count">
+                              {toPersianDigits(classroom.student_count || 0)}{" "}
+                              نفر
+                            </span>
+                          </td>
 
-                        <td>
-                          {toPersianDigits(
-                            sessions.filter(
-                              (session) => session.classroom === cls.id || session.classroom?.id === cls.id,
-                            ).length
-                          )}{" "}
-                          جلسه
-                        </td>
+                          <td data-label="استاد">
+                            <span className="teacher-panel-x7k2-capacity">
+                              {getFullName(classroom.teacher_detail)}
+                            </span>
+                          </td>
 
-                        <td>
-                          <span style={{
-                            background: "oklch(95% 0.05 145 / 0.9)",
-                            color: "oklch(35% 0.15 145)",
-                            padding: "0.2rem 0.6rem",
-                            borderRadius: "8px",
-                            fontSize: "0.76rem",
-                            fontWeight: "800"
-                          }}>
-                            ترم فعال
-                          </span>
-                        </td>
+                          <td data-label="جلسات">
+                            <span className="teacher-panel-x7k2-count">
+                              {toPersianDigits(classSessions)} جلسه
+                            </span>
+                          </td>
 
-                        <td>
-                          <Link
-                            to={`/panel/teacher/attendance/${cls.id}`}
-                            className="teacher-panel-x7k2-action-link"
-                          >
-                            <AnimatedButton variant="primary" size="small">
-                              حضور و غیاب
-                            </AnimatedButton>
-                          </Link>
-                        </td>
-                      </tr>
-                    ))}
+                          <td data-label="وضعیت">
+                            <span className="teacher-panel-x7k2-status teacher-panel-x7k2-status--active">
+                              <span className="teacher-panel-x7k2-status-dot" />
+                              ترم فعال
+                            </span>
+                          </td>
+
+                          <td data-label="عملیات">
+                            <Link
+                              to={`/panel/teacher/attendance/${classroom.id}`}
+                              className="teacher-panel-x7k2-operation-link"
+                            >
+                              <AnimatedButton variant="primary" size="small">
+                                حضور و غیاب
+                              </AnimatedButton>
+
+                              <ChevronLeft
+                                size={15}
+                                className="teacher-panel-x7k2-operation-arrow"
+                              />
+                            </Link>
+                          </td>
+                        </tr>
+                      );
+                    })}
                 </tbody>
               </table>
             </div>
           </div>
         </section>
-
-        {/* Exams Section */}
         <section className="teacher-panel-x7k2-section">
           <div className="teacher-panel-x7k2-section-head">
-            <h3 className="teacher-panel-x7k2-section-title">آزمون‌های ترم فعال</h3>
-            <Link to="/panel/teacher/exams">
-              <span style={{ fontSize: "0.82rem", fontWeight: "700", color: "var(--primary)" }}>
-                مشاهده همه و تصحیح ←
-              </span>
+            <div className="teacher-panel-x7k2-section-heading">
+              <h3 className="teacher-panel-x7k2-section-title">
+                آزمون‌های ترم فعال
+              </h3>
+
+              <p className="teacher-panel-x7k2-section-description">
+                آزمون‌های تعریف‌شده برای کلاس‌های ترم جاری
+              </p>
+            </div>
+
+            <Link
+              to="/panel/teacher/exams"
+              className="teacher-panel-x7k2-view-all"
+            >
+              <span>مشاهده همه و تصحیح</span>
+              <ChevronLeft size={15} />
             </Link>
           </div>
 
           <div className="teacher-panel-x7k2-table-shell">
             <div className="teacher-panel-x7k2-table-scroll">
-              <table className="teacher-panel-x7k2-table">
+              <table className="teacher-panel-x7k2-table teacher-panel-x7k2-table--exams">
                 <thead>
                   <tr>
                     <th>عنوان</th>
                     <th>کلاس</th>
-                    <th>تاریخ (شمسی)</th>
+                    <th>تاریخ</th>
                     <th>پاسخ‌برگ‌های دریافتی</th>
                     <th>وضعیت</th>
                   </tr>
@@ -286,57 +394,58 @@ function TeacherPanel() {
 
                 <tbody>
                   {exams.length === 0 ? (
-                    <tr>
-                      <td colSpan="5" style={{ textAlign: "center", padding: "2rem", color: "oklch(55% 0 0)" }}>
-                        هنوز آزمونی در ترم فعال جاری تعریف نشده است.
+                    <tr className="teacher-panel-x7k2-state-row">
+                      <td colSpan="5">
+                        <div className="teacher-panel-x7k2-empty">
+                          <FileText size={24} />
+                          <span>
+                            هنوز آزمونی در ترم فعال جاری تعریف نشده است.
+                          </span>
+                        </div>
                       </td>
                     </tr>
                   ) : (
                     exams.map((exam) => {
-                      const classItem = classes.find(
-                        (item) => item.id === exam.classroom || item.id === exam.classroom?.id,
-                      );
-                      const examSubmissions = submissions.filter(
-                        (item) => item.exam === exam.id || item.exam?.id === exam.id,
-                      );
+                      const classItem = getClassByExam(exam);
+
+                      const received = submissionsByExam[exam.id] || 0;
+
+                      const total = classItem?.student_count || 0;
 
                       return (
                         <tr key={exam.id}>
-                          <td>
+                          <td data-label="عنوان">
                             <strong className="teacher-panel-x7k2-exam-title">
                               {exam.title}
                             </strong>
                           </td>
 
-                          <td>
+                          <td data-label="کلاس">
                             <span className="teacher-panel-x7k2-class-tag">
-                              {classItem?.name || exam.classroom}
+                              {classItem?.name || getEntityId(exam.classroom)}
                             </span>
                           </td>
 
-                          <td>
-                            <span className="teacher-panel-x7k2-count">
+                          <td data-label="تاریخ">
+                            <span className="teacher-panel-x7k2-date">
                               {toJalaliDateString(exam.date)}
                             </span>
                           </td>
 
-                          <td>
-                            {toPersianDigits(examSubmissions.length)} /{" "}
-                            {toPersianDigits(classItem?.student_count || 0)} نفر
+                          <td data-label="شرکت‌کنندگان">
+                            <span className="teacher-panel-x7k2-submission-count">
+                              <strong>{toPersianDigits(received)}</strong>
+
+                              <span>/</span>
+
+                              <span>{toPersianDigits(total)}</span>
+
+                              <small>نفر</small>
+                            </span>
                           </td>
 
-                          <td>
-                            <span
-                              className="teacher-panel-x7k2-status"
-                              style={{
-                                background: "oklch(96% 0.02 29)",
-                                color: "var(--primary)",
-                                padding: "0.2rem 0.55rem",
-                                borderRadius: "8px",
-                                fontSize: "0.76rem",
-                                fontWeight: "700",
-                              }}
-                            >
+                          <td data-label="وضعیت">
+                            <span className="teacher-panel-x7k2-status teacher-panel-x7k2-status--exam">
                               فعال در ترم
                             </span>
                           </td>

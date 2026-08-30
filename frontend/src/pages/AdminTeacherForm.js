@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   ArrowRight,
+  Check,
   Copy,
   Eye,
   EyeOff,
@@ -26,7 +27,9 @@ function AdminTeacherForm() {
   const isSecretary = location.pathname.includes("/secretary");
   const roleTitle = isSecretary ? "پنل منشی" : "پنل مدیریت";
   const menuType = isSecretary ? "secretary" : "admin";
-  const basePath = isSecretary ? "/panel/secretary/teachers" : "/panel/admin/teachers";
+  const basePath = isSecretary
+    ? "/panel/secretary/teachers"
+    : "/panel/admin/teachers";
 
   const [showPassword, setShowPassword] = useState(false);
   const [passwordCopied, setPasswordCopied] = useState(false);
@@ -125,9 +128,7 @@ function AdminTeacherForm() {
       }
 
       alert(
-        id
-          ? "اطلاعات معلم با موفقیت ویرایش شد."
-          : "معلم با موفقیت ثبت شد.",
+        id ? "اطلاعات معلم با موفقیت ویرایش شد." : "معلم با موفقیت ثبت شد.",
       );
 
       navigate(basePath);
@@ -196,10 +197,7 @@ function AdminTeacherForm() {
     >
       <div className="secretary-student-form-page">
         <div className="secretary-student-form-top">
-          <Link
-            to={basePath}
-            className="secretary-student-form-back"
-          >
+          <Link to={basePath} className="secretary-student-form-back">
             <ArrowRight size={18} />
             <span>بازگشت به معلمان</span>
           </Link>
@@ -272,7 +270,10 @@ function AdminTeacherForm() {
               </label>
 
               {/* Persian Date Picker for Teacher Birth Date */}
-              <div className="secretary-student-form-field full" style={{ marginTop: "0.25rem" }}>
+              <div
+                className="secretary-student-form-field full"
+                style={{ marginTop: "0.25rem" }}
+              >
                 <JalaliDatePicker
                   label="تاریخ تولد (شمسی)"
                   value={formData.birthDate}
@@ -384,11 +385,14 @@ function AdminTeacherForm() {
                         onClick={() => setShowPassword((prev) => !prev)}
                         title={showPassword ? "مخفی کردن" : "نمایش رمز"}
                       >
-                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        {showPassword ? (
+                          <EyeOff size={16} />
+                        ) : (
+                          <Eye size={16} />
+                        )}
                       </button>
                     </div>
                   </div>
-
                   <div className="secretary-student-form-field">
                     <span>
                       تکرار رمز عبور <b>*</b>
@@ -404,26 +408,70 @@ function AdminTeacherForm() {
                       required
                     />
                   </div>
-
                   <div className="secretary-student-form-password-actions full">
-                    <button
-                      type="button"
-                      className="secretary-student-form-action-btn"
-                      onClick={generatePassword}
-                    >
-                      <RefreshCw size={15} />
-                      <span>تولید رمز تصادفی</span>
-                    </button>
+                    <div className="secretary-student-form-password-tools-content">
+                      <div className="secretary-student-form-password-tools-title">
+                        <div className="secretary-student-form-password-tools-icon">
+                          <Lock size={17} />
+                        </div>
 
-                    <button
-                      type="button"
-                      className={`secretary-student-form-action-btn ${passwordCopied ? "copied" : ""}`}
-                      onClick={copyPassword}
-                      disabled={!formData.password}
-                    >
-                      <Copy size={15} />
-                      <span>{passwordCopied ? "کپی شد" : "کپی رمز"}</span>
-                    </button>
+                        <div>
+                          <strong>ابزارهای رمز عبور</strong>
+
+                          <span>
+                            برای امنیت بیشتر می‌توانید یک رمز قوی و تصادفی تولید
+                            کنید.
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="secretary-student-form-password-buttons">
+                        {/* Generate */}
+                        <button
+                          type="button"
+                          className="secretary-student-form-action-btn generate"
+                          onClick={generatePassword}
+                        >
+                          <span className="secretary-student-form-action-icon">
+                            <RefreshCw size={16} />
+                          </span>
+
+                          <span className="secretary-student-form-action-text">
+                            <strong>تولید رمز امن</strong>
+                          </span>
+                        </button>
+
+                        {/* Copy */}
+                        <button
+                          type="button"
+                          className={`secretary-student-form-action-btn copy ${
+                            passwordCopied ? "copied" : ""
+                          }`}
+                          onClick={copyPassword}
+                          disabled={!formData.password}
+                        >
+                          <span className="secretary-student-form-action-icon">
+                            {passwordCopied ? (
+                              <Check size={16} />
+                            ) : (
+                              <Copy size={16} />
+                            )}
+                          </span>
+
+                          <span className="secretary-student-form-action-text">
+                            <strong>
+                              {passwordCopied ? "کپی شد" : "کپی رمز"}
+                            </strong>
+
+                            <small>
+                              {passwordCopied
+                                ? "رمز در کلیپ‌بورد ذخیره شد"
+                                : "کپی سریع رمز فعلی"}
+                            </small>
+                          </span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </>
               )}
@@ -438,10 +486,7 @@ function AdminTeacherForm() {
           )}
 
           <div className="secretary-student-form-actions">
-            <Link
-              to={basePath}
-              className="secretary-student-form-cancel"
-            >
+            <Link to={basePath} className="secretary-student-form-cancel">
               انصراف
             </Link>
 

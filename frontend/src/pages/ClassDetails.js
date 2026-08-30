@@ -63,11 +63,14 @@ export default function ClassDetails() {
 
         setClassroom(clsData);
 
-        const currentTerm = (termsData || []).find((t) => t.id === clsData.term);
+        const currentTerm = (termsData || []).find(
+          (t) => t.id === clsData.term,
+        );
         setTerm(currentTerm);
 
         const currentTeacher = (usersData || []).find(
-          (u) => u.id === clsData.teacher || u.id === clsData.teacher_detail?.id,
+          (u) =>
+            u.id === clsData.teacher || u.id === clsData.teacher_detail?.id,
         );
         setTeacher(currentTeacher || clsData.teacher_detail);
 
@@ -98,14 +101,19 @@ export default function ClassDetails() {
   const enrolledStudents = useMemo(() => {
     if (!classroom?.enrollments) return [];
     return classroom.enrollments.map((e) => {
-      const student = e.student_detail || { id: e.student, username: `کاربر ${e.student}` };
+      const student = e.student_detail || {
+        id: e.student,
+        username: `کاربر ${e.student}`,
+      };
       const studentAttendance = attendanceRecords.filter(
         (a) => a.student === student.id || a.student?.id === student.id,
       );
       const totalAttended = studentAttendance.filter(
         (a) => a.status === "present" || a.status === "late",
       ).length;
-      const totalAbsences = studentAttendance.filter((a) => a.status === "absent").length;
+      const totalAbsences = studentAttendance.filter(
+        (a) => a.status === "absent",
+      ).length;
       const attRate =
         studentAttendance.length > 0
           ? Math.round((totalAttended / studentAttendance.length) * 100)
@@ -142,7 +150,11 @@ export default function ClassDetails() {
   }, [enrolledStudents, sessions, attendanceRecords]);
 
   const handleDeleteClass = async () => {
-    if (!window.confirm("آیا از حذف این کلاس اطمینان دارید؟ تمامی ثبت‌نام‌ها حذف خواهند شد.")) {
+    if (
+      !window.confirm(
+        "آیا از حذف این کلاس اطمینان دارید؟ تمامی ثبت‌نام‌ها حذف خواهند شد.",
+      )
+    ) {
       return;
     }
 
@@ -159,9 +171,21 @@ export default function ClassDetails() {
   if (loading) {
     return (
       <DashboardLayout
-        role={userRole === "admin" ? "پنل مدیریت" : userRole === "teacher" ? "پنل معلم" : "پنل منشی"}
+        role={
+          userRole === "admin"
+            ? "پنل مدیریت"
+            : userRole === "teacher"
+              ? "پنل معلم"
+              : "پنل منشی"
+        }
         title="جزئیات کلاس"
-        menuType={userRole === "admin" ? "admin" : userRole === "teacher" ? "teacher" : "secretary"}
+        menuType={
+          userRole === "admin"
+            ? "admin"
+            : userRole === "teacher"
+              ? "teacher"
+              : "secretary"
+        }
       >
         <div style={{ textAlign: "center", padding: "4rem" }}>
           در حال بارگذاری اطلاعات کلاس...
@@ -173,9 +197,21 @@ export default function ClassDetails() {
   if (error || !classroom) {
     return (
       <DashboardLayout
-        role={userRole === "admin" ? "پنل مدیریت" : userRole === "teacher" ? "پنل معلم" : "پنل منشی"}
+        role={
+          userRole === "admin"
+            ? "پنل مدیریت"
+            : userRole === "teacher"
+              ? "پنل معلم"
+              : "پنل منشی"
+        }
         title="جزئیات کلاس"
-        menuType={userRole === "admin" ? "admin" : userRole === "teacher" ? "teacher" : "secretary"}
+        menuType={
+          userRole === "admin"
+            ? "admin"
+            : userRole === "teacher"
+              ? "teacher"
+              : "secretary"
+        }
       >
         <div className="class-details-page">
           <div className="class-form-alert error">
@@ -195,14 +231,30 @@ export default function ClassDetails() {
 
   return (
     <DashboardLayout
-      role={userRole === "admin" ? "پنل مدیریت" : userRole === "teacher" ? "پنل معلم" : "پنل منشی"}
+      role={
+        userRole === "admin"
+          ? "پنل مدیریت"
+          : userRole === "teacher"
+            ? "پنل معلم"
+            : "پنل منشی"
+      }
       title={`جزئیات ${classroom.name}`}
-      menuType={userRole === "admin" ? "admin" : userRole === "teacher" ? "teacher" : "secretary"}
+      menuType={
+        userRole === "admin"
+          ? "admin"
+          : userRole === "teacher"
+            ? "teacher"
+            : "secretary"
+      }
     >
       <div className="class-details-page">
-        {/* Header Bar */}
         <div className="class-details-header">
           <div className="class-details-title-box">
+            <Link to={`${basePath}/classes`}>
+              <AnimatedButton variant="secondary" size="small">
+                <ArrowRight size={16} />
+              </AnimatedButton>
+            </Link>
             <div className="class-details-badge-icon">
               <BookOpen size={28} />
             </div>
@@ -217,7 +269,8 @@ export default function ClassDetails() {
               </div>
               <p className="class-term-name">
                 <Calendar size={14} />
-                ترم: {term?.name || "نامشخص"} | تاریخ شروع: {toJalaliDateString(term?.start_date)}
+                ترم: {term?.name || "نامشخص"} | تاریخ شروع:{" "}
+                {toJalaliDateString(term?.start_date)}
               </p>
             </div>
           </div>
@@ -250,13 +303,6 @@ export default function ClassDetails() {
                 </AnimatedButton>
               </>
             )}
-
-            <Link to={`${basePath}/classes`}>
-              <AnimatedButton variant="secondary" size="small">
-                <ArrowRight size={16} />
-                بازگشت
-              </AnimatedButton>
-            </Link>
           </div>
         </div>
 
@@ -303,7 +349,9 @@ export default function ClassDetails() {
                   {getFullName(teacher).charAt(0) || "م"}
                 </div>
                 <h3 className="teacher-name">{getFullName(teacher)}</h3>
-                <span className="teacher-role-badge">استاد رسمی آموزشگاه کیش</span>
+                <span className="teacher-role-badge">
+                  استاد رسمی آموزشگاه کیش
+                </span>
 
                 <div className="teacher-contacts">
                   <div className="contact-item">
@@ -317,13 +365,18 @@ export default function ClassDetails() {
                 </div>
 
                 {userRole === "admin" && (
-                  <Link to={`/panel/admin/teachers/${teacher.id}`} className="view-teacher-link">
+                  <Link
+                    to={`/panel/admin/teachers/${teacher.id}`}
+                    className="view-teacher-link"
+                  >
                     مشاهده پروفایل کامل استاد
                   </Link>
                 )}
               </div>
             ) : (
-              <div className="no-teacher-assigned">استادی برای این کلاس تعیین نشده است.</div>
+              <div className="no-teacher-assigned">
+                استادی برای این کلاس تعیین نشده است.
+              </div>
             )}
           </div>
 
@@ -332,7 +385,10 @@ export default function ClassDetails() {
             <div className="enrolled-students-header">
               <h4 className="card-heading">
                 <Users size={18} />
-                دانش‌آموزان ثبت‌نامی ({toPersianDigits(enrolledStudents.length)} نفر)
+                دانش‌آموزان ثبت‌نامی ({toPersianDigits(
+                  enrolledStudents.length,
+                )}{" "}
+                نفر)
               </h4>
 
               {userRole !== "teacher" && (
@@ -378,8 +434,8 @@ export default function ClassDetails() {
                               st.attendanceRate >= 80
                                 ? "high"
                                 : st.attendanceRate >= 50
-                                ? "medium"
-                                : "low"
+                                  ? "medium"
+                                  : "low"
                             }`}
                           >
                             {toPersianDigits(st.attendanceRate)}٪
@@ -444,8 +500,12 @@ export default function ClassDetails() {
                     const sessionAtt = attendanceRecords.filter(
                       (a) => a.session === s.id || a.session?.id === s.id,
                     );
-                    const present = sessionAtt.filter((a) => a.status === "present").length;
-                    const absent = sessionAtt.filter((a) => a.status === "absent").length;
+                    const present = sessionAtt.filter(
+                      (a) => a.status === "present",
+                    ).length;
+                    const absent = sessionAtt.filter(
+                      (a) => a.status === "absent",
+                    ).length;
                     const other = sessionAtt.filter(
                       (a) => a.status === "late" || a.status === "excused",
                     ).length;
@@ -453,7 +513,9 @@ export default function ClassDetails() {
                     return (
                       <tr key={s.id}>
                         <td>
-                          <strong>جلسه {toPersianDigits(sessions.length - idx)}</strong>
+                          <strong>
+                            جلسه {toPersianDigits(sessions.length - idx)}
+                          </strong>
                         </td>
                         <td>
                           <span className="shamsi-date-tag">
@@ -463,7 +525,8 @@ export default function ClassDetails() {
                         </td>
                         <td>
                           <span className="present-count">
-                            <UserCheck size={14} /> {toPersianDigits(present)} نفر
+                            <UserCheck size={14} /> {toPersianDigits(present)}{" "}
+                            نفر
                           </span>
                         </td>
                         <td>

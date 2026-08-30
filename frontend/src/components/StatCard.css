@@ -1,26 +1,40 @@
 .stat-card-p {
+
   --exam-red: #e74c3c;
   --exam-red-dark: #c0392b;
   --exam-red-light: #fdecea;
   --exam-red-border: rgba(231, 76, 60, 0.18);
+  --exam-red-border-hover: rgba(231, 76, 60, 0.40);
 
   --exam-blue: #3498db;
   --exam-blue-dark: #2474a8;
   --exam-blue-light: #eaf4fb;
+  --exam-blue-border: rgba(52, 152, 219, 0.18);
+  --exam-blue-border-hover: rgba(52, 152, 219, 0.40);
 
   --exam-green: #27ae60;
   --exam-green-dark: #1e8e4e;
   --exam-green-light: #eaf8f0;
+  --exam-green-border: rgba(39, 174, 96, 0.18);
+  --exam-green-border-hover: rgba(39, 174, 96, 0.40);
+
+  --exam-orange: #f39c12;
+  --exam-orange-dark: #e67e22;
+  --exam-orange-light: #fff7e8;
+  --exam-orange-border: rgba(243, 156, 18, 0.18);
+  --exam-orange-border-hover: rgba(243, 156, 18, 0.40);
 
   --exam-text: #263238;
   --exam-text-soft: #66727d;
   --exam-muted: #98a4ae;
+
   --exam-glass: rgba(255, 255, 255, 0.74);
   --exam-glass-strong: rgba(255, 255, 255, 0.86);
 
   --exam-radius-xl: 24px;
   --exam-radius-lg: 18px;
   --exam-radius-md: 14px;
+
   --exam-ease: cubic-bezier(0.16, 1, 0.3, 1);
 
   width: 100%;
@@ -28,37 +42,61 @@
   direction: rtl;
 }
 
+
 /* =====================================================
-   Stats
+   CARD
 ===================================================== */
 
 .stat-card-p {
+
   position: relative;
   isolation: isolate;
+
   display: flex;
   align-items: center;
+
   gap: 15px;
+
   overflow: hidden;
+
   min-height: 108px;
+
   padding: 20px;
-  border: 1px solid var(--exam-red-border);
+
+  /* پیش‌فرض */
+  border: 1px solid transparent;
+
   border-radius: var(--exam-radius-xl);
+
   background: var(--exam-glass);
+
   box-shadow:
     0 12px 30px rgba(38, 50, 56, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 0.92);
+
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
+
   transition:
     transform 0.4s var(--exam-ease),
     box-shadow 0.4s var(--exam-ease),
     border-color 0.4s var(--exam-ease);
-  animation: exam-fade-up 0.6s var(--exam-ease) both;
+
+  animation:
+    exam-fade-up
+    0.6s
+    var(--exam-ease)
+    both;
 }
 
-.stat-card-p::after {
-  position: absolute;
 
+/* =====================================================
+   GLOW
+===================================================== */
+
+.stat-card-p::after {
+
+  position: absolute;
   z-index: -1;
 
   top: -55px;
@@ -75,8 +113,14 @@
 
   opacity: 0;
 
-  transition: opacity 0.4s var(--exam-ease);
+  transition:
+    opacity 0.4s var(--exam-ease);
 }
+
+
+/* =====================================================
+   HOVER
+===================================================== */
 
 .stat-card-p:hover {
   transform: translateY(-6px);
@@ -86,149 +130,361 @@
   opacity: 1;
 }
 
+
+/* =====================================================
+   RED
+===================================================== */
+
+.stat-card-p.red,
+.stat-card-p:has(.stat-card__icon-p.red),
+.stat-card-p:has(.stat-card__icon-p.soft-red) {
+
+  border-color:
+    var(--exam-red-border);
+}
+
 .stat-card-p:has(.stat-card__icon-p.red)::after,
 .stat-card-p:has(.stat-card__icon-p.soft-red)::after {
-  background: rgba(231, 76, 60, 0.14);
+
+  background:
+    rgba(231, 76, 60, 0.14);
 }
 
 .stat-card-p:has(.stat-card__icon-p.red):hover,
 .stat-card-p:has(.stat-card__icon-p.soft-red):hover {
-  border-color: rgba(231, 76, 60, 0.4);
+
+  border-color:
+    var(--exam-red-border-hover);
+
+  box-shadow:
+    0 20px 42px rgba(231, 76, 60, 0.11),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
+
 
 /* =====================================================
    BLUE
 ===================================================== */
 
+.stat-card-p:has(.stat-card__icon-p.blue),
+.stat-card-p:has(.stat-card__icon-p.light-blue) {
+
+  border-color:
+    var(--exam-blue-border);
+}
+
 .stat-card-p:has(.stat-card__icon-p.blue)::after,
 .stat-card-p:has(.stat-card__icon-p.light-blue)::after {
-  background: rgba(52, 152, 219, 0.14);
+
+  background:
+    rgba(52, 152, 219, 0.14);
 }
 
 .stat-card-p:has(.stat-card__icon-p.blue):hover,
 .stat-card-p:has(.stat-card__icon-p.light-blue):hover {
-  border-color: rgba(52, 152, 219, 0.4);
+
+  border-color:
+    var(--exam-blue-border-hover);
+
+  box-shadow:
+    0 20px 42px rgba(52, 152, 219, 0.11),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
+
 
 /* =====================================================
    GREEN
 ===================================================== */
 
+.stat-card-p:has(.stat-card__icon-p.green),
+.stat-card-p:has(.stat-card__icon-p.light-green) {
+
+  border-color:
+    var(--exam-green-border);
+}
+
 .stat-card-p:has(.stat-card__icon-p.green)::after,
 .stat-card-p:has(.stat-card__icon-p.light-green)::after {
-  background: rgba(39, 174, 96, 0.14);
+
+  background:
+    rgba(39, 174, 96, 0.14);
 }
 
 .stat-card-p:has(.stat-card__icon-p.green):hover,
 .stat-card-p:has(.stat-card__icon-p.light-green):hover {
-  border-color: rgba(39, 174, 96, 0.4);
+
+  border-color:
+    var(--exam-green-border-hover);
+
+  box-shadow:
+    0 20px 42px rgba(39, 174, 96, 0.11),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
+
 
 /* =====================================================
    ORANGE
 ===================================================== */
 
+.stat-card-p:has(.stat-card__icon-p.orange),
+.stat-card-p:has(.stat-card__icon-p.light-orange) {
+
+  border-color:
+    var(--exam-orange-border);
+}
+
 .stat-card-p:has(.stat-card__icon-p.orange)::after,
 .stat-card-p:has(.stat-card__icon-p.light-orange)::after {
-  background: rgba(243, 156, 18, 0.14);
+
+  background:
+    rgba(243, 156, 18, 0.14);
 }
 
 .stat-card-p:has(.stat-card__icon-p.orange):hover,
 .stat-card-p:has(.stat-card__icon-p.light-orange):hover {
-  border-color: rgba(243, 156, 18, 0.4);
+
+  border-color:
+    var(--exam-orange-border-hover);
+
+  box-shadow:
+    0 20px 42px rgba(243, 156, 18, 0.11),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
 
+
+/* =====================================================
+   ICON
+===================================================== */
+
 .stat-card__icon-p {
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   width: 54px;
   height: 54px;
+
   flex: 0 0 54px;
+
   border-radius: 17px;
+
   color: #ffffff;
-  transition: transform 0.35s var(--exam-ease);
+
+  transition:
+    transform 0.35s var(--exam-ease);
 }
 
 .stat-card-p:hover .stat-card__icon-p {
-  transform: scale(1.08) rotate(-6deg);
+
+  transform:
+    scale(1.08)
+    rotate(-6deg);
 }
+
+
+/* =====================================================
+   RED ICON
+===================================================== */
 
 .stat-card__icon-p.red {
-  background: linear-gradient(135deg, #f05b4b, #c0392b);
-  box-shadow: 0 8px 18px rgba(231, 76, 60, 0.28);
+
+  background:
+    linear-gradient(
+      135deg,
+      #f05b4b,
+      #c0392b
+    );
+
+  box-shadow:
+    0 8px 18px
+    rgba(231, 76, 60, 0.28);
 }
 
+
+/* =====================================================
+   BLUE ICON
+===================================================== */
+
 .stat-card__icon-p.blue {
-  background: linear-gradient(135deg, #43a4dc, #2474a8);
-  box-shadow: 0 8px 18px rgba(52, 152, 219, 0.25);
+
+  background:
+    linear-gradient(
+      135deg,
+      #43a4dc,
+      #2474a8
+    );
+
+  box-shadow:
+    0 8px 18px
+    rgba(52, 152, 219, 0.25);
 }
 
 .stat-card__icon-p.light-blue {
-  background: linear-gradient(135deg, #74c7f4, #3498db);
-  box-shadow: 0 8px 18px rgba(52, 152, 219, 0.22);
+
+  background:
+    linear-gradient(
+      135deg,
+      #74c7f4,
+      #3498db
+    );
+
+  box-shadow:
+    0 8px 18px
+    rgba(52, 152, 219, 0.22);
 }
 
+
+/* =====================================================
+   GREEN ICON
+===================================================== */
+
 .stat-card__icon-p.green {
-  background: linear-gradient(135deg, #42c878, #1e8e4e);
-  box-shadow: 0 8px 18px rgba(39, 174, 96, 0.27);
+
+  background:
+    linear-gradient(
+      135deg,
+      #42c878,
+      #1e8e4e
+    );
+
+  box-shadow:
+    0 8px 18px
+    rgba(39, 174, 96, 0.27);
 }
 
 .stat-card__icon-p.light-green {
-  background: linear-gradient(135deg, #68d391, #27ae60);
-  box-shadow: 0 8px 18px rgba(39, 174, 96, 0.23);
+
+  background:
+    linear-gradient(
+      135deg,
+      #68d391,
+      #27ae60
+    );
+
+  box-shadow:
+    0 8px 18px
+    rgba(39, 174, 96, 0.23);
 }
 
+
+/* =====================================================
+   ORANGE ICON
+===================================================== */
+
 .stat-card__icon-p.orange {
-  background: linear-gradient(135deg, #f6b840, #e67e22);
-  box-shadow: 0 8px 18px rgba(243, 156, 18, 0.28);
+
+  background:
+    linear-gradient(
+      135deg,
+      #f6b840,
+      #e67e22
+    );
+
+  box-shadow:
+    0 8px 18px
+    rgba(243, 156, 18, 0.28);
 }
 
 .stat-card__icon-p.light-orange {
-  background: linear-gradient(135deg, #f8c969, #f39c12);
-  box-shadow: 0 8px 18px rgba(243, 156, 18, 0.24);
+
+  background:
+    linear-gradient(
+      135deg,
+      #f8c969,
+      #f39c12
+    );
+
+  box-shadow:
+    0 8px 18px
+    rgba(243, 156, 18, 0.24);
 }
+
+
+/* =====================================================
+   SOFT RED
+===================================================== */
 
 .stat-card__icon-p.soft-red {
-  background: linear-gradient(135deg, #ff8c7f, #e74c3c);
-  box-shadow: 0 8px 18px rgba(231, 76, 60, 0.24);
+
+  background:
+    linear-gradient(
+      135deg,
+      #ff8c7f,
+      #e74c3c
+    );
+
+  box-shadow:
+    0 8px 18px
+    rgba(231, 76, 60, 0.24);
 }
 
+
+/* =====================================================
+   CONTENT
+===================================================== */
+
 .stat-card__content-p {
+
   display: flex;
   flex-direction: column;
+
   gap: 8px;
+
   min-width: 0;
 }
 
 .stat-card__title-p {
-  color: var(--exam-text-soft);
+
+  color:
+    var(--exam-text-soft);
+
   font-size: 0.82rem;
   font-weight: 600;
 }
 
 .stat-card__value-p {
+
   margin: 0;
-  color: var(--exam-text);
+
+  color:
+    var(--exam-text);
+
   font-size: 1.08rem;
   font-weight: 900;
 }
 
 .stat-card__hint-p {
+
   margin: 0;
-  color: var(--exam-muted);
+
+  color:
+    var(--exam-muted);
+
   font-size: 0.78rem;
   font-weight: 500;
 }
 
+
+/* =====================================================
+   ANIMATION
+===================================================== */
+
 @keyframes exam-fade-up {
+
   from {
+
     opacity: 0;
-    transform: translateY(18px);
+
+    transform:
+      translateY(18px);
   }
 
   to {
+
     opacity: 1;
-    transform: translateY(0);
+
+    transform:
+      translateY(0);
   }
 }

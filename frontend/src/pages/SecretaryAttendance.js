@@ -204,7 +204,7 @@ function SecretaryAttendance() {
             </div>
             <div>
               <h3>
-                ترم تحصیلی انتخابی:{" "}
+                ترم تحصیلی انتخابی:
                 <span className="term-highlight-text" style={{ color: "var(--primary)" }}>
                   {activeTermObj
                     ? activeTermObj.name
@@ -292,7 +292,7 @@ function SecretaryAttendance() {
             value={`${toPersianDigits(stats.notRecorded)} نفر`}
             hint="منتظر ثبت استاد"
             icon={<Clock size={22} />}
-            color="yellow"
+            color="orange"
           />
         </div>
 

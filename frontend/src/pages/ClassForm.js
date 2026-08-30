@@ -159,21 +159,15 @@ export default function ClassForm() {
 
       if (isEdit) {
         await api.classrooms.update(id, payload);
-
-        // Synchronize enrollments
         const currentStudentIds = existingEnrollments.map(
           (e) => e.student || e.student_detail?.id,
         );
-
-        // Delete removed enrollments
         for (const enrollment of existingEnrollments) {
           const stId = enrollment.student || enrollment.student_detail?.id;
           if (!selectedStudentIds.includes(stId)) {
             await api.enrollments.delete(enrollment.id);
           }
         }
-
-        // Add new enrollments
         for (const stId of selectedStudentIds) {
           if (!currentStudentIds.includes(stId)) {
             await api.enrollments.create({
@@ -186,8 +180,6 @@ export default function ClassForm() {
       } else {
         const newClass = await api.classrooms.create(payload);
         classroomId = newClass.id;
-
-        // Create enrollments for selected students
         for (const stId of selectedStudentIds) {
           await api.enrollments.create({
             classroom: Number(classroomId),
@@ -242,7 +234,6 @@ export default function ClassForm() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="class-form-element">
-            {/* Card 1: Main & Financial Details */}
             <section className="class-form-card-section">
               <div className="class-form-card-header">
                 <div className="class-form-card-icon">

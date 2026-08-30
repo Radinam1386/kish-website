@@ -5,9 +5,7 @@
 .secretary-student-form-page {
   width: 100%;
   max-width: 1100px;
-
   margin: 0 auto;
-
   direction: rtl;
 }
 
@@ -22,7 +20,6 @@
 .secretary-student-form-back {
   display: inline-flex;
   align-items: center;
-
   gap: 0.45rem;
 
   color: oklch(48% 0 0);
@@ -39,7 +36,6 @@
 
 .secretary-student-form-back:hover {
   color: var(--primary);
-
   transform: translateX(3px);
 }
 
@@ -50,7 +46,6 @@
 .secretary-student-form {
   display: flex;
   flex-direction: column;
-
   gap: 1.2rem;
 }
 
@@ -64,7 +59,6 @@
   background: oklch(100% 0 0 / 0.88);
 
   border: 1px solid oklch(0% 0 0 / 0.055);
-
   border-radius: 18px;
 
   box-shadow: 0 7px 28px oklch(0% 0 0 / 0.04);
@@ -79,11 +73,9 @@
 .secretary-student-form-card-header {
   display: flex;
   align-items: center;
-
   gap: 0.8rem;
 
   padding-bottom: 1.2rem;
-
   margin-bottom: 1.2rem;
 
   border-bottom: 1px solid oklch(0% 0 0 / 0.055);
@@ -100,14 +92,14 @@
   justify-content: center;
 
   background: var(--red-5);
-  color: white;
+  color: #ffffff;
 
   border-radius: 11px;
 }
 
 .secretary-student-form-card-icon.account {
   background: var(--red-5);
-  color: white;
+  color: #ffffff;
 }
 
 .secretary-student-form-card-header h2 {
@@ -165,19 +157,17 @@
 
 .secretary-student-form-field > span b {
   color: var(--primary);
-
   font-weight: 800;
 }
 
 /* =========================================================
-   Inputs
+   Inputs / Select / Textarea
    ========================================================= */
 
 .secretary-student-form-field input,
 .secretary-student-form-field select,
 .secretary-student-form-field textarea {
   width: 100%;
-
   box-sizing: border-box;
 
   padding: 0.75rem 0.85rem;
@@ -187,7 +177,6 @@
   background: oklch(98% 0.003 29);
 
   border: 1px solid oklch(0% 0 0 / 0.08);
-
   border-radius: 10px;
 
   outline: none;
@@ -208,7 +197,6 @@
 
 .secretary-student-form-field textarea {
   resize: vertical;
-
   min-height: 90px;
 }
 
@@ -228,29 +216,38 @@
 }
 
 /* =========================================================
-   Password
+   Password Field
    ========================================================= */
 
-.secretary-student-password {
+.secretary-student-form-password-wrapper {
   position: relative;
 
+  display: flex;
+  align-items: center;
+
   width: 100%;
+  min-width: 0;
 }
 
-.secretary-student-password input {
+.secretary-student-form-password-wrapper input {
+  width: 100%;
+  min-width: 0;
+
   padding-left: 3rem;
 }
 
-.secretary-student-password button {
+/* =========================================================
+   Password Eye Button
+   ========================================================= */
+
+.secretary-student-form-icon-btn {
   position: absolute;
 
-  left: 0.35rem;
+  left: 0.4rem;
   top: 50%;
 
-  transform: translateY(-50%);
-
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
 
   display: flex;
   align-items: center;
@@ -258,26 +255,509 @@
 
   padding: 0;
 
-  color: oklch(55% 0 0);
+  color: #7f8c8d;
 
   background: transparent;
 
-  border: none;
-
+  border: 0;
   border-radius: 8px;
 
   cursor: pointer;
 
+  transform: translateY(-50%);
+
   transition:
     color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.secretary-student-form-icon-btn:hover {
+  color: var(--red-4);
+  background: #fff1ef;
+}
+
+.secretary-student-form-icon-btn:active {
+  transform: translateY(-50%) scale(0.94);
+}
+
+/* =========================================================
+   Password Tools Panel
+   ========================================================= */
+
+.secretary-student-form-password-actions {
+  grid-column: 1 / -1;
+
+  width: 100%;
+  min-width: 0;
+
+  box-sizing: border-box;
+
+  margin-top: 0.15rem;
+  padding: 0.9rem;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255, 248, 246, 0.98),
+    rgba(255, 252, 251, 0.98)
+  );
+
+  border: 1px solid rgba(231, 76, 60, 0.12);
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 4px 16px rgba(37, 41, 45, 0.035),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+
+  overflow: hidden;
+}
+
+/* =========================================================
+   Password Tools Content
+   ========================================================= */
+
+.secretary-student-form-password-tools-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 1rem;
+
+  width: 100%;
+  min-width: 0;
+}
+
+/* =========================================================
+   Password Tools Title
+   ========================================================= */
+
+.secretary-student-form-password-tools-title {
+  display: flex;
+  align-items: center;
+
+  gap: 0.7rem;
+
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.secretary-student-form-password-tools-icon {
+  width: 36px;
+  height: 36px;
+
+  flex: 0 0 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: var(--primary);
+
+  background: #fff1ef;
+
+  border: 1px solid rgba(231, 76, 60, 0.1);
+
+  border-radius: 10px;
+}
+
+.secretary-student-form-password-tools-title > div:last-child {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0.08rem;
+
+  min-width: 0;
+}
+
+.secretary-student-form-password-tools-title strong {
+  color: #2d3436;
+
+  font-size: 0.8rem;
+  font-weight: 800;
+
+  line-height: 1.5;
+}
+
+.secretary-student-form-password-tools-title span {
+  color: #95a5a6;
+
+  font-size: 0.68rem;
+  font-weight: 500;
+
+  line-height: 1.5;
+
+  white-space: nowrap;
+}
+
+/* =========================================================
+   Password Buttons Container
+   ========================================================= */
+
+.secretary-student-form-password-buttons {
+  display: flex;
+  align-items: center;
+
+  gap: 0.5rem;
+
+  flex: 0 0 auto;
+}
+
+/* =========================================================
+   Base Password Action Button
+   ========================================================= */
+
+.secretary-student-form-action-btn {
+  position: relative;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 0.55rem;
+
+  min-width: 0;
+  min-height: 46px;
+
+  padding: 0.5rem 0.7rem;
+
+  border-radius: 11px;
+
+  font-family: inherit;
+  font-size: 0.76rem;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  overflow: hidden;
+
+  isolation: isolate;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* =========================================================
+   Shine Effect
+   ========================================================= */
+
+.secretary-student-form-action-btn::after {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  bottom: 0;
+
+  left: -80%;
+
+  width: 45%;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.22),
+    transparent
+  );
+
+  transform: skewX(-18deg);
+
+  transition: left 0.6s ease;
+
+  pointer-events: none;
+
+  z-index: 2;
+}
+
+.secretary-student-form-action-btn:hover::after {
+  left: 135%;
+}
+
+/* =========================================================
+   Action Icon
+   ========================================================= */
+
+.secretary-student-form-action-icon {
+  position: relative;
+
+  width: 32px;
+  height: 32px;
+
+  flex: 0 0 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 8px;
+
+  z-index: 3;
+
+  transition:
+    transform 0.25s ease,
     background 0.2s ease;
 }
 
-.secretary-student-password button:hover {
+/* =========================================================
+   Action Text
+   ========================================================= */
+
+.secretary-student-form-action-text {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  gap: 0.02rem;
+
+  min-width: 0;
+
+  text-align: right;
+
+  z-index: 3;
+}
+
+.secretary-student-form-action-text strong {
+  display: block;
+
+  font-size: 0.76rem;
+  font-weight: 800;
+
+  line-height: 1.5;
+
+  white-space: nowrap;
+}
+
+.secretary-student-form-action-text small {
+  display: block;
+
+  font-size: 0.61rem;
+  font-weight: 500;
+
+  line-height: 1.5;
+
+  white-space: nowrap;
+}
+
+/* =========================================================
+   Generate Password Button
+   ========================================================= */
+
+.secretary-student-form-action-btn.generate {
+  min-width: 185px;
+
+  color: #ffffff;
+
+  background: var(--red-4);
+
+  border: 1px solid var(--primary);
+
+  box-shadow:
+    0 5px 14px rgba(231, 76, 60, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.13);
+}
+
+/* Icon */
+
+.secretary-student-form-action-btn.generate
+  .secretary-student-form-action-icon {
+  color: #ffffff;
+
+  background: rgba(255, 255, 255, 0.14);
+}
+
+/* Subtitle */
+
+.secretary-student-form-action-btn.generate
+  .secretary-student-form-action-text
+  small {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+/* =========================================================
+   Generate Hover
+   ========================================================= */
+
+.secretary-student-form-action-btn.generate:hover {
+  color: var(--red-4);
+
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+
+  border-color: var(--primary-dark);
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 9px 24px rgba(231, 76, 60, 0.28),
+    0 3px 8px rgba(231, 76, 60, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.secretary-student-form-action-btn.generate:hover
+  .secretary-student-form-action-icon {
+  color: var(--red-4);
+  background: rgba(242, 0, 0, 0.2);
+
+  transform: scale(1.06);
+}
+
+.secretary-student-form-action-btn.generate:hover
+  .secretary-student-form-action-icon
+  svg {
+  animation: secretary-student-password-spin 0.55s ease;
+}
+
+/* =========================================================
+   Generate Active
+   ========================================================= */
+
+.secretary-student-form-action-btn.generate:active {
+  transform: translateY(0) scale(0.985);
+
+  box-shadow:
+    0 4px 10px rgba(231, 76, 60, 0.18),
+    inset 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.secretary-student-form-action-btn.generate:active
+  .secretary-student-form-action-icon {
+  transform: scale(0.96);
+}
+
+/* =========================================================
+   Copy Button
+   ========================================================= */
+
+.secretary-student-form-action-btn.copy {
+  min-width: 160px;
+
+  color: #4f5558;
+
+  background: #ffffff;
+
+  border: 1px solid #e4e7ea;
+
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.025);
+}
+
+/* Copy Icon */
+
+.secretary-student-form-action-btn.copy .secretary-student-form-action-icon {
   color: var(--primary);
 
-  background: oklch(96% 0.04 29);
+  background: #fff1ef;
 }
+
+/* Copy Subtitle */
+
+.secretary-student-form-action-btn.copy
+  .secretary-student-form-action-text
+  small {
+  color: #9aa1a5;
+}
+
+/* =========================================================
+   Copy Hover
+   ========================================================= */
+
+.secretary-student-form-action-btn.copy:hover:not(:disabled) {
+  color: var(--primary);
+
+  background: #fffafa;
+
+  border-color: rgba(231, 76, 60, 0.25);
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 7px 16px rgba(231, 76, 60, 0.08),
+    0 2px 5px rgba(0, 0, 0, 0.025);
+}
+
+.secretary-student-form-action-btn.copy:hover:not(:disabled)
+  .secretary-student-form-action-icon {
+  background: #ffe9e6;
+
+  transform: scale(1.06);
+}
+
+/* =========================================================
+   Copy Active
+   ========================================================= */
+
+.secretary-student-form-action-btn.copy:active:not(:disabled) {
+  transform: translateY(0) scale(0.985);
+}
+
+/* =========================================================
+   Copied State
+   ========================================================= */
+
+.secretary-student-form-action-btn.copy.copied {
+  color: #2e8b57;
+
+  background: #f3fbf6;
+
+  border-color: rgba(46, 139, 87, 0.28);
+
+  box-shadow: 0 5px 14px rgba(46, 139, 87, 0.08);
+}
+
+.secretary-student-form-action-btn.copy.copied
+  .secretary-student-form-action-icon {
+  color: #2e8b57;
+
+  background: #e7f7ed;
+
+  transform: scale(1.04);
+}
+
+.secretary-student-form-action-btn.copy.copied
+  .secretary-student-form-action-text
+  small {
+  color: #6c9d7e;
+}
+
+/* =========================================================
+   Disabled
+   ========================================================= */
+
+.secretary-student-form-action-btn:disabled {
+  opacity: 0.48;
+
+  cursor: not-allowed;
+
+  transform: none !important;
+
+  box-shadow: none !important;
+}
+
+.secretary-student-form-action-btn:disabled::after {
+  display: none;
+}
+
+/* =========================================================
+   Password Animation
+   ========================================================= */
+
+@keyframes secretary-student-password-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================
+   Main Form Actions
+   ========================================================= */
+
 .secretary-student-form-actions {
   display: flex;
   align-items: center;
@@ -310,13 +790,16 @@
 
   transition:
     background 0.2s ease,
-    border-color 0.2s ease;
+    border-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .secretary-student-form-cancel:hover {
   background: oklch(97% 0.005 29);
 
   border-color: oklch(0% 0 0 / 0.13);
+
+  transform: translateY(-1px);
 }
 
 .secretary-student-form-submit {
@@ -358,194 +841,27 @@
 }
 
 /* =========================================================
-   Password Generator
+   Tablet - Password Tools
    ========================================================= */
 
-.secretary-student-password {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
+@media (max-width: 900px) {
+  .secretary-student-form-password-tools-content {
+    align-items: stretch;
 
-.secretary-student-password input {
-  width: 100%;
-  padding-left: 3.2rem;
-}
-
-.secretary-student-password-icon {
-  position: absolute;
-  left: 0.55rem;
-  top: 50%;
-  transform: translateY(-50%);
-
-  width: 34px;
-  height: 34px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border: none;
-  border-radius: 9px;
-
-  background: transparent;
-  color: #95a5a6;
-
-  cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    color 0.2s ease;
-}
-
-.secretary-student-password-icon:hover {
-  background: var(--student-panel-red-light, #fff1f1);
-  color: var(--student-panel-red, #e74c3c);
-}
-
-/* =========================================================
-   Password Tools
-   ========================================================= */
-
-.secretary-student-password-tools {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-
-  width: 100%;
-  margin-top: 0.6rem;
-}
-
-.secretary-student-password-tools button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  gap: 0.4rem;
-
-  min-height: 36px;
-
-  padding: 0.45rem 0.75rem;
-
-  border-radius: 9px;
-
-  font-family: inherit;
-  font-size: 0.78rem;
-  font-weight: 700;
-
-  cursor: pointer;
-
-  transition:
-    transform 0.2s ease,
-    background 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-/* Generate */
-
-.secretary-student-password-generate {
-  flex: 1;
-  background: var(--red-5);
-  color: white;
-  border: 1px solid var(--student-panel-red, #e74c3c);
-  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.18);
-}
-
-.secretary-student-password-generate:hover {
-  transform: translateY(-1px);
-
-  background: #d94335;
-
-  border-color: #d94335;
-
-  box-shadow: 0 6px 16px rgba(231, 76, 60, 0.25);
-}
-
-.secretary-student-password-generate:active {
-  transform: translateY(0);
-}
-
-/* Copy */
-
-.secretary-student-password-copy {
-  flex: 0 0 auto;
-
-  background: #ffffff;
-
-  color: #5f6368;
-
-  border: 1px solid #e5e7eb;
-}
-
-.secretary-student-password-copy:hover:not(:disabled) {
-  transform: translateY(-1px);
-
-  background: var(--student-panel-red-light, #fff1f1);
-
-  color: var(--student-panel-red, #e74c3c);
-
-  border-color: rgba(231, 76, 60, 0.25);
-}
-
-.secretary-student-password-copy:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-/* Hint */
-
-.secretary-student-password-hint {
-  display: block;
-
-  margin-top: 0.45rem;
-
-  color: #95a5a6;
-
-  font-size: 0.72rem;
-  font-weight: 500;
-
-  line-height: 1.7;
-}
-
-/* =========================================================
-   Responsive Password Generator
-   ========================================================= */
-
-@media (max-width: 768px) {
-  .secretary-student-password-tools {
-    gap: 0.45rem;
+    flex-direction: column;
   }
 
-  .secretary-student-password-tools button {
-    min-height: 38px;
-    padding: 0.45rem 0.65rem;
-  }
-
-  .secretary-student-password-hint {
-    font-size: 0.68rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .secretary-student-password-tools {
-    display: grid;
-    grid-template-columns: 1fr 0.7fr;
-  }
-
-  .secretary-student-password-tools button {
+  .secretary-student-form-password-buttons {
     width: 100%;
-    font-size: 0.72rem;
   }
 
-  .secretary-student-password-hint {
-    font-size: 0.65rem;
+  .secretary-student-form-action-btn {
+    flex: 1 1 0;
   }
 }
+
 /* =========================================================
-   Tablet
+   Tablet - Form
    ========================================================= */
 
 @media (max-width: 768px) {
@@ -559,6 +875,39 @@
 
   .secretary-student-form-card {
     padding: 1.15rem;
+  }
+
+  .secretary-student-form-password-actions {
+    padding: 0.8rem;
+  }
+}
+
+/* =========================================================
+   Large Mobile
+   ========================================================= */
+
+@media (max-width: 600px) {
+  .secretary-student-form-password-tools-title {
+    align-items: flex-start;
+  }
+
+  .secretary-student-form-password-tools-title span {
+    white-space: normal;
+  }
+
+  .secretary-student-form-password-buttons {
+    display: grid;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(0, 1fr);
+
+    gap: 0.5rem;
+  }
+
+  .secretary-student-form-action-btn {
+    width: 100%;
+    min-width: 0;
   }
 }
 
@@ -594,99 +943,104 @@
   .secretary-student-form-submit {
     width: 100%;
   }
+
+  .secretary-student-form-password-actions {
+    padding: 0.7rem;
+
+    border-radius: 12px;
+  }
+
+  .secretary-student-form-password-tools-icon {
+    width: 34px;
+    height: 34px;
+
+    flex-basis: 34px;
+  }
+
+  .secretary-student-form-password-tools-title strong {
+    font-size: 0.76rem;
+  }
+
+  .secretary-student-form-password-tools-title span {
+    font-size: 0.63rem;
+  }
+
+  .secretary-student-form-password-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .secretary-student-form-action-btn {
+    min-height: 44px;
+
+    justify-content: flex-start;
+
+    padding: 0.45rem 0.65rem;
+  }
+
+  .secretary-student-form-action-text {
+    align-items: flex-start;
+  }
+
+  .secretary-student-form-action-text strong {
+    font-size: 0.74rem;
+  }
+
+  .secretary-student-form-action-text small {
+    font-size: 0.59rem;
+  }
 }
 
 /* =========================================================
-   Password Generator & Eye Button Styles
+   Very Small Mobile
    ========================================================= */
 
-.secretary-student-form-password-wrapper {
-  position: relative;
-  width: 100%;
-  display: flex;
-  align-items: center;
+@media (max-width: 360px) {
+  .secretary-student-form-password-actions {
+    padding: 0.6rem;
+  }
+
+  .secretary-student-form-password-tools-title {
+    gap: 0.55rem;
+  }
+
+  .secretary-student-form-action-btn {
+    min-height: 42px;
+  }
+
+  .secretary-student-form-action-icon {
+    width: 30px;
+    height: 30px;
+
+    flex-basis: 30px;
+  }
+
+  .secretary-student-form-action-text strong {
+    font-size: 0.7rem;
+  }
+
+  .secretary-student-form-action-text small {
+    font-size: 0.56rem;
+  }
 }
 
-.secretary-student-form-password-wrapper input {
-  width: 100%;
-  padding-left: 2.75rem;
-}
+/* =========================================================
+   Reduced Motion
+   ========================================================= */
 
-.secretary-student-form-icon-btn {
-  position: absolute;
-  left: 0.4rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 34px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  color: #7f8c8d;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
+@media (prefers-reduced-motion: reduce) {
+  .secretary-student-form-action-btn,
+  .secretary-student-form-action-btn::after,
+  .secretary-student-form-action-icon,
+  .secretary-student-form-icon-btn,
+  .secretary-student-form-back,
+  .secretary-student-form-cancel,
+  .secretary-student-form-submit {
+    transition: none;
+  }
 
-.secretary-student-form-icon-btn:hover {
-  background: #fff1ef;
-  color: var(--primary);
-}
-
-.secretary-student-form-password-actions {
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.85rem 1.15rem;
-  background: #fdf8f7;
-  border: 1px dashed rgba(231, 76, 60, 0.25);
-  border-radius: 12px;
-  margin-top: 0.25rem;
-  flex-wrap: wrap;
-}
-
-.secretary-student-form-action-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.5rem 1rem;
-  background: #ffffff;
-  color: #2d3436;
-  border: 1px solid #eceff3;
-  border-radius: 10px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  font-family: inherit;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
-  transition: all 0.2s ease;
-}
-
-.secretary-student-form-action-btn svg {
-  color: var(--primary);
-  transition: transform 0.2s ease;
-}
-
-.secretary-student-form-action-btn:hover {
-  background: #fff1ef;
-  color: var(--primary);
-  border-color: rgba(231, 76, 60, 0.3);
-  transform: translateY(-1px);
-}
-
-.secretary-student-form-action-btn:hover svg {
-  transform: rotate(45deg);
-}
-
-.secretary-student-form-action-btn.copied {
-  background: #edf8f1 !important;
-  color: #2e8b57 !important;
-  border-color: #2e8b57 !important;
-}
-
-.secretary-student-form-action-btn.copied svg {
-  color: #2e8b57 !important;
+  .secretary-student-form-action-btn.generate:hover
+    .secretary-student-form-action-icon
+    svg {
+    animation: none;
+  }
 }

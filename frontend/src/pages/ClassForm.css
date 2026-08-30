@@ -1,19 +1,9 @@
-/* =========================================================
-   Class Form Styling
-   100% matched with SecretaryStudentForm & AdminTeacherForm
-   ========================================================= */
-
 .class-form-page-container {
   width: 100%;
   max-width: 1300px;
   margin: 0 auto;
   direction: rtl;
 }
-
-/* =========================================================
-   Top Navigation
-   ========================================================= */
-
 .class-form-top-nav {
   margin-bottom: 1.5rem;
 }
@@ -76,14 +66,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  background:var(--red-5);
   color: #ffffff;
   border-radius: 15px;
   box-shadow: 0 6px 16px rgba(231, 76, 60, 0.2);
 }
 
 .class-form-card-icon.users-icon {
-  background: linear-gradient(135deg, #3578c8, #205493);
+  background: var(--red-5);
   box-shadow: 0 6px 16px rgba(53, 120, 200, 0.2);
 }
 
