@@ -1,115 +1,143 @@
+/* =========================================================
+   Jalali Date Picker Component
+   Clean, modern Persian date picker
+   ========================================================= */
+
 .jalali-datepicker-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
-  background: oklch(100% 0 0 / 0.88);
-  border: 1px solid oklch(0% 0 0 / 0.08);
-  border-radius: 14px;
-  padding: 0.85rem 1rem;
-  box-shadow: 0 4px 16px oklch(0% 0 0 / 0.02);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.jalali-datepicker-wrapper:focus-within {
-  border-color: oklch(60% 0.19 29 / 0.5);
-  box-shadow: 0 0 0 3px oklch(60% 0.19 29 / 0.1);
+  gap: 0.6rem;
+  width: 100%;
+  direction: rtl;
 }
 
 .jalali-datepicker-label {
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-weight: 700;
-  color: oklch(30% 0 0);
+  color: #2d3436;
+}
+
+.jalali-datepicker-label svg {
+  color: var(--primary, #e74c3c);
+  flex-shrink: 0;
 }
 
 .jalali-datepicker-label .req-star {
-  color: var(--primary, oklch(55% 0.18 25));
+  color: var(--primary, #e74c3c);
+  margin-right: 0.2rem;
 }
+
+/* =========================================================
+   Controls Grid (Day, Month, Year)
+   ========================================================= */
 
 .jalali-datepicker-controls {
   display: grid;
-  grid-template-columns: 1fr 1.4fr 1.1fr;
-  gap: 0.5rem;
+  grid-template-columns: 1fr 1.4fr 1.2fr;
+  gap: 0.6rem;
+  width: 100%;
 }
 
-.jdp-select-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+@media (max-width: 480px) {
+  .jalali-datepicker-controls {
+    grid-template-columns: 1fr 1.2fr 1fr;
+    gap: 0.35rem;
+  }
 }
 
-.jdp-select-group label {
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: oklch(55% 0 0);
-}
-
-.jdp-select {
-  background: oklch(98% 0.003 29);
-  border: 1px solid oklch(0% 0 0 / 0.08);
-  color: oklch(25% 0 0);
-  padding: 0.55rem 0.65rem;
-  border-radius: 9px;
-  font-size: 0.85rem;
+.date-select {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.65rem 0.85rem;
+  background: #ffffff;
+  color: #2d3436;
+  border: 1px solid #eceff3;
+  border-radius: 12px;
   font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
   cursor: pointer;
+  appearance: auto;
   outline: none;
   transition: all 0.2s ease;
-  height: 38px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
 }
 
-.jdp-select:focus {
+.date-select:focus {
+  border-color: var(--primary, #e74c3c);
+  box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.09);
   background: #ffffff;
-  border-color: oklch(60% 0.19 29 / 0.45);
 }
 
-.jdp-select option {
+.date-select option {
   background: #ffffff;
-  color: oklch(25% 0 0);
+  color: #2d3436;
+  padding: 0.5rem;
 }
+
+/* =========================================================
+   Footer: Formatted Preview & Quick Buttons
+   ========================================================= */
 
 .jalali-datepicker-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
-  margin-top: 0.35rem;
-  padding-top: 0.45rem;
-  border-top: 1px dashed oklch(0% 0 0 / 0.08);
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+  padding: 0.55rem 0.85rem;
+  background: #fdf8f7;
+  border: 1px dashed rgba(231, 76, 60, 0.2);
+  border-radius: 10px;
   flex-wrap: wrap;
 }
 
-.jdp-current-badge {
+.formatted-preview {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.4rem;
   font-size: 0.8rem;
-  color: var(--primary, oklch(55% 0.18 25));
-  font-weight: 700;
+  color: #7f8c8d;
 }
 
-.jdp-quick-btns {
+.formatted-preview .preview-icon {
+  color: var(--primary, #e74c3c);
+  flex-shrink: 0;
+}
+
+.formatted-preview strong {
+  color: var(--primary, #e74c3c);
+  font-weight: 800;
+}
+
+.quick-presets {
   display: flex;
   align-items: center;
   gap: 0.35rem;
 }
 
-.jdp-quick-btn {
-  background: oklch(96% 0.005 29);
-  border: 1px solid oklch(0% 0 0 / 0.06);
-  color: oklch(45% 0 0);
-  font-size: 0.74rem;
-  font-weight: 600;
-  padding: 0.2rem 0.55rem;
-  border-radius: 6px;
+.preset-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem 0.65rem;
+  background: #ffffff;
+  color: #495057;
+  border: 1px solid #eceff3;
+  border-radius: 7px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  font-family: inherit;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.jdp-quick-btn:hover {
-  background: var(--red-5, oklch(55.799% 0.17067 24.538));
-  color: #ffffff;
-  border-color: var(--red-5, oklch(55.799% 0.17067 24.538));
+.preset-btn:hover {
+  background: #fff1ef;
+  color: var(--primary, #e74c3c);
+  border-color: rgba(231, 76, 60, 0.25);
+  transform: translateY(-1px);
 }

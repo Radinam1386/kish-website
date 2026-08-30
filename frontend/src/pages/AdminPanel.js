@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   BookOpen,
   CalendarDays,
@@ -7,6 +8,8 @@ import {
   UserCheck,
   Eye,
   Layers,
+  GraduationCap,
+  ChevronLeft,
 } from "lucide-react";
 
 import DashboardLayout from "../components/DashboardLayout";
@@ -16,7 +19,6 @@ import { api, getFullName } from "../services/api";
 import { toPersianDigits } from "../utils/dateUtils";
 
 import "./AdminPanel.css";
-import { Link } from "react-router-dom";
 
 function AdminPanel() {
   const [users, setUsers] = useState([]);
@@ -162,7 +164,7 @@ function AdminPanel() {
     return termClassrooms.slice(0, 6).map((classroom) => ({
       id: classroom.id,
       className: classroom.name,
-      teacher: getFullName(classroom.teacher_detail),
+      teacher: getFullName(classroom.teacher_detail) || "استاد نامشخص",
       capacity: `${toPersianDigits(classroom.student_count || 0)} نفر`,
     }));
   }, [termClassrooms]);
@@ -217,7 +219,7 @@ function AdminPanel() {
           <div>
             <h3>
               ترم تحصیلی انتخابی:{" "}
-              <span className="term-highlight-text">
+              <span className="term-highlight-text" style={{ color: "var(--primary)" }}>
                 {activeTermObj
                   ? activeTermObj.name
                   : selectedTermId === "all"
@@ -235,8 +237,8 @@ function AdminPanel() {
           </div>
         </div>
 
-        <div className="term-dropdown-wrapper">
-          <label>انتخاب ترم:</label>
+        <div className="term-dropdown-wrapper" style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+          <label style={{ fontSize: "0.84rem", fontWeight: "700" }}>انتخاب ترم:</label>
           <select
             value={selectedTermId}
             onChange={(e) => setSelectedTermId(e.target.value)}
@@ -265,6 +267,7 @@ function AdminPanel() {
         ))}
       </div>
 
+      {/* Students Table Section */}
       <section className="admin-panel-x7k2-section">
         <div className="admin-panel-x7k2-section-header">
           <h3 className="admin-panel-x7k2-section-title">دانش‌آموزان ترم</h3>
@@ -351,74 +354,97 @@ function AdminPanel() {
         </div>
       </section>
 
+      {/* Bottom Grid: Teachers & Term Classes */}
       <div className="admin-panel-x7k2-bottom-grid">
+        {/* Teachers Widget */}
         <section className="admin-panel-x7k2-section">
           <div className="admin-panel-x7k2-section-header">
             <h3 className="admin-panel-x7k2-section-title">معلمان و اساتید</h3>
             <Link to="/panel/admin/teachers">
-              <span style={{ fontSize: "0.82rem", fontWeight: "700", color: "var(--primary)" }}>
+              <span className="admin-panel-section-link">
                 مدیریت معلمان ←
               </span>
             </Link>
           </div>
 
-          <div className="admin-panel-x7k2-teachers-list">
-            {teachers.map((teacher) => (
-              <div key={teacher.id} className="admin-panel-x7k2-teacher-item">
-                <div className="admin-panel-x7k2-teacher-avatar">
-                  {teacher.avatar}
-                </div>
-
-                <div className="admin-panel-x7k2-teacher-details">
-                  <span className="admin-panel-x7k2-teacher-name">
-                    {teacher.name}
-                  </span>
-                  <span className="admin-panel-x7k2-teacher-specialty">
-                    {teacher.specialty}
-                  </span>
-                </div>
-
-                <span className="admin-panel-x7k2-teacher-classes">
-                  {teacher.activeClasses}
-                </span>
+          <div className="admin-panel-teachers-list-container">
+            {teachers.length === 0 ? (
+              <div style={{ textAlign: "center", padding: "2rem", color: "#7f8c8d" }}>
+                مدرسی ثبت نشده است.
               </div>
-            ))}
+            ) : (
+              teachers.map((teacher) => (
+                <Link
+                  key={teacher.id}
+                  to={`/panel/admin/teachers/${teacher.id}`}
+                  className="admin-panel-teacher-row-card"
+                >
+                  <div className="admin-panel-teacher-avatar-circle">
+                    {teacher.avatar}
+                  </div>
+
+                  <div className="admin-panel-teacher-info-col">
+                    <h4 className="admin-panel-teacher-name-text">
+                      {teacher.name}
+                    </h4>
+                    <span className="admin-panel-teacher-sub-text">
+                      {teacher.specialty}
+                    </span>
+                  </div>
+
+                  <span className="admin-panel-teacher-classes-pill">
+                    {teacher.activeClasses}
+                  </span>
+
+                  <ChevronLeft size={16} className="admin-panel-arrow-icon" />
+                </Link>
+              ))
+            )}
           </div>
         </section>
 
+        {/* Classes Widget */}
         <section className="admin-panel-x7k2-section">
           <div className="admin-panel-x7k2-section-header">
             <h3 className="admin-panel-x7k2-section-title">کلاس‌های این ترم</h3>
             <Link to="/panel/admin/classes">
-              <span style={{ fontSize: "0.82rem", fontWeight: "700", color: "var(--primary)" }}>
+              <span className="admin-panel-section-link">
                 مدیریت کلاس‌ها ←
               </span>
             </Link>
           </div>
 
-          <div className="admin-panel-x7k2-schedule-list">
+          <div className="admin-panel-classes-list-container">
             {schedule.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "2rem", color: "oklch(55% 0 0)" }}>
+              <div style={{ textAlign: "center", padding: "2rem", color: "#7f8c8d" }}>
                 کلاسی در این ترم ثبت نشده است.
               </div>
             ) : (
               schedule.map((item) => (
-                <div key={item.id} className="admin-panel-x7k2-schedule-item">
-                  <div className="admin-panel-x7k2-schedule-info">
-                    <span className="admin-panel-x7k2-schedule-class">
+                <Link
+                  key={item.id}
+                  to={`/panel/admin/classes/${item.id}`}
+                  className="admin-panel-class-row-card"
+                >
+                  <div className="admin-panel-class-icon-circle">
+                    <GraduationCap size={20} />
+                  </div>
+
+                  <div className="admin-panel-class-info-col">
+                    <h4 className="admin-panel-class-name-text">
                       {item.className}
-                    </span>
-                    <span className="admin-panel-x7k2-schedule-teacher">
+                    </h4>
+                    <span className="admin-panel-class-teacher-text">
                       مدرس: {item.teacher}
                     </span>
                   </div>
 
-                  <div className="admin-panel-x7k2-schedule-meta">
-                    <span className="admin-panel-x7k2-schedule-capacity">
-                      {item.capacity}
-                    </span>
+                  <div className="admin-panel-class-capacity-badge">
+                    <span>{item.capacity}</span>
                   </div>
-                </div>
+
+                  <ChevronLeft size={16} className="admin-panel-arrow-icon" />
+                </Link>
               ))
             )}
           </div>

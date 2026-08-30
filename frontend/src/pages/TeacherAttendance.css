@@ -1,21 +1,20 @@
 /* =========================================================
-   Teacher Attendance (Light Theme White/Red Glassmorphism)
+   Teacher Attendance Styles
+   Unified with Admin & Secretary portal design
    ========================================================= */
 
 .teacher-attendance-q9m4-root {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  padding: 0.5rem 0;
-  max-width: 1100px;
-  margin: 0 auto;
+  width: 100%;
   direction: rtl;
 }
 
 .teacher-attendance-q9m4-section {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
 .teacher-attendance-q9m4-section-head {
@@ -23,12 +22,11 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  background: oklch(100% 0 0 / 0.88);
-  border: 1px solid oklch(0% 0 0 / 0.055);
-  border-radius: 18px;
-  padding: 1.25rem 1.5rem;
-  box-shadow: 0 7px 28px oklch(0% 0 0 / 0.04);
-  backdrop-filter: blur(12px);
+  background: #ffffff;
+  border: 1px solid #eceff3;
+  border-radius: 20px;
+  padding: 1.25rem 1.75rem;
+  box-shadow: 0 8px 25px rgba(37, 41, 45, 0.04);
   flex-wrap: wrap;
 }
 
@@ -39,27 +37,28 @@
 }
 
 .teacher-attendance-q9m4-avatar {
-  width: 52px;
-  height: 52px;
-  border-radius: 12px;
-  background: var(--red-5, oklch(55.799% 0.17067 24.538));
+  width: 50px;
+  height: 50px;
+  border-radius: 15px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 6px 18px oklch(60% 0.19 29 / 0.25);
+  box-shadow: 0 6px 16px rgba(231, 76, 60, 0.2);
+  flex-shrink: 0;
 }
 
 .teacher-attendance-q9m4-title {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   font-weight: 800;
-  color: oklch(25% 0 0);
+  color: #2d3436;
   margin: 0 0 0.2rem;
 }
 
 .teacher-attendance-q9m4-class-code {
   font-size: 0.85rem;
-  color: var(--primary, oklch(55% 0.18 25));
+  color: var(--primary);
   font-weight: 700;
   margin: 0;
 }
@@ -70,279 +69,284 @@
   gap: 0.75rem;
   padding: 0.85rem 1.25rem;
   border-radius: 12px;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.88rem;
 }
 
 .attendance-alert.error {
-  background: oklch(95% 0.05 25 / 0.8);
-  border: 1px solid oklch(75% 0.15 25 / 0.3);
-  color: oklch(45% 0.18 25);
+  background: #ffe3e3;
+  color: #c92a2a;
+  border: 1px solid #ffc9c9;
 }
 
 .attendance-alert.success {
-  background: oklch(95% 0.05 145 / 0.8);
-  border: 1px solid oklch(75% 0.15 145 / 0.3);
-  color: oklch(35% 0.15 145);
+  background: #edf8f1;
+  color: #2e8b57;
+  border: 1px solid #d9f0e1;
 }
+
+/* =========================================================
+   Controls Grid (Class & Date)
+   ========================================================= */
 
 .teacher-att-controls-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1.2fr;
   gap: 1.25rem;
-}
-
-.teacher-att-control-box {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  background: oklch(100% 0 0 / 0.88);
-  border: 1px solid oklch(0% 0 0 / 0.08);
-  border-radius: 14px;
-  padding: 0.85rem 1rem;
-  box-shadow: 0 4px 16px oklch(0% 0 0 / 0.02);
-}
-
-.teacher-att-label {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: oklch(30% 0 0);
-}
-
-.teacher-att-select {
-  background: oklch(98% 0.003 29);
-  border: 1px solid oklch(0% 0 0 / 0.08);
-  color: oklch(25% 0 0);
-  padding: 0.6rem 0.85rem;
-  border-radius: 9px;
-  font-size: 0.88rem;
-  font-family: inherit;
-  outline: none;
-  cursor: pointer;
-  margin-top: 0.35rem;
-  height: 42px;
-}
-
-.teacher-att-select:focus {
-  background: #ffffff;
-  border-color: oklch(60% 0.19 29 / 0.45);
-}
-
-.teacher-att-select option {
-  background: #ffffff;
-  color: oklch(25% 0 0);
-}
-
-.teacher-att-stats-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
-.teacher-att-bulk-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  background: oklch(100% 0 0 / 0.88);
-  border: 1px solid oklch(0% 0 0 / 0.055);
-  border-radius: 14px;
-  padding: 0.75rem 1.25rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: oklch(40% 0 0);
-  box-shadow: 0 4px 16px oklch(0% 0 0 / 0.02);
-}
-
-.bulk-action-btn {
-  padding: 0.35rem 0.85rem;
-  border-radius: 8px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: none;
-}
-
-.bulk-action-btn.present {
-  background: oklch(95% 0.05 145 / 0.9);
-  color: oklch(35% 0.15 145);
-}
-
-.bulk-action-btn.present:hover {
-  background: var(--red-5, oklch(55.799% 0.17067 24.538));
-  color: #ffffff;
-}
-
-.bulk-action-btn.absent {
-  background: oklch(95% 0.05 25 / 0.9);
-  color: oklch(45% 0.18 25);
-}
-
-.bulk-action-btn.absent:hover {
-  background: var(--primary, oklch(55% 0.18 25));
-  color: #ffffff;
-}
-
-.teacher-attendance-q9m4-students {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-}
-
-.teacher-attendance-q9m4-student-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.25rem;
-  background: oklch(100% 0 0 / 0.88);
-  border: 1px solid oklch(0% 0 0 / 0.055);
-  border-radius: 16px;
-  padding: 1rem 1.25rem;
-  box-shadow: 0 4px 20px oklch(0% 0 0 / 0.03);
-  backdrop-filter: blur(12px);
-  flex-wrap: wrap;
-}
-
-.teacher-attendance-q9m4-student-info {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  min-width: 240px;
-}
-
-.teacher-attendance-q9m4-student-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--red-5, oklch(55.799% 0.17067 24.538));
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 1rem;
-  box-shadow: 0 4px 12px oklch(60% 0.19 29 / 0.2);
-}
-
-.teacher-attendance-q9m4-student-name {
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: oklch(25% 0 0);
-  margin: 0 0 0.2rem;
-}
-
-.teacher-attendance-q9m4-student-meta {
-  font-size: 0.78rem;
-  color: oklch(55% 0 0);
-}
-
-.teacher-attendance-q9m4-student-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  flex: 1;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-}
-
-.teacher-att-status-pills {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  background: oklch(97% 0.005 29);
-  padding: 0.25rem;
-  border-radius: 10px;
-  border: 1px solid oklch(0% 0 0 / 0.06);
-}
-
-.status-choice-btn {
-  background: transparent;
-  border: none;
-  color: oklch(45% 0 0);
-  font-size: 0.8rem;
-  font-weight: 700;
-  padding: 0.35rem 0.75rem;
-  border-radius: 7px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.status-choice-btn.present.active {
-  background: oklch(65% 0.18 145);
-  color: #ffffff;
-}
-
-.status-choice-btn.absent.active {
-  background: var(--red-5, oklch(55.799% 0.17067 24.538));
-  color: #ffffff;
-}
-
-.status-choice-btn.late.active {
-  background: oklch(75% 0.16 85);
-  color: #ffffff;
-}
-
-.status-choice-btn.excused.active {
-  background: oklch(65% 0.16 240);
-  color: #ffffff;
-}
-
-.teacher-att-note-input {
-  background: oklch(98% 0.003 29);
-  border: 1px solid oklch(0% 0 0 / 0.08);
-  color: oklch(25% 0 0);
-  padding: 0.5rem 0.85rem;
-  border-radius: 9px;
-  font-size: 0.82rem;
-  font-family: inherit;
-  min-width: 180px;
-  outline: none;
-}
-
-.teacher-att-note-input:focus {
-  background: #ffffff;
-  border-color: oklch(60% 0.19 29 / 0.45);
-}
-
-.teacher-att-footer {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 1rem 0;
-}
-
-.empty-state-card {
-  text-align: center;
-  padding: 3rem 1rem;
-  background: oklch(100% 0 0 / 0.88);
-  border-radius: 18px;
-  border: 1px solid oklch(0% 0 0 / 0.055);
-  color: oklch(55% 0 0);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
 }
 
 @media (max-width: 768px) {
   .teacher-att-controls-grid {
     grid-template-columns: 1fr;
   }
+}
 
-  .teacher-attendance-q9m4-student-controls {
-    justify-content: stretch;
-    width: 100%;
-  }
+.teacher-att-control-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: #ffffff;
+  border: 1px solid #eceff3;
+  border-radius: 18px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 8px 25px rgba(37, 41, 45, 0.04);
+}
 
-  .teacher-att-status-pills {
-    width: 100%;
-    justify-content: space-between;
-  }
+.teacher-att-label {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #2d3436;
+}
 
-  .teacher-att-note-input {
-    width: 100%;
+.teacher-att-label svg {
+  color: var(--primary);
+}
+
+.teacher-att-select {
+  background: #ffffff;
+  border: 1px solid #eceff3;
+  color: #2d3436;
+  padding: 0.65rem 0.9rem;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+  height: 46px;
+  transition: all 0.2s ease;
+}
+
+.teacher-att-select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.09);
+}
+
+/* =========================================================
+   Quick Stats Row
+   ========================================================= */
+
+.teacher-att-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+@media (max-width: 900px) {
+  .teacher-att-stats-row {
+    grid-template-columns: repeat(2, 1fr);
   }
+}
+
+@media (max-width: 480px) {
+  .teacher-att-stats-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   Bulk Actions
+   ========================================================= */
+
+.teacher-att-bulk-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: #ffffff;
+  border: 1px solid #eceff3;
+  border-radius: 16px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+  flex-wrap: wrap;
+}
+
+.bulk-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.bulk-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 9px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.bulk-action-btn.all-present {
+  background: #edf8f1;
+  color: #2e8b57;
+  border-color: #d9f0e1;
+}
+
+.bulk-action-btn.all-present:hover {
+  background: #d8f1e0;
+}
+
+.bulk-action-btn.all-absent {
+  background: #ffe3e3;
+  color: #c92a2a;
+  border-color: #ffc9c9;
+}
+
+.bulk-action-btn.all-absent:hover {
+  background: #ffc9c9;
+}
+
+/* =========================================================
+   Roster Table
+   ========================================================= */
+
+.teacher-att-table-container {
+  width: 100%;
+  overflow-x: auto;
+  background: #ffffff;
+  border: 1px solid #eceff3;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(37, 41, 45, 0.04);
+}
+
+.teacher-att-table {
+  width: 100%;
+  min-width: 750px;
+  border-collapse: collapse;
+  text-align: right;
+}
+
+.teacher-att-table thead {
+  background: #f8f9fa;
+  border-bottom: 2px solid #eceff3;
+}
+
+.teacher-att-table th {
+  padding: 1rem 1.25rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #7f8c8d;
+  white-space: nowrap;
+}
+
+.teacher-att-table td {
+  padding: 0.95rem 1.25rem;
+  color: #2d3436;
+  font-size: 0.88rem;
+  border-bottom: 1px solid #f1f2f6;
+  vertical-align: middle;
+}
+
+.teacher-att-table tbody tr:hover {
+  background-color: #fff9f8;
+}
+
+.teacher-att-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Status Radio Group */
+.status-pill-group {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.status-pill-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 8px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid #eceff3;
+  background: #ffffff;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.status-pill-label input {
+  display: none;
+}
+
+.status-pill-label.present.checked {
+  background: #edf8f1;
+  color: #2e8b57;
+  border-color: #2e8b57;
+}
+
+.status-pill-label.absent.checked {
+  background: #ffe3e3;
+  color: #c92a2a;
+  border-color: #c92a2a;
+}
+
+.status-pill-label.late.checked {
+  background: #fff5e8;
+  color: #d88922;
+  border-color: #d88922;
+}
+
+.status-pill-label.excused.checked {
+  background: #eef5ff;
+  color: #3578c8;
+  border-color: #3578c8;
+}
+
+.note-input {
+  width: 100%;
+  min-height: 38px;
+  padding: 0.45rem 0.75rem;
+  background: #f8f9fa;
+  border: 1px solid #eceff3;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.82rem;
+  color: #2d3436;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.note-input:focus {
+  background: #ffffff;
+  border-color: var(--primary);
+}
+
+.teacher-att-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
 }

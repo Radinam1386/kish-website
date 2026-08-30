@@ -14,6 +14,12 @@ class User(AbstractUser):
         choices=Role.choices,
     )
     phone_number = models.CharField(max_length=15, blank=True, null=True)
+    plain_password = models.CharField(
+        max_length=128,
+        blank=True,
+        null=True,
+        verbose_name="رمز عبور خام (جهت مشاهده مدیر و منشی)",
+    )
 
     def __str__(self):
         return f"{self.username} ({self.get_role_display()})"

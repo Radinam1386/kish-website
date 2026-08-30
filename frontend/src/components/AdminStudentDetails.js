@@ -4,7 +4,6 @@ import {
   User,
   Phone,
   BookOpen,
-  CalendarDays,
   ClipboardCheck,
   ArrowRight,
   Edit3,
@@ -17,6 +16,12 @@ import {
   Check,
   X,
   Sparkles,
+  Eye,
+  EyeOff,
+  Copy,
+  KeyRound,
+  RefreshCw,
+  Lock,
 } from "lucide-react";
 
 import DashboardLayout from "../components/DashboardLayout";
@@ -51,6 +56,14 @@ function AdminStudentDetails() {
   const [paymentModalEnrollment, setPaymentModalEnrollment] = useState(null);
   const [paymentNotesInput, setPaymentNotesInput] = useState("");
   const [updatingPayment, setUpdatingPayment] = useState(false);
+
+  // Student password inspection & reset
+  const [showPasswordState, setShowPasswordState] = useState(false);
+  const [copiedPassword, setCopiedPassword] = useState(false);
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+  const [newPasswordInput, setNewPasswordInput] = useState("");
+  const [showNewPasswordInModal, setShowNewPasswordInModal] = useState(true);
+  const [changingPasswordLoading, setChangingPasswordLoading] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -173,6 +186,52 @@ function AdminStudentDetails() {
       setTimeout(() => setActionSuccess(""), 4000);
     } catch (err) {
       alert(err.message || "خطا در حذف ثبت‌نام");
+    }
+  };
+
+  const generateRandomPassword = () => {
+    const chars = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789#@!";
+    let res = "";
+    for (let i = 0; i < 8; i++) {
+      res += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setNewPasswordInput(res);
+  };
+
+  const copyPassword = () => {
+    if (!studentUser?.plain_password) return;
+    navigator.clipboard.writeText(studentUser.plain_password);
+    setCopiedPassword(true);
+    setTimeout(() => setCopiedPassword(false), 2500);
+  };
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    if (!newPasswordInput || newPasswordInput.length < 4) {
+      alert("رمز عبور باید حداقل ۴ کاراکتر باشد.");
+      return;
+    }
+
+    try {
+      setChangingPasswordLoading(true);
+      const updated = await api.users.update(id, {
+        password: newPasswordInput,
+      });
+
+      setStudentUser((prev) => ({
+        ...prev,
+        ...updated,
+        plain_password: newPasswordInput,
+      }));
+
+      setActionSuccess("رمز عبور دانش‌آموز با موفقیت تغییر یافت و ذخیره شد.");
+      setTimeout(() => setActionSuccess(""), 4000);
+      setShowChangePasswordModal(false);
+      setNewPasswordInput("");
+    } catch (err) {
+      alert(err.message || "خطا در تغییر رمز عبور");
+    } finally {
+      setChangingPasswordLoading(false);
     }
   };
 
@@ -482,15 +541,26 @@ function AdminStudentDetails() {
           </div>
         </section>
 
-        {/* Student Personal Info */}
+        {/* Student Personal & Credentials Info */}
         <section className="admin-student-details-x9p4-section">
           <div className="admin-student-details-x9p4-section-header">
             <div>
-              <h3 className="admin-student-details-x9p4-title">اطلاعات پرونده</h3>
+              <h3 className="admin-student-details-x9p4-title">اطلاعات پرونده و حساب کاربری</h3>
               <p className="admin-student-details-x9p4-description">
-                مشخصات هویتی و اطلاعات تماس ثبت‌شده دانش‌آموز
+                مشخصات فردی، شماره تماس، نام کاربری و رمز عبور ثبت‌شده دانش‌آموز جهت استفاده منشی و مدیریت
               </p>
             </div>
+            <button
+              type="button"
+              className="student-credentials-edit-btn"
+              onClick={() => {
+                setNewPasswordInput("");
+                setShowChangePasswordModal(true);
+              }}
+            >
+              <KeyRound size={16} />
+              <span>تغییر / تنظیم رمز عبور جدید</span>
+            </button>
           </div>
 
           <div className="admin-student-details-x9p4-info-grid">
@@ -521,18 +591,47 @@ function AdminStudentDetails() {
                 <Users size={19} />
               </div>
               <div>
-                <span>نام کاربری</span>
-                <strong>{studentUser.username}</strong>
+                <span>نام کاربری ورود</span>
+                <strong style={{ direction: "ltr", display: "inline-block" }}>{studentUser.username}</strong>
               </div>
             </div>
 
-            <div className="admin-student-details-x9p4-info-card">
-              <div className="admin-student-details-x9p4-info-icon">
-                <CalendarDays size={19} />
+            <div className="admin-student-details-x9p4-info-card credentials-card">
+              <div className="admin-student-details-x9p4-info-icon credentials-icon">
+                <Lock size={19} />
               </div>
-              <div>
-                <span>ایمیل</span>
-                <strong>{studentUser.email || "-"}</strong>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <span>رمز عبور حساب</span>
+                <div className="student-password-view-row">
+                  <strong className="student-password-val">
+                    {studentUser.plain_password ? (
+                      showPasswordState ? studentUser.plain_password : "••••••••"
+                    ) : (
+                      <span style={{ color: "#95a5a6", fontSize: "0.82rem" }}>ثبت‌نشده (تعیین نشده)</span>
+                    )}
+                  </strong>
+                  {studentUser.plain_password && (
+                    <div className="password-actions-inline">
+                      <button
+                        type="button"
+                        className="password-toggle-btn"
+                        onClick={() => setShowPasswordState((prev) => !prev)}
+                        title={showPasswordState ? "مخفی‌سازی رمز" : "نمایش رمز"}
+                      >
+                        {showPasswordState ? <EyeOff size={15} /> : <Eye size={15} />}
+                      </button>
+                      <button
+                        type="button"
+                        className={`password-copy-btn ${copiedPassword ? "copied" : ""}`}
+                        onClick={copyPassword}
+                        title="کپی رمز عبور"
+                      >
+                        {copiedPassword ? <Check size={15} /> : <Copy size={15} />}
+                        <span>{copiedPassword ? "کپی شد" : "کپی"}</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -707,6 +806,118 @@ function AdminStudentDetails() {
                   {updatingPayment ? "در حال ثبت..." : "تایید و ثبت تسویه"}
                 </AnimatedButton>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal: Change / Reset Password */}
+        {showChangePasswordModal && (
+          <div
+            className="exam-modal-backdrop"
+            onClick={() => setShowChangePasswordModal(false)}
+          >
+            <div
+              className="exam-modal-container"
+              style={{ maxWidth: "480px" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="exam-modal-header">
+                <div className="modal-header-info">
+                  <div className="exam-icon-circle">
+                    <KeyRound size={20} />
+                  </div>
+                  <div>
+                    <h4>تغییر یا تنظیم رمز عبور جدید</h4>
+                    <p>دانش‌آموز: {studentName} ({studentUser.username})</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="modal-close-btn"
+                  onClick={() => setShowChangePasswordModal(false)}
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <form onSubmit={handleChangePassword}>
+                <div className="exam-modal-body" style={{ padding: "1.5rem" }}>
+                  <div className="class-form-group full-width" style={{ marginBottom: "1rem" }}>
+                    <label style={{ fontWeight: "700", marginBottom: "0.5rem", display: "block" }}>
+                      رمز عبور جدید <span style={{ color: "red" }}>*</span>
+                    </label>
+                    <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                      <input
+                        type={showNewPasswordInModal ? "text" : "password"}
+                        placeholder="حداقل ۴ کاراکتر..."
+                        value={newPasswordInput}
+                        onChange={(e) => setNewPasswordInput(e.target.value)}
+                        required
+                        style={{
+                          width: "100%",
+                          padding: "0.75rem",
+                          paddingLeft: "2.75rem",
+                          borderRadius: "10px",
+                          border: "1px solid oklch(85% 0 0)",
+                          fontFamily: "inherit",
+                          fontSize: "0.95rem",
+                          direction: "ltr",
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPasswordInModal((p) => !p)}
+                        style={{
+                          position: "absolute",
+                          left: "0.5rem",
+                          background: "transparent",
+                          border: "none",
+                          color: "#7f8c8d",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        {showNewPasswordInModal ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem" }}>
+                    <button
+                      type="button"
+                      className="secretary-student-form-action-btn"
+                      onClick={generateRandomPassword}
+                      style={{ fontSize: "0.78rem", padding: "0.4rem 0.75rem" }}
+                    >
+                      <RefreshCw size={14} />
+                      <span>تولید رمز تصادفی</span>
+                    </button>
+                  </div>
+
+                  <p style={{ fontSize: "0.78rem", color: "#7f8c8d", margin: 0, lineHeight: 1.6 }}>
+                    با ثبت رمز جدید، رمز عبور ورود دانش‌آموز بلافاصله تغییر کرده و در پنل مدیریت و منشی قابل مشاهده و کپی خواهد بود.
+                  </p>
+                </div>
+
+                <div className="exam-modal-footer">
+                  <AnimatedButton
+                    variant="secondary"
+                    type="button"
+                    onClick={() => setShowChangePasswordModal(false)}
+                  >
+                    انصراف
+                  </AnimatedButton>
+                  <AnimatedButton
+                    variant="primary"
+                    type="submit"
+                    disabled={changingPasswordLoading}
+                  >
+                    {changingPasswordLoading ? "در حال ذخیره..." : "ثبت و تغییر رمز"}
+                  </AnimatedButton>
+                </div>
+              </form>
             </div>
           </div>
         )}

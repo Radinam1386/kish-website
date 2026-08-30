@@ -1,16 +1,26 @@
 /* =========================================================
-   Admin Panel
-   Scoped Namespace:
-   admin-panel-x7k2
+   Admin Panel Styles
+   Clean, modern dashboard design
    ========================================================= */
 
 .admin-panel-x7k2-stats-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2.5rem;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
 }
 
+@media (max-width: 1024px) {
+  .admin-panel-x7k2-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-panel-x7k2-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
 /* =========================================================
    Sections
@@ -20,75 +30,56 @@
   width: 100%;
   margin-bottom: 2rem;
   padding: 2rem;
-
-  background: rgba(255, 255, 255, 0.78);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-
-  border: 1px solid rgba(231, 76, 60, 0.1);
-  border-radius: 24px;
-
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
-
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
+  background: #ffffff;
+  border: 1px solid #eceff3;
+  border-radius: 22px;
+  box-shadow: 0 8px 25px rgba(37, 41, 45, 0.04);
 }
-
-.admin-panel-x7k2-section:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.07);
-}
-
 
 .admin-panel-x7k2-section-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   gap: 1rem;
   flex-wrap: wrap;
-
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-
-  border-bottom: 1px solid #f0f2f5;
+  border-bottom: 2px solid #f3f4f6;
 }
 
-
 .admin-panel-x7k2-section-title {
-  display: flex;
-  align-items: center;
-
-  gap: 0.6rem;
-
+  position: relative;
   margin: 0;
-
-  color: #2d3436;
-
-  font-size: 1.2rem;
+  padding-right: 0.9rem;
+  color: var(--primary);
+  font-size: 1.25rem;
   font-weight: 800;
   line-height: 1.7;
 }
 
 .admin-panel-x7k2-section-title::before {
   content: "";
-
+  position: absolute;
+  top: 50%;
+  right: 0;
   width: 4px;
   height: 24px;
-
-  flex-shrink: 0;
-
-  background:
-    linear-gradient(
-      180deg,
-      #e74c3c,
-      #c0392b
-    );
-
+  background: linear-gradient(180deg, var(--primary), var(--primary-dark));
   border-radius: 999px;
+  transform: translateY(-50%);
 }
 
+.admin-panel-section-link {
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: var(--primary);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.admin-panel-section-link:hover {
+  transform: translateX(-3px);
+}
 
 /* =========================================================
    Table
@@ -96,549 +87,241 @@
 
 .admin-panel-x7k2-table-wrapper {
   width: 100%;
-
   overflow-x: auto;
-
-  border: 1px solid #f0f2f5;
+  border: 1px solid #eceff3;
   border-radius: 16px;
-
-  scrollbar-width: thin;
-  scrollbar-color:
-    rgba(231, 76, 60, 0.25)
-    transparent;
+  background: #ffffff;
 }
-
-
-.admin-panel-x7k2-table-wrapper::-webkit-scrollbar {
-  height: 6px;
-}
-
-.admin-panel-x7k2-table-wrapper::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.admin-panel-x7k2-table-wrapper::-webkit-scrollbar-thumb {
-  background: rgba(231, 76, 60, 0.25);
-  border-radius: 999px;
-}
-
 
 .admin-panel-x7k2-table {
   width: 100%;
   min-width: 760px;
-
   border-collapse: collapse;
-  border-spacing: 0;
-
-  background: #ffffff;
-
-  direction: rtl;
   text-align: right;
+  direction: rtl;
 }
-
 
 .admin-panel-x7k2-table thead {
-  background:
-    linear-gradient(
-      180deg,
-      #fff7f5 0%,
-      #fff1ef 100%
-    );
+  background: #f8f9fa;
+  border-bottom: 2px solid #eceff3;
 }
 
-
 .admin-panel-x7k2-table th {
-  padding: 1rem 1.25rem;
-
-  color: #c0392b;
-
-  border-bottom: 1px solid
-    rgba(231, 76, 60, 0.15);
-
-  font-size: 0.88rem;
-  font-weight: 800;
-
+  padding: 1rem 1.1rem;
+  color: #7f8c8d;
+  font-size: 0.82rem;
+  font-weight: 700;
   white-space: nowrap;
 }
 
-
 .admin-panel-x7k2-table td {
-  padding: 1rem 1.25rem;
-
+  padding: 0.95rem 1.1rem;
   color: #2d3436;
-
-  border-bottom: 1px solid #f0f2f5;
-
-  font-size: 0.9rem;
-
+  font-size: 0.88rem;
+  border-bottom: 1px solid #f1f2f6;
   vertical-align: middle;
 }
 
-
-.admin-panel-x7k2-table tbody tr {
-  transition: background-color 0.25s ease;
-}
-
-
 .admin-panel-x7k2-table tbody tr:hover {
-  background: rgba(231, 76, 60, 0.035);
+  background-color: #fff9f8;
 }
-
 
 .admin-panel-x7k2-table tbody tr:last-child td {
   border-bottom: none;
 }
 
-
-/* =========================================================
-   Student
-   ========================================================= */
-
 .admin-panel-x7k2-student-name {
-  color: #2d3436;
-
-  font-size: 0.92rem;
   font-weight: 800;
-
-  white-space: nowrap;
+  color: #2d3436;
 }
-
 
 .admin-panel-x7k2-student-phone {
-  display: inline-block;
-
+  font-size: 0.82rem;
   color: #7f8c8d;
-
-  font-family: "Vazirmatn", sans-serif;
-
-  font-size: 0.85rem;
-  font-weight: 600;
-
-  direction: ltr;
-
-  white-space: nowrap;
+  font-family: inherit;
 }
-
-
-/* =========================================================
-   Badges
-   ========================================================= */
-
-.admin-panel-x7k2-class-badge,
-.admin-panel-x7k2-status-badge,
-.admin-panel-x7k2-capacity-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  white-space: nowrap;
-
-  font-weight: 700;
-}
-
 
 .admin-panel-x7k2-class-badge {
-  padding: 0.4rem 0.8rem;
-
-  background: #f3f8ff;
-  color: #2874a6;
-
-  border: 1px solid #dcecff;
-  border-radius: 999px;
-
-  font-size: 0.8rem;
-}
-
-
-.admin-panel-x7k2-class-badge.admin-panel-x7k2-highlight {
-  background: #fff1ef;
-  color: #e74c3c;
-
-  border-color:
-    rgba(231, 76, 60, 0.15);
-}
-
-
-.admin-panel-x7k2-status-badge {
-  padding: 0.4rem 0.8rem;
-
-  border-radius: 999px;
-
-  font-size: 0.8rem;
-}
-
-
-.admin-panel-x7k2-status-paid {
-  background: #edf9f1;
-  color: #218c4b;
-
-  border: 1px solid #d5f0df;
-}
-
-
-.admin-panel-x7k2-status-pending {
-  background: #fff8e8;
-  color: #b7791f;
-
-  border: 1px solid #f8e5b5;
-}
-
-
-/* =========================================================
-   Teachers
-   ========================================================= */
-
-.admin-panel-x7k2-teacher-grid {
-  display: grid;
-
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
-
-  gap: 1.25rem;
-}
-
-
-.admin-panel-x7k2-teacher-card {
-  position: relative;
-
-  display: flex;
-  align-items: center;
-
-  gap: 1rem;
-
-  min-width: 0;
-
-  padding: 1.25rem;
-
-  background:
-    linear-gradient(
-      135deg,
-      #ffffff,
-      #fff8f6
-    );
-
-  border: 1px solid #f0f2f5;
-  border-radius: 18px;
-
-  cursor: pointer;
-
-  overflow: hidden;
-
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease,
-    border-color 0.3s ease;
-}
-
-
-.admin-panel-x7k2-teacher-card:hover {
-  transform: translateY(-4px);
-
-  border-color:
-    rgba(231, 76, 60, 0.25);
-
-  box-shadow:
-    0 10px 25px rgba(231, 76, 60, 0.08);
-}
-
-
-.admin-panel-x7k2-teacher-avatar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 54px;
-  height: 54px;
-
-  flex-shrink: 0;
-
-  background:
-    linear-gradient(
-      135deg,
-      #e74c3c,
-      #c0392b
-    );
-
-  color: #ffffff;
-
-  border-radius: 50%;
-
-  font-size: 1.35rem;
-  font-weight: 800;
-
-  box-shadow:
-    0 5px 15px rgba(231, 76, 60, 0.2);
-}
-
-
-.admin-panel-x7k2-teacher-info {
-  min-width: 0;
-  flex: 1;
-}
-
-
-.admin-panel-x7k2-teacher-name {
-  margin: 0 0 0.25rem;
-
+  display: inline-block;
+  padding: 0.25rem 0.65rem;
+  background: #f1f2f6;
   color: #2d3436;
-
-  font-size: 1rem;
-  font-weight: 800;
-}
-
-
-.admin-panel-x7k2-teacher-specialty {
-  margin: 0 0 0.5rem;
-
-  color: #7f8c8d;
-
-  font-size: 0.85rem;
-}
-
-
-.admin-panel-x7k2-teacher-classes {
-  display: inline-flex;
-
-  padding: 0.25rem 0.7rem;
-
-  background: #fff1ef;
-  color: #e74c3c;
-
-  border-radius: 999px;
-
-  font-size: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
   font-weight: 700;
 }
 
-
-.admin-panel-x7k2-teacher-arrow {
-  flex-shrink: 0;
-
-  color: #e74c3c;
-
-  transition: transform 0.3s ease;
+.admin-panel-x7k2-status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 800;
 }
 
-
-.admin-panel-x7k2-teacher-card:hover
-.admin-panel-x7k2-teacher-arrow {
-  transform: translateX(-4px);
+.admin-panel-status-paid {
+  background: #edf8f1;
+  color: #2e8b57;
+  border: 1px solid #d9f0e1;
 }
 
+.admin-panel-status-pending {
+  background: #fff5e8;
+  color: #d88922;
+  border: 1px solid #f5dfbb;
+}
+
+.admin-panel-x7k2-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem;
+  background: #fff1ef;
+  color: var(--primary);
+  border: 1px solid rgba(231, 76, 60, 0.15);
+  border-radius: 9px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-panel-x7k2-action-btn:hover {
+  background: #ffe5e1;
+  transform: translateY(-1px);
+}
 
 /* =========================================================
-   Schedule
+   Bottom Grid: Teachers & Classes Widgets
    ========================================================= */
 
-.admin-panel-x7k2-schedule-table {
-  min-width: 700px;
+.admin-panel-x7k2-bottom-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
 }
 
-
-.admin-panel-x7k2-schedule-days {
-  color: #636e72;
-  font-weight: 600;
+@media (max-width: 900px) {
+  .admin-panel-x7k2-bottom-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
+.admin-panel-teachers-list-container,
+.admin-panel-classes-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
 
-.admin-panel-x7k2-schedule-time {
-  display: inline-flex;
+/* Teacher Row Card */
+.admin-panel-teacher-row-card,
+.admin-panel-class-row-card {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.85rem 1.15rem;
+  background: #ffffff;
+  border: 1px solid #eceff3;
+  border-radius: 16px;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
+}
 
-  padding: 0.35rem 0.7rem;
+.admin-panel-teacher-row-card:hover,
+.admin-panel-class-row-card:hover {
+  background: #fff9f8;
+  border-color: rgba(231, 76, 60, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(231, 76, 60, 0.07);
+}
 
-  background: #fff1ef;
-  color: #c0392b;
-
-  border-radius: 10px;
-
-  font-family: "Vazirmatn", sans-serif;
+.admin-panel-teacher-avatar-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
   font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
+}
 
+.admin-panel-class-icon-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  background: #fff1ef;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.admin-panel-teacher-info-col,
+.admin-panel-class-info-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.admin-panel-teacher-name-text,
+.admin-panel-class-name-text {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #2d3436;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.admin-panel-teacher-sub-text,
+.admin-panel-class-teacher-text {
+  font-size: 0.78rem;
+  color: #7f8c8d;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-.admin-panel-x7k2-capacity-badge {
-  padding: 0.35rem 0.75rem;
-
-  background: #edfafa;
-  color: #218c8c;
-
-  border: 1px solid #d8eeee;
-
+.admin-panel-teacher-classes-pill {
+  padding: 0.25rem 0.65rem;
+  background: #fff1ef;
+  color: var(--primary);
   border-radius: 999px;
-
-  font-size: 0.8rem;
+  font-size: 0.76rem;
+  font-weight: 800;
+  white-space: nowrap;
 }
 
-
-/* =========================================================
-   Responsive
-   ========================================================= */
-
-@media (max-width: 1100px) {
-  .admin-panel-x7k2-stats-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .admin-panel-x7k2-teacher-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.admin-panel-class-capacity-badge {
+  padding: 0.25rem 0.65rem;
+  background: #eef5ff;
+  color: #3578c8;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  white-space: nowrap;
 }
 
-
-@media (max-width: 768px) {
-  .admin-panel-x7k2-stats-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .admin-panel-x7k2-section {
-    padding: 1.25rem;
-    margin-bottom: 1.5rem;
-    border-radius: 20px;
-  }
-
-  .admin-panel-x7k2-section-header {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .admin-panel-x7k2-section-title {
-    font-size: 1.05rem;
-  }
-
-  .admin-panel-x7k2-teacher-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .admin-panel-x7k2-table-wrapper {
-    overflow-x: visible;
-    border: none;
-  }
-
-  /*
-    تبدیل جدول به کارت در موبایل
-  */
-
-  .admin-panel-x7k2-table,
-  .admin-panel-x7k2-table thead,
-  .admin-panel-x7k2-table tbody,
-  .admin-panel-x7k2-table tr,
-  .admin-panel-x7k2-table th,
-  .admin-panel-x7k2-table td {
-    display: block;
-  }
-
-  .admin-panel-x7k2-table {
-    min-width: 0;
-    background: transparent;
-  }
-
-  .admin-panel-x7k2-table thead {
-    display: none;
-  }
-
-  .admin-panel-x7k2-table tbody tr {
-    margin-bottom: 1rem;
-    padding: 0.5rem;
-
-    background: #ffffff;
-
-    border: 1px solid #f0f2f5;
-    border-radius: 16px;
-
-    box-shadow:
-      0 5px 18px rgba(0, 0, 0, 0.035);
-  }
-
-  .admin-panel-x7k2-table tbody tr:last-child {
-    margin-bottom: 0;
-  }
-
-  .admin-panel-x7k2-table td {
-    position: relative;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 1rem;
-
-    min-height: 48px;
-
-    padding: 0.75rem 0.6rem 0.75rem 0 !important;
-
-    text-align: left;
-
-    border-bottom: 1px solid #f2f3f5;
-  }
-
-  .admin-panel-x7k2-table td:last-child {
-    border-bottom: none;
-  }
-
-  .admin-panel-x7k2-table td::before {
-    content: attr(data-label);
-
-    flex-shrink: 0;
-
-    color: #7f8c8d;
-
-    font-size: 0.78rem;
-    font-weight: 800;
-
-    text-align: right;
-  }
-
-  .admin-panel-x7k2-student-name,
-  .admin-panel-x7k2-student-phone {
-    white-space: normal;
-    text-align: left;
-  }
-
-  .admin-panel-x7k2-teacher-card {
-    padding: 1rem;
-  }
+.admin-panel-arrow-icon {
+  color: #bdc3c7;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
 }
 
-
-@media (max-width: 480px) {
-  .admin-panel-x7k2-section {
-    padding: 1rem;
-    border-radius: 18px;
-  }
-
-  .admin-panel-x7k2-section-title {
-    font-size: 0.98rem;
-  }
-
-  .admin-panel-x7k2-teacher-avatar {
-    width: 46px;
-    height: 46px;
-
-    font-size: 1.1rem;
-  }
-
-  .admin-panel-x7k2-teacher-name {
-    font-size: 0.92rem;
-  }
-
-  .admin-panel-x7k2-teacher-specialty {
-    font-size: 0.8rem;
-  }
-
-  .admin-panel-x7k2-table td {
-    gap: 0.6rem;
-  }
-
-  .admin-panel-x7k2-table td::before {
-    font-size: 0.74rem;
-  }
-
-  .admin-panel-x7k2-class-badge,
-  .admin-panel-x7k2-status-badge,
-  .admin-panel-x7k2-capacity-badge {
-    font-size: 0.72rem;
-  }
+.admin-panel-teacher-row-card:hover .admin-panel-arrow-icon,
+.admin-panel-class-row-card:hover .admin-panel-arrow-icon {
+  transform: translateX(-4px);
+  color: var(--primary);
 }

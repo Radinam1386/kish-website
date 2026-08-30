@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   FileText,
   Search,
@@ -10,13 +10,12 @@ import {
   Award,
   X,
   BookOpen,
-  Info,
-  Check,
   Edit3,
   Save,
   Plus,
   UserX,
   Sparkles,
+  Eye,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -248,21 +247,16 @@ export default function TeacherExams() {
       );
 
       // Trigger recalculation on submission
-      await api.submissions.grade(gradingSubmission.id).catch(() => {});
+      await api.submissions.grade(gradingSubmission.id);
 
-      // Refresh data
-      await loadData();
-
-      setSuccessMsg(
-        `نمرات برگه دانش‌آموز «${getFullName(
-          gradingSubmission.student_detail,
-        )}» با موفقیت ذخیره و به‌روزرسانی شد.`,
-      );
+      setSuccessMsg("نمرات و تصحیح برگه با موفقیت ذخیره و ثبت گردید.");
       setTimeout(() => setSuccessMsg(""), 4000);
 
+      // Close modal and reload data
       setGradingSubmission(null);
+      await loadData();
     } catch (err) {
-      alert(err.message || "خطا در ثبت نمرات برگه");
+      alert(err.message || "خطا در ثبت نمرات");
     } finally {
       setSavingGrade(false);
     }
@@ -270,7 +264,7 @@ export default function TeacherExams() {
 
   return (
     <DashboardLayout role="پنل استاد" title="مدیریت و تصحیح امتحانات" menuType="teacher">
-      <div className="teacher-exams-page">
+      <div className="teacher-exams-page-container">
         {/* Banner */}
         <div className="teacher-exams-banner">
           <div className="banner-icon">
@@ -310,13 +304,13 @@ export default function TeacherExams() {
             title="کل آزمون‌های شما"
             value={`${toPersianDigits(stats.totalExams)} آزمون`}
             icon={<FileText size={22} />}
-            color="blue"
+            color="red"
           />
           <StatCard
             title="پاسخ‌برگ‌های دریافتی"
             value={`${toPersianDigits(stats.totalSubmissions)} برگه`}
             icon={<Users size={22} />}
-            color="orange"
+            color="blue"
           />
           <StatCard
             title="برگه‌های تصحیح‌شده"
@@ -328,73 +322,80 @@ export default function TeacherExams() {
             title="در انتظار تصحیح شما"
             value={`${toPersianDigits(stats.totalPending)} برگه`}
             icon={<Clock3 size={22} />}
-            color="red"
+            color="orange"
           />
         </div>
 
-        {/* Filters Bar */}
-        <div className="teacher-exams-filters-bar">
-          <div className="search-field-box">
-            <Search size={18} />
-            <input
-              type="text"
-              placeholder="جستجوی آزمون یا کلاس..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+        {/* Main Section Container */}
+        <section className="teacher-exams-main-section">
+          <div className="teacher-exams-section-header">
+            <div className="teacher-exams-heading">
+              <h3 className="teacher-exams-section-title">لیست آزمون‌های برگزارشده</h3>
+              <p className="teacher-exams-section-desc">
+                برای تصحیح و نمره‌دهی برگه‌ها یا بررسی وضعیت شرکت‌کنندگان، روی دکمه «بررسی برگه‌ها و دانش‌آموزان» کلیک کنید.
+              </p>
+            </div>
           </div>
 
-          <div className="select-field-box">
-            <BookOpen size={16} />
-            <select
-              value={selectedClass}
-              onChange={(e) => setSelectedClass(e.target.value)}
-            >
-              <option value="all">همه کلاس‌های من</option>
-              {classrooms.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
+          {/* Filters Bar */}
+          <div className="teacher-exams-filters-row">
+            <div className="exams-search-wrapper">
+              <Search size={18} className="exams-search-icon" />
+              <input
+                type="text"
+                placeholder="جستجوی آزمون یا کلاس..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="exams-search-input"
+              />
+            </div>
+
+            <div className="exams-select-wrapper">
+              <BookOpen size={16} className="exams-filter-icon" />
+              <select
+                value={selectedClass}
+                onChange={(e) => setSelectedClass(e.target.value)}
+                className="exams-select"
+              >
+                <option value="all">همه کلاس‌های من</option>
+                {classrooms.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="exams-select-wrapper">
+              <Filter size={16} className="exams-filter-icon" />
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="exams-select"
+              >
+                <option value="all">همه وضعیت‌ها</option>
+                <option value="pending">دارای برگه منتظر تصحیح</option>
+                <option value="graded">کاملاً تصحیح‌شده</option>
+                <option value="no_subs">بدون شرکت‌کننده</option>
+              </select>
+            </div>
           </div>
 
-          <div className="select-field-box">
-            <Filter size={16} />
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
-              <option value="all">همه وضعیت‌ها</option>
-              <option value="pending">دارای برگه منتظر تصحیح</option>
-              <option value="graded">کاملاً تصحیح‌شده</option>
-              <option value="no_subs">بدون شرکت‌کننده</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Exams Table Card */}
-        <div className="teacher-exams-card">
-          <div className="card-header">
-            <h3>لیست آزمون‌های برگزارشده</h3>
-            <span className="count-badge">
-              {toPersianDigits(filteredExams.length)} آزمون
-            </span>
-          </div>
-
+          {/* Table */}
           {loading ? (
-            <div className="exams-empty-state">در حال دریافت آزمون‌ها...</div>
+            <div style={{ textAlign: "center", padding: "3rem", color: "oklch(50% 0 0)" }}>
+              در حال بارگذاری لیست آزمون‌ها...
+            </div>
           ) : filteredExams.length > 0 ? (
-            <div className="table-responsive">
+            <div className="teacher-exams-table-wrapper">
               <table className="teacher-exams-table">
                 <thead>
                   <tr>
                     <th>عنوان آزمون</th>
-                    <th>کلاس</th>
+                    <th>کلاس مربوطه</th>
                     <th>تاریخ (شمسی)</th>
                     <th>تعداد سوالات</th>
-                    <th>بارم کل</th>
-                    <th>شرکت‌کنندگان</th>
+                    <th>پاسخ‌برگ‌ها</th>
                     <th>میانگین نمرات</th>
                     <th>وضعیت تصحیح</th>
                     <th>عملیات</th>
@@ -410,6 +411,7 @@ export default function TeacherExams() {
                           </div>
                           <div>
                             <strong>{exam.title}</strong>
+                            <small>{toPersianDigits(exam.maxScore)} نمره کل</small>
                           </div>
                         </div>
                       </td>
@@ -420,17 +422,13 @@ export default function TeacherExams() {
 
                       <td>
                         <span className="shamsi-date-pill">
-                          {toJalaliDateString(exam.date)}
+                          {exam.created_at ? toJalaliDateString(exam.created_at) : "-"}
                         </span>
                       </td>
 
                       <td>
-                        <strong>{toPersianDigits(exam.questions?.length || 0)} سوال</strong>
-                      </td>
-
-                      <td>
-                        <span className="max-score-badge">
-                          {toPersianDigits(exam.maxScore)} نمره
+                        <span className="questions-count-badge">
+                          {toPersianDigits(exam.questions?.length || 0)} سوال
                         </span>
                       </td>
 
@@ -445,7 +443,7 @@ export default function TeacherExams() {
 
                       <td>
                         <strong className="avg-score-text">
-                          {exam.avgScore !== "-" ? toPersianDigits(exam.avgScore) : "-"}
+                          {exam.avgScore !== "-" ? `${toPersianDigits(exam.avgScore)}` : "-"}
                         </strong>
                       </td>
 
@@ -453,7 +451,7 @@ export default function TeacherExams() {
                         {exam.submissionsCount === 0 ? (
                           <span className="exam-status-pill no-subs">بدون شرکت‌کننده</span>
                         ) : exam.pendingCount === 0 ? (
-                          <span className="exam-status-pill graded">تصحیح شده</span>
+                          <span className="exam-status-pill graded">تماماً تصحیح‌شده</span>
                         ) : (
                           <span className="exam-status-pill pending">
                             {toPersianDigits(exam.pendingCount)} برگه در انتظار تصحیح
@@ -462,17 +460,17 @@ export default function TeacherExams() {
                       </td>
 
                       <td>
-                        <AnimatedButton
-                          size="small"
-                          variant="primary"
-                          icon={<Edit3 size={15} />}
+                        <button
+                          type="button"
+                          className="exam-action-btn view"
                           onClick={() => {
                             setInspectedExam(exam);
                             setRosterTab("all");
                           }}
                         >
-                          بررسی و نمره‌دهی
-                        </AnimatedButton>
+                          <Eye size={15} />
+                          <span>بررسی برگه‌ها و دانش‌آموزان</span>
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -481,30 +479,31 @@ export default function TeacherExams() {
             </div>
           ) : (
             <div className="exams-empty-state">
-              <FileText size={36} />
-              <p>آزمونی برای نمایش یافت نشد.</p>
+              <FileText size={44} />
+              <h4>هیچ آزمونی یافت نشد</h4>
+              <p>شما می‌توانید با استفاده از دکمه «طراحی آزمون جدید» امتحان جدیدی تعریف کنید.</p>
             </div>
           )}
-        </div>
+        </section>
 
-        {/* Modal 1: Exam Roster & Submissions Management */}
+        {/* Modal 1: Exam Roster & Submissions Breakdown */}
         {inspectedExam && (
           <div className="exam-modal-backdrop" onClick={() => setInspectedExam(null)}>
-            <div
-              className="exam-modal-container large"
-              onClick={(e) => e.stopPropagation()}
-            >
+            <div className="exam-modal-container large" onClick={(e) => e.stopPropagation()}>
               <div className="exam-modal-header">
                 <div className="modal-header-info">
-                  <div className="exam-icon-circle">
+                  <div className="exam-modal-icon-badge">
                     <Award size={22} />
                   </div>
                   <div>
-                    <h4>مدیریت شرکت‌کنندگان و تصحیح «{inspectedExam.title}»</h4>
+                    <h4>بررسی وضعیت آزمون «{inspectedExam.title}»</h4>
                     <p>
                       کلاس: <strong>{inspectedExam.classroomName}</strong> | بارم کل:{" "}
-                      <strong>{toPersianDigits(inspectedExam.maxScore)} نمره</strong> | تاریخ:{" "}
-                      <strong>{toJalaliDateString(inspectedExam.date)}</strong>
+                      <strong>{toPersianDigits(inspectedExam.maxScore)} نمره</strong> | تحویل:{" "}
+                      <strong>
+                        {toPersianDigits(inspectedExam.submissionsCount)} از{" "}
+                        {toPersianDigits(inspectedExam.enrolledCount)} نفر
+                      </strong>
                     </p>
                   </div>
                 </div>
@@ -517,64 +516,51 @@ export default function TeacherExams() {
                 </button>
               </div>
 
+              {/* Roster Tabs */}
+              <div className="modal-roster-tabs">
+                <button
+                  type="button"
+                  className={`roster-tab-btn ${rosterTab === "all" ? "active" : ""}`}
+                  onClick={() => setRosterTab("all")}
+                >
+                  همه دانش‌آموزان کلاس ({toPersianDigits(inspectedExam.enrolledStudents?.length || 0)})
+                </button>
+                <button
+                  type="button"
+                  className={`roster-tab-btn ${rosterTab === "submitted" ? "active" : ""}`}
+                  onClick={() => setRosterTab("submitted")}
+                >
+                  تحویل داده‌ها ({toPersianDigits(inspectedExam.submissionsCount)})
+                </button>
+                <button
+                  type="button"
+                  className={`roster-tab-btn ${rosterTab === "missing" ? "active" : ""}`}
+                  onClick={() => setRosterTab("missing")}
+                >
+                  هنوز شرکت نکرده‌اند (
+                  {toPersianDigits(
+                    (inspectedExam.enrolledStudents?.length || 0) - inspectedExam.submissionsCount,
+                  )}
+                  )
+                </button>
+              </div>
+
               <div className="exam-modal-body">
-                {/* Roster Tabs */}
-                <div className="roster-tabs-bar">
-                  <button
-                    type="button"
-                    className={`roster-tab-btn ${rosterTab === "all" ? "active" : ""}`}
-                    onClick={() => setRosterTab("all")}
-                  >
-                    <Users size={16} />
-                    <span>کل دانش‌آموزان کلاس</span>
-                    <span className="badge">
-                      {toPersianDigits(inspectedExam.enrolledStudents.length)}
-                    </span>
-                  </button>
-
-                  <button
-                    type="button"
-                    className={`roster-tab-btn ${rosterTab === "submitted" ? "active" : ""}`}
-                    onClick={() => setRosterTab("submitted")}
-                  >
-                    <CheckCircle2 size={16} />
-                    <span>شرکت کرده‌اند (پاسخ‌برگ)</span>
-                    <span className="badge green">
-                      {toPersianDigits(inspectedExam.submissionsCount)}
-                    </span>
-                  </button>
-
-                  <button
-                    type="button"
-                    className={`roster-tab-btn ${rosterTab === "missing" ? "active" : ""}`}
-                    onClick={() => setRosterTab("missing")}
-                  >
-                    <UserX size={16} />
-                    <span>هنوز شرکت نکرده‌اند</span>
-                    <span className="badge orange">
-                      {toPersianDigits(
-                        inspectedExam.enrolledStudents.length -
-                          inspectedExam.submissionsCount,
-                      )}
-                    </span>
-                  </button>
-                </div>
-
-                {/* Roster Table */}
-                <div className="table-responsive">
-                  <table className="modal-submissions-table">
+                <div className="teacher-exams-table-wrapper">
+                  <table className="teacher-exams-table modal-table">
                     <thead>
                       <tr>
-                        <th>دانش‌آموز</th>
+                        <th>نام دانش‌آموز</th>
+                        <th>نام کاربری</th>
                         <th>وضعیت شرکت</th>
-                        <th>زمان تحویل</th>
-                        <th>نمره کل</th>
+                        <th>زمان تحویل (شمسی)</th>
+                        <th>نمره نهایی</th>
                         <th>وضعیت تصحیح</th>
-                        <th>اقدام</th>
+                        <th>عملیات تصحیح</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {inspectedExam.enrolledStudents
+                      {(inspectedExam.enrolledStudents || [])
                         .filter((item) => {
                           if (rosterTab === "submitted") return item.hasSubmitted;
                           if (rosterTab === "missing") return !item.hasSubmitted;
@@ -587,97 +573,65 @@ export default function TeacherExams() {
                           return (
                             <tr key={item.id}>
                               <td>
-                                <div className="student-modal-cell">
-                                  <div className="student-avatar-small">
-                                    {getFullName(student).charAt(0) || "د"}
-                                  </div>
-                                  <div>
-                                    <strong>{getFullName(student)}</strong>
-                                    <small>{student?.username}</small>
-                                  </div>
-                                </div>
+                                <strong>{getFullName(student)}</strong>
                               </td>
-
+                              <td>
+                                <span className="user-code-tag">{student?.username}</span>
+                              </td>
                               <td>
                                 {item.hasSubmitted ? (
-                                  <span className="roster-status-pill submitted">
-                                    <Check size={13} />
-                                    شرکت کرده
+                                  <span className="exam-status-pill graded">
+                                    <CheckCircle2 size={13} style={{ marginLeft: "3px" }} />
+                                    پاسخ‌برگ ارسال شد
                                   </span>
                                 ) : (
-                                  <span className="roster-status-pill missing">
-                                    <UserX size={13} />
-                                    عدم شرکت
+                                  <span className="exam-status-pill no-subs">
+                                    <UserX size={13} style={{ marginLeft: "3px" }} />
+                                    شرکت نکرده
                                   </span>
                                 )}
                               </td>
-
                               <td>
-                                {sub ? (
-                                  <span className="date-sub-text">
-                                    {toJalaliDateString(
-                                      sub.submitted_at?.split("T")[0],
-                                    )}
-                                  </span>
-                                ) : (
-                                  <span className="date-sub-text muted">-</span>
-                                )}
+                                <span className="shamsi-date-pill">
+                                  {sub?.submitted_at
+                                    ? toJalaliDateString(sub.submitted_at)
+                                    : "-"}
+                                </span>
                               </td>
-
                               <td>
-                                {sub ? (
+                                {sub?.is_graded ? (
                                   <strong className="score-highlight">
-                                    {sub.total_score !== null &&
-                                    sub.total_score !== undefined
-                                      ? `${toPersianDigits(
-                                          sub.total_score,
-                                        )} / ${toPersianDigits(
-                                          inspectedExam.maxScore,
-                                        )}`
-                                      : "در انتظار تصحیح"}
+                                    {toPersianDigits(sub.total_score)} از{" "}
+                                    {toPersianDigits(inspectedExam.maxScore)}
                                   </strong>
                                 ) : (
-                                  <span className="muted">-</span>
+                                  <span className="no-score-tag">-</span>
                                 )}
                               </td>
-
                               <td>
-                                {sub ? (
-                                  <span
-                                    className={`sub-status-tag ${
-                                      sub.is_graded ? "graded" : "pending"
-                                    }`}
-                                  >
-                                    {sub.is_graded
-                                      ? "تصحیح نهایی"
-                                      : "در انتظار نمره شما"}
-                                  </span>
+                                {!item.hasSubmitted ? (
+                                  <span className="no-score-tag">-</span>
+                                ) : sub?.is_graded ? (
+                                  <span className="exam-status-pill graded">تصحیح شده</span>
                                 ) : (
-                                  <span className="muted">-</span>
+                                  <span className="exam-status-pill pending">
+                                    در انتظار تصحیح
+                                  </span>
                                 )}
                               </td>
-
                               <td>
-                                {sub ? (
+                                {item.hasSubmitted ? (
                                   <button
                                     type="button"
-                                    className={`grade-action-btn ${
-                                      sub.is_graded ? "edit" : "grade"
-                                    }`}
-                                    onClick={() =>
-                                      openGradingModal(sub, inspectedExam)
-                                    }
+                                    className="exam-action-btn edit"
+                                    onClick={() => openGradingModal(sub, inspectedExam)}
                                   >
                                     <Edit3 size={14} />
-                                    <span>
-                                      {sub.is_graded
-                                        ? "ویرایش نمره"
-                                        : "تصحیح و نمره‌دهی"}
-                                    </span>
+                                    <span>{sub?.is_graded ? "ویرایش نمره" : "تصحیح و نمره‌دهی"}</span>
                                   </button>
                                 ) : (
-                                  <span className="roster-note-text">
-                                    پاسخ‌برگی ثبت نشده
+                                  <span style={{ fontSize: "0.78rem", color: "#95a5a6" }}>
+                                    امکان نمره‌دهی نیست
                                   </span>
                                 )}
                               </td>
@@ -690,60 +644,41 @@ export default function TeacherExams() {
               </div>
 
               <div className="exam-modal-footer">
-                <AnimatedButton
-                  variant="secondary"
+                <button
+                  type="button"
+                  className="modal-cancel-btn"
                   onClick={() => setInspectedExam(null)}
                 >
                   بستن پنجره
-                </AnimatedButton>
+                </button>
               </div>
             </div>
           </div>
         )}
 
-        {/* Modal 2: Grading & Score Editing Modal */}
+        {/* Modal 2: Grading Student Submission */}
         {gradingSubmission && (
-          <div
-            className="exam-modal-backdrop secondary-backdrop"
-            onClick={() => setGradingSubmission(null)}
-          >
-            <div
-              className="exam-modal-container answer-sheet-container"
-              onClick={(e) => e.stopPropagation()}
-            >
+          <div className="exam-modal-backdrop grading-modal" onClick={() => setGradingSubmission(null)}>
+            <div className="exam-modal-container large" onClick={(e) => e.stopPropagation()}>
               <div className="exam-modal-header">
                 <div className="modal-header-info">
-                  <div className="student-avatar-small">
-                    {getFullName(gradingSubmission.student_detail).charAt(0) ||
-                      "د"}
+                  <div className="exam-modal-icon-badge">
+                    <Edit3 size={22} />
                   </div>
                   <div>
                     <h4>
-                      تصحیح و ویرایش نمره:{" "}
-                      {getFullName(gradingSubmission.student_detail)}
+                      تصحیح برگه: {getFullName(gradingSubmission.student_detail)} (
+                      {gradingSubmission.student_detail?.username})
                     </h4>
                     <p>
-                      آزمون:{" "}
-                      <strong>{gradingSubmission.examDetails?.title}</strong> |
-                      بارم کل:{" "}
-                      <strong>
-                        {toPersianDigits(
-                          gradingSubmission.examDetails?.maxScore,
-                        )}{" "}
-                        نمره
+                      آزمون: <strong>{gradingSubmission.examDetails?.title}</strong> | نمره محاسبه‌شده:{" "}
+                      <strong style={{ color: "var(--primary)" }}>
+                        {toPersianDigits(liveTotalScore)} از{" "}
+                        {toPersianDigits(gradingSubmission.examDetails?.maxScore)}
                       </strong>
                     </p>
                   </div>
                 </div>
-
-                <div className="live-score-badge-header">
-                  <span>نمره کل محاسبه‌شده:</span>
-                  <strong>
-                    {toPersianDigits(liveTotalScore)} /{" "}
-                    {toPersianDigits(gradingSubmission.examDetails?.maxScore)}
-                  </strong>
-                </div>
-
                 <button
                   type="button"
                   className="modal-close-btn"
@@ -753,188 +688,105 @@ export default function TeacherExams() {
                 </button>
               </div>
 
-              <div className="exam-modal-body answer-sheet-body">
-                <div className="grading-notice-box">
-                  <Info size={16} />
-                  <span>
-                    برای سوالات تشریحی نمره مورد نظر خود را وارد کنید. برای سوالات
-                    تستی نمره بر اساس پاسخ صحیح محاسبه شده اما در صورت نیاز می‌توانید
-                    آن را ویرایش نمایید.
-                  </span>
-                </div>
+              <div className="exam-modal-body modal-scrollable">
+                <div className="grading-questions-list">
+                  {(gradingSubmission.examDetails?.questions || []).map((q, qIdx) => {
+                    const ans = (gradingSubmission.answers || []).find(
+                      (a) => a.question === q.id || a.question?.id === q.id,
+                    );
+                    const isMultiple = q.question_type === "multiple_choice";
+                    const maxQScore = q.max_score || 1;
 
-                <div className="answers-list">
-                  {(gradingSubmission.examDetails?.questions || []).map(
-                    (q, idx) => {
-                      const ans = (gradingSubmission.answers || []).find(
-                        (a) => a.question === q.id || a.question?.id === q.id,
-                      );
-                      const isMultiple = q.question_type === "multiple_choice";
-                      const maxQScore = q.max_score || 1;
+                    return (
+                      <div key={q.id || qIdx} className="grading-q-card">
+                        <div className="grading-q-header">
+                          <span className="q-number-pill">سوال {toPersianDigits(qIdx + 1)}</span>
+                          <span className="q-type-badge">
+                            {isMultiple ? "تستی چهارگزینه‌ای" : "تشریحی"}
+                          </span>
+                          <span className="q-score-tag">
+                            بارم این سوال: {toPersianDigits(maxQScore)} نمره
+                          </span>
+                        </div>
 
-                      return (
-                        <div key={q.id || idx} className="grading-question-card">
-                          <div className="question-card-head">
-                            <span className="q-number">
-                              سوال {toPersianDigits(idx + 1)}
-                            </span>
-                            <span className="q-type-badge">
-                              {isMultiple ? "تستی (چهارگزینه‌ای)" : "تشریحی"}
-                            </span>
-                            <span className="q-score-badge">
-                              بارم: {toPersianDigits(maxQScore)} نمره
-                            </span>
-                          </div>
+                        <p className="grading-q-text">{q.text}</p>
 
-                          <p className="q-text">{q.text}</p>
-
-                          {/* Multiple Choice Review */}
-                          {isMultiple && (
-                            <div className="choices-review-grid">
-                              {(q.choices || []).map((choice) => {
-                                const isSelected =
-                                  ans?.selected_choice === choice.id ||
-                                  ans?.selected_choice?.id === choice.id;
-                                const isCorrect = choice.is_correct;
-
-                                let choiceClass = "choice-item";
-                                if (isSelected && isCorrect)
-                                  choiceClass += " correct-selected";
-                                else if (isSelected && !isCorrect)
-                                  choiceClass += " wrong-selected";
-                                else if (isCorrect)
-                                  choiceClass += " correct-target";
-
-                                return (
-                                  <div key={choice.id} className={choiceClass}>
-                                    <div className="choice-indicator">
-                                      {isSelected && <Check size={14} />}
-                                    </div>
-                                    <span className="choice-text">
-                                      {choice.text}
-                                    </span>
-                                    {isCorrect && (
-                                      <span className="correct-label">
-                                        (پاسخ صحیح)
-                                      </span>
-                                    )}
-                                    {isSelected && (
-                                      <span className="user-selected-label">
-                                        [پاسخ دانش‌آموز]
-                                      </span>
-                                    )}
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          )}
-
-                          {/* Essay Review */}
-                          {!isMultiple && (
-                            <div className="essay-review-box">
-                              <label>متن پاسخ ثبت‌شده دانش‌آموز:</label>
-                              <div className="essay-content">
-                                {ans?.essay_text || "بدون پاسخ"}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Teacher Score Input Row */}
-                          <div className="teacher-score-input-row">
-                            <div className="score-input-label">
-                              <span>نمره این سوال:</span>
-                              <small>(حداکثر {toPersianDigits(maxQScore)})</small>
-                            </div>
-
+                        {/* Student Answer Box */}
+                        <div className="student-ans-block">
+                          <span className="ans-label">پاسخ ثبت‌شده دانش‌آموز:</span>
+                          <div className="ans-content-box">
                             {ans ? (
-                              <div className="score-input-wrapper">
-                                <input
-                                  type="number"
-                                  min="0"
-                                  max={maxQScore}
-                                  step="0.25"
-                                  value={
-                                    questionScores[ans.id] !== undefined
-                                      ? questionScores[ans.id]
-                                      : ""
-                                  }
-                                  onChange={(e) => {
-                                    const val = e.target.value;
-                                    setQuestionScores((prev) => ({
-                                      ...prev,
-                                      [ans.id]: val,
-                                    }));
-                                  }}
-                                  className="score-number-input"
-                                  placeholder="0"
-                                />
-                                <span className="score-denom-text">
-                                  / {toPersianDigits(maxQScore)}
-                                </span>
-
-                                {/* Quick buttons */}
-                                <button
-                                  type="button"
-                                  className="quick-score-btn"
-                                  onClick={() =>
-                                    setQuestionScores((prev) => ({
-                                      ...prev,
-                                      [ans.id]: maxQScore,
-                                    }))
-                                  }
-                                >
-                                  نمره کامل
-                                </button>
-                                <button
-                                  type="button"
-                                  className="quick-score-btn"
-                                  onClick={() =>
-                                    setQuestionScores((prev) => ({
-                                      ...prev,
-                                      [ans.id]: 0,
-                                    }))
-                                  }
-                                >
-                                  صفر
-                                </button>
-                              </div>
+                              isMultiple ? (
+                                <div>
+                                  <strong>گزینه انتخابی: </strong>
+                                  <span>{ans.selected_choice_text || "گزینه " + ans.selected_choice}</span>
+                                </div>
+                              ) : (
+                                <p style={{ margin: 0, whiteSpace: "pre-wrap" }}>
+                                  {ans.text_response || (
+                                    <span style={{ color: "#95a5a6", fontStyle: "italic" }}>
+                                      پاسخی تایپ نشده است
+                                    </span>
+                                  )}
+                                </p>
+                              )
                             ) : (
-                              <span className="muted">پاسخی ثبت نشده</span>
+                              <span style={{ color: "#95a5a6", fontStyle: "italic" }}>
+                                پاسخی دریافت نشد
+                              </span>
                             )}
                           </div>
                         </div>
-                      );
-                    },
-                  )}
+
+                        {/* Teacher Score Input */}
+                        {ans && (
+                          <div className="teacher-score-input-row">
+                            <label>نمره ثبت‌شده برای این سوال:</label>
+                            <input
+                              type="number"
+                              min="0"
+                              max={maxQScore}
+                              step="0.25"
+                              value={questionScores[ans.id] !== undefined ? questionScores[ans.id] : ""}
+                              onChange={(e) =>
+                                setQuestionScores((prev) => ({
+                                  ...prev,
+                                  [ans.id]: e.target.value,
+                                }))
+                              }
+                              className="q-score-input"
+                              placeholder={`از ${maxQScore}`}
+                            />
+                            <span style={{ fontSize: "0.82rem", color: "#7f8c8d" }}>
+                              (از حداکثر {toPersianDigits(maxQScore)} نمره)
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
-              <div className="exam-modal-footer grading-footer">
-                <div className="footer-total-summary">
-                  <span>جمع نمرات:</span>
-                  <strong>
-                    {toPersianDigits(liveTotalScore)} از{" "}
-                    {toPersianDigits(gradingSubmission.examDetails?.maxScore)}
-                  </strong>
-                </div>
+              <div className="exam-modal-footer">
+                <button
+                  type="button"
+                  className="modal-cancel-btn"
+                  onClick={() => setGradingSubmission(null)}
+                >
+                  انصراف
+                </button>
 
-                <div style={{ display: "flex", gap: "0.75rem" }}>
-                  <AnimatedButton
-                    variant="secondary"
-                    onClick={() => setGradingSubmission(null)}
-                  >
-                    انصراف
-                  </AnimatedButton>
-
-                  <AnimatedButton
-                    variant="primary"
-                    disabled={savingGrade}
-                    onClick={handleSaveGrades}
-                    icon={<Save size={16} />}
-                  >
-                    {savingGrade ? "در حال ثبت نمرات..." : "ثبت و نهایی‌سازی نمره"}
-                  </AnimatedButton>
-                </div>
+                <AnimatedButton
+                  variant="primary"
+                  icon={<Save size={18} />}
+                  disabled={savingGrade}
+                  onClick={handleSaveGrades}
+                >
+                  {savingGrade
+                    ? "در حال ثبت نمرات..."
+                    : `ثبت و تایید نمره نهایی (${toPersianDigits(liveTotalScore)} نمره)`}
+                </AnimatedButton>
               </div>
             </div>
           </div>

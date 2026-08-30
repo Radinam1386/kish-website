@@ -787,3 +787,110 @@
     font-size: 0.72rem;
   }
 }
+
+/* ========================================
+   Credentials & Password Reveal Styles
+======================================== */
+
+.student-credentials-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 1rem;
+  background: #ffffff;
+  color: var(--primary);
+  border: 1px solid rgba(231, 76, 60, 0.25);
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
+}
+
+.student-credentials-edit-btn:hover {
+  background: #fff1ef;
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.admin-student-details-x9p4-info-card.credentials-card {
+  border-color: rgba(231, 76, 60, 0.25);
+  background: #fffaf9;
+}
+
+.credentials-icon {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark)) !important;
+  color: #ffffff !important;
+}
+
+.student-password-view-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-top: 0.2rem;
+  flex-wrap: wrap;
+}
+
+.student-password-val {
+  font-family: monospace, "Vazirmatn", sans-serif;
+  font-size: 1rem;
+  color: #2d3436;
+  letter-spacing: 1px;
+}
+
+.password-actions-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.password-toggle-btn {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: 1px solid #eceff3;
+  border-radius: 8px;
+  color: #7f8c8d;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.password-toggle-btn:hover {
+  background: #fff1ef;
+  color: var(--primary);
+  border-color: rgba(231, 76, 60, 0.3);
+}
+
+.password-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.6rem;
+  background: #ffffff;
+  border: 1px solid #eceff3;
+  border-radius: 8px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  font-family: inherit;
+  color: #2d3436;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.password-copy-btn:hover {
+  background: #fff1ef;
+  color: var(--primary);
+  border-color: rgba(231, 76, 60, 0.3);
+}
+
+.password-copy-btn.copied {
+  background: #edf8f1 !important;
+  color: #2e8b57 !important;
+  border-color: #2e8b57 !important;
+}

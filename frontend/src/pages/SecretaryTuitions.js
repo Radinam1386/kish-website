@@ -390,24 +390,39 @@ function SecretaryTuitions() {
           />
         </div>
 
-        {/* Filters & Actions Bar */}
-        <div className="tuitions-filter-section">
-          <div className="filter-controls-row">
-            <div className="search-field-shell">
-              <Search size={18} />
+        {/* Main Section Container */}
+        <section className="tuitions-main-section">
+          <div className="tuitions-section-header">
+            <div className="tuitions-heading-info">
+              <h3 className="tuitions-section-title">لیست ثبت‌نام‌ها و وضعیت شهریه</h3>
+              <p className="tuitions-section-desc">
+                مبالغ شهریه مصوب به تفکیک کلاس و وضعیت پرداخت نقدی/کارتخوانی توسط منشی یا مدیریت
+              </p>
+            </div>
+            <span className="tuitions-count-badge">
+              {toPersianDigits(filteredItems.length)} مورد ثبت‌نام
+            </span>
+          </div>
+
+          {/* Filters & Actions Bar */}
+          <div className="tuitions-filters-row">
+            <div className="tuitions-search-wrapper">
+              <Search size={18} className="tuitions-search-icon" />
               <input
                 type="text"
-                placeholder="جستجو بر اساس نام دانش‌آموز، نام کاربری یا شماره تماس..."
+                placeholder="جستجوی نام دانش‌آموز، نام کاربری یا شماره تماس..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                className="tuitions-search-input"
               />
             </div>
 
-            <div className="select-field-shell">
-              <BookOpen size={16} />
+            <div className="tuitions-select-wrapper">
+              <BookOpen size={16} className="tuitions-filter-icon" />
               <select
                 value={selectedClassId}
                 onChange={(e) => setSelectedClassId(e.target.value)}
+                className="tuitions-select"
               >
                 <option value="all">همه کلاس‌های این ترم</option>
                 {termClassrooms.map((c) => (
@@ -418,11 +433,12 @@ function SecretaryTuitions() {
               </select>
             </div>
 
-            <div className="select-field-shell">
-              <Filter size={16} />
+            <div className="tuitions-select-wrapper">
+              <Filter size={16} className="tuitions-filter-icon" />
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
+                className="tuitions-select"
               >
                 <option value="all">همه وضعیت‌های پرداخت</option>
                 <option value="paid">پرداخت شده (تسویه)</option>
@@ -438,53 +454,36 @@ function SecretaryTuitions() {
               تعیین کلاس برای دانش‌آموز
             </AnimatedButton>
           </div>
-        </div>
 
-        {/* Main Table */}
-        <div className="tuitions-table-card">
-          <div className="tuitions-table-header">
-            <div>
-              <h3>لیست ثبت‌نام‌ها و وضعیت شهریه</h3>
-              <p>مبالغ شهریه به تفکیک کلاس و وضعیت پرداخت نقدی/کارتخوانی به آموزشگاه</p>
+          {/* Main Table */}
+          {loading ? (
+            <div style={{ textAlign: "center", padding: "3rem", color: "oklch(50% 0 0)" }}>
+              در حال بارگذاری اطلاعات شهریه‌ها...
             </div>
-            <span className="count-badge">
-              {toPersianDigits(filteredItems.length)} مورد
-            </span>
-          </div>
-
-          <div className="table-responsive">
-            <table className="tuition-data-table">
-              <thead>
-                <tr>
-                  <th>دانش‌آموز</th>
-                  <th>کلاس و ترم</th>
-                  <th>مدرس دوره</th>
-                  <th>شهریه مصوب کلاس</th>
-                  <th>وضعیت پرداخت</th>
-                  <th>تاریخ پرداخت</th>
-                  <th>توضیحات فیش / رسید</th>
-                  <th>عملیات منشی / مدیر</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {loading ? (
+          ) : filteredItems.length === 0 ? (
+            <div className="tuition-empty-state">
+              <CreditCard size={44} />
+              <h4>هیچ ثبت‌نامی یافت نشد</h4>
+              <p>موردی مطابق با فیلترهای انتخابی شما وجود ندارد.</p>
+            </div>
+          ) : (
+            <div className="tuitions-table-wrapper">
+              <table className="tuitions-table">
+                <thead>
                   <tr>
-                    <td colSpan="8" style={{ textAlign: "center", padding: "3rem" }}>
-                      در حال بارگذاری اطلاعات شهریه‌ها...
-                    </td>
+                    <th>دانش‌آموز</th>
+                    <th>کلاس و ترم</th>
+                    <th>مدرس دوره</th>
+                    <th>شهریه مصوب کلاس</th>
+                    <th>وضعیت پرداخت</th>
+                    <th>تاریخ پرداخت</th>
+                    <th>توضیحات فیش / رسید</th>
+                    <th>عملیات منشی / مدیر</th>
                   </tr>
-                ) : filteredItems.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan="8"
-                      style={{ textAlign: "center", padding: "3rem", color: "oklch(55% 0 0)" }}
-                    >
-                      موردی مطابق با فیلترهای انتخابی یافت نشد.
-                    </td>
-                  </tr>
-                ) : (
-                  filteredItems.map((item) => (
+                </thead>
+
+                <tbody>
+                  {filteredItems.map((item) => (
                     <tr key={item.id}>
                       <td>
                         <div className="student-profile-cell">
@@ -576,21 +575,22 @@ function SecretaryTuitions() {
                           <Link to={`${basePath}/students/${item.studentId}`}>
                             <button
                               type="button"
-                              className="tuition-action-btn view-profile"
+                              className="tuition-action-btn view"
                               title="مشاهده پرونده"
                             >
                               <Eye size={14} />
+                              پرونده
                             </button>
                           </Link>
                         </div>
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
 
         {/* Modal 1: Record / Confirm Payment */}
         {paymentModalData && (
