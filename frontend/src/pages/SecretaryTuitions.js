@@ -16,6 +16,10 @@ import {
   Layers,
   ArrowRightLeft,
   AlertCircle,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
 } from "lucide-react";
 
 import DashboardLayout from "../components/DashboardLayout";
@@ -28,6 +32,7 @@ import "./SecretaryTuitions.css";
 
 function SecretaryTuitions() {
   const location = useLocation();
+
   const isSecretary = location.pathname.includes("/secretary");
   const roleTitle = isSecretary ? "پنل منشی" : "پنل مدیریت";
   const menuType = isSecretary ? "secretary" : "admin";
@@ -42,25 +47,23 @@ function SecretaryTuitions() {
   const [classrooms, setClassrooms] = useState([]);
   const [users, setUsers] = useState([]);
   const [enrollments, setEnrollments] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
-
-  // Modals state
-  const [paymentModalData, setPaymentModalData] = useState(null); // { enrollment, student, classObj }
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [paymentModalData, setPaymentModalData] = useState(null);
   const [paymentNotes, setPaymentNotes] = useState("");
   const [savingPayment, setSavingPayment] = useState(false);
-
-  const [changeClassModalData, setChangeClassModalData] = useState(null); // { enrollment, student, classObj }
+  const [changeClassModalData, setChangeClassModalData] = useState(null);
   const [newClassIdTarget, setNewClassIdTarget] = useState("");
   const [savingClassChange, setSavingClassChange] = useState(false);
-
   const [showNewEnrollModal, setShowNewEnrollModal] = useState(false);
   const [newEnrollStudentId, setNewEnrollStudentId] = useState("");
   const [newEnrollClassId, setNewEnrollClassId] = useState("");
   const [newEnrollPaid, setNewEnrollPaid] = useState(false);
   const [savingNewEnroll, setSavingNewEnroll] = useState(false);
-
   useEffect(() => {
     let alive = true;
 
@@ -68,23 +71,30 @@ function SecretaryTuitions() {
       try {
         setLoading(true);
         setError("");
-        const [termsData, usersData, classroomsData, enrollmentsData] =
-          await Promise.all([
-            api.terms.list(),
-            api.users.list(),
-            api.classrooms.list(),
-            api.enrollments.list(),
-          ]);
+
+        const [
+          termsData,
+          usersData,
+          classroomsData,
+          enrollmentsData,
+        ] = await Promise.all([
+          api.terms.list(),
+          api.users.list(),
+          api.classrooms.list(),
+          api.enrollments.list(),
+        ]);
 
         if (!alive) return;
 
         const allTerms = termsData || [];
+
         setTerms(allTerms);
         setUsers(usersData || []);
         setClassrooms(classroomsData || []);
         setEnrollments(enrollmentsData || []);
 
         const active = allTerms.find((t) => t.is_active);
+
         if (active) {
           setSelectedTermId(String(active.id));
         } else if (allTerms.length > 0) {
@@ -93,9 +103,15 @@ function SecretaryTuitions() {
           setSelectedTermId("all");
         }
       } catch (err) {
-        if (alive) setError(err.message || "خطا در دریافت اطلاعات مالی و شهریه");
+        if (alive) {
+          setError(
+            err.message || "خطا در دریافت اطلاعات مالی و شهریه"
+          );
+        }
       } finally {
-        if (alive) setLoading(false);
+        if (alive) {
+          setLoading(false);
+        }
       }
     }
 
@@ -105,92 +121,244 @@ function SecretaryTuitions() {
       alive = false;
     };
   }, []);
-
   const activeTermObj = useMemo(() => {
     if (selectedTermId === "all") return null;
-    return terms.find((t) => String(t.id) === String(selectedTermId));
-  }, [terms, selectedTermId]);
 
-  // Filtered Classrooms for the Term
+    return terms.find(
+      (t) => String(t.id) === String(selectedTermId)
+    );
+  }, [terms, selectedTermId]);
   const termClassrooms = useMemo(() => {
-    if (selectedTermId === "all") return classrooms;
+    if (selectedTermId === "all") {
+      return classrooms;
+    }
+
     return classrooms.filter(
-      (c) => String(c.term || c.term?.id) === String(selectedTermId),
+      (c) =>
+        String(c.term || c.term?.id) ===
+        String(selectedTermId)
     );
   }, [classrooms, selectedTermId]);
 
-  const termClassIds = useMemo(() => termClassrooms.map((c) => c.id), [termClassrooms]);
-
-  // Enriched items: One item per enrollment
+  const termClassIds = useMemo(
+    () => termClassrooms.map((c) => c.id),
+    [termClassrooms]
+  );
   const tuitionItems = useMemo(() => {
     return enrollments
       .filter((enr) => {
-        if (selectedTermId === "all") return true;
-        return termClassIds.includes(enr.classroom || enr.classroom?.id);
+        if (selectedTermId === "all") {
+          return true;
+        }
+
+        return termClassIds.includes(
+          enr.classroom || enr.classroom?.id
+        );
       })
       .map((enr) => {
-        const studentId = enr.student || enr.student?.id;
-        const student = users.find((u) => u.id === studentId);
-        const clsId = enr.classroom || enr.classroom?.id;
-        const cls = classrooms.find((c) => c.id === clsId);
-        const term = terms.find((t) => t.id === (cls?.term || cls?.term?.id));
+        const studentId =
+          enr.student || enr.student?.id;
 
-        const tuitionFee = cls?.tuition_fee !== undefined ? cls.tuition_fee : 2500000;
+        const student = users.find(
+          (u) => u.id === studentId
+        );
+
+        const clsId =
+          enr.classroom || enr.classroom?.id;
+
+        const cls = classrooms.find(
+          (c) => c.id === clsId
+        );
+
+        const term = terms.find(
+          (t) =>
+            t.id ===
+            (cls?.term || cls?.term?.id)
+        );
+
+        const tuitionFee =
+          cls?.tuition_fee !== undefined
+            ? Number(cls.tuition_fee)
+            : 2500000;
 
         return {
           id: enr.id,
           enrollment: enr,
           studentId,
           student,
-          studentName: student ? getFullName(student) : "دانش‌آموز نامشخص",
-          username: student?.username || "-",
-          phone: student?.phone_number || "-",
+
+          studentName: student
+            ? getFullName(student)
+            : "دانش‌آموز نامشخص",
+
+          username:
+            student?.username || "-",
+
+          phone:
+            student?.phone_number || "-",
+
           classId: clsId,
-          className: cls?.name || enr.classroom_name || `کلاس کد ${clsId}`,
-          teacherName: getFullName(cls?.teacher_detail) || "استاد نامشخص",
-          termName: term?.name || "ترم نامشخص",
+
+          className:
+            cls?.name ||
+            enr.classroom_name ||
+            `کلاس کد ${clsId}`,
+
+          teacherName:
+            getFullName(cls?.teacher_detail) ||
+            "استاد نامشخص",
+
+          termName:
+            term?.name || "ترم نامشخص",
+
           tuitionFee,
+
           isPaid: Boolean(enr.is_paid),
+
           paidAt: enr.paid_at,
-          paymentNotes: enr.payment_notes || "",
+
+          paymentNotes:
+            enr.payment_notes || "",
         };
       });
-  }, [enrollments, users, classrooms, terms, selectedTermId, termClassIds]);
-
-  // Filtered Items
+  }, [
+    enrollments,
+    users,
+    classrooms,
+    terms,
+    selectedTermId,
+    termClassIds,
+  ]);
   const filteredItems = useMemo(() => {
-    const q = searchTerm.trim().toLowerCase();
+    const q = searchTerm
+      .trim()
+      .toLowerCase();
 
     return tuitionItems.filter((item) => {
       const matchSearch =
         !q ||
-        item.studentName.toLowerCase().includes(q) ||
-        item.username.toLowerCase().includes(q) ||
+        item.studentName
+          .toLowerCase()
+          .includes(q) ||
+        item.username
+          .toLowerCase()
+          .includes(q) ||
         item.phone.includes(q) ||
-        item.className.toLowerCase().includes(q);
+        item.className
+          .toLowerCase()
+          .includes(q);
 
       const matchClass =
-        selectedClassId === "all" || String(item.classId) === String(selectedClassId);
+        selectedClassId === "all" ||
+        String(item.classId) ===
+          String(selectedClassId);
 
       const matchStatus =
         selectedStatus === "all" ||
-        (selectedStatus === "paid" && item.isPaid) ||
-        (selectedStatus === "pending" && !item.isPaid);
+        (selectedStatus === "paid" &&
+          item.isPaid) ||
+        (selectedStatus === "pending" &&
+          !item.isPaid);
 
-      return matchSearch && matchClass && matchStatus;
+      return (
+        matchSearch &&
+        matchClass &&
+        matchStatus
+      );
     });
-  }, [tuitionItems, searchTerm, selectedClassId, selectedStatus]);
+  }, [
+    tuitionItems,
+    searchTerm,
+    selectedClassId,
+    selectedStatus,
+  ]);
+  const totalPages = Math.max(
+    1,
+    Math.ceil(
+      filteredItems.length / itemsPerPage
+    )
+  );
 
-  // Stats Calculations
+  const safeCurrentPage = Math.min(
+    currentPage,
+    totalPages
+  );
+
+  const paginatedItems = useMemo(() => {
+    const start =
+      (safeCurrentPage - 1) *
+      itemsPerPage;
+
+    const end =
+      start + itemsPerPage;
+
+    return filteredItems.slice(
+      start,
+      end
+    );
+  }, [
+    filteredItems,
+    safeCurrentPage,
+    itemsPerPage,
+  ]);
+
+  const paginationStart =
+    filteredItems.length === 0
+      ? 0
+      : (safeCurrentPage - 1) *
+          itemsPerPage +
+        1;
+
+  const paginationEnd = Math.min(
+    safeCurrentPage * itemsPerPage,
+    filteredItems.length
+  );
+
+  /* =========================================================
+     Reset Pagination When Filters Change
+     ========================================================= */
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [
+    searchTerm,
+    selectedClassId,
+    selectedStatus,
+    selectedTermId,
+    itemsPerPage,
+  ]);
   const stats = useMemo(() => {
-    const totalCount = tuitionItems.length;
-    const totalExpected = tuitionItems.reduce((sum, i) => sum + i.tuitionFee, 0);
-    const totalCollected = tuitionItems
-      .filter((i) => i.isPaid)
-      .reduce((sum, i) => sum + i.tuitionFee, 0);
-    const totalPending = totalExpected - totalCollected;
-    const paidCount = tuitionItems.filter((i) => i.isPaid).length;
-    const pendingCount = totalCount - paidCount;
+    const totalCount =
+      tuitionItems.length;
+
+    const totalExpected =
+      tuitionItems.reduce(
+        (sum, i) =>
+          sum + Number(i.tuitionFee || 0),
+        0
+      );
+
+    const totalCollected =
+      tuitionItems
+        .filter((i) => i.isPaid)
+        .reduce(
+          (sum, i) =>
+            sum +
+            Number(i.tuitionFee || 0),
+          0
+        );
+
+    const totalPending =
+      totalExpected -
+      totalCollected;
+
+    const paidCount =
+      tuitionItems.filter(
+        (i) => i.isPaid
+      ).length;
+
+    const pendingCount =
+      totalCount - paidCount;
 
     return {
       totalCount,
@@ -201,105 +369,214 @@ function SecretaryTuitions() {
       pendingCount,
     };
   }, [tuitionItems]);
+  const showSuccess = (message) => {
+    setSuccessMsg(message);
 
-  // Actions
-  const handleTogglePayment = async (enrollmentId, targetPaidStatus, notes = "") => {
+    window.setTimeout(() => {
+      setSuccessMsg("");
+    }, 4000);
+  };
+  const handleTogglePayment = async (
+    enrollmentId,
+    targetPaidStatus,
+    notes = ""
+  ) => {
     try {
       setSavingPayment(true);
-      const updated = await api.enrollments.update(enrollmentId, {
-        is_paid: targetPaidStatus,
-        payment_notes: notes,
-      });
+
+      const updated =
+        await api.enrollments.update(
+          enrollmentId,
+          {
+            is_paid:
+              targetPaidStatus,
+            payment_notes: notes,
+          }
+        );
 
       setEnrollments((prev) =>
-        prev.map((e) => (e.id === enrollmentId ? { ...e, ...updated } : e)),
+        prev.map((e) =>
+          e.id === enrollmentId
+            ? {
+                ...e,
+                ...updated,
+              }
+            : e
+        )
       );
 
-      setSuccessMsg(
+      showSuccess(
         targetPaidStatus
           ? "دریافت شهریه با موفقیت ثبت شد و وضعیت به «تسویه شده» تغییر یافت."
-          : "وضعیت شهریه به «در انتظار پرداخت» بازگردانده شد.",
+          : "وضعیت شهریه به «در انتظار پرداخت» بازگردانده شد."
       );
+
       setPaymentModalData(null);
-      setTimeout(() => setSuccessMsg(""), 4000);
     } catch (err) {
-      alert(err.message || "خطا در به‌روزرسانی وضعیت پرداخت");
+      alert(
+        err.message ||
+          "خطا در به‌روزرسانی وضعیت پرداخت"
+      );
     } finally {
       setSavingPayment(false);
     }
   };
-
   const handleChangeClass = async (e) => {
     e.preventDefault();
-    if (!changeClassModalData || !newClassIdTarget) return;
+
+    if (
+      !changeClassModalData ||
+      !newClassIdTarget
+    ) {
+      return;
+    }
 
     try {
       setSavingClassChange(true);
-      const updated = await api.enrollments.update(changeClassModalData.enrollment.id, {
-        classroom: Number(newClassIdTarget),
-      });
+
+      const updated =
+        await api.enrollments.update(
+          changeClassModalData.enrollment.id,
+          {
+            classroom:
+              Number(newClassIdTarget),
+          }
+        );
 
       setEnrollments((prev) =>
         prev.map((item) =>
-          item.id === changeClassModalData.enrollment.id ? { ...item, ...updated } : item,
-        ),
+          item.id ===
+          changeClassModalData.enrollment.id
+            ? {
+                ...item,
+                ...updated,
+              }
+            : item
+        )
       );
 
-      setSuccessMsg("کلاس دانش‌آموز با موفقیت تغییر داده شد.");
+      showSuccess(
+        "کلاس دانش‌آموز با موفقیت تغییر داده شد."
+      );
+
       setChangeClassModalData(null);
       setNewClassIdTarget("");
-      setTimeout(() => setSuccessMsg(""), 4000);
     } catch (err) {
-      alert(err.message || "خطا در تغییر کلاس دانش‌آموز");
+      alert(
+        err.message ||
+          "خطا در تغییر کلاس دانش‌آموز"
+      );
     } finally {
       setSavingClassChange(false);
     }
   };
-
-  const handleCreateEnrollment = async (e) => {
+  const handleCreateEnrollment = async (
+    e
+  ) => {
     e.preventDefault();
-    if (!newEnrollStudentId || !newEnrollClassId) return;
+
+    if (
+      !newEnrollStudentId ||
+      !newEnrollClassId
+    ) {
+      return;
+    }
 
     try {
       setSavingNewEnroll(true);
-      const newEnr = await api.enrollments.create({
-        student: Number(newEnrollStudentId),
-        classroom: Number(newEnrollClassId),
-        is_paid: newEnrollPaid,
-      });
 
-      setEnrollments((prev) => [...prev, newEnr]);
+      const newEnr =
+        await api.enrollments.create({
+          student:
+            Number(newEnrollStudentId),
+
+          classroom:
+            Number(newEnrollClassId),
+
+          is_paid: newEnrollPaid,
+        });
+
+      setEnrollments((prev) => [
+        ...prev,
+        newEnr,
+      ]);
+
       setShowNewEnrollModal(false);
+
       setNewEnrollStudentId("");
       setNewEnrollClassId("");
       setNewEnrollPaid(false);
-      setSuccessMsg("دانش‌آموز با موفقیت در کلاس ثبت‌نام شد.");
-      setTimeout(() => setSuccessMsg(""), 4000);
+
+      showSuccess(
+        "دانش‌آموز با موفقیت در کلاس ثبت‌نام شد."
+      );
     } catch (err) {
-      alert(err.message || "خطا در ثبت‌نام دانش‌آموز در کلاس");
+      alert(
+        err.message ||
+          "خطا در ثبت‌نام دانش‌آموز در کلاس"
+      );
     } finally {
       setSavingNewEnroll(false);
     }
   };
 
   const studentUsersList = useMemo(
-    () => users.filter((u) => u.role === "student"),
-    [users],
+    () =>
+      users.filter(
+        (u) => u.role === "student"
+      ),
+    [users]
   );
+  const getPaginationPages = () => {
+    if (totalPages <= 5) {
+      return Array.from(
+        { length: totalPages },
+        (_, index) => index + 1
+      );
+    }
+
+    if (safeCurrentPage <= 3) {
+      return [1, 2, 3, 4, 5];
+    }
+
+    if (
+      safeCurrentPage >=
+      totalPages - 2
+    ) {
+      return [
+        totalPages - 4,
+        totalPages - 3,
+        totalPages - 2,
+        totalPages - 1,
+        totalPages,
+      ];
+    }
+
+    return [
+      safeCurrentPage - 2,
+      safeCurrentPage - 1,
+      safeCurrentPage,
+      safeCurrentPage + 1,
+      safeCurrentPage + 2,
+    ];
+  };
 
   return (
-    <DashboardLayout role={roleTitle} title="مدیریت شهریه‌ها و تسویه" menuType={menuType}>
+    <DashboardLayout
+      role={roleTitle}
+      title="مدیریت شهریه‌ها و تسویه"
+      menuType={menuType}
+    >
       <div className="secretary-tuitions-page">
-        {/* Term Selector Header Banner */}
-        <div className="term-selector-banner" style={{ marginBottom: "1.75rem" }}>
+        <div className="term-selector-banner">
           <div className="term-banner-info">
             <div className="term-icon-circle">
               <Layers size={22} />
             </div>
-            <div>
-              <h3 style={{ margin: "0 0 0.25rem", fontSize: "1.1rem", fontWeight: "800" }}>
+            <div className="term-banner-text">
+              <h3>
                 ترم تحصیلی انتخابی:{" "}
-                <span className="term-highlight-text" style={{ color: "var(--primary)" }}>
+                <span className="term-highlight-text">
                   {activeTermObj
                     ? activeTermObj.name
                     : selectedTermId === "all"
@@ -307,7 +584,8 @@ function SecretaryTuitions() {
                     : "ترم نامشخص"}
                 </span>
               </h3>
-              <p style={{ margin: 0, fontSize: "0.8rem", color: "oklch(55% 0 0)" }}>
+
+              <p>
                 {activeTermObj?.is_active
                   ? "شهریه‌ها و وضعیت تسویه ثبت‌نام‌های ترم فعال جاری در حال نمایش است."
                   : activeTermObj
@@ -317,26 +595,39 @@ function SecretaryTuitions() {
             </div>
           </div>
 
-          <div className="term-dropdown-wrapper" style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-            <label style={{ fontSize: "0.84rem", fontWeight: "700" }}>انتخاب ترم:</label>
+          <div className="term-dropdown-wrapper">
+            <label>
+              انتخاب ترم:
+            </label>
+
             <select
               value={selectedTermId}
               onChange={(e) => {
-                setSelectedTermId(e.target.value);
+                setSelectedTermId(
+                  e.target.value
+                );
                 setSelectedClassId("all");
               }}
               className="term-select-input"
             >
               {terms.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name} {t.is_active ? "(ترم فعال جاری)" : "(به پایان رسیده)"}
+                <option
+                  key={t.id}
+                  value={t.id}
+                >
+                  {t.name}{" "}
+                  {t.is_active
+                    ? "(ترم فعال جاری)"
+                    : "(به پایان رسیده)"}
                 </option>
               ))}
-              <option value="all">همه ترم‌ها (مشاهده کامل)</option>
+
+              <option value="all">
+                همه ترم‌ها (مشاهده کامل)
+              </option>
             </select>
           </div>
         </div>
-
         {error && (
           <div className="tuition-alert error">
             <AlertCircle size={18} />
@@ -350,411 +641,968 @@ function SecretaryTuitions() {
             <span>{successMsg}</span>
           </div>
         )}
-
-        {/* Stats Grid */}
         <div className="secretary-tuition-stats-grid">
           <StatCard
             title="کل شهریه مصوب ترم"
-            value={`${toPersianDigits(stats.totalExpected.toLocaleString("fa-IR"))} تومان`}
-            hint={`${toPersianDigits(stats.totalCount)} ثبت‌نام کلاسی`}
+            value={`${toPersianDigits(
+              stats.totalExpected.toLocaleString(
+                "fa-IR"
+              )
+            )} تومان`}
+            hint={`${toPersianDigits(
+              stats.totalCount
+            )} ثبت‌نام کلاسی`}
             icon={<CreditCard />}
             color="blue"
           />
 
           <StatCard
             title="شهریه وصول‌شده"
-            value={`${toPersianDigits(stats.totalCollected.toLocaleString("fa-IR"))} تومان`}
-            hint={`${toPersianDigits(stats.paidCount)} نفر تسویه کامل`}
+            value={`${toPersianDigits(
+              stats.totalCollected.toLocaleString(
+                "fa-IR"
+              )
+            )} تومان`}
+            hint={`${toPersianDigits(
+              stats.paidCount
+            )} نفر تسویه کامل`}
             icon={<CheckCircle2 />}
             color="green"
           />
 
           <StatCard
             title="مانده در انتظار وصول"
-            value={`${toPersianDigits(stats.totalPending.toLocaleString("fa-IR"))} تومان`}
-            hint={`${toPersianDigits(stats.pendingCount)} نفر بدهکار`}
+            value={`${toPersianDigits(
+              stats.totalPending.toLocaleString(
+                "fa-IR"
+              )
+            )} تومان`}
+            hint={`${toPersianDigits(
+              stats.pendingCount
+            )} نفر بدهکار`}
             icon={<Clock3 />}
-            color={stats.totalPending === 0 ? "green" : "red"}
+            color={
+              stats.totalPending === 0
+                ? "green"
+                : "red"
+            }
           />
 
           <StatCard
             title="نسبت وصولی"
             value={`${toPersianDigits(
               stats.totalCount > 0
-                ? Math.round((stats.paidCount / stats.totalCount) * 100)
-                : 100,
+                ? Math.round(
+                    (stats.paidCount /
+                      stats.totalCount) *
+                      100
+                  )
+                : 100
             )}٪`}
             hint="درصد تسویه حساب‌ها"
             icon={<Users />}
             color="light-blue"
           />
         </div>
-
-        {/* Main Section Container */}
         <section className="tuitions-main-section">
+
           <div className="tuitions-section-header">
             <div className="tuitions-heading-info">
-              <h3 className="tuitions-section-title">لیست ثبت‌نام‌ها و وضعیت شهریه</h3>
+              <h3 className="tuitions-section-title">
+                لیست ثبت‌نام‌ها و وضعیت شهریه
+              </h3>
+
               <p className="tuitions-section-desc">
-                مبالغ شهریه مصوب به تفکیک کلاس و وضعیت پرداخت نقدی/کارتخوانی توسط منشی یا مدیریت
+                مبالغ شهریه مصوب به تفکیک کلاس و وضعیت پرداخت
               </p>
             </div>
+
             <span className="tuitions-count-badge">
-              {toPersianDigits(filteredItems.length)} مورد ثبت‌نام
+              {toPersianDigits(
+                filteredItems.length
+              )}{" "}
+              مورد ثبت‌نام
             </span>
           </div>
-
-          {/* Filters & Actions Bar */}
           <div className="tuitions-filters-row">
+
             <div className="tuitions-search-wrapper">
-              <Search size={18} className="tuitions-search-icon" />
+              <Search
+                size={18}
+                className="tuitions-search-icon"
+              />
+
               <input
                 type="text"
-                placeholder="جستجوی نام دانش‌آموز، نام کاربری یا شماره تماس..."
+                placeholder="جستجوی نام، نام کاربری یا شماره تماس..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) =>
+                  setSearchTerm(
+                    e.target.value
+                  )
+                }
                 className="tuitions-search-input"
               />
             </div>
 
             <div className="tuitions-select-wrapper">
-              <BookOpen size={16} className="tuitions-filter-icon" />
+              <BookOpen
+                size={16}
+                className="tuitions-filter-icon"
+              />
+
               <select
                 value={selectedClassId}
-                onChange={(e) => setSelectedClassId(e.target.value)}
+                onChange={(e) =>
+                  setSelectedClassId(
+                    e.target.value
+                  )
+                }
                 className="tuitions-select"
               >
-                <option value="all">همه کلاس‌های این ترم</option>
+                <option value="all">
+                  همه کلاس‌های این ترم
+                </option>
+
                 {termClassrooms.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name} (شهریه: {toPersianDigits((c.tuition_fee || 2500000).toLocaleString("fa-IR"))} ت)
+                  <option
+                    key={c.id}
+                    value={c.id}
+                  >
+                    {c.name} -{" "}
+                    {toPersianDigits(
+                      (
+                        c.tuition_fee ||
+                        2500000
+                      ).toLocaleString(
+                        "fa-IR"
+                      )
+                    )}{" "}
+                    تومان
                   </option>
                 ))}
               </select>
             </div>
 
             <div className="tuitions-select-wrapper">
-              <Filter size={16} className="tuitions-filter-icon" />
+              <Filter
+                size={16}
+                className="tuitions-filter-icon"
+              />
+
               <select
                 value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
+                onChange={(e) =>
+                  setSelectedStatus(
+                    e.target.value
+                  )
+                }
                 className="tuitions-select"
               >
-                <option value="all">همه وضعیت‌های پرداخت</option>
-                <option value="paid">پرداخت شده (تسویه)</option>
-                <option value="pending">در انتظار پرداخت</option>
+                <option value="all">
+                  همه وضعیت‌های پرداخت
+                </option>
+
+                <option value="paid">
+                  پرداخت شده (تسویه)
+                </option>
+
+                <option value="pending">
+                  در انتظار پرداخت
+                </option>
               </select>
             </div>
 
             <AnimatedButton
               variant="primary"
               icon={<Plus size={18} />}
-              onClick={() => setShowNewEnrollModal(true)}
+              onClick={() =>
+                setShowNewEnrollModal(true)
+              }
             >
               تعیین کلاس برای دانش‌آموز
             </AnimatedButton>
           </div>
+          {!loading &&
+            filteredItems.length > 0 && (
+              <div className="tuitions-results-toolbar">
+                <div className="tuitions-results-info">
+                  نمایش{" "}
+                  <strong>
+                    {toPersianDigits(
+                      paginationStart
+                    )}
+                  </strong>{" "}
+                  تا{" "}
+                  <strong>
+                    {toPersianDigits(
+                      paginationEnd
+                    )}
+                  </strong>{" "}
+                  از{" "}
+                  <strong>
+                    {toPersianDigits(
+                      filteredItems.length
+                    )}
+                  </strong>{" "}
+                  مورد
+                </div>
 
-          {/* Main Table */}
+                <div className="tuitions-page-size">
+                  <span>
+                    تعداد در صفحه
+                  </span>
+
+                  <select
+                    value={itemsPerPage}
+                    onChange={(e) =>
+                      setItemsPerPage(
+                        Number(
+                          e.target.value
+                        )
+                      )
+                    }
+                  >
+                    <option value={10}>
+                      ۱۰
+                    </option>
+
+                    <option value={20}>
+                      ۲۰
+                    </option>
+
+                    <option value={50}>
+                      ۵۰
+                    </option>
+                  </select>
+                </div>
+              </div>
+            )}
           {loading ? (
-            <div style={{ textAlign: "center", padding: "3rem", color: "oklch(50% 0 0)" }}>
-              در حال بارگذاری اطلاعات شهریه‌ها...
+            <div className="tuition-loading-state">
+              <div className="tuition-loading-spinner" />
+
+              <span>
+                در حال بارگذاری اطلاعات شهریه‌ها...
+              </span>
             </div>
           ) : filteredItems.length === 0 ? (
             <div className="tuition-empty-state">
               <CreditCard size={44} />
-              <h4>هیچ ثبت‌نامی یافت نشد</h4>
-              <p>موردی مطابق با فیلترهای انتخابی شما وجود ندارد.</p>
+
+              <h4>
+                هیچ ثبت‌نامی یافت نشد
+              </h4>
+
+              <p>
+                موردی مطابق با فیلترهای انتخابی شما وجود ندارد.
+              </p>
             </div>
           ) : (
-            <div className="tuitions-table-wrapper">
-              <table className="tuitions-table">
-                <thead>
-                  <tr>
-                    <th>دانش‌آموز</th>
-                    <th>کلاس و ترم</th>
-                    <th>مدرس دوره</th>
-                    <th>شهریه مصوب کلاس</th>
-                    <th>وضعیت پرداخت</th>
-                    <th>تاریخ پرداخت</th>
-                    <th>توضیحات فیش / رسید</th>
-                    <th>عملیات منشی / مدیر</th>
-                  </tr>
-                </thead>
+            <>
+              <div className="tuitions-table-wrapper">
+                <table className="tuitions-table">
+                  <thead>
+                    <tr>
+                      <th>دانش‌آموز</th>
+                      <th>کلاس و ترم</th>
+                      <th>مدرس دوره</th>
+                      <th>شهریه مصوب</th>
+                      <th>وضعیت پرداخت</th>
+                      <th>تاریخ پرداخت</th>
+                      <th>رسید / توضیحات</th>
+                      <th>عملیات</th>
+                    </tr>
+                  </thead>
 
-                <tbody>
-                  {filteredItems.map((item) => (
-                    <tr key={item.id}>
-                      <td>
+                  <tbody>
+                    {paginatedItems.map(
+                      (item) => (
+                        <tr key={item.id}>
+                          <td>
+                            <div className="student-profile-cell">
+                              <div className="student-avatar-circle">
+                                {item.studentName.charAt(
+                                  0
+                                )}
+                              </div>
+
+                              <div>
+                                <strong>
+                                  {
+                                    item.studentName
+                                  }
+                                </strong>
+
+                                <small>
+                                  {item.phone}
+                                </small>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td>
+                            <div className="class-badge-cell">
+                              <span className="class-name-text">
+                                {
+                                  item.className
+                                }
+                              </span>
+
+                              <small>
+                                {
+                                  item.termName
+                                }
+                              </small>
+                            </div>
+                          </td>
+
+                          <td>
+                            <span className="teacher-text">
+                              {
+                                item.teacherName
+                              }
+                            </span>
+                          </td>
+
+                          <td>
+                            <strong className="tuition-amount-text">
+                              {toPersianDigits(
+                                item.tuitionFee.toLocaleString(
+                                  "fa-IR"
+                                )
+                              )}
+                              تومان
+                            </strong>
+                          </td>
+
+                          <td>
+                            <span
+                              className={`payment-pill ${
+                                item.isPaid
+                                  ? "paid"
+                                  : "pending"
+                              }`}
+                            >
+                              {item.isPaid
+                                ? "پرداخت شده"
+                                : "در انتظار پرداخت"}
+                            </span>
+                          </td>
+
+                          <td>
+                            <span className="date-sub-text">
+                              {item.paidAt
+                                ? toJalaliDateString(
+                                    item.paidAt
+                                  )
+                                : "-"}
+                            </span>
+                          </td>
+
+                          <td>
+                            <span className="notes-text">
+                              {item.paymentNotes ||
+                                "-"}
+                            </span>
+                          </td>
+
+                          <td>
+                            <TuitionActions
+                              item={item}
+                              basePath={basePath}
+                              onPayment={() => {
+                                setPaymentModalData(
+                                  item
+                                );
+                                setPaymentNotes(
+                                  item.paymentNotes ||
+                                    ""
+                                );
+                              }}
+                              onRevert={() =>
+                                handleTogglePayment(
+                                  item.id,
+                                  false,
+                                  ""
+                                )
+                              }
+                              onChangeClass={() => {
+                                setChangeClassModalData(
+                                  item
+                                );
+                                setNewClassIdTarget(
+                                  String(
+                                    item.classId
+                                  )
+                                );
+                              }}
+                            />
+                          </td>
+                        </tr>
+                      )
+                    )}
+                  </tbody>
+                </table>
+              </div>
+              <div className="tuitions-mobile-list">
+                {paginatedItems.map(
+                  (item) => (
+                    <div
+                      className="tuition-mobile-card"
+                      key={item.id}
+                    >
+                      <div className="mobile-card-top">
                         <div className="student-profile-cell">
                           <div className="student-avatar-circle">
-                            {item.studentName.charAt(0)}
+                            {item.studentName.charAt(
+                              0
+                            )}
                           </div>
+
                           <div>
-                            <strong>{item.studentName}</strong>
-                            <small>{item.phone}</small>
+                            <strong>
+                              {
+                                item.studentName
+                              }
+                            </strong>
+
+                            <small>
+                              {item.phone}
+                            </small>
                           </div>
                         </div>
-                      </td>
 
-                      <td>
-                        <div className="class-badge-cell">
-                          <span className="class-name-text">{item.className}</span>
-                          <small>{item.termName}</small>
+                        <span
+                          className={`payment-pill ${
+                            item.isPaid
+                              ? "paid"
+                              : "pending"
+                          }`}
+                        >
+                          {item.isPaid
+                            ? "تسویه"
+                            : "بدهکار"}
+                        </span>
+                      </div>
+
+                      <div className="mobile-card-divider" />
+
+                      <div className="mobile-card-grid">
+                        <div>
+                          <span>
+                            کلاس
+                          </span>
+
+                          <strong>
+                            {
+                              item.className
+                            }
+                          </strong>
                         </div>
-                      </td>
 
-                      <td>
-                        <span className="teacher-text">{item.teacherName}</span>
-                      </td>
+                        <div>
+                          <span>
+                            ترم
+                          </span>
 
-                      <td>
-                        <strong className="tuition-amount-text">
-                          {toPersianDigits(item.tuitionFee.toLocaleString("fa-IR"))} تومان
-                        </strong>
-                      </td>
+                          <strong>
+                            {
+                              item.termName
+                            }
+                          </strong>
+                        </div>
 
-                      <td>
-                        <span className={`payment-pill ${item.isPaid ? "paid" : "pending"}`}>
-                          {item.isPaid ? "پرداخت شده (تسویه)" : "در انتظار پرداخت"}
-                        </span>
-                      </td>
+                        <div>
+                          <span>
+                            مدرس
+                          </span>
 
-                      <td>
-                        <span className="date-sub-text">
-                          {item.paidAt ? toJalaliDateString(item.paidAt) : "-"}
-                        </span>
-                      </td>
+                          <strong>
+                            {
+                              item.teacherName
+                            }
+                          </strong>
+                        </div>
 
-                      <td>
-                        <span className="notes-text">
-                          {item.paymentNotes || "-"}
-                        </span>
-                      </td>
+                        <div>
+                          <span>
+                            شهریه
+                          </span>
 
-                      <td>
-                        <div className="tuition-row-actions">
-                          {item.isPaid ? (
-                            <button
-                              type="button"
-                              className="tuition-action-btn revert"
-                              onClick={() => handleTogglePayment(item.id, false, "")}
-                              title="لغو وضعیت تسویه"
-                            >
-                              <X size={14} />
-                              لغو تسویه
-                            </button>
-                          ) : (
-                            <button
-                              type="button"
-                              className="tuition-action-btn pay"
-                              onClick={() => {
-                                setPaymentModalData(item);
-                                setPaymentNotes(item.paymentNotes || "");
-                              }}
-                              title="ثبت دریافت وجه نقدی/کارتخوان"
-                            >
-                              <Check size={14} />
-                              ثبت دریافت وجه
-                            </button>
+                          <strong className="mobile-price">
+                            {toPersianDigits(
+                              item.tuitionFee.toLocaleString(
+                                "fa-IR"
+                              )
+                            )}{" "}
+                            تومان
+                          </strong>
+                        </div>
+
+                        <div>
+                          <span>
+                            تاریخ پرداخت
+                          </span>
+
+                          <strong>
+                            {item.paidAt
+                              ? toJalaliDateString(
+                                  item.paidAt
+                                )
+                              : "-"}
+                          </strong>
+                        </div>
+
+                        <div>
+                          <span>
+                            رسید / توضیحات
+                          </span>
+
+                          <strong className="mobile-note">
+                            {item.paymentNotes ||
+                              "-"}
+                          </strong>
+                        </div>
+                      </div>
+
+                      <div className="mobile-card-actions">
+                        <TuitionActions
+                          item={item}
+                          basePath={basePath}
+                          onPayment={() => {
+                            setPaymentModalData(
+                              item
+                            );
+                            setPaymentNotes(
+                              item.paymentNotes ||
+                                ""
+                            );
+                          }}
+                          onRevert={() =>
+                            handleTogglePayment(
+                              item.id,
+                              false,
+                              ""
+                            )
+                          }
+                          onChangeClass={() => {
+                            setChangeClassModalData(
+                              item
+                            );
+                            setNewClassIdTarget(
+                              String(
+                                item.classId
+                              )
+                            );
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
+              {totalPages > 1 && (
+                <div className="tuitions-pagination">
+
+                  <button
+                    type="button"
+                    className="pagination-nav-btn"
+                    disabled={
+                      safeCurrentPage === 1
+                    }
+                    onClick={() =>
+                      setCurrentPage(1)
+                    }
+                    title="صفحه اول"
+                  >
+                    <ChevronsRight size={17} />
+                  </button>
+
+                  <button
+                    type="button"
+                    className="pagination-nav-btn"
+                    disabled={
+                      safeCurrentPage === 1
+                    }
+                    onClick={() =>
+                      setCurrentPage(
+                        (prev) =>
+                          Math.max(
+                            1,
+                            prev - 1
+                          )
+                      )
+                    }
+                    title="صفحه قبل"
+                  >
+                    <ChevronRight size={17} />
+                  </button>
+
+                  <div className="pagination-pages">
+                    {getPaginationPages().map(
+                      (page) => (
+                        <button
+                          type="button"
+                          key={page}
+                          className={`pagination-page-btn ${
+                            page ===
+                            safeCurrentPage
+                              ? "active"
+                              : ""
+                          }`}
+                          onClick={() =>
+                            setCurrentPage(
+                              page
+                            )
+                          }
+                        >
+                          {toPersianDigits(
+                            page
                           )}
+                        </button>
+                      )
+                    )}
+                  </div>
 
-                          <button
-                            type="button"
-                            className="tuition-action-btn change-class"
-                            onClick={() => {
-                              setChangeClassModalData(item);
-                              setNewClassIdTarget(String(item.classId));
-                            }}
-                            title="تغییر کلاس دانش‌آموز"
-                          >
-                            <ArrowRightLeft size={14} />
-                            تغییر کلاس
-                          </button>
+                  <button
+                    type="button"
+                    className="pagination-nav-btn"
+                    disabled={
+                      safeCurrentPage ===
+                      totalPages
+                    }
+                    onClick={() =>
+                      setCurrentPage(
+                        (prev) =>
+                          Math.min(
+                            totalPages,
+                            prev + 1
+                          )
+                      )
+                    }
+                    title="صفحه بعد"
+                  >
+                    <ChevronLeft size={17} />
+                  </button>
 
-                          <Link to={`${basePath}/students/${item.studentId}`}>
-                            <button
-                              type="button"
-                              className="tuition-action-btn view"
-                              title="مشاهده پرونده"
-                            >
-                              <Eye size={14} />
-                              پرونده
-                            </button>
-                          </Link>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  <button
+                    type="button"
+                    className="pagination-nav-btn"
+                    disabled={
+                      safeCurrentPage ===
+                      totalPages
+                    }
+                    onClick={() =>
+                      setCurrentPage(
+                        totalPages
+                      )
+                    }
+                    title="آخرین صفحه"
+                  >
+                    <ChevronsLeft size={17} />
+                  </button>
+
+                  <span className="pagination-current-info">
+                    صفحه{" "}
+                    <strong>
+                      {toPersianDigits(
+                        safeCurrentPage
+                      )}
+                    </strong>{" "}
+                    از{" "}
+                    <strong>
+                      {toPersianDigits(
+                        totalPages
+                      )}
+                    </strong>
+                  </span>
+                </div>
+              )}
+            </>
           )}
         </section>
 
-        {/* Modal 1: Record / Confirm Payment */}
+        {/* =====================================================
+            Payment Modal
+            ===================================================== */}
+
         {paymentModalData && (
           <div
-            className="exam-modal-backdrop"
-            onClick={() => setPaymentModalData(null)}
+            className="tuition-modal-backdrop"
+            onClick={() =>
+              setPaymentModalData(null)
+            }
           >
             <div
-              className="exam-modal-container"
-              style={{ maxWidth: "480px" }}
-              onClick={(e) => e.stopPropagation()}
+              className="tuition-modal-container"
+              onClick={(e) =>
+                e.stopPropagation()
+              }
             >
-              <div className="exam-modal-header">
+              <div className="tuition-modal-header">
                 <div className="modal-header-info">
-                  <div className="exam-icon-circle" style={{ background: "var(--green-5, #10b981)" }}>
+                  <div className="exam-icon-circle payment">
                     <CheckCircle2 size={20} />
                   </div>
+
                   <div>
-                    <h4>ثبت دریافت شهریه آموزشگاه</h4>
-                    <p>{paymentModalData.studentName} - {paymentModalData.className}</p>
+                    <h4>
+                      ثبت دریافت شهریه
+                    </h4>
+
+                    <p>
+                      {
+                        paymentModalData.studentName
+                      }{" "}
+                      -{" "}
+                      {
+                        paymentModalData.className
+                      }
+                    </p>
                   </div>
                 </div>
+
                 <button
                   type="button"
                   className="modal-close-btn"
-                  onClick={() => setPaymentModalData(null)}
+                  onClick={() =>
+                    setPaymentModalData(null)
+                  }
                 >
                   <X size={20} />
                 </button>
               </div>
 
-              <div className="exam-modal-body" style={{ padding: "1.5rem" }}>
-                <div style={{ background: "oklch(97% 0 0)", padding: "1rem", borderRadius: "12px", marginBottom: "1.25rem" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
-                    <span>دانش‌آموز:</span>
-                    <strong>{paymentModalData.studentName}</strong>
+              <div className="tuition-modal-body">
+                <div className="payment-summary-box">
+                  <div>
+                    <span>
+                      دانش‌آموز
+                    </span>
+
+                    <strong>
+                      {
+                        paymentModalData.studentName
+                      }
+                    </strong>
                   </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
-                    <span>کلاس انتخابی:</span>
-                    <strong>{paymentModalData.className}</strong>
+
+                  <div>
+                    <span>
+                      کلاس
+                    </span>
+
+                    <strong>
+                      {
+                        paymentModalData.className
+                      }
+                    </strong>
                   </div>
-                  <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <span>مبلغ شهریه کلاس:</span>
-                    <strong style={{ color: "var(--primary)" }}>
-                      {toPersianDigits(paymentModalData.tuitionFee.toLocaleString("fa-IR"))} تومان
+
+                  <div>
+                    <span>
+                      مبلغ شهریه
+                    </span>
+
+                    <strong className="modal-price">
+                      {toPersianDigits(
+                        paymentModalData.tuitionFee.toLocaleString(
+                          "fa-IR"
+                        )
+                      )}{" "}
+                      تومان
                     </strong>
                   </div>
                 </div>
 
-                <div className="class-form-group full-width">
-                  <label style={{ fontWeight: "700", marginBottom: "0.5rem", display: "block" }}>
-                    شماره پیگیری / رسید کارتخوان / یادداشت (اختیاری):
+                <div className="modal-form-group">
+                  <label>
+                    شماره پیگیری / رسید / یادداشت
+                    <span>
+                      اختیاری
+                    </span>
                   </label>
+
                   <input
                     type="text"
                     placeholder="مثال: پرداخت نقدی / کارتخوان دفتر - پیگیری ۱۲۳۴۵"
                     value={paymentNotes}
-                    onChange={(e) => setPaymentNotes(e.target.value)}
-                    style={{
-                      width: "100%",
-                      padding: "0.75rem",
-                      borderRadius: "10px",
-                      border: "1px solid oklch(85% 0 0)",
-                    }}
+                    onChange={(e) =>
+                      setPaymentNotes(
+                        e.target.value
+                      )
+                    }
                   />
                 </div>
               </div>
 
-              <div className="exam-modal-footer">
+              <div className="tuition-modal-footer">
                 <AnimatedButton
                   variant="secondary"
                   type="button"
-                  onClick={() => setPaymentModalData(null)}
+                  onClick={() =>
+                    setPaymentModalData(null)
+                  }
                 >
                   انصراف
                 </AnimatedButton>
+
                 <AnimatedButton
                   variant="primary"
                   type="button"
                   disabled={savingPayment}
-                  onClick={() => handleTogglePayment(paymentModalData.id, true, paymentNotes)}
+                  onClick={() =>
+                    handleTogglePayment(
+                      paymentModalData.id,
+                      true,
+                      paymentNotes
+                    )
+                  }
                 >
-                  {savingPayment ? "در حال ثبت..." : "تایید و ثبت تسویه"}
+                  {savingPayment
+                    ? "در حال ثبت..."
+                    : "تایید و ثبت تسویه"}
                 </AnimatedButton>
               </div>
             </div>
           </div>
         )}
 
-        {/* Modal 2: Change Class */}
+        {/* =====================================================
+            Change Class Modal
+            ===================================================== */}
+
         {changeClassModalData && (
           <div
-            className="exam-modal-backdrop"
-            onClick={() => setChangeClassModalData(null)}
+            className="tuition-modal-backdrop"
+            onClick={() =>
+              setChangeClassModalData(null)
+            }
           >
             <div
-              className="exam-modal-container"
-              style={{ maxWidth: "480px" }}
-              onClick={(e) => e.stopPropagation()}
+              className="tuition-modal-container"
+              onClick={(e) =>
+                e.stopPropagation()
+              }
             >
-              <div className="exam-modal-header">
+              <div className="tuition-modal-header">
                 <div className="modal-header-info">
                   <div className="exam-icon-circle">
                     <ArrowRightLeft size={20} />
                   </div>
+
                   <div>
-                    <h4>تغییر کلاس دانش‌آموز</h4>
-                    <p>{changeClassModalData.studentName}</p>
+                    <h4>
+                      تغییر کلاس دانش‌آموز
+                    </h4>
+
+                    <p>
+                      {
+                        changeClassModalData.studentName
+                      }
+                    </p>
                   </div>
                 </div>
+
                 <button
                   type="button"
                   className="modal-close-btn"
-                  onClick={() => setChangeClassModalData(null)}
+                  onClick={() =>
+                    setChangeClassModalData(
+                      null
+                    )
+                  }
                 >
                   <X size={20} />
                 </button>
               </div>
 
-              <form onSubmit={handleChangeClass}>
-                <div className="exam-modal-body" style={{ padding: "1.5rem" }}>
-                  <p style={{ fontSize: "0.88rem", marginBottom: "1rem", color: "oklch(45% 0 0)" }}>
-                    کلاس فعلی: <strong>{changeClassModalData.className}</strong>
-                  </p>
+              <form
+                onSubmit={
+                  handleChangeClass
+                }
+              >
+                <div className="tuition-modal-body">
+                  <div className="current-class-box">
+                    <span>
+                      کلاس فعلی
+                    </span>
 
-                  <div className="class-form-group full-width">
-                    <label style={{ fontWeight: "700", marginBottom: "0.5rem", display: "block" }}>
-                      کلاس جدید را انتخاب کنید:
+                    <strong>
+                      {
+                        changeClassModalData.className
+                      }
+                    </strong>
+                  </div>
+
+                  <div className="modal-form-group">
+                    <label>
+                      کلاس جدید
                     </label>
+
                     <select
-                      value={newClassIdTarget}
-                      onChange={(e) => setNewClassIdTarget(e.target.value)}
+                      value={
+                        newClassIdTarget
+                      }
+                      onChange={(e) =>
+                        setNewClassIdTarget(
+                          e.target.value
+                        )
+                      }
                       required
-                      style={{
-                        width: "100%",
-                        padding: "0.75rem",
-                        borderRadius: "10px",
-                        border: "1px solid oklch(85% 0 0)",
-                      }}
                     >
-                      <option value="">انتخاب کلاس جدید...</option>
-                      {termClassrooms.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.name} (شهریه: {toPersianDigits((c.tuition_fee || 2500000).toLocaleString("fa-IR"))} تومان)
-                        </option>
-                      ))}
+                      <option value="">
+                        انتخاب کلاس جدید...
+                      </option>
+
+                      {termClassrooms.map(
+                        (c) => (
+                          <option
+                            key={c.id}
+                            value={c.id}
+                          >
+                            {c.name} -{" "}
+                            {toPersianDigits(
+                              (
+                                c.tuition_fee ||
+                                2500000
+                              ).toLocaleString(
+                                "fa-IR"
+                              )
+                            )}{" "}
+                            تومان
+                          </option>
+                        )
+                      )}
                     </select>
                   </div>
                 </div>
 
-                <div className="exam-modal-footer">
+                <div className="tuition-modal-footer">
                   <AnimatedButton
                     variant="secondary"
                     type="button"
-                    onClick={() => setChangeClassModalData(null)}
+                    onClick={() =>
+                      setChangeClassModalData(
+                        null
+                      )
+                    }
                   >
                     انصراف
                   </AnimatedButton>
+
                   <AnimatedButton
                     variant="primary"
                     type="submit"
-                    disabled={savingClassChange || !newClassIdTarget}
+                    disabled={
+                      savingClassChange ||
+                      !newClassIdTarget
+                    }
                   >
-                    {savingClassChange ? "در حال تغییر..." : "ثبت تغییر کلاس"}
+                    {savingClassChange
+                      ? "در حال تغییر..."
+                      : "ثبت تغییر کلاس"}
                   </AnimatedButton>
                 </div>
               </form>
@@ -762,112 +1610,190 @@ function SecretaryTuitions() {
           </div>
         )}
 
-        {/* Modal 3: Add new student to a class */}
+        {/* =====================================================
+            New Enrollment Modal
+            ===================================================== */}
+
         {showNewEnrollModal && (
           <div
-            className="exam-modal-backdrop"
-            onClick={() => setShowNewEnrollModal(false)}
+            className="tuition-modal-backdrop"
+            onClick={() =>
+              setShowNewEnrollModal(false)
+            }
           >
             <div
-              className="exam-modal-container"
-              style={{ maxWidth: "520px" }}
-              onClick={(e) => e.stopPropagation()}
+              className="tuition-modal-container"
+              onClick={(e) =>
+                e.stopPropagation()
+              }
             >
-              <div className="exam-modal-header">
+              <div className="tuition-modal-header">
                 <div className="modal-header-info">
                   <div className="exam-icon-circle">
                     <Plus size={20} />
                   </div>
+
                   <div>
-                    <h4>تعیین کلاس برای دانش‌آموز</h4>
-                    <p>ثبت‌نام دانش‌آموز در کلاس و تنظیم وضعیت اولیه شهریه</p>
+                    <h4>
+                      تعیین کلاس برای دانش‌آموز
+                    </h4>
+
+                    <p>
+                      ثبت‌نام در کلاس و تنظیم وضعیت اولیه شهریه
+                    </p>
                   </div>
                 </div>
+
                 <button
                   type="button"
                   className="modal-close-btn"
-                  onClick={() => setShowNewEnrollModal(false)}
+                  onClick={() =>
+                    setShowNewEnrollModal(
+                      false
+                    )
+                  }
                 >
                   <X size={20} />
                 </button>
               </div>
 
-              <form onSubmit={handleCreateEnrollment}>
-                <div className="exam-modal-body" style={{ padding: "1.5rem" }}>
-                  <div className="class-form-group full-width" style={{ marginBottom: "1.25rem" }}>
-                    <label style={{ fontWeight: "700", marginBottom: "0.5rem", display: "block" }}>
-                      انتخاب دانش‌آموز <span style={{ color: "red" }}>*</span>
+              <form
+                onSubmit={
+                  handleCreateEnrollment
+                }
+              >
+                <div className="tuition-modal-body">
+
+                  <div className="modal-form-group">
+                    <label>
+                      انتخاب دانش‌آموز
+                      <span className="required">
+                        *
+                      </span>
                     </label>
+
                     <select
-                      value={newEnrollStudentId}
-                      onChange={(e) => setNewEnrollStudentId(e.target.value)}
+                      value={
+                        newEnrollStudentId
+                      }
+                      onChange={(e) =>
+                        setNewEnrollStudentId(
+                          e.target.value
+                        )
+                      }
                       required
-                      style={{
-                        width: "100%",
-                        padding: "0.75rem",
-                        borderRadius: "10px",
-                        border: "1px solid oklch(85% 0 0)",
-                      }}
                     >
-                      <option value="">انتخاب دانش‌آموز...</option>
-                      {studentUsersList.map((st) => (
-                        <option key={st.id} value={st.id}>
-                          {getFullName(st)} ({st.username}) - {st.phone_number || "بدون شماره"}
-                        </option>
-                      ))}
+                      <option value="">
+                        انتخاب دانش‌آموز...
+                      </option>
+
+                      {studentUsersList.map(
+                        (st) => (
+                          <option
+                            key={st.id}
+                            value={st.id}
+                          >
+                            {getFullName(
+                              st
+                            )}{" "}
+                            ({st.username}) -{" "}
+                            {st.phone_number ||
+                              "بدون شماره"}
+                          </option>
+                        )
+                      )}
                     </select>
                   </div>
 
-                  <div className="class-form-group full-width" style={{ marginBottom: "1.25rem" }}>
-                    <label style={{ fontWeight: "700", marginBottom: "0.5rem", display: "block" }}>
-                      انتخاب کلاس در این ترم <span style={{ color: "red" }}>*</span>
+                  <div className="modal-form-group">
+                    <label>
+                      انتخاب کلاس در این ترم
+                      <span className="required">
+                        *
+                      </span>
                     </label>
+
                     <select
-                      value={newEnrollClassId}
-                      onChange={(e) => setNewEnrollClassId(e.target.value)}
+                      value={
+                        newEnrollClassId
+                      }
+                      onChange={(e) =>
+                        setNewEnrollClassId(
+                          e.target.value
+                        )
+                      }
                       required
-                      style={{
-                        width: "100%",
-                        padding: "0.75rem",
-                        borderRadius: "10px",
-                        border: "1px solid oklch(85% 0 0)",
-                      }}
                     >
-                      <option value="">انتخاب کلاس...</option>
-                      {termClassrooms.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.name} (شهریه: {toPersianDigits((c.tuition_fee || 2500000).toLocaleString("fa-IR"))} تومان)
-                        </option>
-                      ))}
+                      <option value="">
+                        انتخاب کلاس...
+                      </option>
+
+                      {termClassrooms.map(
+                        (c) => (
+                          <option
+                            key={c.id}
+                            value={c.id}
+                          >
+                            {c.name} -{" "}
+                            {toPersianDigits(
+                              (
+                                c.tuition_fee ||
+                                2500000
+                              ).toLocaleString(
+                                "fa-IR"
+                              )
+                            )}{" "}
+                            تومان
+                          </option>
+                        )
+                      )}
                     </select>
                   </div>
 
-                  <div className="class-form-group full-width">
-                    <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
-                      <input
-                        type="checkbox"
-                        checked={newEnrollPaid}
-                        onChange={(e) => setNewEnrollPaid(e.target.checked)}
-                      />
-                      <span>شهریه این کلاس هم‌اکنون به صورت نقدی/کارتخوان تسویه شد.</span>
-                    </label>
-                  </div>
+                  <label className="payment-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={
+                        newEnrollPaid
+                      }
+                      onChange={(e) =>
+                        setNewEnrollPaid(
+                          e.target.checked
+                        )
+                      }
+                    />
+
+                    <span>
+                      شهریه این کلاس هم‌اکنون به صورت نقدی/کارتخوان تسویه شد.
+                    </span>
+                  </label>
                 </div>
 
-                <div className="exam-modal-footer">
+                <div className="tuition-modal-footer">
                   <AnimatedButton
                     variant="secondary"
                     type="button"
-                    onClick={() => setShowNewEnrollModal(false)}
+                    onClick={() =>
+                      setShowNewEnrollModal(
+                        false
+                      )
+                    }
                   >
                     انصراف
                   </AnimatedButton>
+
                   <AnimatedButton
                     variant="primary"
                     type="submit"
-                    disabled={savingNewEnroll || !newEnrollStudentId || !newEnrollClassId}
+                    disabled={
+                      savingNewEnroll ||
+                      !newEnrollStudentId ||
+                      !newEnrollClassId
+                    }
                   >
-                    {savingNewEnroll ? "در حال ثبت..." : "ثبت‌نام در کلاس"}
+                    {savingNewEnroll
+                      ? "در حال ثبت..."
+                      : "ثبت‌نام در کلاس"}
                   </AnimatedButton>
                 </div>
               </form>
@@ -876,6 +1802,64 @@ function SecretaryTuitions() {
         )}
       </div>
     </DashboardLayout>
+  );
+}
+
+/* =========================================================
+   Tuition Actions
+   ========================================================= */
+
+function TuitionActions({
+  item,
+  basePath,
+  onPayment,
+  onRevert,
+  onChangeClass,
+}) {
+  return (
+    <div className="tuition-row-actions">
+      {item.isPaid ? (
+        <button
+          type="button"
+          className="tuition-action-btn revert"
+          onClick={onRevert}
+          title="لغو وضعیت تسویه"
+        >
+          <X size={14} />
+          لغو تسویه
+        </button>
+      ) : (
+        <button
+          type="button"
+          className="tuition-action-btn pay"
+          onClick={onPayment}
+          title="ثبت دریافت وجه"
+        >
+          <Check size={14} />
+          ثبت دریافت وجه
+        </button>
+      )}
+
+      <button
+        type="button"
+        className="tuition-action-btn change-class"
+        onClick={onChangeClass}
+        title="تغییر کلاس دانش‌آموز"
+      >
+        <ArrowRightLeft size={14} />
+        تغییر کلاس
+      </button>
+
+      <Link
+        to={`${basePath}/students/${item.studentId}`}
+        className="tuition-view-link"
+      >
+        <span className="tuition-action-btn view">
+          <Eye size={14} />
+          پرونده
+        </span>
+      </Link>
+    </div>
   );
 }
 
