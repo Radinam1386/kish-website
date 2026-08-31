@@ -14,6 +14,7 @@ import {
   Sparkles,
   X,
   Save,
+  Terminal,
 } from "lucide-react";
 
 import DashboardLayout from "../components/DashboardLayout";
@@ -21,7 +22,11 @@ import StatCard from "../components/StatCard";
 import JalaliDatePicker from "../components/JalaliDatePicker";
 import { AnimatedButton } from "../components/AnimatedButton";
 import { api, storage } from "../services/api";
-import { toJalaliDateString, toPersianDigits, getTodayJalali } from "../utils/dateUtils";
+import {
+  toJalaliDateString,
+  toPersianDigits,
+  getTodayJalali,
+} from "../utils/dateUtils";
 
 import "./SecretaryTerms.css";
 
@@ -39,7 +44,6 @@ export default function SecretaryTerms() {
   const [successMsg, setSuccessMsg] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Modal State
   const [modalOpen, setModalOpen] = useState(false);
   const [editingTerm, setEditingTerm] = useState(null);
   const [termName, setTermName] = useState("");
@@ -53,10 +57,12 @@ export default function SecretaryTerms() {
     try {
       setLoading(true);
       setError("");
+
       const [termsData, classroomsData] = await Promise.all([
         api.terms.list(),
         api.classrooms.list(),
       ]);
+
       setTerms(termsData || []);
       setClassrooms(classroomsData || []);
     } catch (err) {
@@ -90,8 +96,16 @@ export default function SecretaryTerms() {
     setModalOpen(true);
   };
 
+  const closeModal = () => {
+    if (saving) return;
+
+    setModalOpen(false);
+    setModalError("");
+  };
+
   const handleSaveTerm = async (e) => {
     e.preventDefault();
+
     if (!termName.trim()) {
       setModalError("لطفاً عنوان ترم را وارد کنید.");
       return;
@@ -110,14 +124,18 @@ export default function SecretaryTerms() {
 
       if (editingTerm) {
         await api.terms.update(editingTerm.id, payload);
+
         setSuccessMsg(`ترم «${termName}» با موفقیت ویرایش شد.`);
       } else {
         await api.terms.create(payload);
+
         setSuccessMsg(`ترم جدید «${termName}» با موفقیت ایجاد شد.`);
       }
 
       setModalOpen(false);
+
       await loadData();
+
       setTimeout(() => setSuccessMsg(""), 4000);
     } catch (err) {
       setModalError(err.message || "خطا در ذخیره‌سازی ترم");
@@ -129,11 +147,19 @@ export default function SecretaryTerms() {
   const handleToggleActive = async (term) => {
     try {
       const nextStatus = !term.is_active;
-      await api.terms.update(term.id, { is_active: nextStatus });
+
+      await api.terms.update(term.id, {
+        is_active: nextStatus,
+      });
+
       await loadData();
+
       setSuccessMsg(
-        `وضعیت ترم «${term.name}» به ${nextStatus ? "فعال" : "غیرفعال"} تغییر یافت.`,
+        `وضعیت ترم «${term.name}» به ${
+          nextStatus ? "فعال" : "غیرفعال"
+        } تغییر یافت.`,
       );
+
       setTimeout(() => setSuccessMsg(""), 3500);
     } catch (err) {
       alert(err.message || "خطا در تغییر وضعیت ترم");
@@ -142,6 +168,7 @@ export default function SecretaryTerms() {
 
   const handleDeleteTerm = async (term) => {
     const classCount = classrooms.filter((c) => c.term === term.id).length;
+
     if (classCount > 0) {
       if (
         !window.confirm(
@@ -151,13 +178,18 @@ export default function SecretaryTerms() {
         return;
       }
     } else {
-      if (!window.confirm(`آیا از حذف ترم «${term.name}» اطمینان دارید؟`)) return;
+      if (!window.confirm(`آیا از حذف ترم «${term.name}» اطمینان دارید؟`)) {
+        return;
+      }
     }
 
     try {
       await api.terms.remove(term.id);
+
       setTerms((prev) => prev.filter((t) => t.id !== term.id));
+
       setSuccessMsg(`ترم «${term.name}» با موفقیت حذف گردید.`);
+
       setTimeout(() => setSuccessMsg(""), 3500);
     } catch (err) {
       alert(
@@ -169,30 +201,46 @@ export default function SecretaryTerms() {
 
   const filteredTerms = useMemo(() => {
     const q = searchTerm.trim().toLowerCase();
+
     if (!q) return terms;
+
     return terms.filter((t) => t.name?.toLowerCase().includes(q));
   }, [terms, searchTerm]);
+
+  const getClassCount = (termId) => {
+    return classrooms.filter((c) => c.term === termId).length;
+  };
 
   const stats = useMemo(() => {
     const total = terms.length;
     const active = terms.filter((t) => t.is_active).length;
     const inactive = total - active;
     const totalClasses = classrooms.length;
-    return { total, active, inactive, totalClasses };
+
+    return {
+      total,
+      active,
+      inactive,
+      totalClasses,
+    };
   }, [terms, classrooms]);
 
   return (
     <DashboardLayout role={roleTitle} title="مدیریت ترم‌ها" menuType={role}>
       <div className="secretary-terms-page">
-        {/* Header */}
-        <div className="secretary-terms-header">
+        {/* HEADER */}
+        <section className="secretary-terms-header">
           <div className="secretary-terms-heading">
             <div className="secretary-terms-avatar">
-              <Layers size={24} />
+              <Layers size={25} />
             </div>
-            <div>
+
+            <div className="secretary-terms-heading-content">
               <h3>مدیریت ترم‌های آموزشی</h3>
-              <p>تعریف دوره‌ها، تاریخ شروع و پایان و کنترل ترم‌های فعال آکادمی</p>
+
+              <p>
+                تعریف دوره‌ها، تاریخ شروع و پایان و کنترل ترم‌های فعال آکادمی
+              </p>
             </div>
           </div>
 
@@ -203,9 +251,9 @@ export default function SecretaryTerms() {
           >
             افزودن ترم جدید
           </AnimatedButton>
-        </div>
+        </section>
 
-        {/* Alerts */}
+        {/* ALERTS */}
         {error && (
           <div className="terms-alert error">
             <AlertCircle size={18} />
@@ -220,186 +268,343 @@ export default function SecretaryTerms() {
           </div>
         )}
 
-        {/* Stats */}
-        <div className="secretary-terms-stats-grid">
+        {/* STATS */}
+        <section className="secretary-terms-stats-grid">
           <StatCard
             title="کل ترم‌های تعریف‌شده"
             value={`${toPersianDigits(stats.total)} ترم`}
             icon={<Layers size={20} />}
             color="blue"
           />
+
           <StatCard
             title="ترم‌های فعال"
             value={`${toPersianDigits(stats.active)} ترم`}
             icon={<CheckCircle2 size={20} />}
             color="green"
           />
+
           <StatCard
             title="ترم‌های پایان‌یافته"
             value={`${toPersianDigits(stats.inactive)} ترم`}
             icon={<Clock size={20} />}
             color="orange"
           />
+
           <StatCard
             title="کلاس‌های ثبت‌شده"
             value={`${toPersianDigits(stats.totalClasses)} کلاس`}
             icon={<BookOpen size={20} />}
             color="red"
           />
-        </div>
+        </section>
 
-        {/* Search & Filter Bar */}
+        {/* SEARCH */}
         <div className="secretary-terms-search-bar">
           <Search size={18} />
+
           <input
-            type="text"
+            type="search"
             placeholder="جستجوی نام ترم (مثلاً: پاییز ۱۴۰۴)..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+
+          {searchTerm && (
+            <button
+              type="button"
+              className="terms-search-clear"
+              onClick={() => setSearchTerm("")}
+              aria-label="پاک کردن جستجو"
+            >
+              <X size={16} />
+            </button>
+          )}
         </div>
 
-        {/* Terms Table */}
-        <div className="secretary-terms-card">
+        {/* MAIN CARD */}
+        <section className="secretary-terms-card">
           <div className="card-header">
-            <h3>لیست دوره‌ها و ترم‌های تحصیلی</h3>
+            <div className="card-header-title">
+              <h3>لیست دوره‌ها و ترم‌های تحصیلی</h3>
+
+              <span className="card-header-subtitle">
+                مدیریت و کنترل وضعیت ترم‌ها
+              </span>
+            </div>
+
             <span className="count-badge">
               {toPersianDigits(filteredTerms.length)} ترم
             </span>
           </div>
 
           {loading ? (
-            <div className="terms-empty-state">در حال بارگذاری اطلاعات ترم‌ها...</div>
-          ) : filteredTerms.length > 0 ? (
-            <div className="table-responsive">
-              <table className="terms-table">
-                <thead>
-                  <tr>
-                    <th>عنوان ترم</th>
-                    <th>تاریخ شروع (شمسی)</th>
-                    <th>تاریخ پایان (شمسی)</th>
-                    <th>کلاس‌های متصل</th>
-                    <th>وضعیت</th>
-                    <th>تغییر وضعیت</th>
-                    <th>عملیات</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredTerms.map((term) => {
-                    const classCount = classrooms.filter(
-                      (c) => c.term === term.id,
-                    ).length;
+            <div className="terms-loading-state">
+              <div className="terms-loading-spinner" />
 
-                    return (
-                      <tr key={term.id}>
-                        <td>
-                          <div className="term-name-cell">
-                            <div className="term-cell-icon">
-                              <Calendar size={18} />
-                            </div>
-                            <div>
-                              <strong>{term.name}</strong>
-                              <small>کد ترم: {toPersianDigits(term.id)}</small>
-                            </div>
-                          </div>
-                        </td>
-
-                        <td>
-                          <span className="shamsi-badge">
-                            {toJalaliDateString(term.start_date)}
-                          </span>
-                        </td>
-
-                        <td>
-                          <span className="shamsi-badge">
-                            {toJalaliDateString(term.end_date)}
-                          </span>
-                        </td>
-
-                        <td>
-                          <span className="class-count-pill">
-                            {toPersianDigits(classCount)} کلاس
-                          </span>
-                        </td>
-
-                        <td>
-                          <span
-                            className={`term-status-badge ${
-                              term.is_active ? "active" : "inactive"
-                            }`}
-                          >
-                            {term.is_active ? "در حال اجرا (فعال)" : "پایان‌یافته"}
-                          </span>
-                        </td>
-
-                        <td>
-                          <button
-                            type="button"
-                            className={`toggle-status-btn ${
-                              term.is_active ? "btn-deactivate" : "btn-activate"
-                            }`}
-                            onClick={() => handleToggleActive(term)}
-                            title={
-                              term.is_active
-                                ? "غیرفعال کردن این ترم"
-                                : "فعال‌سازی این ترم"
-                            }
-                          >
-                            <Power size={14} />
-                            <span>{term.is_active ? "غیرفعال‌سازی" : "فعال‌سازی"}</span>
-                          </button>
-                        </td>
-
-                        <td>
-                          <div className="terms-action-btns">
-                            <button
-                              type="button"
-                              className="action-icon-btn edit"
-                              onClick={() => openEditModal(term)}
-                              title="ویرایش اطلاعات ترم"
-                            >
-                              <Edit3 size={16} />
-                            </button>
-                            <button
-                              type="button"
-                              className="action-icon-btn delete"
-                              onClick={() => handleDeleteTerm(term)}
-                              title="حذف ترم"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+              <span>در حال بارگذاری اطلاعات ترم‌ها...</span>
             </div>
+          ) : filteredTerms.length > 0 ? (
+            <>
+              {/* DESKTOP TABLE */}
+              <div className="table-responsive">
+                <table className="terms-table">
+                  <thead>
+                    <tr>
+                      <th>عنوان ترم</th>
+                      <th>تاریخ شروع</th>
+                      <th>تاریخ پایان</th>
+                      <th>کلاس‌های متصل</th>
+                      <th>وضعیت</th>
+                      <th>تغییر وضعیت</th>
+                      <th>عملیات</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {filteredTerms.map((term) => {
+                      const classCount = getClassCount(term.id);
+
+                      return (
+                        <tr key={term.id}>
+                          <td>
+                            <div className="term-name-cell">
+                              <div className="term-cell-icon">
+                                <Calendar size={18} />
+                              </div>
+
+                              <div>
+                                <strong>{term.name}</strong>
+
+                                <small>
+                                  کد ترم: {toPersianDigits(term.id)}
+                                </small>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td>
+                            <span className="shamsi-badge">
+                              {toJalaliDateString(term.start_date)}
+                            </span>
+                          </td>
+
+                          <td>
+                            <span className="shamsi-badge">
+                              {toJalaliDateString(term.end_date)}
+                            </span>
+                          </td>
+
+                          <td>
+                            <span className="class-count-pill">
+                              {toPersianDigits(classCount)} کلاس
+                            </span>
+                          </td>
+
+                          <td>
+                            <span
+                              className={`term-status-badge ${
+                                term.is_active ? "active" : "inactive"
+                              }`}
+                            >
+                              {term.is_active
+                                ? "در حال اجرا (فعال)"
+                                : "پایان‌یافته"}
+                            </span>
+                          </td>
+
+                          <td>
+                            <button
+                              type="button"
+                              className={`toggle-status-btn ${
+                                term.is_active
+                                  ? "btn-deactivate"
+                                  : "btn-activate"
+                              }`}
+                              onClick={() => handleToggleActive(term)}
+                            >
+                              <Power size={14} />
+
+                              <span>
+                                {term.is_active ? "غیرفعال‌سازی" : "فعال‌سازی"}
+                              </span>
+                            </button>
+                          </td>
+
+                          <td>
+                            <div className="terms-action-btns">
+                              <button
+                                type="button"
+                                className="action-icon-btn edit"
+                                onClick={() => openEditModal(term)}
+                                title="ویرایش اطلاعات ترم"
+                              >
+                                <Edit3 size={16} />
+                              </button>
+
+                              <button
+                                type="button"
+                                className="action-icon-btn delete"
+                                onClick={() => handleDeleteTerm(term)}
+                                title="حذف ترم"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* MOBILE CARDS */}
+              <div className="terms-mobile-list">
+                {filteredTerms.map((term) => {
+                  const classCount = getClassCount(term.id);
+
+                  return (
+                    <article className="term-mobile-card" key={term.id}>
+                      <div className="term-mobile-top">
+                        <div className="term-mobile-title">
+                          <div className="term-cell-icon">
+                            <Calendar size={18} />
+                          </div>
+
+                          <div>
+                            <strong>{term.name}</strong>
+
+                            <small>کد ترم: {toPersianDigits(term.id)}</small>
+                          </div>
+                        </div>
+
+                        <span
+                          className={`term-status-badge ${
+                            term.is_active ? "active" : "inactive"
+                          }`}
+                        >
+                          {term.is_active ? "فعال" : "پایان‌یافته"}
+                        </span>
+                      </div>
+
+                      <div className="term-mobile-info">
+                        <div className="term-mobile-info-item">
+                          <span>تاریخ شروع</span>
+                          <strong>{toJalaliDateString(term.start_date)}</strong>
+                        </div>
+
+                        <div className="term-mobile-info-item">
+                          <span>تاریخ پایان</span>
+                          <strong>{toJalaliDateString(term.end_date)}</strong>
+                        </div>
+
+                        <div className="term-mobile-info-item">
+                          <span>کلاس‌های متصل</span>
+                          <strong>{toPersianDigits(classCount)} کلاس</strong>
+                        </div>
+                      </div>
+
+                      <div className="term-mobile-actions">
+                        <button
+                          type="button"
+                          className={`toggle-status-btn ${
+                            term.is_active ? "btn-deactivate" : "btn-activate"
+                          }`}
+                          onClick={() => handleToggleActive(term)}
+                        >
+                          <Power size={14} />
+
+                          <span>
+                            {term.is_active ? "غیرفعال‌سازی" : "فعال‌سازی"}
+                          </span>
+                        </button>
+
+                        <button
+                          type="button"
+                          className="mobile-edit-btn"
+                          onClick={() => openEditModal(term)}
+                        >
+                          <Edit3 size={15} />
+                          ویرایش
+                        </button>
+
+                        <button
+                          type="button"
+                          className="mobile-delete-btn"
+                          onClick={() => handleDeleteTerm(term)}
+                        >
+                          <Trash2 size={15} />
+                          حذف
+                        </button>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            </>
           ) : (
             <div className="terms-empty-state">
-              <Layers size={36} />
-              <p>ترمی با این مشخصات یافت نشد.</p>
+              <div className="terms-empty-icon">
+                <Layers size={36} />
+              </div>
+
+              <strong>ترمی پیدا نشد</strong>
+
+              <p>
+                {searchTerm
+                  ? "نتیجه‌ای مطابق جستجوی شما وجود ندارد."
+                  : "هنوز هیچ ترمی در سیستم تعریف نشده است."}
+              </p>
+
+              {searchTerm && (
+                <button
+                  type="button"
+                  className="empty-clear-search"
+                  onClick={() => setSearchTerm("")}
+                >
+                  پاک کردن جستجو
+                </button>
+              )}
             </div>
           )}
-        </div>
+        </section>
 
-        {/* Create / Edit Term Modal */}
+        {/* MODAL */}
         {modalOpen && (
-          <div className="term-modal-backdrop" onClick={() => setModalOpen(false)}>
+          <div
+            className="term-modal-backdrop"
+            onMouseDown={(e) => {
+              if (e.target === e.currentTarget) {
+                closeModal();
+              }
+            }}
+          >
             <div
               className="term-modal-container"
-              onClick={(e) => e.stopPropagation()}
+              onMouseDown={(e) => e.stopPropagation()}
             >
               <div className="term-modal-header">
                 <div className="modal-header-title">
-                  <Layers size={20} />
-                  <h4>{editingTerm ? "ویرایش ترم تحصیلی" : "تعریف ترم جدید"}</h4>
+                  <div className="modal-title-icon">
+                    <Layers size={19} />
+                  </div>
+
+                  <div>
+                    <h4>
+                      {editingTerm ? "ویرایش ترم تحصیلی" : "تعریف ترم جدید"}
+                    </h4>
+
+                    <span>اطلاعات دوره آموزشی را وارد کنید</span>
+                  </div>
                 </div>
+
                 <button
                   type="button"
                   className="modal-close-btn"
-                  onClick={() => setModalOpen(false)}
+                  onClick={closeModal}
+                  disabled={saving}
+                  aria-label="بستن"
                 >
                   <X size={18} />
                 </button>
@@ -408,6 +613,7 @@ export default function SecretaryTerms() {
               {modalError && (
                 <div className="modal-alert-error">
                   <AlertCircle size={16} />
+
                   <span>{modalError}</span>
                 </div>
               )}
@@ -415,14 +621,17 @@ export default function SecretaryTerms() {
               <form onSubmit={handleSaveTerm} className="term-modal-form">
                 <div className="form-field-group">
                   <label>
-                    عنوان ترم <span className="req">*</span>
+                    عنوان ترم
+                    <span className="req">*</span>
                   </label>
+
                   <input
                     type="text"
-                    placeholder="مثلاً: بهار ۱۴۰۵ یا تابستان دوره اول"
+                    placeholder="مثلاً: بهار ۱۴۰۵"
                     value={termName}
                     onChange={(e) => setTermName(e.target.value)}
                     required
+                    autoComplete="off"
                   />
                 </div>
 
@@ -453,7 +662,14 @@ export default function SecretaryTerms() {
                       checked={isActive}
                       onChange={(e) => setIsActive(e.target.checked)}
                     />
-                    <span>این ترم به عنوان ترم فعال و جاری در سیستم قرار گیرد</span>
+
+                    <span className="custom-checkbox">
+                      <CheckCircle2 size={12} />
+                    </span>
+
+                    <span>
+                      این ترم به عنوان ترم فعال و جاری در سیستم قرار گیرد
+                    </span>
                   </label>
                 </div>
 
@@ -461,16 +677,21 @@ export default function SecretaryTerms() {
                   <AnimatedButton
                     type="button"
                     variant="secondary"
-                    onClick={() => setModalOpen(false)}
+                    onClick={closeModal}
+                    disabled={saving}
+                    size="small"
                   >
                     انصراف
                   </AnimatedButton>
+
                   <AnimatedButton
                     type="submit"
                     variant="primary"
                     disabled={saving}
+                    size="small"
                   >
                     <Save size={16} />
+
                     {saving ? "در حال ذخیره..." : "ذخیره اطلاعات ترم"}
                   </AnimatedButton>
                 </div>

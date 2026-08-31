@@ -10,6 +10,7 @@ import {
   Save,
   UserCheck,
   Check,
+  Lock,
 } from "lucide-react";
 
 import DashboardLayout from "../components/DashboardLayout";
@@ -96,11 +97,30 @@ function AdminSecretaryForm() {
   }, [id]);
 
   const generatePassword = () => {
-    const chars = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789#@!";
-    let password = "";
-    for (let i = 0; i < 8; i++) {
-      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    const upper = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+    const lower = "abcdefghijkmnopqrstuvwxyz";
+    const numbers = "23456789";
+    const symbols = "!@#$%&*";
+
+    const getRandom = (chars) =>
+      chars[Math.floor(Math.random() * chars.length)];
+
+    const allChars = upper + lower + numbers + symbols;
+
+    let password =
+      getRandom(upper) +
+      getRandom(lower) +
+      getRandom(numbers) +
+      getRandom(symbols);
+
+    for (let i = password.length; i < 12; i++) {
+      password += getRandom(allChars);
     }
+
+    password = password
+      .split("")
+      .sort(() => Math.random() - 0.5)
+      .join("");
 
     setFormData((prev) => ({
       ...prev,
@@ -132,7 +152,11 @@ function AdminSecretaryForm() {
       return;
     }
 
-    if (formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword) {
+    if (
+      formData.password &&
+      formData.confirmPassword &&
+      formData.password !== formData.confirmPassword
+    ) {
       alert("رمز عبور و تکرار آن یکسان نیستند.");
       return;
     }
@@ -351,9 +375,7 @@ function AdminSecretaryForm() {
                 </div>
 
                 <div className="secretary-student-form-field full">
-                  <span>
-                    رمز عبور {!isEdit && <b>*</b>}
-                  </span>
+                  <span>رمز عبور {!isEdit && <b>*</b>}</span>
 
                   <div className="secretary-student-form-password-wrapper">
                     <input
@@ -364,7 +386,7 @@ function AdminSecretaryForm() {
                       placeholder={
                         isEdit
                           ? "در صورت تمایل به تغییر رمز، رمز جدید را وارد کنید..."
-                          : "حداقل ۶ کاراکتر یا تولید رمز تصادفی..."
+                          : "حداقل 8 کاراکتر یا تولید رمز تصادفی..."
                       }
                       required={!isEdit}
                       dir="ltr"
@@ -376,35 +398,75 @@ function AdminSecretaryForm() {
                       onClick={() => setShowPassword((prev) => !prev)}
                       title={showPassword ? "مخفی کردن رمز" : "نمایش رمز"}
                     >
-                      {showPassword ? (
-                        <EyeOff size={16} />
-                      ) : (
-                        <Eye size={16} />
-                      )}
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
                 </div>
 
                 <div className="secretary-student-form-password-actions full">
-                  <button
-                    type="button"
-                    className="secretary-student-form-action-btn"
-                    onClick={generatePassword}
-                  >
-                    <RefreshCw size={15} />
-                    <span>تولید رمز تصادفی</span>
-                  </button>
+                  <div className="secretary-student-form-password-tools-content">
+                    <div className="secretary-student-form-password-tools-title">
+                      <div className="secretary-student-form-password-tools-icon">
+                        <Lock size={17} />
+                      </div>
 
-                  <button
-                    type="button"
-                    className={`secretary-student-form-action-btn ${
-                      passwordCopied ? "copied" : ""
-                    }`}
-                    onClick={copyPassword}
-                  >
-                    {passwordCopied ? <Check size={15} /> : <Copy size={15} />}
-                    <span>{passwordCopied ? "کپی شد" : "کپی رمز"}</span>
-                  </button>
+                      <div>
+                        <strong>ابزارهای رمز عبور</strong>
+
+                        <span>
+                          برای امنیت بیشتر می‌توانید یک رمز قوی و تصادفی تولید
+                          کنید.
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="secretary-student-form-password-buttons">
+                      {/* Generate */}
+                      <button
+                        type="button"
+                        className="secretary-student-form-action-btn generate"
+                        onClick={generatePassword}
+                      >
+                        <span className="secretary-student-form-action-icon">
+                          <RefreshCw size={16} />
+                        </span>
+
+                        <span className="secretary-student-form-action-text">
+                          <strong>تولید رمز امن</strong>
+                        </span>
+                      </button>
+
+                      {/* Copy */}
+                      <button
+                        type="button"
+                        className={`secretary-student-form-action-btn copy ${
+                          passwordCopied ? "copied" : ""
+                        }`}
+                        onClick={copyPassword}
+                        disabled={!formData.password}
+                      >
+                        <span className="secretary-student-form-action-icon">
+                          {passwordCopied ? (
+                            <Check size={16} />
+                          ) : (
+                            <Copy size={16} />
+                          )}
+                        </span>
+
+                        <span className="secretary-student-form-action-text">
+                          <strong>
+                            {passwordCopied ? "کپی شد" : "کپی رمز"}
+                          </strong>
+
+                          <small>
+                            {passwordCopied
+                              ? "رمز در کلیپ‌بورد ذخیره شد"
+                              : "کپی سریع رمز فعلی"}
+                          </small>
+                        </span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </section>
@@ -427,8 +489,8 @@ function AdminSecretaryForm() {
                 {submitting
                   ? "در حال ذخیره..."
                   : isEdit
-                  ? "ثبت تغییرات"
-                  : "ایجاد حساب منشی"}
+                    ? "ثبت تغییرات"
+                    : "ایجاد حساب منشی"}
               </AnimatedButton>
             </div>
           </form>

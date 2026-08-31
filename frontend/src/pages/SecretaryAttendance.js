@@ -12,6 +12,7 @@ import {
   Layers,
   Phone,
   UserRound,
+  ClipboardCheck,
 } from "lucide-react";
 
 import DashboardLayout from "../components/DashboardLayout";
@@ -25,6 +26,7 @@ import {
 } from "../utils/dateUtils";
 
 import "./SecretaryAttendance.css";
+import { AnimatedButton } from "../components/AnimatedButton";
 
 const statusMapping = {
   present: { text: "حاضر", class: "present" },
@@ -59,7 +61,7 @@ function SecretaryAttendance() {
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const STUDENTS_PER_PAGE = 1;
+  const STUDENTS_PER_PAGE = 20;
 
   useEffect(() => {
     let alive = true;
@@ -273,14 +275,10 @@ function SecretaryAttendance() {
       menuType={menuType}
     >
       <div className="secretary-attendance-page-container">
-        {/* =========================
-            TERM SELECTOR
-        ========================== */}
-
         <div className="term-selector-banner">
           <div className="term-banner-info">
-            <div className="term-icon-circle">
-              <Layers size={22} />
+            <div className="term-icon-circle-attendance">
+              <ClipboardCheck size={25} />
             </div>
 
             <div className="term-banner-text">
@@ -541,13 +539,13 @@ function SecretaryAttendance() {
                             to={`/panel/${menuType}/students/${item.id}`}
                             className="attendance-link-reset"
                           >
-                            <button
-                              type="button"
-                              className="attendance-view-btn"
+                            <AnimatedButton
+                              variant="primary"
+                              size="small"
+                              icon={<Eye size={14} />}
                             >
-                              <Eye size={14} />
                               <span>مشاهده پرونده</span>
-                            </button>
+                            </AnimatedButton>
                           </Link>
                         </td>
                       </tr>

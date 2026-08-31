@@ -29,7 +29,9 @@ function AdminTeachers() {
   const isSecretary = location.pathname.includes("/secretary");
   const roleTitle = isSecretary ? "پنل منشی" : "پنل مدیریت";
   const menuType = isSecretary ? "secretary" : "admin";
-  const basePath = isSecretary ? "/panel/secretary/teachers" : "/panel/admin/teachers";
+  const basePath = isSecretary
+    ? "/panel/secretary/teachers"
+    : "/panel/admin/teachers";
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSpecialty, setSelectedSpecialty] = useState("all");
@@ -67,9 +69,13 @@ function AdminTeachers() {
       const nextStatus = !teacher.isActive;
       await api.users.update(teacher.id, { is_active: nextStatus });
       setUsers((prev) =>
-        prev.map((u) => (u.id === teacher.id ? { ...u, is_active: nextStatus } : u)),
+        prev.map((u) =>
+          u.id === teacher.id ? { ...u, is_active: nextStatus } : u,
+        ),
       );
-      setSuccessMsg(`وضعیت مدرس «${teacher.name}» به ${nextStatus ? "فعال" : "غیرفعال"} تغییر یافت.`);
+      setSuccessMsg(
+        `وضعیت مدرس «${teacher.name}» به ${nextStatus ? "فعال" : "غیرفعال"} تغییر یافت.`,
+      );
       setTimeout(() => setSuccessMsg(""), 3500);
     } catch (err) {
       alert(err.message || "خطا در تغییر وضعیت مدرس");
@@ -77,7 +83,11 @@ function AdminTeachers() {
   };
 
   const handleDeleteTeacher = async (teacher) => {
-    if (!window.confirm(`آیا از حذف حساب کاربری مدرس «${teacher.name}» اطمینان دارید؟`)) {
+    if (
+      !window.confirm(
+        `آیا از حذف حساب کاربری مدرس «${teacher.name}» اطمینان دارید؟`,
+      )
+    ) {
       return;
     }
 
@@ -97,7 +107,9 @@ function AdminTeachers() {
         .filter((user) => user.role === "teacher")
         .map((user) => {
           const teacherClasses = classrooms.filter(
-            (classroom) => classroom.teacher === user.id || classroom.teacher?.id === user.id,
+            (classroom) =>
+              classroom.teacher === user.id ||
+              classroom.teacher?.id === user.id,
           );
           const students = teacherClasses.reduce(
             (total, classroom) => total + (classroom.student_count || 0),
@@ -151,13 +163,33 @@ function AdminTeachers() {
     0,
   );
 
-  const activeTeachers = teachers.filter(
-    (teacher) => teacher.isActive,
-  ).length;
+  const activeTeachers = teachers.filter((teacher) => teacher.isActive).length;
 
   return (
     <DashboardLayout role={roleTitle} title="مدیریت معلمان" menuType={menuType}>
       <div className="admin-teachers-x7k2-root">
+        {/* ================= HEADER ================= */}
+        <div className="admin-students-x7k2-header">
+          <div className="admin-students-x7k2-heading">
+            <div className="admin-students-x7k2-heading-icon">
+              <GraduationCap size={25} />
+            </div>
+
+            <div>
+              <h3 className="admin-students-x7k2-title">لیست معلمان آکادمی</h3>
+
+              <p className="admin-students-x7k2-description">
+                مدیریت اطلاعات، تخصص، کلاس‌ها و وضعیت اساتید
+              </p>
+            </div>
+          </div>
+          <Link to={`${basePath}/new`}>
+            <AnimatedButton variant="primary" icon={<UserPlus size={18} />}>
+              افزودن معلم جدید
+            </AnimatedButton>
+          </Link>
+        </div>
+
         <div className="admin-teachers-x7k2-stats">
           <StatCard
             title="کل معلمان"
@@ -186,39 +218,26 @@ function AdminTeachers() {
         </div>
 
         {successMsg && (
-          <div style={{
-            background: "oklch(95% 0.05 145 / 0.8)",
-            border: "1px solid oklch(75% 0.15 145 / 0.3)",
-            color: "oklch(35% 0.15 145)",
-            padding: "0.85rem 1.25rem",
-            borderRadius: "12px",
-            marginBottom: "1.5rem",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            fontWeight: "700"
-          }}>
+          <div
+            style={{
+              background: "oklch(95% 0.05 145 / 0.8)",
+              border: "1px solid oklch(75% 0.15 145 / 0.3)",
+              color: "oklch(35% 0.15 145)",
+              padding: "0.85rem 1.25rem",
+              borderRadius: "12px",
+              marginBottom: "1.5rem",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              fontWeight: "700",
+            }}
+          >
             <Sparkles size={18} />
             <span>{successMsg}</span>
           </div>
         )}
 
         <section className="admin-teachers-x7k2-section">
-          {/* Header */}
-          <div className="admin-teachers-x7k2-section-header">
-            <div className="admin-teachers-x7k2-heading">
-              <h3 className="admin-teachers-x7k2-title">لیست معلمان آکادمی</h3>
-              <p className="admin-teachers-x7k2-description">
-                مدیریت اطلاعات، تخصص، کلاس‌ها و وضعیت اساتید
-              </p>
-            </div>
-            <Link to={`${basePath}/new`}> 
-              <AnimatedButton variant="primary" icon={<UserPlus size={18} />}>
-                افزودن معلم جدید
-              </AnimatedButton>
-            </Link>
-          </div>
-
           {/* Filters */}
           <div className="admin-teachers-x7k2-filters">
             <div className="admin-teachers-x7k2-search-wrapper">
@@ -253,7 +272,13 @@ function AdminTeachers() {
 
           {/* Teachers Grid */}
           {loading ? (
-            <div style={{ textAlign: "center", padding: "3rem", color: "oklch(55% 0 0)" }}>
+            <div
+              style={{
+                textAlign: "center",
+                padding: "3rem",
+                color: "oklch(55% 0 0)",
+              }}
+            >
               در حال بارگذاری اطلاعات معلمان...
             </div>
           ) : error ? (
@@ -372,7 +397,11 @@ function AdminTeachers() {
                           alignItems: "center",
                           justifyContent: "center",
                         }}
-                        title={teacher.isActive ? "غیرفعال‌سازی حساب" : "فعال‌سازی حساب"}
+                        title={
+                          teacher.isActive
+                            ? "غیرفعال‌سازی حساب"
+                            : "فعال‌سازی حساب"
+                        }
                       >
                         <Power size={15} />
                       </button>

@@ -1,22 +1,45 @@
+/* =========================================================
+   Class Form
+   Responsive RTL Design
+   ========================================================= */
+
 .class-form-page-container {
   width: 100%;
   max-width: 1300px;
+  min-width: 0;
   margin: 0 auto;
   direction: rtl;
+  box-sizing: border-box;
 }
+
+.class-form-page-container *,
+.class-form-page-container *::before,
+.class-form-page-container *::after {
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   Top Navigation
+   ========================================================= */
+
 .class-form-top-nav {
+  width: 100%;
   margin-bottom: 1.5rem;
 }
 
 .class-form-back-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
+  max-width: 100%;
   color: var(--primary);
   font-size: 0.88rem;
   font-weight: 700;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
 }
 
 .class-form-back-btn:hover {
@@ -24,10 +47,45 @@
 }
 
 /* =========================================================
+   Alerts
+   ========================================================= */
+
+.class-form-page-container .classes-alert {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 0.85rem 1.25rem;
+  border-radius: 12px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.class-form-page-container .classes-alert.success {
+  background: #edf8f1;
+  color: #2e8b57;
+  border: 1px solid #d9f0e1;
+}
+
+.class-form-page-container .classes-alert.error {
+  background: #ffe3e3;
+  color: #c92a2a;
+  border: 1px solid #ffc9c9;
+}
+
+.class-form-page-container .classes-alert svg {
+  flex-shrink: 0;
+}
+
+/* =========================================================
    Form Container
    ========================================================= */
 
 .class-form-element {
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -38,6 +96,8 @@
    ========================================================= */
 
 .class-form-card-section {
+  width: 100%;
+  min-width: 0;
   background: #ffffff;
   border: 1px solid #eceff3;
   border-radius: 22px;
@@ -45,7 +105,13 @@
   box-shadow: 0 8px 25px rgba(37, 41, 45, 0.04);
 }
 
+/* =========================================================
+   Card Header
+   ========================================================= */
+
 .class-form-card-header {
+  width: 100%;
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 0.9rem;
@@ -56,17 +122,28 @@
 
 .class-form-card-header.flex-header {
   justify-content: space-between;
+  align-items: center;
   flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.class-form-card-header > div {
+  min-width: 0;
+}
+
+.class-form-card-header.flex-header > div:first-child {
+  flex: 1 1 420px;
+  min-width: 0;
 }
 
 .class-form-card-icon {
   width: 48px;
   height: 48px;
-  flex-shrink: 0;
+  flex: 0 0 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background:var(--red-5);
+  background: var(--red-5);
   color: #ffffff;
   border-radius: 15px;
   box-shadow: 0 6px 16px rgba(231, 76, 60, 0.2);
@@ -82,33 +159,31 @@
   color: #2d3436;
   font-size: 1.15rem;
   font-weight: 800;
-  line-height: 1.4;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 
 .class-form-card-header p {
   margin: 0.25rem 0 0;
   color: #7f8c8d;
   font-size: 0.82rem;
-  line-height: 1.6;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
 }
 
 /* =========================================================
-   Form Grid & Fields
+   Main Form Grid
    ========================================================= */
 
 .class-form-grid-layout {
+  width: 100%;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.25rem;
 }
 
-@media (max-width: 768px) {
-  .class-form-grid-layout {
-    grid-template-columns: 1fr;
-  }
-}
-
 .class-form-field-wrapper {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -118,22 +193,32 @@
   grid-column: 1 / -1;
 }
 
-.class-form-field-wrapper span {
+.class-form-field-wrapper > span {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 0.15rem;
+  min-width: 0;
   color: #2d3436;
   font-size: 0.86rem;
   font-weight: 700;
+  line-height: 1.7;
+}
+
+.class-form-field-wrapper > span svg {
+  flex-shrink: 0;
 }
 
 .class-form-field-wrapper span b {
   color: var(--primary);
-  margin-right: 0.25rem;
+  margin-right: 0.15rem;
 }
 
 .class-form-field-wrapper input,
 .class-form-field-wrapper select {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   min-height: 46px;
   padding: 0.75rem 1rem;
   background: #ffffff;
@@ -142,7 +227,16 @@
   border-radius: 12px;
   font-family: inherit;
   font-size: 0.88rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  line-height: 1.5;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.class-form-field-wrapper input::placeholder {
+  color: #a0a7ad;
+  opacity: 1;
 }
 
 .class-form-field-wrapper select {
@@ -157,21 +251,37 @@
   box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.09);
 }
 
-.tuition-preview-badge {
-  color: var(--primary);
-  font-size: 0.82rem;
-  font-weight: 800;
-  margin-top: 0.35rem;
-  display: block;
+.class-form-field-wrapper input:disabled,
+.class-form-field-wrapper select:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 /* =========================================================
-   Student Picker
+   Tuition
+   ========================================================= */
+
+.tuition-preview-badge {
+  display: block;
+  width: 100%;
+  margin-top: 0.35rem;
+  color: var(--primary);
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   Student Header
    ========================================================= */
 
 .student-search-input-wrapper {
   position: relative;
-  min-width: 260px;
+  flex: 0 1 340px;
+  width: 340px;
+  min-width: 240px;
+  max-width: 100%;
   display: flex;
   align-items: center;
 }
@@ -181,19 +291,29 @@
   right: 0.85rem;
   color: #7f8c8d;
   pointer-events: none;
+  z-index: 1;
 }
 
 .student-search-input-wrapper input {
   width: 100%;
+  min-width: 0;
   min-height: 40px;
   padding: 0.55rem 2.4rem 0.55rem 0.85rem;
   background: #f8f9fa;
+  color: #2d3436;
   border: 1px solid #eceff3;
   border-radius: 10px;
   font-family: inherit;
   font-size: 0.84rem;
   outline: none;
-  transition: all 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.student-search-input-wrapper input::placeholder {
+  color: #9aa1a7;
 }
 
 .student-search-input-wrapper input:focus {
@@ -202,84 +322,401 @@
   box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.08);
 }
 
-.student-picker-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1rem;
-  max-height: 420px;
-  overflow-y: auto;
-  padding: 0.5rem 0.25rem;
+/* =========================================================
+   Student Picker
+   ========================================================= */
+
+/* =========================================================
+   Student List
+   ========================================================= */
+
+.student-list-wrapper {
+  width: 100%;
+  min-width: 0;
 }
 
-.student-card-item {
+.student-list {
+  width: 100%;
   display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+/* =========================================================
+   Student Row
+   ========================================================= */
+
+.student-row-item {
+  width: 100%;
+  min-width: 0;
+  min-height: 72px;
+  display: grid;
+  grid-template-columns: 42px 30px minmax(240px, 1.5fr) minmax(150px, 0.8fr) 120px;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.9rem 1rem;
-  background: #fdfefe;
+  gap: 0.8rem;
+  padding: 0.7rem 0.9rem;
+  background: #ffffff;
   border: 1px solid #eceff3;
   border-radius: 14px;
   cursor: pointer;
   user-select: none;
-  transition: all 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
-.student-card-item:hover {
-  background: #fff8f7;
+.student-row-item:hover {
+  background: #fffafa;
   border-color: rgba(231, 76, 60, 0.25);
+  box-shadow: 0 4px 14px rgba(37, 41, 45, 0.05);
   transform: translateY(-1px);
 }
 
-.student-card-item.selected {
-  background: #fff1ef;
-  border-color: rgba(231, 76, 60, 0.4);
-  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.08);
+.student-row-item.selected {
+  background: #fff7f5;
+  border-color: rgba(231, 76, 60, 0.38);
+  box-shadow: 0 4px 15px rgba(231, 76, 60, 0.07);
 }
 
-.card-checkbox {
+/* =========================================================
+   Row Number
+   ========================================================= */
+
+.student-row-number {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f7f8fa;
+  color: #8b949e;
+  border-radius: 9px;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.student-row-item.selected .student-row-number {
+  background: #ffe8e4;
+  color: var(--primary);
+}
+
+/* =========================================================
+   Checkbox
+   ========================================================= */
+
+.student-row-check {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.card-checkbox .check-active {
+.student-row-check .check-active {
   color: var(--primary);
 }
 
-.card-checkbox .check-inactive {
-  color: #bdc3c7;
+.student-row-check .check-inactive {
+  color: #b8bec5;
 }
 
-.student-info-col {
+/* =========================================================
+   Main Student Info
+   ========================================================= */
+
+.student-row-main {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.student-avatar {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--red-5);
+  color: #ffffff;
+  border-radius: 11px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  box-shadow: 0 4px 10px rgba(231, 76, 60, 0.16);
+}
+
+.student-row-info {
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  min-width: 0;
-  gap: 0.15rem;
+  gap: 0.18rem;
 }
 
-.student-info-col strong {
-  font-size: 0.88rem;
+.student-row-info strong {
+  min-width: 0;
   color: #2d3436;
+  font-size: 0.87rem;
+  font-weight: 800;
+  line-height: 1.6;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.student-info-col .user-tag {
-  font-size: 0.76rem;
-  color: #7f8c8d;
-}
-
-.student-info-col .phone-tag {
-  font-size: 0.74rem;
-  color: #95a5a6;
+.student-row-info span {
+  color: #8a9299;
+  font-size: 0.73rem;
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* =========================================================
-   Actions Row
+   Phone
+   ========================================================= */
+
+.student-row-phone {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.student-row-label {
+  color: #a0a7ad;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.student-row-phone strong {
+  color: #495057;
+  font-size: 0.78rem;
+  font-weight: 700;
+  direction: ltr;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* =========================================================
+   Status
+   ========================================================= */
+
+.student-row-status {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.student-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 92px;
+  padding: 0.4rem 0.7rem;
+  background: #f6f7f8;
+  color: #8a9299;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.student-status.selected-status {
+  background: #eaf8ef;
+  color: #29945a;
+}
+
+/* =========================================================
+   Empty State
+   ========================================================= */
+
+.student-empty-state {
+  width: 100%;
+  min-height: 190px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 2rem 1rem;
+  background: #fafbfc;
+  border: 1px dashed #dfe3e7;
+  border-radius: 15px;
+  text-align: center;
+}
+
+.student-empty-icon {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.35rem;
+  background: #f1f3f5;
+  color: #9aa1a7;
+  border-radius: 14px;
+}
+
+.student-empty-state strong {
+  color: #495057;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.student-empty-state span {
+  color: #9aa1a7;
+  font-size: 0.75rem;
+}
+
+/* =========================================================
+   Pagination
+   ========================================================= */
+
+.student-pagination {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f0f1f3;
+}
+
+.student-pagination-info {
+  color: #8a9299;
+  font-size: 0.74rem;
+  white-space: nowrap;
+}
+
+.student-pagination-info strong {
+  color: #495057;
+  font-weight: 800;
+}
+
+.student-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.student-pagination-btn,
+.student-page-number {
+  height: 34px;
+  min-width: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e7e9ec;
+  background: #ffffff;
+  color: #69727a;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 0.73rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.student-pagination-btn {
+  padding: 0 0.75rem;
+}
+
+.student-pagination-btn:hover:not(:disabled),
+.student-page-number:hover:not(.active) {
+  background: var(--red-5);
+  color: white;
+  border-color: rgba(231, 76, 60, 0.25);
+}
+
+.student-page-number.active {
+  background: var(--red-5);
+  color: #ffffff;
+  border-color: var(--primary);
+  box-shadow: 0 4px 10px rgba(231, 76, 60, 0.18);
+}
+
+.student-pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.student-page-numbers {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.student-pagination-dots {
+  color: #a0a7ad;
+  font-size: 0.75rem;
+  padding: 0 0.1rem;
+}
+
+/* =========================================================
+   Student Search
+   ========================================================= */
+
+.student-search-input-wrapper {
+  position: relative;
+  flex: 0 1 340px;
+  width: 340px;
+  min-width: 240px;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.student-search-input-wrapper .search-icon {
+  position: absolute;
+  right: 0.85rem;
+  color: #7f8c8d;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.student-search-input-wrapper input {
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0.55rem 2.4rem 0.55rem 0.85rem;
+  background: #f8f9fa;
+  color: #2d3436;
+  border: 1px solid #eceff3;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.84rem;
+  outline: none;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.student-search-input-wrapper input::placeholder {
+  color: #9aa1a7;
+}
+
+.student-search-input-wrapper input:focus {
+  background: #ffffff;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.08);
+}
+
+/* =========================================================
+   Submit Actions
    ========================================================= */
 
 .class-form-submit-actions {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -287,10 +724,15 @@
   margin-top: 1rem;
 }
 
+.class-form-submit-actions > * {
+  min-width: 0;
+}
+
 .class-form-cancel-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-height: 46px;
   padding: 0.75rem 1.5rem;
   background: #f8f9fa;
   color: #495057;
@@ -299,9 +741,397 @@
   font-size: 0.88rem;
   font-weight: 700;
   text-decoration: none;
-  transition: all 0.2s ease;
+  white-space: nowrap;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .class-form-cancel-btn:hover {
   background: #e9ecef;
+  border-color: #dee2e6;
+}
+
+/* =========================================================
+   Loading
+   ========================================================= */
+
+.class-form-page-container > div[style*="text-align"] {
+  width: 100%;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   Large Tablet
+   ========================================================= */
+
+@media (max-width: 1100px) {
+  .class-form-page-container {
+    max-width: 100%;
+  }
+
+  .class-form-card-section {
+    padding: 1.6rem;
+    border-radius: 20px;
+  }
+
+  .class-form-grid-layout {
+    gap: 1rem;
+  }
+
+  .student-picker-grid {
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(min(220px, 100%), 1fr)
+    );
+  }
+
+  .student-search-input-wrapper {
+    flex: 1 1 280px;
+    width: auto;
+  }
+}
+
+/* =========================================================
+   Tablet
+   ========================================================= */
+
+@media (max-width: 850px) {
+  .class-form-card-section {
+    padding: 1.4rem;
+  }
+
+  .class-form-card-header {
+    align-items: flex-start;
+  }
+
+  .class-form-card-header.flex-header {
+    align-items: flex-start;
+  }
+
+  .class-form-card-header.flex-header > div:first-child {
+    flex: 1 1 100%;
+  }
+
+  .student-search-input-wrapper {
+    width: 100%;
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .student-picker-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-height: 400px;
+  }
+}
+
+/* =========================================================
+   Mobile
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .class-form-page-container {
+    width: 100%;
+    padding: 0;
+  }
+
+  .class-form-top-nav {
+    margin-bottom: 1.1rem;
+  }
+
+  .class-form-back-btn {
+    font-size: 0.82rem;
+    gap: 0.4rem;
+  }
+
+  .class-form-page-container .classes-alert {
+    padding: 0.75rem 0.9rem;
+    font-size: 0.8rem;
+    border-radius: 11px;
+  }
+
+  .class-form-element {
+    gap: 1rem;
+  }
+
+  .class-form-card-section {
+    padding: 1.1rem;
+    border-radius: 17px;
+  }
+
+  .class-form-card-header {
+    gap: 0.7rem;
+    margin-bottom: 1.2rem;
+    padding-bottom: 1rem;
+  }
+
+  .class-form-card-icon {
+    width: 42px;
+    height: 42px;
+    flex-basis: 42px;
+    border-radius: 12px;
+  }
+
+  .class-form-card-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .class-form-card-header h2 {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .class-form-card-header p {
+    font-size: 0.76rem;
+    line-height: 1.8;
+  }
+
+  .class-form-grid-layout {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .class-form-field-wrapper.full-col {
+    grid-column: auto;
+  }
+
+  .class-form-field-wrapper > span {
+    font-size: 0.82rem;
+  }
+
+  .class-form-field-wrapper input,
+  .class-form-field-wrapper select {
+    min-height: 44px;
+    padding: 0.65rem 0.85rem;
+    font-size: 0.84rem;
+  }
+
+  .tuition-preview-badge {
+    font-size: 0.77rem;
+  }
+
+  .student-picker-grid {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+    max-height: 380px;
+    padding: 0.25rem 0;
+  }
+
+  .student-card-item {
+    padding: 0.8rem 0.85rem;
+    border-radius: 12px;
+  }
+
+  .student-info-col strong {
+    font-size: 0.84rem;
+  }
+
+  .student-info-col .user-tag {
+    font-size: 0.72rem;
+  }
+
+  .student-info-col .phone-tag {
+    font-size: 0.7rem;
+  }
+
+  .class-form-submit-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 0.7rem;
+    margin-top: 0.25rem;
+  }
+
+  .class-form-submit-actions a,
+  .class-form-submit-actions button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .class-form-cancel-btn {
+    width: 100%;
+    min-height: 44px;
+    padding: 0.7rem 1rem;
+    font-size: 0.84rem;
+  }
+}
+
+/* =========================================================
+   Small Mobile
+   ========================================================= */
+
+@media (max-width: 480px) {
+  .class-form-top-nav {
+    margin-bottom: 0.9rem;
+  }
+
+  .class-form-back-btn {
+    width: 100%;
+    justify-content: flex-start;
+    font-size: 0.78rem;
+  }
+
+  .class-form-card-section {
+    padding: 0.9rem;
+    border-radius: 15px;
+  }
+
+  .class-form-card-header {
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.85rem;
+  }
+
+  .class-form-card-icon {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+    border-radius: 11px;
+  }
+
+  .class-form-card-icon svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .class-form-card-header h2 {
+    font-size: 0.92rem;
+  }
+
+  .class-form-card-header p {
+    font-size: 0.72rem;
+  }
+
+  .class-form-grid-layout {
+    gap: 0.85rem;
+  }
+
+  .class-form-field-wrapper {
+    gap: 0.4rem;
+  }
+
+  .class-form-field-wrapper > span {
+    font-size: 0.78rem;
+  }
+
+  .class-form-field-wrapper input,
+  .class-form-field-wrapper select {
+    min-height: 43px;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.8rem;
+    border-radius: 10px;
+  }
+
+  .student-search-input-wrapper input {
+    min-height: 40px;
+    font-size: 0.78rem;
+  }
+
+  .student-card-item {
+    gap: 0.6rem;
+    padding: 0.72rem 0.7rem;
+  }
+
+  .card-checkbox svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .student-info-col strong {
+    font-size: 0.8rem;
+  }
+
+  .student-info-col .user-tag {
+    font-size: 0.68rem;
+  }
+
+  .student-info-col .phone-tag {
+    font-size: 0.66rem;
+  }
+
+  .class-form-submit-actions {
+    gap: 0.6rem;
+  }
+}
+
+/* =========================================================
+   Very Small Phones
+   ========================================================= */
+
+@media (max-width: 360px) {
+  .class-form-card-section {
+    padding: 0.75rem;
+  }
+
+  .class-form-card-header {
+    gap: 0.5rem;
+  }
+
+  .class-form-card-icon {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
+    border-radius: 9px;
+  }
+
+  .class-form-card-header h2 {
+    font-size: 0.86rem;
+  }
+
+  .class-form-card-header p {
+    font-size: 0.68rem;
+  }
+
+  .class-form-field-wrapper > span {
+    font-size: 0.74rem;
+  }
+
+  .class-form-field-wrapper input,
+  .class-form-field-wrapper select {
+    font-size: 0.76rem;
+  }
+
+  .student-card-item {
+    padding: 0.65rem;
+  }
+}
+
+/* =========================================================
+   Touch Devices
+   ========================================================= */
+
+@media (hover: none) and (pointer: coarse) {
+  .student-card-item:hover {
+    transform: none;
+  }
+
+  .class-form-back-btn:hover {
+    transform: none;
+  }
+
+  .class-form-cancel-btn:hover {
+    transform: none;
+  }
+
+  .student-card-item {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* =========================================================
+   Reduced Motion
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .class-form-back-btn,
+  .student-card-item,
+  .class-form-cancel-btn,
+  .class-form-field-wrapper input,
+  .class-form-field-wrapper select,
+  .student-search-input-wrapper input {
+    transition: none;
+  }
 }

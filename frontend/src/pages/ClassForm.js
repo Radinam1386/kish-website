@@ -36,7 +36,9 @@ export default function ClassForm() {
   const [termId, setTermId] = useState("");
   const [teacherId, setTeacherId] = useState("");
   const [tuitionFee, setTuitionFee] = useState(2500000);
-  const [schedule, setSchedule] = useState("روزهای زوج (شنبه، دوشنبه، چهارشنبه)");
+  const [schedule, setSchedule] = useState(
+    "روزهای زوج (شنبه، دوشنبه، چهارشنبه)",
+  );
   const [timeSlot, setTimeSlot] = useState("۱۶:۰۰ الی ۱۷:۳۰");
   const [selectedStudentIds, setSelectedStudentIds] = useState([]);
   const [studentSearch, setStudentSearch] = useState("");
@@ -50,6 +52,9 @@ export default function ClassForm() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+
+  const [studentPage, setStudentPage] = useState(1);
+  const STUDENTS_PER_PAGE = 10;
 
   useEffect(() => {
     let alive = true;
@@ -67,8 +72,12 @@ export default function ClassForm() {
         if (!alive) return;
 
         setTerms(termsData || []);
-        const teacherUsers = (usersData || []).filter((u) => u.role === "teacher");
-        const studentUsers = (usersData || []).filter((u) => u.role === "student");
+        const teacherUsers = (usersData || []).filter(
+          (u) => u.role === "teacher",
+        );
+        const studentUsers = (usersData || []).filter(
+          (u) => u.role === "student",
+        );
 
         setTeachers(teacherUsers);
         setAllStudents(studentUsers);
@@ -89,13 +98,17 @@ export default function ClassForm() {
           setName(cls.name || "");
           setTermId(cls.term || "");
           setTeacherId(cls.teacher || "");
-          setTuitionFee(cls.tuition_fee !== undefined ? cls.tuition_fee : 2500000);
+          setTuitionFee(
+            cls.tuition_fee !== undefined ? cls.tuition_fee : 2500000,
+          );
           setSchedule(cls.schedule || "روزهای زوج (شنبه، دوشنبه، چهارشنبه)");
           setTimeSlot(cls.time_slot || "۱۶:۰۰ الی ۱۷:۳۰");
 
           const enrollments = cls.enrollments || [];
           setExistingEnrollments(enrollments);
-          setSelectedStudentIds(enrollments.map((e) => e.student || e.student_detail?.id));
+          setSelectedStudentIds(
+            enrollments.map((e) => e.student || e.student_detail?.id),
+          );
         }
       } catch (err) {
         if (!alive) return;
@@ -120,9 +133,9 @@ export default function ClassForm() {
         : [...prev, studentId],
     );
   };
-
   const filteredStudents = useMemo(() => {
     const q = studentSearch.trim().toLowerCase();
+
     if (!q) return allStudents;
 
     return allStudents.filter(
@@ -132,6 +145,26 @@ export default function ClassForm() {
         s.phone_number?.includes(q),
     );
   }, [allStudents, studentSearch]);
+
+  const totalStudentPages = Math.max(
+    1,
+    Math.ceil(filteredStudents.length / STUDENTS_PER_PAGE),
+  );
+
+  const paginatedStudents = useMemo(() => {
+    const start = (studentPage - 1) * STUDENTS_PER_PAGE;
+    return filteredStudents.slice(start, start + STUDENTS_PER_PAGE);
+  }, [filteredStudents, studentPage]);
+
+  useEffect(() => {
+    setStudentPage(1);
+  }, [studentSearch]);
+
+  useEffect(() => {
+    if (studentPage > totalStudentPages) {
+      setStudentPage(totalStudentPages);
+    }
+  }, [studentPage, totalStudentPages]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -222,21 +255,33 @@ export default function ClassForm() {
         </div>
 
         {error && (
-          <div className="classes-alert error" style={{ marginBottom: "1.25rem" }}>
+          <div
+            className="classes-alert error"
+            style={{ marginBottom: "1.25rem" }}
+          >
             <AlertCircle size={18} />
             <span>{error}</span>
           </div>
         )}
 
         {successMsg && (
-          <div className="classes-alert success" style={{ marginBottom: "1.25rem" }}>
+          <div
+            className="classes-alert success"
+            style={{ marginBottom: "1.25rem" }}
+          >
             <Sparkles size={18} />
             <span>{successMsg}</span>
           </div>
         )}
 
         {loading ? (
-          <div style={{ textAlign: "center", padding: "3.5rem", color: "oklch(50% 0 0)" }}>
+          <div
+            style={{
+              textAlign: "center",
+              padding: "3.5rem",
+              color: "oklch(50% 0 0)",
+            }}
+          >
             در حال بارگذاری اطلاعات فرم...
           </div>
         ) : (
@@ -248,7 +293,9 @@ export default function ClassForm() {
                 </div>
                 <div>
                   <h2>مشخصات اصلی و مالی کلاس</h2>
-                  <p>نام دوره، ترم تحصیلی، مدرس و مبلغ مصوب شهریه را مشخص کنید.</p>
+                  <p>
+                    نام دوره، ترم تحصیلی، مدرس و مبلغ مصوب شهریه را مشخص کنید.
+                  </p>
                 </div>
               </div>
 
@@ -345,7 +392,10 @@ export default function ClassForm() {
                     required
                   />
                   <small className="tuition-preview-badge">
-                    مبلغ شهریه: {tuitionFee ? `${toPersianDigits(Number(tuitionFee).toLocaleString("fa-IR"))} تومان` : "۰ تومان"}
+                    مبلغ شهریه:{" "}
+                    {tuitionFee
+                      ? `${toPersianDigits(Number(tuitionFee).toLocaleString("fa-IR"))} تومان`
+                      : "۰ تومان"}
                   </small>
                 </label>
               </div>
@@ -354,15 +404,22 @@ export default function ClassForm() {
             {/* Card 2: Student Assignment */}
             <section className="class-form-card-section">
               <div className="class-form-card-header flex-header">
-                <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.85rem",
+                  }}
+                >
                   <div className="class-form-card-icon users-icon">
                     <Users size={20} />
                   </div>
                   <div>
                     <h2>انتخاب دانش‌آموزان کلاس</h2>
                     <p>
-                      دانش‌آموزانی که در این کلاس شرکت می‌کنند را انتخاب نمایید (
-                      {toPersianDigits(selectedStudentIds.length)} نفر انتخاب‌شده).
+                      دانش‌آموزانی که در این کلاس شرکت می‌کنند را انتخاب نمایید
+                      ({toPersianDigits(selectedStudentIds.length)} نفر
+                      انتخاب‌شده).
                     </p>
                   </div>
                 </div>
@@ -378,40 +435,188 @@ export default function ClassForm() {
                 </div>
               </div>
 
-              <div className="student-picker-grid">
-                {filteredStudents.map((student) => {
-                  const isSelected = selectedStudentIds.includes(student.id);
+              <div className="student-list-wrapper">
+                {paginatedStudents.length > 0 ? (
+                  <div className="student-list">
+                    {paginatedStudents.map((student, index) => {
+                      const isSelected = selectedStudentIds.includes(
+                        student.id,
+                      );
+                      const rowNumber =
+                        (studentPage - 1) * STUDENTS_PER_PAGE + index + 1;
 
-                  return (
-                    <div
-                      key={student.id}
-                      className={`student-card-item ${isSelected ? "selected" : ""}`}
-                      onClick={() => toggleStudent(student.id)}
-                    >
-                      <div className="card-checkbox">
-                        {isSelected ? (
-                          <CheckSquare size={19} className="check-active" />
-                        ) : (
-                          <Square size={19} className="check-inactive" />
-                        )}
-                      </div>
+                      return (
+                        <div
+                          key={student.id}
+                          className={`student-row-item ${
+                            isSelected ? "selected" : ""
+                          }`}
+                          onClick={() => toggleStudent(student.id)}
+                        >
+                          <div className="student-row-number">
+                            {toPersianDigits(rowNumber)}
+                          </div>
 
-                      <div className="student-info-col">
-                        <strong>{getFullName(student)}</strong>
-                        <span className="user-tag">{student.username}</span>
-                        {student.phone_number && (
-                          <small className="phone-tag">{student.phone_number}</small>
-                        )}
-                      </div>
+                          <div className="student-row-check">
+                            {isSelected ? (
+                              <CheckSquare size={19} className="check-active" />
+                            ) : (
+                              <Square size={19} className="check-inactive" />
+                            )}
+                          </div>
+
+                          <div className="student-row-main">
+                            <div className="student-avatar">
+                              {getFullName(student)?.charAt(0) || "؟"}
+                            </div>
+
+                            <div className="student-row-info">
+                              <strong>{getFullName(student)}</strong>
+
+                              <span>نام کاربری: {student.username || "—"}</span>
+                            </div>
+                          </div>
+
+                          <div className="student-row-phone">
+                            <span className="student-row-label">
+                              شماره تماس
+                            </span>
+                            <strong>
+                              {student.phone_number || "ثبت نشده"}
+                            </strong>
+                          </div>
+
+                          <div className="student-row-status">
+                            <span
+                              className={
+                                isSelected
+                                  ? "student-status selected-status"
+                                  : "student-status"
+                              }
+                            >
+                              {isSelected ? "انتخاب شده" : "انتخاب نشده"}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="student-empty-state">
+                    <div className="student-empty-icon">
+                      <Users size={25} />
                     </div>
-                  );
-                })}
+
+                    <strong>دانش‌آموزی پیدا نشد</strong>
+
+                    <span>
+                      {studentSearch
+                        ? "نتیجه‌ای برای عبارت جستجو شده وجود ندارد."
+                        : "هنوز دانش‌آموزی برای نمایش وجود ندارد."}
+                    </span>
+                  </div>
+                )}
+
+                {filteredStudents.length > 0 && (
+                  <div className="student-pagination">
+                    <div className="student-pagination-info">
+                      نمایش
+                      <strong>
+                        {toPersianDigits(
+                          (studentPage - 1) * STUDENTS_PER_PAGE + 1,
+                        )}
+                      </strong>
+                      تا
+                      <strong>
+                        {toPersianDigits(
+                          Math.min(
+                            studentPage * STUDENTS_PER_PAGE,
+                            filteredStudents.length,
+                          ),
+                        )}
+                      </strong>
+                      از
+                      <strong>
+                        {toPersianDigits(filteredStudents.length)}
+                      </strong>
+                      دانش‌آموز
+                    </div>
+
+                    <div className="student-pagination-controls">
+                      <button
+                        type="button"
+                        className="student-pagination-btn"
+                        disabled={studentPage === 1}
+                        onClick={() =>
+                          setStudentPage((prev) => Math.max(1, prev - 1))
+                        }
+                      >
+                        قبلی
+                      </button>
+
+                      <div className="student-page-numbers">
+                        {Array.from(
+                          { length: totalStudentPages },
+                          (_, index) => index + 1,
+                        )
+                          .filter((page) => {
+                            if (totalStudentPages <= 5) return true;
+
+                            return (
+                              page === 1 ||
+                              page === totalStudentPages ||
+                              Math.abs(page - studentPage) <= 1
+                            );
+                          })
+                          .map((page, index, visiblePages) => {
+                            const previousPage = visiblePages[index - 1];
+
+                            return (
+                              <React.Fragment key={page}>
+                                {previousPage && page - previousPage > 1 && (
+                                  <span className="student-pagination-dots">
+                                    ...
+                                  </span>
+                                )}
+
+                                <button
+                                  type="button"
+                                  className={`student-page-number ${
+                                    studentPage === page ? "active" : ""
+                                  }`}
+                                  onClick={() => setStudentPage(page)}
+                                >
+                                  {toPersianDigits(page)}
+                                </button>
+                              </React.Fragment>
+                            );
+                          })}
+                      </div>
+
+                      <button
+                        type="button"
+                        className="student-pagination-btn"
+                        disabled={studentPage === totalStudentPages}
+                        onClick={() =>
+                          setStudentPage((prev) =>
+                            Math.min(totalStudentPages, prev + 1),
+                          )
+                        }
+                      >
+                        بعدی
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </section>
 
             {/* Form Actions */}
             <div className="class-form-submit-actions">
-              <Link to={`${basePath}/classes`} className="class-form-cancel-btn">
+              <Link
+                to={`${basePath}/classes`}
+                className="class-form-cancel-btn"
+              >
                 انصراف
               </Link>
 
@@ -421,7 +626,11 @@ export default function ClassForm() {
                 disabled={saving}
                 icon={<Save size={18} />}
               >
-                {saving ? "در حال ذخیره‌سازی..." : isEdit ? "ذخیره تغییرات کلاس" : "ثبت و ایجاد کلاس"}
+                {saving
+                  ? "در حال ذخیره‌سازی..."
+                  : isEdit
+                    ? "ذخیره تغییرات کلاس"
+                    : "ثبت و ایجاد کلاس"}
               </AnimatedButton>
             </div>
           </form>

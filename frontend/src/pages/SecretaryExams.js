@@ -434,8 +434,8 @@ export default function SecretaryExams() {
         <section className="term-selector-banner">
           <div className="term-banner-info">
 
-            <div className="term-icon-circle">
-              <Layers size={22} />
+            <div className="term-icon-circle-exam">
+              <FileText size={25} />
             </div>
 
             <div className="term-banner-text">

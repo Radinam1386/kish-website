@@ -401,69 +401,152 @@ export default function ClassDetails() {
             </div>
 
             {enrolledStudents.length > 0 ? (
-              <div className="enrolled-table-wrap">
-                <table className="enrolled-table">
-                  <thead>
-                    <tr>
-                      <th>دانش‌آموز</th>
-                      <th>شماره تماس</th>
-                      <th>تاریخ عضویت</th>
-                      <th>درصد حضور</th>
-                      <th>عملیات</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {enrolledStudents.map((st) => (
-                      <tr key={st.id}>
-                        <td>
-                          <div className="student-row-info">
-                            <div className="student-small-avatar">
-                              {st.fullName.charAt(0)}
-                            </div>
-                            <div>
-                              <strong>{st.fullName}</strong>
-                              <small>نام کاربری: {st.username}</small>
-                            </div>
-                          </div>
-                        </td>
-                        <td>{st.phone_number || "-"}</td>
-                        <td>{toJalaliDateString(st.enrolledAt)}</td>
-                        <td>
-                          <span
-                            className={`att-pill ${
-                              st.attendanceRate >= 80
-                                ? "high"
-                                : st.attendanceRate >= 50
-                                  ? "medium"
-                                  : "low"
-                            }`}
-                          >
-                            {toPersianDigits(st.attendanceRate)}٪
-                          </span>
-                        </td>
-                        <td>
-                          <Link
-                            to={
-                              userRole === "teacher"
-                                ? `/panel/teacher/students`
-                                : `${basePath}/students/${st.id}`
-                            }
-                          >
-                            <AnimatedButton variant="secondary" size="small">
-                              <Eye size={14} />
-                              مشاهده
-                            </AnimatedButton>
-                          </Link>
-                        </td>
+              <>
+                {/* Desktop Table */}
+                <div className="enrolled-table-wrap desktop-only">
+                  <table className="enrolled-table">
+                    <thead>
+                      <tr>
+                        <th>دانش‌آموز</th>
+                        <th>شماره تماس</th>
+                        <th>تاریخ عضویت</th>
+                        <th>درصد حضور</th>
+                        <th>عملیات</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+
+                    <tbody>
+                      {enrolledStudents.map((st) => (
+                        <tr key={st.id}>
+                          <td>
+                            <div className="student-row-info">
+                              <div className="student-small-avatar">
+                                {st.fullName.charAt(0)}
+                              </div>
+
+                              <div>
+                                <strong>{st.fullName}</strong>
+                                <small>نام کاربری: {st.username}</small>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td>{st.phone_number || "-"}</td>
+
+                          <td>{toJalaliDateString(st.enrolledAt)}</td>
+
+                          <td>
+                            <span
+                              className={`att-pill ${
+                                st.attendanceRate >= 80
+                                  ? "high"
+                                  : st.attendanceRate >= 50
+                                    ? "medium"
+                                    : "low"
+                              }`}
+                            >
+                              {toPersianDigits(st.attendanceRate)}٪
+                            </span>
+                          </td>
+
+                          <td>
+                            <Link
+                              to={
+                                userRole === "teacher"
+                                  ? `/panel/teacher/students`
+                                  : `${basePath}/students/${st.id}`
+                              }
+                            >
+                              <AnimatedButton variant="secondary" size="small">
+                                <Eye size={14} />
+                                مشاهده
+                              </AnimatedButton>
+                            </Link>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile Cards */}
+                <div className="students-mobile-list">
+                  {enrolledStudents.map((st) => (
+                    <div className="student-mobile-card" key={st.id}>
+                      <div className="student-mobile-top">
+                        <div className="student-row-info">
+                          <div className="student-small-avatar">
+                            {st.fullName.charAt(0)}
+                          </div>
+
+                          <div>
+                            <strong>{st.fullName}</strong>
+                            <small>{st.username}</small>
+                          </div>
+                        </div>
+
+                        <span
+                          className={`att-pill ${
+                            st.attendanceRate >= 80
+                              ? "high"
+                              : st.attendanceRate >= 50
+                                ? "medium"
+                                : "low"
+                          }`}
+                        >
+                          {toPersianDigits(st.attendanceRate)}٪
+                        </span>
+                      </div>
+
+                      <div className="student-mobile-info">
+                        <div className="mobile-info-item">
+                          <span>شماره تماس</span>
+                          <strong>{st.phone_number || "ثبت نشده"}</strong>
+                        </div>
+
+                        <div className="mobile-info-item">
+                          <span>تاریخ عضویت</span>
+                          <strong>{toJalaliDateString(st.enrolledAt)}</strong>
+                        </div>
+
+                        <div className="mobile-info-item">
+                          <span>حضور</span>
+                          <strong>
+                            {toPersianDigits(st.attendanceCount)} جلسه
+                          </strong>
+                        </div>
+
+                        <div className="mobile-info-item">
+                          <span>غیبت</span>
+                          <strong>
+                            {toPersianDigits(st.absentCount)} جلسه
+                          </strong>
+                        </div>
+                      </div>
+
+                      <div className="student-mobile-action">
+                        <Link
+                          to={
+                            userRole === "teacher"
+                              ? `/panel/teacher/students`
+                              : `${basePath}/students/${st.id}`
+                          }
+                        >
+                          <AnimatedButton variant="secondary" size="small">
+                            <Eye size={14} />
+                            مشاهده پروفایل
+                          </AnimatedButton>
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
             ) : (
               <div className="empty-students-box">
                 <Users size={36} />
                 <p>هنوز دانش‌آموزی در این کلاس ثبت‌نام نشده است.</p>
+
                 {userRole !== "teacher" && (
                   <Link to={`${basePath}/classes/${classroom.id}/edit`}>
                     <AnimatedButton variant="primary" size="small">
@@ -482,65 +565,149 @@ export default function ClassDetails() {
             <Calendar size={18} />
             تاریخچه جلسات برگزار شده ({toPersianDigits(sessions.length)} جلسه)
           </h4>
-
           {sessions.length > 0 ? (
-            <div className="sessions-table-wrap">
-              <table className="sessions-table">
-                <thead>
-                  <tr>
-                    <th>جلسه</th>
-                    <th>تاریخ برگزاری (شمسی)</th>
-                    <th>حاضرین</th>
-                    <th>غایبین</th>
-                    <th>تأخیر / موجه</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sessions.map((s, idx) => {
-                    const sessionAtt = attendanceRecords.filter(
-                      (a) => a.session === s.id || a.session?.id === s.id,
-                    );
-                    const present = sessionAtt.filter(
-                      (a) => a.status === "present",
-                    ).length;
-                    const absent = sessionAtt.filter(
-                      (a) => a.status === "absent",
-                    ).length;
-                    const other = sessionAtt.filter(
-                      (a) => a.status === "late" || a.status === "excused",
-                    ).length;
+            <>
+              {/* Desktop Table */}
+              <div className="sessions-table-wrap desktop-only">
+                <table className="sessions-table">
+                  <thead>
+                    <tr>
+                      <th>جلسه</th>
+                      <th>تاریخ برگزاری</th>
+                      <th>حاضرین</th>
+                      <th>غایبین</th>
+                      <th>تأخیر / موجه</th>
+                    </tr>
+                  </thead>
 
-                    return (
-                      <tr key={s.id}>
-                        <td>
+                  <tbody>
+                    {sessions.map((s, idx) => {
+                      const sessionAtt = attendanceRecords.filter(
+                        (a) => a.session === s.id || a.session?.id === s.id,
+                      );
+
+                      const present = sessionAtt.filter(
+                        (a) => a.status === "present",
+                      ).length;
+
+                      const absent = sessionAtt.filter(
+                        (a) => a.status === "absent",
+                      ).length;
+
+                      const other = sessionAtt.filter(
+                        (a) => a.status === "late" || a.status === "excused",
+                      ).length;
+
+                      return (
+                        <tr key={s.id}>
+                          <td>
+                            <strong>
+                              جلسه {toPersianDigits(sessions.length - idx)}
+                            </strong>
+                          </td>
+
+                          <td>
+                            <span className="shamsi-date-tag">
+                              <Calendar size={13} />
+                              {toJalaliDateString(s.date)}
+                            </span>
+                          </td>
+
+                          <td>
+                            <span className="present-count">
+                              <UserCheck size={14} />
+                              {toPersianDigits(present)} نفر
+                            </span>
+                          </td>
+
+                          <td>
+                            <span className="absent-count">
+                              <UserX size={14} />
+                              {toPersianDigits(absent)} نفر
+                            </span>
+                          </td>
+
+                          <td>{toPersianDigits(other)} نفر</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Cards */}
+              <div className="sessions-mobile-list">
+                {sessions.map((s, idx) => {
+                  const sessionAtt = attendanceRecords.filter(
+                    (a) => a.session === s.id || a.session?.id === s.id,
+                  );
+
+                  const present = sessionAtt.filter(
+                    (a) => a.status === "present",
+                  ).length;
+
+                  const absent = sessionAtt.filter(
+                    (a) => a.status === "absent",
+                  ).length;
+
+                  const other = sessionAtt.filter(
+                    (a) => a.status === "late" || a.status === "excused",
+                  ).length;
+
+                  return (
+                    <div className="session-mobile-card" key={s.id}>
+                      <div className="session-mobile-header">
+                        <div className="session-number">
+                          <Calendar size={17} />
                           <strong>
                             جلسه {toPersianDigits(sessions.length - idx)}
                           </strong>
-                        </td>
-                        <td>
-                          <span className="shamsi-date-tag">
-                            <Calendar size={13} />
-                            {toJalaliDateString(s.date)}
-                          </span>
-                        </td>
-                        <td>
-                          <span className="present-count">
-                            <UserCheck size={14} /> {toPersianDigits(present)}{" "}
-                            نفر
-                          </span>
-                        </td>
-                        <td>
-                          <span className="absent-count">
-                            <UserX size={14} /> {toPersianDigits(absent)} نفر
-                          </span>
-                        </td>
-                        <td>{toPersianDigits(other)} نفر</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                        </div>
+
+                        <span className="shamsi-date-tag">
+                          {toJalaliDateString(s.date)}
+                        </span>
+                      </div>
+
+                      <div className="session-mobile-stats">
+                        <div className="session-stat present">
+                          <UserCheck size={18} />
+                          <div>
+                            <span>حاضرین</span>
+                            <strong>
+                              {toPersianDigits(present)}
+                              <small> نفر</small>
+                            </strong>
+                          </div>
+                        </div>
+
+                        <div className="session-stat absent">
+                          <UserX size={18} />
+                          <div>
+                            <span>غایبین</span>
+                            <strong>
+                              {toPersianDigits(absent)}
+                              <small> نفر</small>
+                            </strong>
+                          </div>
+                        </div>
+
+                        <div className="session-stat other">
+                          <Clock size={18} />
+                          <div>
+                            <span>تأخیر / موجه</span>
+                            <strong>
+                              {toPersianDigits(other)}
+                              <small> نفر</small>
+                            </strong>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
           ) : (
             <div className="empty-sessions-box">
               <Clock size={36} />

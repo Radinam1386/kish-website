@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api, rolePanelPath, storage } from "../services/api";
+import { api, rolePanelPath } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 import { Eye, EyeClosed, UserRound } from "lucide-react";
 import DatabaseErrorHandler from "../components/DatabaseErrorHandler";
 import "./Login.css";
@@ -14,6 +15,7 @@ export default function Login() {
   const [errorObject, setErrorObject] = useState(null);
 
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -28,8 +30,13 @@ export default function Login() {
         password: pass,
       });
 
-      storage.setSession(session);
-      navigate(rolePanelPath(session.user.role));
+      // ذخیره session + بروزرسانی AuthContext
+      login(session);
+
+      // انتقال مستقیم به پنل رول خودش
+      navigate(rolePanelPath(session.user.role), {
+        replace: true,
+      });
     } catch (err) {
       setErrorObject(err);
       setError(err.message || "ورود ناموفق بود.");
@@ -40,18 +47,27 @@ export default function Login() {
 
   return (
     <div className="login-root" dir="rtl">
+
       <div className="login-bg">
         <div className="blob blob-1" />
         <div className="blob blob-2" />
       </div>
 
       <div className="login-inner">
+
         <div className="login-card">
+
           <div className="login-brand">
-            <div className="brand-icon">🎯</div>
+
+            <div className="brand-icon">
+              🎯
+            </div>
 
             <div className="brand-content">
-              <h1>آموزشگاه زبان کیش</h1>
+
+              <h1>
+                آموزشگاه زبان کیش
+              </h1>
 
               <p className="subtitle">
                 خوبان زنجان
@@ -60,19 +76,24 @@ export default function Login() {
               <p className="tagline">
                 یادگیری حرفه‌ای، آینده‌ای روشن
               </p>
+
             </div>
+
           </div>
 
           <form
             className="login-form"
             onSubmit={handleSubmit}
           >
+
             <div className="field">
+
               <label htmlFor="phone">
                 نام کاربری
               </label>
 
               <div className="input-wrap">
+
                 <span className="input-password-toggle">
                   <UserRound />
                 </span>
@@ -88,15 +109,19 @@ export default function Login() {
                   dir="ltr"
                   required
                 />
+
               </div>
+
             </div>
 
             <div className="field">
+
               <label htmlFor="pass">
                 رمز عبور
               </label>
 
               <div className="input-wrap">
+
                 <input
                   id="pass"
                   type={
@@ -132,7 +157,9 @@ export default function Login() {
                     <Eye size={18} />
                   )}
                 </button>
+
               </div>
+
             </div>
 
             {errorObject ? (
@@ -164,6 +191,7 @@ export default function Login() {
                 "ورود به پنل"
               )}
             </button>
+
           </form>
 
           <p className="login-footer">
@@ -172,8 +200,11 @@ export default function Login() {
               به منشی مراجعه کنید.
             </a>
           </p>
+
         </div>
+
       </div>
+
     </div>
   );
 }

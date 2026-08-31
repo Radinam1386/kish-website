@@ -9,6 +9,10 @@ import {
   Eye,
   Filter,
   Layers,
+  AlertCircle,
+  CheckCircle2,
+  ChevronLeft,
+  Home,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -38,10 +42,11 @@ function SecretaryPanel() {
   useEffect(() => {
     let alive = true;
 
-    async function loadData() {
+    const loadData = async () => {
       try {
         setLoading(true);
         setError("");
+
         const [
           termsData,
           usersData,
@@ -61,6 +66,7 @@ function SecretaryPanel() {
         if (!alive) return;
 
         const allTerms = termsData || [];
+
         setTerms(allTerms);
         setRawUsers(usersData || []);
         setRawClassrooms(classroomsData || []);
@@ -68,21 +74,25 @@ function SecretaryPanel() {
         setRawSessions(sessionsData || []);
         setRawAttendance(attendanceData || []);
 
-        // Default to active term if available
-        const active = allTerms.find((t) => t.is_active);
-        if (active) {
-          setSelectedTermId(String(active.id));
+        const activeTerm = allTerms.find((term) => term.is_active);
+
+        if (activeTerm) {
+          setSelectedTermId(String(activeTerm.id));
         } else if (allTerms.length > 0) {
           setSelectedTermId(String(allTerms[0].id));
         } else {
           setSelectedTermId("all");
         }
       } catch (err) {
-        if (alive) setError(err.message || "خطا در دریافت اطلاعات");
+        if (alive) {
+          setError(err.message || "دریافت اطلاعات پنل منشی با خطا مواجه شد.");
+        }
       } finally {
-        if (alive) setLoading(false);
+        if (alive) {
+          setLoading(false);
+        }
       }
-    }
+    };
 
     loadData();
 
@@ -93,124 +103,155 @@ function SecretaryPanel() {
 
   const activeTermObj = useMemo(() => {
     if (selectedTermId === "all") return null;
-    return terms.find((t) => String(t.id) === String(selectedTermId));
+
+    return terms.find((term) => String(term.id) === String(selectedTermId));
   }, [terms, selectedTermId]);
 
-  // Filtered Classrooms by Term
   const termClassrooms = useMemo(() => {
-    if (selectedTermId === "all") return rawClassrooms;
+    if (selectedTermId === "all") {
+      return rawClassrooms;
+    }
+
     return rawClassrooms.filter(
-      (c) => String(c.term || c.term?.id) === String(selectedTermId),
+      (classroom) =>
+        String(classroom.term?.id ?? classroom.term) === String(selectedTermId),
     );
   }, [rawClassrooms, selectedTermId]);
 
   const termClassIds = useMemo(
-    () => termClassrooms.map((c) => c.id),
+    () => termClassrooms.map((classroom) => classroom.id),
     [termClassrooms],
   );
 
-  // Filtered Enrollments by Term Classrooms
   const termEnrollments = useMemo(() => {
-    if (selectedTermId === "all") return rawEnrollments;
-    return rawEnrollments.filter((e) =>
-      termClassIds.includes(e.classroom || e.classroom?.id),
+    if (selectedTermId === "all") {
+      return rawEnrollments;
+    }
+
+    return rawEnrollments.filter((enrollment) =>
+      termClassIds.includes(enrollment.classroom?.id ?? enrollment.classroom),
     );
   }, [rawEnrollments, termClassIds, selectedTermId]);
 
-  // Filtered Sessions by Term Classrooms
   const termSessions = useMemo(() => {
-    if (selectedTermId === "all") return rawSessions;
-    return rawSessions.filter((s) =>
-      termClassIds.includes(s.classroom || s.classroom?.id),
+    if (selectedTermId === "all") {
+      return rawSessions;
+    }
+
+    return rawSessions.filter((session) =>
+      termClassIds.includes(session.classroom?.id ?? session.classroom),
     );
   }, [rawSessions, termClassIds, selectedTermId]);
 
-  // Enrolled Students list for the Selected Term
   const studentList = useMemo(() => {
-    const studentUsers = rawUsers.filter((u) => u.role === "student");
+    const studentUsers = rawUsers.filter((user) => user.role === "student");
 
-    // If specific term selected, prioritize students enrolled in this term
     let targetStudents = studentUsers;
+
     if (selectedTermId !== "all") {
       const enrolledStudentIds = termEnrollments.map(
-        (e) => e.student || e.student?.id,
+        (enrollment) => enrollment.student?.id ?? enrollment.student,
       );
-      // If there are enrolled students, show them; otherwise show all with note
-      const enrolledOnly = studentUsers.filter((u) =>
-        enrolledStudentIds.includes(u.id),
+
+      const enrolledStudents = studentUsers.filter((user) =>
+        enrolledStudentIds.includes(user.id),
       );
-      if (enrolledOnly.length > 0) {
-        targetStudents = enrolledOnly;
+
+      if (enrolledStudents.length > 0) {
+        targetStudents = enrolledStudents;
       }
     }
 
-    return targetStudents.map((u) => {
+    return targetStudents.map((user) => {
       const studentEnrollment = termEnrollments.find(
-        (e) => e.student === u.id || e.student?.id === u.id,
+        (enrollment) =>
+          (enrollment.student?.id ?? enrollment.student) === user.id,
       );
-      const studentClass = studentEnrollment
-        ? termClassrooms.find(
-            (c) => c.id === (studentEnrollment.classroom || studentEnrollment.classroom?.id),
-          )
-        : null;
+
+      const classroomId =
+        studentEnrollment?.classroom?.id ?? studentEnrollment?.classroom;
+
+      const studentClass =
+        termClassrooms.find((classroom) => classroom.id === classroomId) ||
+        null;
 
       const studentRecords = rawAttendance.filter(
-        (a) => a.student === u.id || a.student?.id === u.id,
+        (attendance) =>
+          (attendance.student?.id ?? attendance.student) === user.id,
       );
-      const absents = studentRecords.filter((a) => a.status === "absent").length;
-      const attendanceStatus =
-        studentRecords.length === 0
-          ? "بدون سابقه"
-          : absents === 0
-          ? "منظم"
-          : `${toPersianDigits(absents)} غیبت`;
+
+      const absentCount = studentRecords.filter(
+        (attendance) => attendance.status === "absent",
+      ).length;
+
+      let attendanceStatus = "بدون سابقه";
+
+      if (studentRecords.length > 0) {
+        attendanceStatus =
+          absentCount === 0 ? "منظم" : `${toPersianDigits(absentCount)} غیبت`;
+      }
 
       return {
-        id: u.id,
-        name: getFullName(u),
-        phone: u.phone_number || "-",
-        cls: studentClass?.name || "بدون کلاس در این ترم",
-        fee: u.is_active ? "paid" : "pending",
+        id: user.id,
+        name: getFullName(user) || user.username,
+        username: user.username,
+        phone: user.phone_number || "-",
+        cls: studentClass?.name || "بدون کلاس",
+        fee: user.is_active ? "paid" : "pending",
         attendance: attendanceStatus,
-        remaining: 0,
+        isRegular: attendanceStatus === "منظم",
+        avatar: (getFullName(user) || user.username || "د").charAt(0),
       };
     });
-  }, [rawUsers, termEnrollments, termClassrooms, rawAttendance, selectedTermId]);
+  }, [
+    rawUsers,
+    termEnrollments,
+    termClassrooms,
+    rawAttendance,
+    selectedTermId,
+  ]);
 
   const classList = useMemo(() => {
-    return termClassrooms.map((cls) => {
+    return termClassrooms.map((classroom) => {
       const classSessions = termSessions.filter(
-        (s) => s.classroom === cls.id || s.classroom?.id === cls.id,
+        (session) =>
+          (session.classroom?.id ?? session.classroom) === classroom.id,
       );
-      const held = classSessions.length;
+
       const total = 20;
+      const held = classSessions.length;
       const remaining = Math.max(0, total - held);
+      const progress = Math.min(100, Math.round((held / total) * 100));
 
       return {
-        id: cls.id,
-        name: cls.name,
+        id: classroom.id,
+        name: classroom.name,
         held,
         remaining,
         total,
+        progress,
       };
     });
   }, [termClassrooms, termSessions]);
 
-  const paidStudents = studentList.filter(
-    (student) => student.fee === "paid",
-  ).length;
+  const paidStudents = useMemo(
+    () => studentList.filter((student) => student.fee === "paid").length,
+    [studentList],
+  );
 
-  const totalRegularAttendance = studentList.filter(
-    (student) => student.attendance === "منظم",
-  ).length;
+  const regularStudents = useMemo(
+    () => studentList.filter((student) => student.isRegular).length,
+    [studentList],
+  );
 
   const filteredStudents = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
 
     return studentList.filter((student) => {
       const matchesSearch =
+        !normalizedSearch ||
         student.name.toLowerCase().includes(normalizedSearch) ||
-        student.phone.includes(normalizedSearch) ||
+        student.phone.toLowerCase().includes(normalizedSearch) ||
         student.cls.toLowerCase().includes(normalizedSearch);
 
       const matchesFee = selectedFee === "all" || student.fee === selectedFee;
@@ -219,6 +260,12 @@ function SecretaryPanel() {
     });
   }, [studentList, searchTerm, selectedFee]);
 
+  const selectedTermTitle = activeTermObj
+    ? activeTermObj.name
+    : selectedTermId === "all"
+      ? "همه ترم‌ها"
+      : "ترم نامشخص";
+
   return (
     <DashboardLayout
       role="پنل منشی"
@@ -226,63 +273,61 @@ function SecretaryPanel() {
       menuType="secretary"
     >
       <div className="secretary-panel-x8m4-root">
-        {/* Term Selection Top Bar */}
-        <div className="term-selector-banner">
-          <div className="term-banner-info">
-            <div className="term-icon-circle">
-              <Layers size={22} />
+        <section className="secretary-panel-x8m4-term-banner">
+          <div className="secretary-panel-x8m4-term-content">
+            <div className="secretary-panel-x8m4-term-icon">
+              <Home size={25} />
             </div>
-            <div>
-              <h3>
-                ترم تحصیلی انتخابی:{" "}
-                <span className="term-highlight-text">
-                  {activeTermObj
-                    ? activeTermObj.name
-                    : selectedTermId === "all"
-                    ? "همه ترم‌ها"
-                    : "ترم نامشخص"}
-                </span>
-              </h3>
+
+            <div className="secretary-panel-x8m4-term-text">
+              <div className="secretary-panel-x8m4-term-label">
+                ترم تحصیلی انتخابی
+              </div>
+
+              <h3>{selectedTermTitle}</h3>
+
               <p>
                 {activeTermObj?.is_active
-                  ? "اطلاعات، کلاس‌ها و آمار مربوط به ترم فعال جاری در حال نمایش است."
+                  ? "اطلاعات و آمار مربوط به ترم فعال جاری نمایش داده می‌شود."
                   : activeTermObj
-                  ? "اطلاعات مربوط به این ترم بایگانی‌شده در حال نمایش است."
-                  : "نمایش کلیه اطلاعات تمامی ترم‌ها"}
+                    ? "اطلاعات مربوط به ترم انتخاب‌شده در حال نمایش است."
+                    : "اطلاعات تجمیعی تمام ترم‌های آموزشگاه نمایش داده می‌شود."}
               </p>
             </div>
           </div>
 
-          <div className="term-dropdown-wrapper">
-            <label>انتخاب ترم:</label>
+          <div className="secretary-panel-x8m4-term-control">
+            <label htmlFor="secretary-term-select">انتخاب ترم</label>
+
             <select
+              id="secretary-term-select"
               value={selectedTermId}
-              onChange={(e) => setSelectedTermId(e.target.value)}
-              className="term-select-input"
+              onChange={(event) => setSelectedTermId(event.target.value)}
+              className="secretary-panel-x8m4-term-select"
             >
-              {terms.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name} {t.is_active ? "(ترم فعال جاری)" : "(به پایان رسیده)"}
+              {terms.map((term) => (
+                <option key={term.id} value={term.id}>
+                  {term.name}{" "}
+                  {term.is_active ? "(ترم فعال جاری)" : "(به پایان رسیده)"}
                 </option>
               ))}
+
               <option value="all">همه ترم‌ها (مشاهده تجمیعی)</option>
             </select>
           </div>
-        </div>
-
+        </section>
         {error && (
-          <div style={{ color: "var(--danger, #ef4444)", marginBottom: "1rem", textAlign: "center" }}>
-            {error}
+          <div className="secretary-panel-x8m4-error">
+            <AlertCircle size={19} />
+            <span>{error}</span>
           </div>
         )}
-
-        {/* Stats Grid */}
-        <div className="secretary-panel-x8m4-stats">
+        <section className="secretary-panel-x8m4-stats">
           <StatCard
             title="دانش‌آموزان ترم"
             value={`${toPersianDigits(studentList.length)} نفر`}
-            hint={activeTermObj?.name || "ترم انتخابی"}
-            icon={<UsersRound />}
+            hint={selectedTermTitle}
+            icon={<UsersRound size={21} />}
             color="red"
           />
 
@@ -290,15 +335,15 @@ function SecretaryPanel() {
             title="حساب‌های فعال"
             value={`${toPersianDigits(paidStudents)} نفر`}
             hint="دانش‌آموزان فعال"
-            icon={<CreditCard />}
+            icon={<CreditCard size={21} />}
             color="green"
           />
 
           <StatCard
             title="دانش‌آموزان منظم"
-            value={`${toPersianDigits(totalRegularAttendance)} نفر`}
-            hint="بدون غیبت"
-            icon={<ClipboardCheck />}
+            value={`${toPersianDigits(regularStudents)} نفر`}
+            hint="بدون غیبت ثبت‌شده"
+            icon={<ClipboardCheck size={21} />}
             color="light-blue"
           />
 
@@ -306,48 +351,63 @@ function SecretaryPanel() {
             title="کلاس‌های ترم"
             value={`${toPersianDigits(termClassrooms.length)} کلاس`}
             hint={activeTermObj?.is_active ? "در حال برگزاری" : "ترم انتخابی"}
-            icon={<CalendarDays />}
+            icon={<CalendarDays size={21} />}
             color="soft-red"
           />
-        </div>
-
-        {/* Search & Actions Section */}
+        </section>
         <section className="secretary-panel-x8m4-section">
           <div className="secretary-panel-x8m4-section-header">
-            <div>
-              <h3 className="secretary-panel-x8m4-title">جستجوی سریع دانش‌آموزان</h3>
+            <div className="secretary-panel-x8m4-section-heading">
+              <div className="secretary-panel-x8m4-section-kicker">
+                مدیریت دانش‌آموزان
+              </div>
+
+              <h3 className="secretary-panel-x8m4-title">
+                جستجوی سریع دانش‌آموزان
+              </h3>
+
               <p className="secretary-panel-x8m4-description">
-                جستجو در اطلاعات دانش‌آموزان ترم انتخابی
+                جستجو و مشاهده اطلاعات دانش‌آموزان ترم انتخابی
               </p>
             </div>
 
-            <div style={{ display: "flex", gap: "0.75rem" }}>
-              <Link to="/panel/secretary/students/new">
-                <AnimatedButton variant="primary" icon={<UserPlus size={18} />}>
-                  ثبت‌نام دانش‌آموز جدید
-                </AnimatedButton>
-              </Link>
-            </div>
+            <Link to="/panel/secretary/students/new">
+              <AnimatedButton variant="primary" icon={<UserPlus size={18} />}>
+                ثبت‌نام دانش‌آموز جدید
+              </AnimatedButton>
+            </Link>
           </div>
+          <div className="secretary-panel-x8m4-filters">
+            <div className="secretary-panel-x8m4-search">
+              <Search size={18} className="secretary-panel-x8m4-search-icon" />
 
-          <div className="secretary-panel-x8m4-search-row">
-            <div className="secretary-panel-x8m4-input-shell">
-              <Search size={18} />
               <input
                 type="text"
-                placeholder="نام، شماره تماس یا کلاس..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="secretary-panel-x8m4-input"
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="نام، شماره تماس یا نام کلاس را جستجو کنید..."
+                className="secretary-panel-x8m4-search-input"
               />
+
+              {searchTerm && (
+                <button
+                  type="button"
+                  className="secretary-panel-x8m4-search-clear"
+                  onClick={() => setSearchTerm("")}
+                  aria-label="پاک کردن جستجو"
+                >
+                  ×
+                </button>
+              )}
             </div>
 
-            <div className="secretary-panel-x8m4-select-shell">
-              <Filter size={16} />
+            <div className="secretary-panel-x8m4-filter">
+              <Filter size={17} />
+
               <select
                 value={selectedFee}
-                onChange={(e) => setSelectedFee(e.target.value)}
-                className="secretary-panel-x8m4-select"
+                onChange={(event) => setSelectedFee(event.target.value)}
+                className="secretary-panel-x8m4-filter-select"
               >
                 <option value="all">همه وضعیت‌های حساب</option>
                 <option value="paid">فعال / پرداخت‌شده</option>
@@ -356,173 +416,227 @@ function SecretaryPanel() {
             </div>
           </div>
 
+          <div className="secretary-panel-x8m4-results-info">
+            <span>
+              نمایش
+              <strong>{toPersianDigits(filteredStudents.length)}</strong>
+              دانش‌آموز
+            </span>
+
+            {(searchTerm || selectedFee !== "all") && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchTerm("");
+                  setSelectedFee("all");
+                }}
+                className="secretary-panel-x8m4-reset"
+              >
+                حذف فیلترها
+              </button>
+            )}
+          </div>
           <div className="secretary-panel-x8m4-table-shell">
-            <div className="secretary-panel-x8m4-table-scroll">
-              <table className="secretary-panel-x8m4-table">
-                <thead>
-                  <tr>
-                    <th>نام دانش‌آموز</th>
-                    <th>شماره تماس</th>
-                    <th>کلاس ترم</th>
-                    <th>وضعیت حساب</th>
-                    <th>حضور و غیاب</th>
-                    <th>عملیات</th>
-                  </tr>
-                </thead>
+            {loading ? (
+              <div className="secretary-panel-x8m4-state">
+                <div className="secretary-panel-x8m4-loader" />
+                <strong>در حال دریافت اطلاعات</strong>
+                <span>اطلاعات دانش‌آموزان در حال بارگذاری است...</span>
+              </div>
+            ) : filteredStudents.length === 0 ? (
+              <div className="secretary-panel-x8m4-state">
+                <div className="secretary-panel-x8m4-state-icon">
+                  <UsersRound size={27} />
+                </div>
 
-                <tbody>
-                  {loading && (
+                <strong>دانش‌آموزی پیدا نشد</strong>
+
+                <span>عبارت جستجو یا فیلتر وضعیت حساب را تغییر دهید.</span>
+              </div>
+            ) : (
+              <div className="secretary-panel-x8m4-table-scroll">
+                <table className="secretary-panel-x8m4-table">
+                  <thead>
                     <tr>
-                      <td colSpan="6" style={{ textAlign: "center", padding: "2rem" }}>
-                        در حال بارگذاری اطلاعات...
-                      </td>
+                      <th>دانش‌آموز</th>
+                      <th>شماره تماس</th>
+                      <th>کلاس ترم</th>
+                      <th>وضعیت حساب</th>
+                      <th>حضور و غیاب</th>
+                      <th>عملیات</th>
                     </tr>
-                  )}
+                  </thead>
 
-                  {!loading && filteredStudents.length === 0 && (
-                    <tr>
-                      <td colSpan="6" style={{ textAlign: "center", padding: "2.5rem", color: "oklch(55% 0 0)" }}>
-                        دانش‌آموزی در این ترم یافت نشد.
-                      </td>
-                    </tr>
-                  )}
-
-                  {!loading &&
-                    filteredStudents.map((student) => (
+                  <tbody>
+                    {filteredStudents.map((student) => (
                       <tr key={student.id}>
-                        <td>
-                          <strong>{student.name}</strong>
+                        <td data-label="دانش‌آموز">
+                          <div className="secretary-panel-x8m4-student">
+                            <div className="secretary-panel-x8m4-avatar">
+                              {student.avatar}
+                            </div>
+
+                            <div className="secretary-panel-x8m4-student-info">
+                              <strong>{student.name}</strong>
+
+                              <span>{student.username}</span>
+                            </div>
+                          </div>
                         </td>
 
-                        <td>
-                          <span className="secretary-panel-x8m4-phone-tag">
+                        <td data-label="شماره تماس">
+                          <span className="secretary-panel-x8m4-phone">
                             {student.phone}
                           </span>
                         </td>
 
-                        <td>
+                        <td data-label="کلاس ترم">
                           <span className="secretary-panel-x8m4-class-tag">
                             {student.cls}
                           </span>
                         </td>
 
-                        <td>
+                        <td data-label="وضعیت حساب">
                           <span
-                            className={`secretary-panel-x8m4-fee-pill ${
+                            className={`secretary-panel-x8m4-status ${
                               student.fee === "paid"
-                                ? "secretary-panel-x8m4-fee-pill--paid"
-                                : "secretary-panel-x8m4-fee-pill--pending"
+                                ? "secretary-panel-x8m4-status--active"
+                                : "secretary-panel-x8m4-status--pending"
                             }`}
                           >
-                            {student.fee === "paid" ? "فعال" : "در انتظار پرداخت"}
+                            {student.fee === "paid" ? (
+                              <>
+                                <CheckCircle2 size={14} />
+                                فعال
+                              </>
+                            ) : (
+                              <>
+                                <CreditCard size={14} />
+                                در انتظار پرداخت
+                              </>
+                            )}
                           </span>
                         </td>
 
-                        <td>
-                          <span className="secretary-panel-x8m4-attendance-tag">
+                        <td data-label="حضور و غیاب">
+                          <span
+                            className={`secretary-panel-x8m4-attendance ${
+                              student.isRegular
+                                ? "secretary-panel-x8m4-attendance--good"
+                                : "secretary-panel-x8m4-attendance--warning"
+                            }`}
+                          >
                             {student.attendance}
                           </span>
                         </td>
 
-                        <td>
+                        <td
+                          data-label="عملیات"
+                          className="secretary-panel-x8m4-action-cell"
+                        >
                           <Link to={`/panel/secretary/students/${student.id}`}>
-                            <button
-                              type="button"
-                              className="secretary-panel-x8m4-view-btn"
+                            <AnimatedButton
+                              icon={<Eye size={16} />}
+                              size="small"
+                              variant="secondary"
                             >
-                              <Eye size={16} />
-                              مشاهده پرونده
-                            </button>
+                              <span>مشاهده پرونده</span>
+                              <ChevronLeft size={14} />
+                            </AnimatedButton>
                           </Link>
                         </td>
                       </tr>
                     ))}
-                </tbody>
-              </table>
-            </div>
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </section>
-
-        {/* Classes Overview Section */}
         <section className="secretary-panel-x8m4-section">
           <div className="secretary-panel-x8m4-section-header">
-            <div>
-              <h3 className="secretary-panel-x8m4-title">کلاس‌های ترم انتخابی</h3>
+            <div className="secretary-panel-x8m4-section-heading">
+              <h3 className="secretary-panel-x8m4-title">
+                کلاس‌های ترم انتخابی
+              </h3>
+
               <p className="secretary-panel-x8m4-description">
-                وضعیت تشکیل جلسات کلاس‌های این ترم
+                وضعیت تشکیل جلسات و میزان پیشرفت کلاس‌های این ترم
               </p>
             </div>
 
-            <Link to="/panel/secretary/classes">
-              <span style={{ fontSize: "0.84rem", fontWeight: "800", color: "var(--primary)" }}>
-                مدیریت همه کلاس‌ها ←
-              </span>
+            <Link
+              to="/panel/secretary/classes"
+              className="secretary-panel-x8m4-more-link"
+            >
+              <AnimatedButton icon={<ChevronLeft size={16} />} size="small">
+                مدیریت همه کلاس‌ها
+              </AnimatedButton>
             </Link>
           </div>
 
-          <div className="secretary-panel-x8m4-table-shell">
-            <div className="secretary-panel-x8m4-table-scroll">
-              <table className="secretary-panel-x8m4-table">
-                <thead>
-                  <tr>
-                    <th>نام کلاس</th>
-                    <th>جلسات برگزارشده</th>
-                    <th>جلسات باقی‌مانده</th>
-                    <th>پیشرفت ترم</th>
-                  </tr>
-                </thead>
+          {classList.length === 0 ? (
+            <div className="secretary-panel-x8m4-state secretary-panel-x8m4-state--classes">
+              <div className="secretary-panel-x8m4-state-icon">
+                <CalendarDays size={27} />
+              </div>
 
-                <tbody>
-                  {classList.length === 0 ? (
-                    <tr>
-                      <td colSpan="4" style={{ textAlign: "center", padding: "2rem", color: "oklch(55% 0 0)" }}>
-                        کلاسی در این ترم تعریف نشده است.
-                      </td>
-                    </tr>
-                  ) : (
-                    classList.map((cls) => (
-                      <tr key={cls.id}>
-                        <td>
-                          <strong>{cls.name}</strong>
-                        </td>
+              <strong>کلاسی برای این ترم تعریف نشده است</strong>
 
-                        <td>{toPersianDigits(cls.held)} جلسه</td>
-
-                        <td>{toPersianDigits(cls.remaining)} جلسه</td>
-
-                        <td>
-                          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                            <div
-                              style={{
-                                flex: 1,
-                                height: "8px",
-                                background: "oklch(92% 0 0)",
-                                borderRadius: "4px",
-                                overflow: "hidden",
-                                maxWidth: "120px",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  width: `${Math.min(100, Math.round((cls.held / cls.total) * 100))}%`,
-                                  height: "100%",
-                                  background: "var(--primary)",
-                                  borderRadius: "4px",
-                                }}
-                              />
-                            </div>
-                            <span style={{ fontSize: "0.78rem", fontWeight: "700" }}>
-                              {toPersianDigits(Math.round((cls.held / cls.total) * 100))}٪
-                            </span>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+              <span>
+                پس از ایجاد کلاس، وضعیت جلسات در این بخش نمایش داده می‌شود.
+              </span>
             </div>
-          </div>
+          ) : (
+            <div className="secretary-panel-x8m4-class-grid">
+              {classList.map((classItem) => (
+                <article
+                  key={classItem.id}
+                  className="secretary-panel-x8m4-class-card"
+                >
+                  <div className="secretary-panel-x8m4-class-header">
+                    <div className="secretary-panel-x8m4-class-icon">
+                      <Layers size={20} />
+                    </div>
+
+                    <div className="secretary-panel-x8m4-class-title">
+                      <span>کلاس آموزشی</span>
+                      <h4>{classItem.name}</h4>
+                    </div>
+                  </div>
+
+                  <div className="secretary-panel-x8m4-progress-head">
+                    <span>پیشرفت ترم</span>
+
+                    <strong>{toPersianDigits(classItem.progress)}٪</strong>
+                  </div>
+
+                  <div className="secretary-panel-x8m4-progress">
+                    <div
+                      className="secretary-panel-x8m4-progress-fill"
+                      style={{
+                        width: `${classItem.progress}%`,
+                      }}
+                    />
+                  </div>
+
+                  <div className="secretary-panel-x8m4-class-meta">
+                    <div>
+                      <span>برگزارشده</span>
+                      <strong>{toPersianDigits(classItem.held)} جلسه</strong>
+                    </div>
+
+                    <div>
+                      <span>باقی‌مانده</span>
+                      <strong>
+                        {toPersianDigits(classItem.remaining)} جلسه
+                      </strong>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
         </section>
       </div>
     </DashboardLayout>

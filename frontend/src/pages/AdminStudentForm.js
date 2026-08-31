@@ -10,6 +10,7 @@ import {
   Save,
   UserRound,
   BookOpen,
+  Check,
 } from "lucide-react";
 
 import DashboardLayout from "../components/DashboardLayout";
@@ -118,7 +119,11 @@ function AdminStudentForm() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword) {
+    if (
+      formData.password &&
+      formData.confirmPassword &&
+      formData.password !== formData.confirmPassword
+    ) {
       alert("رمز عبور و تکرار رمز عبور یکسان نیستند.");
       return;
     }
@@ -526,23 +531,25 @@ function AdminStudentForm() {
                       required
                     />
                   </div>
-
-                  <div className="secretary-student-form-password-actions">
+                  <div className="secretary-student-form-password-actions full">
                     <div className="secretary-student-form-password-tools-content">
                       <div className="secretary-student-form-password-tools-title">
                         <div className="secretary-student-form-password-tools-icon">
-                          <Lock size={15} />
+                          <Lock size={17} />
                         </div>
 
                         <div>
-                          <strong>ابزار رمز عبور</strong>
+                          <strong>ابزارهای رمز عبور</strong>
+
                           <span>
-                            می‌توانید یک رمز امن بسازید یا آن را کپی کنید.
+                            برای امنیت بیشتر می‌توانید یک رمز قوی و تصادفی تولید
+                            کنید.
                           </span>
                         </div>
                       </div>
 
                       <div className="secretary-student-form-password-buttons">
+                        {/* Generate */}
                         <button
                           type="button"
                           className="secretary-student-form-action-btn generate"
@@ -554,10 +561,10 @@ function AdminStudentForm() {
 
                           <span className="secretary-student-form-action-text">
                             <strong>تولید رمز امن</strong>
-                            {/* <small>رمز تصادفی ۱۲ کاراکتری</small> */}
                           </span>
                         </button>
 
+                        {/* Copy */}
                         <button
                           type="button"
                           className={`secretary-student-form-action-btn copy ${
@@ -567,17 +574,22 @@ function AdminStudentForm() {
                           disabled={!formData.password}
                         >
                           <span className="secretary-student-form-action-icon">
-                            <Copy size={16} />
+                            {passwordCopied ? (
+                              <Check size={16} />
+                            ) : (
+                              <Copy size={16} />
+                            )}
                           </span>
 
                           <span className="secretary-student-form-action-text">
                             <strong>
-                              {passwordCopied ? "رمز کپی شد" : "کپی رمز"}
+                              {passwordCopied ? "کپی شد" : "کپی رمز"}
                             </strong>
+
                             <small>
                               {passwordCopied
                                 ? "رمز در کلیپ‌بورد ذخیره شد"
-                                : "کپی رمز فعلی"}
+                                : "کپی سریع رمز فعلی"}
                             </small>
                           </span>
                         </button>

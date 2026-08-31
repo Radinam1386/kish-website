@@ -15,6 +15,7 @@ import {
   Layers,
   CreditCard,
   Sparkles,
+  CalendarDaysIcon,
 } from "lucide-react";
 
 import DashboardLayout from "../components/DashboardLayout";
@@ -177,8 +178,8 @@ function SecretaryClasses() {
           style={{ marginBottom: "1.75rem" }}
         >
           <div className="term-banner-info">
-            <div className="term-icon-circle">
-              <Layers size={22} />
+            <div className="term-icon-circle-secretary">
+              <CalendarDaysIcon size={26} />
             </div>
             <div>
               <h3

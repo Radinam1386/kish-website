@@ -1,0 +1,2395 @@
+/* =========================================================
+   ADMIN STUDENT DETAILS
+   Responsive / RTL / Mobile First
+   ========================================================= */
+
+.admin-student-details-x9p4-root {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow-x: clip;
+  direction: rtl;
+}
+
+.admin-student-details-x9p4-root *,
+.admin-student-details-x9p4-root *::before,
+.admin-student-details-x9p4-root *::after {
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   SUCCESS ALERT
+   ========================================================= */
+
+.admin-student-details-x9p4-success-alert {
+  width: 100%;
+  margin-bottom: 1.25rem;
+
+  display: flex;
+  align-items: center;
+
+  gap: 0.6rem;
+
+  min-width: 0;
+
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   PAGE HEADER
+   ========================================================= */
+
+.admin-student-details-x9p4-page-header {
+  width: 100%;
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 1.5rem;
+
+  margin-bottom: 2rem;
+}
+
+.admin-student-details-x9p4-header-content {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.admin-student-details-x9p4-heading {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 0.9rem;
+}
+
+.admin-student-details-x9p4-heading > a {
+  flex: 0 0 auto;
+}
+
+.admin-student-details-x9p4-heading > a button {
+  flex-shrink: 0;
+}
+
+.admin-student-details-x9p4-avatar {
+  width: 64px;
+  height: 64px;
+
+  flex: 0 0 64px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:var(--red-5);
+
+  color: #fff;
+
+  font-size: 1.55rem;
+  font-weight: 800;
+
+  box-shadow:
+    0 8px 22px rgba(231, 76, 60, 0.2);
+}
+
+.admin-student-details-x9p4-heading-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.admin-student-details-x9p4-heading-info h2 {
+  margin: 0 0 0.3rem;
+
+  color: #242424;
+
+  font-size: 1.5rem;
+  font-weight: 800;
+
+  line-height: 1.6;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.admin-student-details-x9p4-subtitle {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 0.45rem;
+
+  color: #777;
+
+  font-size: 0.82rem;
+
+  line-height: 1.8;
+}
+
+.admin-student-details-x9p4-subtitle span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.admin-student-details-x9p4-dot {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.admin-student-details-x9p4-header-actions {
+  flex: 0 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 0.65rem;
+
+  min-width: 0;
+}
+
+.admin-student-details-x9p4-action-link {
+  display: flex;
+  min-width: 0;
+
+  text-decoration: none;
+}
+
+.admin-student-details-x9p4-header-actions button {
+  max-width: 100%;
+}
+
+/* =========================================================
+   STATISTICS
+   ========================================================= */
+
+.admin-student-details-x9p4-stats {
+  width: 100%;
+  min-width: 0;
+
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  gap: 1.15rem;
+
+  margin-bottom: 1.75rem;
+}
+
+.admin-student-details-x9p4-stats > * {
+  min-width: 0;
+}
+
+/* =========================================================
+   SECTION
+   ========================================================= */
+
+.admin-student-details-x9p4-section {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  padding: 1.75rem;
+
+  margin-bottom: 1.5rem;
+
+  background: #fff;
+
+  border: 1px solid #f0f0f0;
+
+  border-radius: var(--radius-lg, 18px);
+
+  box-shadow: var(--shadow-sm);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.admin-student-details-x9p4-section:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* =========================================================
+   SECTION HEADER
+   ========================================================= */
+
+.admin-student-details-x9p4-section-header {
+  width: 100%;
+  min-width: 0;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 1.25rem;
+
+  margin-bottom: 1.4rem;
+  padding-bottom: 1rem;
+
+  border-bottom: 1px solid #eeeeee;
+}
+
+.admin-student-details-x9p4-section-heading {
+  min-width: 0;
+  flex: 1;
+}
+
+.admin-student-details-x9p4-title {
+  min-width: 0;
+
+  display: flex;
+  align-items: flex-start;
+
+  gap: 0.55rem;
+
+  margin: 0;
+
+  color: var(--primary);
+
+  font-size: 1.2rem;
+  font-weight: 800;
+
+  line-height: 1.7;
+
+  overflow-wrap: anywhere;
+}
+
+.admin-student-details-x9p4-title::before {
+  content: "";
+
+  width: 4px;
+  min-width: 4px;
+
+  height: 23px;
+
+  margin-top: 0.3rem;
+
+  background:
+    linear-gradient(
+      180deg,
+      var(--primary),
+      var(--primary-dark)
+    );
+
+  border-radius: 999px;
+}
+
+.admin-student-details-x9p4-description {
+  max-width: 900px;
+
+  margin: 0.35rem 0 0;
+
+  color: #777;
+
+  font-size: 0.82rem;
+
+  line-height: 1.9;
+
+  overflow-wrap: anywhere;
+}
+
+.admin-student-details-x9p4-section-action {
+  flex: 0 0 auto;
+
+  min-width: 0;
+}
+
+.admin-student-details-x9p4-section-action > button {
+  max-width: 100%;
+}
+
+/* =========================================================
+   INFORMATION GRID
+   ========================================================= */
+
+.admin-student-details-x9p4-info-grid {
+  width: 100%;
+  min-width: 0;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 0.9rem;
+}
+
+.admin-student-details-x9p4-info-card {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 0.75rem;
+
+  padding: 0.95rem;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff,
+      #fff9f8
+    );
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 13px;
+
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.admin-student-details-x9p4-info-card:hover {
+  border-color: rgba(231, 76, 60, 0.2);
+  transform: translateY(-1px);
+}
+
+.admin-student-details-x9p4-info-card > div:last-child {
+  min-width: 0;
+  flex: 1;
+}
+
+.admin-student-details-x9p4-info-icon {
+  width: 40px;
+  height: 40px;
+
+  flex: 0 0 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 11px;
+
+  background: var(--red-5);
+
+  color: white;
+}
+
+.admin-student-details-x9p4-info-card span {
+  display: block;
+
+  margin-bottom: 0.25rem;
+
+  color: #858585;
+
+  font-size: 0.72rem;
+
+  line-height: 1.6;
+}
+
+.admin-student-details-x9p4-info-card strong {
+  display: block;
+
+  min-width: 0;
+
+  color: #282828;
+
+  font-size: 0.86rem;
+
+  font-weight: 750;
+
+  line-height: 1.7;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.admin-student-details-x9p4-phone {
+  direction: ltr;
+
+  text-align: right;
+
+  white-space: normal !important;
+}
+
+.admin-student-details-x9p4-email {
+  direction: ltr;
+
+  text-align: right;
+
+  white-space: normal !important;
+
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+}
+
+.admin-student-details-x9p4-ltr-value {
+  direction: ltr;
+  text-align: right;
+}
+
+/* =========================================================
+   ADDRESS
+   ========================================================= */
+
+.admin-student-details-x9p4-address-card {
+  grid-column: 1 / -1;
+}
+
+.admin-student-details-x9p4-address {
+  line-height: 1.9 !important;
+}
+
+/* =========================================================
+   CREDENTIALS
+   ========================================================= */
+
+.student-credentials-edit-btn {
+  min-height: 38px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 0.45rem;
+
+  padding: 0.5rem 0.9rem;
+
+  background: #fff;
+
+  color: var(--primary);
+
+  border: 1px solid rgba(231, 76, 60, 0.22);
+
+  border-radius: 10px;
+
+  font-family: inherit;
+
+  font-size: 0.8rem;
+  font-weight: 750;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.student-credentials-edit-btn:hover {
+  background: #fff4f2;
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.admin-student-details-x9p4-info-card.credentials-card {
+  border-color: rgba(231, 76, 60, 0.22);
+
+  background:
+    linear-gradient(
+      135deg,
+      #fffaf9,
+      #fff
+    );
+}
+
+.credentials-icon {
+  background:
+    linear-gradient(
+      135deg,
+      var(--primary),
+      var(--primary-dark)
+    ) !important;
+
+  color: #fff !important;
+}
+
+.admin-student-details-x9p4-credential-content {
+  min-width: 0;
+  flex: 1;
+}
+
+.student-password-view-row {
+  width: 100%;
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 0.5rem;
+}
+
+.student-password-val {
+  min-width: 0;
+  max-width: 100%;
+
+  color: #303030;
+
+  font-family:
+    monospace,
+    "Vazirmatn",
+    sans-serif;
+
+  font-size: 0.92rem;
+
+  letter-spacing: 0.7px;
+
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+
+.admin-student-details-x9p4-password-empty {
+  color: #aaa !important;
+  font-family: inherit !important;
+  letter-spacing: 0 !important;
+}
+
+.password-actions-inline {
+  flex: 0 0 auto;
+
+  display: flex;
+  align-items: center;
+
+  gap: 0.3rem;
+}
+
+.password-toggle-btn,
+.password-copy-btn {
+  min-height: 30px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #e8e8e8;
+
+  background: #fff;
+
+  border-radius: 8px;
+
+  color: #666;
+
+  font-family: inherit;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.password-toggle-btn {
+  width: 30px;
+}
+
+.password-copy-btn {
+  gap: 0.3rem;
+
+  padding: 0.25rem 0.55rem;
+
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.password-toggle-btn:hover,
+.password-copy-btn:hover {
+  background: #fff3f1;
+
+  color: var(--primary);
+
+  border-color: rgba(231, 76, 60, 0.25);
+}
+
+.password-copy-btn.copied {
+  background: #edf8f1 !important;
+
+  color: #2e8b57 !important;
+
+  border-color: #2e8b57 !important;
+}
+
+/* =========================================================
+   TABLE WRAPPER
+   ========================================================= */
+
+.admin-student-details-x9p4-table-wrapper {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  -webkit-overflow-scrolling: touch;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 13px;
+}
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+.admin-student-details-x9p4-table {
+  width: 100%;
+
+  min-width: 900px;
+
+  border-collapse: collapse;
+
+  background: #fff;
+}
+
+.admin-student-details-x9p4-table thead {
+  background:
+    linear-gradient(
+      135deg,
+      #fff8f7,
+      #fff1ef
+    );
+
+  border-bottom: 2px solid var(--primary);
+}
+
+.admin-student-details-x9p4-table th {
+  padding: 0.95rem 1rem;
+
+  color: var(--primary-dark);
+
+  font-size: 0.8rem;
+  font-weight: 800;
+
+  text-align: right;
+
+  white-space: nowrap;
+}
+
+.admin-student-details-x9p4-table td {
+  padding: 0.95rem 1rem;
+
+  color: #444;
+
+  font-size: 0.82rem;
+
+  line-height: 1.7;
+
+  border-bottom: 1px solid #f1f1f1;
+
+  vertical-align: middle;
+
+  overflow-wrap: anywhere;
+}
+
+.admin-student-details-x9p4-table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.admin-student-details-x9p4-table tbody tr:hover {
+  background: #fffafa;
+}
+
+.admin-student-details-x9p4-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* =========================================================
+   TABLE CONTENT
+   ========================================================= */
+
+.admin-student-details-x9p4-class-cell {
+  min-width: 145px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 0.15rem;
+}
+
+.admin-student-details-x9p4-class-cell strong {
+  color: #272727;
+
+  font-size: 0.85rem;
+
+  line-height: 1.6;
+
+  overflow-wrap: anywhere;
+}
+
+.admin-student-details-x9p4-class-cell small {
+  color: #858585;
+
+  font-size: 0.72rem;
+
+  line-height: 1.6;
+
+  overflow-wrap: anywhere;
+}
+
+.admin-student-details-x9p4-table-value {
+  min-width: 0;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.admin-student-details-x9p4-price {
+  color: var(--primary);
+
+  white-space: nowrap;
+}
+
+.admin-student-details-x9p4-date {
+  white-space: nowrap;
+}
+
+.admin-student-details-x9p4-note {
+  display: block;
+
+  max-width: 210px;
+
+  color: #666;
+
+  font-size: 0.76rem;
+
+  line-height: 1.7;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* =========================================================
+   PAYMENT BADGE
+   ========================================================= */
+
+.admin-student-details-x9p4-payment-badge {
+  max-width: 150px;
+
+  text-align: center;
+
+  white-space: normal !important;
+
+  line-height: 1.6;
+}
+
+/* =========================================================
+   TABLE ACTIONS
+   ========================================================= */
+
+.admin-student-details-x9p4-table-actions {
+  min-width: 175px;
+
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 0.4rem;
+}
+
+.tuition-action-btn {
+  min-height: 35px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 0.3rem;
+
+  padding: 0.4rem 0.65rem;
+
+  border: 1px solid transparent;
+
+  border-radius: 8px;
+
+  font-family: inherit;
+
+  font-size: 0.72rem;
+  font-weight: 750;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.tuition-action-btn:hover {
+  transform: translateY(-1px);
+}
+
+.tuition-action-btn.pay {
+  background: #eaf9ef;
+
+  color: #287a4a;
+
+  border-color: #c7ebd3;
+}
+
+.tuition-action-btn.pay:hover {
+  background: #dcf5e5;
+}
+
+.tuition-action-btn.revert {
+  background: #fff2f0;
+
+  color: #c0392b;
+
+  border-color: #f3cfca;
+}
+
+.tuition-action-btn.revert:hover {
+  background: #ffe7e4;
+}
+
+.tuition-action-btn.delete {
+  width: 38px;
+
+  padding: 0.4rem;
+
+  background: #f6f6f6;
+
+  color: #666;
+
+  border-color: #ededed;
+}
+
+.tuition-action-btn.delete:hover {
+  background: #fff0ee;
+
+  color: #e74c3c;
+
+  border-color: #f1c4bd;
+}
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.admin-student-details-x9p4-empty-row td {
+  padding: 0 !important;
+}
+
+.admin-student-details-x9p4-empty-state {
+  min-height: 190px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 0.55rem;
+
+  padding: 2rem 1rem;
+
+  color: #999;
+
+  text-align: center;
+}
+
+.admin-student-details-x9p4-empty-state svg {
+  color: var(--primary);
+
+  opacity: 0.7;
+}
+
+.admin-student-details-x9p4-empty-state span {
+  color: #555;
+
+  font-size: 0.88rem;
+  font-weight: 700;
+
+  line-height: 1.8;
+}
+
+.admin-student-details-x9p4-empty-state small {
+  max-width: 480px;
+
+  color: #999;
+
+  font-size: 0.76rem;
+
+  line-height: 1.8;
+}
+
+/* =========================================================
+   MODALS
+   ========================================================= */
+
+.exam-modal-backdrop {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 1rem;
+
+  overflow-y: auto;
+
+  background: rgba(15, 23, 42, 0.52);
+
+  backdrop-filter: blur(6px);
+
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.exam-modal-container {
+  width: min(100%, 540px);
+
+  max-height: calc(100dvh - 2rem);
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  background: #fff;
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 30px 70px rgba(0, 0, 0, 0.2);
+}
+
+.exam-modal-header {
+  min-width: 0;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 0.9rem;
+
+  padding: 1rem 1.15rem;
+
+  border-bottom: 1px solid #eeeeee;
+
+  flex-shrink: 0;
+}
+
+.modal-header-info {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 0.7rem;
+}
+
+.modal-header-info > div:last-child {
+  min-width: 0;
+}
+
+.modal-header-info h4 {
+  margin: 0;
+
+  color: #272727;
+
+  font-size: 0.95rem;
+  font-weight: 800;
+
+  line-height: 1.7;
+
+  overflow-wrap: anywhere;
+}
+
+.modal-header-info p {
+  margin: 0.1rem 0 0;
+
+  color: #777;
+
+  font-size: 0.74rem;
+
+  line-height: 1.7;
+
+  overflow-wrap: anywhere;
+}
+
+.exam-icon-circle {
+  width: 42px;
+  height: 42px;
+
+  flex: 0 0 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: #fff0ee;
+
+  color: var(--primary);
+}
+
+.modal-close-btn {
+  width: 35px;
+  height: 35px;
+
+  flex: 0 0 35px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+
+  border-radius: 9px;
+
+  background: #f7f7f7;
+
+  color: #666;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.modal-close-btn:hover {
+  background: #fff0ee;
+  color: var(--primary);
+}
+
+.exam-modal-body {
+  width: 100%;
+  min-width: 0;
+
+  overflow-y: auto;
+
+  padding: 1.35rem;
+
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-student-details-x9p4-modal-body {
+  min-width: 0;
+}
+
+.exam-modal-footer {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 0.65rem;
+
+  padding: 0.9rem 1.15rem;
+
+  border-top: 1px solid #eeeeee;
+
+  flex-shrink: 0;
+}
+
+.exam-modal-footer > * {
+  min-width: 110px;
+}
+
+/* =========================================================
+   FORMS
+   ========================================================= */
+
+.class-form-group {
+  width: 100%;
+  min-width: 0;
+
+  margin-bottom: 1rem;
+}
+
+.class-form-group:last-child {
+  margin-bottom: 0;
+}
+
+.class-form-group.full-width {
+  width: 100%;
+}
+
+.class-form-group label {
+  display: block;
+
+  margin-bottom: 0.45rem;
+
+  color: #444;
+
+  font-size: 0.78rem;
+  font-weight: 700;
+
+  line-height: 1.7;
+
+  overflow-wrap: anywhere;
+}
+
+.admin-student-details-x9p4-required {
+  margin-right: 0.25rem;
+
+  color: #e74c3c;
+}
+
+.admin-student-details-x9p4-optional {
+  margin-right: 0.4rem;
+
+  color: #999;
+
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.class-form-group input,
+.class-form-group select,
+.class-form-group textarea,
+.admin-student-details-x9p4-input {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  font-family: inherit;
+
+  font-size: 0.82rem;
+}
+
+.class-form-group select,
+.class-form-group input,
+.admin-student-details-x9p4-input {
+  min-height: 44px;
+
+  padding: 0.7rem 0.8rem;
+
+  border: 1px solid #e2e2e2;
+
+  border-radius: 10px;
+
+  background: #fff;
+
+  color: #333;
+}
+
+.class-form-group textarea {
+  resize: vertical;
+}
+
+.class-form-group input:focus,
+.class-form-group select:focus,
+.class-form-group textarea:focus,
+.admin-student-details-x9p4-input:focus {
+  outline: none;
+
+  border-color: var(--primary) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(231, 76, 60, 0.08);
+}
+
+.admin-student-details-x9p4-select {
+  direction: rtl;
+
+  text-overflow: ellipsis;
+}
+
+.admin-student-details-x9p4-checkbox-label {
+  display: flex !important;
+  align-items: flex-start;
+
+  gap: 0.6rem;
+
+  padding: 0.75rem;
+
+  background: #fafafa;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+}
+
+.admin-student-details-x9p4-checkbox-label input {
+  width: 17px !important;
+  height: 17px !important;
+
+  min-height: 17px !important;
+
+  margin-top: 0.15rem;
+
+  flex: 0 0 17px;
+}
+
+.admin-student-details-x9p4-checkbox-label span {
+  min-width: 0;
+
+  color: #555;
+
+  font-size: 0.78rem;
+
+  line-height: 1.8;
+
+  overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   PAYMENT SUMMARY
+   ========================================================= */
+
+.admin-student-details-x9p4-payment-summary {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 0.75rem;
+
+  margin-bottom: 1.2rem;
+}
+
+.admin-student-details-x9p4-payment-summary > div {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 0.25rem;
+
+  padding: 0.85rem;
+
+  background: #fafafa;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 10px;
+}
+
+.admin-student-details-x9p4-payment-summary span {
+  color: #888;
+
+  font-size: 0.72rem;
+}
+
+.admin-student-details-x9p4-payment-summary strong {
+  min-width: 0;
+
+  color: #333;
+
+  font-size: 0.82rem;
+
+  line-height: 1.7;
+
+  overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   PASSWORD MODAL
+   ========================================================= */
+
+.admin-student-details-x9p4-password-input {
+  width: 100%;
+
+  display: flex;
+
+  border: 1px solid #e2e2e2;
+
+  border-radius: 10px;
+
+  overflow: hidden;
+
+  background: #fff;
+}
+
+.admin-student-details-x9p4-password-input:focus-within {
+  border-color: var(--primary);
+
+  box-shadow:
+    0 0 0 3px rgba(231, 76, 60, 0.08);
+}
+
+.admin-student-details-x9p4-password-input input {
+  min-width: 0;
+  flex: 1;
+
+  min-height: 44px;
+
+  padding: 0.7rem 0.8rem;
+
+  border: 0 !important;
+
+  outline: none !important;
+
+  box-shadow: none !important;
+}
+
+.admin-student-details-x9p4-password-input button {
+  width: 44px;
+
+  flex: 0 0 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 0;
+
+  border-right: 1px solid #eeeeee;
+
+  background: #fafafa;
+
+  color: #777;
+
+  cursor: pointer;
+}
+
+.admin-student-details-x9p4-password-input button:hover {
+  color: var(--primary);
+
+  background: #fff5f3;
+}
+
+.admin-student-details-x9p4-password-generator {
+  margin-top: 0.75rem;
+}
+
+.admin-student-details-x9p4-password-generator button {
+  max-width: 100%;
+}
+
+.admin-student-details-x9p4-password-help {
+  margin: 0.85rem 0 0;
+
+  padding: 0.75rem;
+
+  background: #fffaf9;
+
+  border: 1px solid #f2e5e2;
+
+  border-radius: 9px;
+
+  color: #777;
+
+  font-size: 0.73rem;
+
+  line-height: 1.9;
+
+  overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   TUITION / ATTENDANCE EXTRA GRIDS
+   ========================================================= */
+
+.admin-student-details-x9p4-tuition-grid,
+.admin-student-details-x9p4-attendance-grid,
+.admin-student-details-x9p4-session-info {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 0.9rem;
+}
+
+.admin-student-details-x9p4-tuition-grid > div,
+.admin-student-details-x9p4-session-info > div {
+  min-width: 0;
+
+  padding: 0.95rem;
+
+  background: #fafafa;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 12px;
+}
+
+.admin-student-details-x9p4-tuition-grid span,
+.admin-student-details-x9p4-session-info span {
+  display: block;
+
+  margin-bottom: 0.4rem;
+
+  color: #888;
+
+  font-size: 0.75rem;
+}
+
+.admin-student-details-x9p4-tuition-grid strong,
+.admin-student-details-x9p4-session-info strong {
+  display: block;
+
+  color: #333;
+
+  font-size: 0.9rem;
+
+  line-height: 1.7;
+
+  overflow-wrap: anywhere;
+}
+
+.admin-student-details-x9p4-progress {
+  width: 100%;
+  height: 8px;
+
+  margin-top: 1rem;
+
+  overflow: hidden;
+
+  background: #eeeeee;
+
+  border-radius: 999px;
+}
+
+.admin-student-details-x9p4-progress-fill {
+  height: 100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--primary),
+      var(--primary-dark)
+    );
+
+  border-radius: inherit;
+
+  transition: width 0.7s ease;
+}
+
+.admin-student-details-x9p4-attendance-card {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 0.65rem;
+
+  padding: 0.9rem;
+
+  border: 1px solid #eeeeee;
+
+  border-radius: 12px;
+}
+
+.admin-student-details-x9p4-attendance-card svg {
+  flex-shrink: 0;
+}
+
+.admin-student-details-x9p4-attendance-card span {
+  min-width: 0;
+  flex: 1;
+
+  color: #666;
+
+  font-size: 0.78rem;
+
+  overflow-wrap: anywhere;
+}
+
+.admin-student-details-x9p4-attendance-card strong {
+  flex-shrink: 0;
+
+  font-size: 1.1rem;
+}
+
+.admin-student-details-x9p4-attendance-card.good {
+  color: #2e8b57;
+  background: #f2faf5;
+}
+
+.admin-student-details-x9p4-attendance-card.warning {
+  color: #b7791f;
+  background: #fffaf0;
+}
+
+.admin-student-details-x9p4-attendance-card.danger {
+  color: #c0392b;
+  background: #fff5f3;
+}
+
+/* =========================================================
+   TABLET / <= 1200px
+   ========================================================= */
+
+@media (max-width: 1200px) {
+  .admin-student-details-x9p4-stats {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-student-details-x9p4-info-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* =========================================================
+   TABLET / <= 950px
+   ========================================================= */
+
+@media (max-width: 950px) {
+  .admin-student-details-x9p4-page-header {
+    align-items: stretch;
+
+    flex-direction: column;
+
+    gap: 1rem;
+  }
+
+  .admin-student-details-x9p4-header-actions {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 0.65rem;
+  }
+
+  .admin-student-details-x9p4-header-actions > *,
+  .admin-student-details-x9p4-action-link,
+  .admin-student-details-x9p4-header-actions button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .admin-student-details-x9p4-section {
+    padding: 1.35rem;
+  }
+
+  .admin-student-details-x9p4-section-header {
+    align-items: stretch;
+
+    flex-direction: column;
+
+    gap: 0.9rem;
+  }
+
+  .admin-student-details-x9p4-section-action {
+    width: 100%;
+  }
+
+  .admin-student-details-x9p4-section-action button {
+    width: 100%;
+  }
+
+  .admin-student-details-x9p4-tuition-grid,
+  .admin-student-details-x9p4-attendance-grid,
+  .admin-student-details-x9p4-session-info {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* =========================================================
+   MOBILE / <= 768px
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .admin-student-details-x9p4-root {
+    width: 100%;
+  }
+
+  /* -------------------------------------------------------
+     Header
+  ------------------------------------------------------- */
+
+  .admin-student-details-x9p4-page-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .admin-student-details-x9p4-heading {
+    align-items: flex-start;
+
+    gap: 0.65rem;
+  }
+
+  .admin-student-details-x9p4-avatar {
+    width: 54px;
+    height: 54px;
+
+    flex-basis: 54px;
+
+    font-size: 1.3rem;
+  }
+
+  .admin-student-details-x9p4-heading-info h2 {
+    font-size: 1.18rem;
+
+    line-height: 1.65;
+  }
+
+  .admin-student-details-x9p4-subtitle {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 0.05rem;
+
+    font-size: 0.73rem;
+  }
+
+  .admin-student-details-x9p4-dot {
+    display: none;
+  }
+
+  .admin-student-details-x9p4-header-actions {
+    grid-template-columns: 1fr;
+  }
+
+  /* -------------------------------------------------------
+     Stats
+  ------------------------------------------------------- */
+
+  .admin-student-details-x9p4-stats {
+    grid-template-columns: 1fr;
+
+    gap: 0.75rem;
+
+    margin-bottom: 1.1rem;
+  }
+
+  /* -------------------------------------------------------
+     Sections
+  ------------------------------------------------------- */
+
+  .admin-student-details-x9p4-section {
+    padding: 1rem;
+
+    margin-bottom: 1rem;
+
+    border-radius: 14px;
+  }
+
+  .admin-student-details-x9p4-section:hover {
+    transform: none;
+
+    box-shadow: var(--shadow-sm);
+  }
+
+  .admin-student-details-x9p4-section-header {
+    margin-bottom: 1rem;
+
+    padding-bottom: 0.85rem;
+  }
+
+  .admin-student-details-x9p4-title {
+    font-size: 1rem;
+
+    line-height: 1.75;
+  }
+
+  .admin-student-details-x9p4-title::before {
+    width: 3px;
+    min-width: 3px;
+
+    height: 20px;
+  }
+
+  .admin-student-details-x9p4-description {
+    font-size: 0.73rem;
+
+    line-height: 1.9;
+  }
+
+  /* -------------------------------------------------------
+     Info
+  ------------------------------------------------------- */
+
+  .admin-student-details-x9p4-info-grid {
+    grid-template-columns: 1fr;
+
+    gap: 0.65rem;
+  }
+
+  .admin-student-details-x9p4-info-card {
+    padding: 0.8rem;
+
+    gap: 0.65rem;
+  }
+
+  .admin-student-details-x9p4-info-icon {
+    width: 37px;
+    height: 37px;
+
+    flex-basis: 37px;
+
+    border-radius: 10px;
+  }
+
+  .admin-student-details-x9p4-info-card span {
+    font-size: 0.68rem;
+  }
+
+  .admin-student-details-x9p4-info-card strong {
+    font-size: 0.8rem;
+  }
+
+  .admin-student-details-x9p4-address-card {
+    grid-column: auto;
+  }
+
+  /* -------------------------------------------------------
+     Credentials
+  ------------------------------------------------------- */
+
+  .student-credentials-edit-btn {
+    width: 100%;
+
+    min-height: 42px;
+  }
+
+  .student-password-view-row {
+    align-items: stretch;
+
+    flex-direction: column;
+  }
+
+  .student-password-val {
+    width: 100%;
+
+    font-size: 0.85rem;
+  }
+
+  .password-actions-inline {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns: 40px minmax(0, 1fr);
+
+    gap: 0.35rem;
+  }
+
+  .password-toggle-btn {
+    width: 40px;
+  }
+
+  .password-copy-btn {
+    width: 100%;
+  }
+
+  /* -------------------------------------------------------
+     Extra grids
+  ------------------------------------------------------- */
+
+  .admin-student-details-x9p4-tuition-grid,
+  .admin-student-details-x9p4-attendance-grid,
+  .admin-student-details-x9p4-session-info {
+    grid-template-columns: 1fr;
+  }
+
+  /* =======================================================
+     TABLE -> MOBILE CARDS
+  ======================================================= */
+
+  .admin-student-details-x9p4-table-wrapper {
+    overflow: visible;
+
+    border: none;
+
+    border-radius: 0;
+  }
+
+  .admin-student-details-x9p4-table,
+  .admin-student-details-x9p4-table tbody {
+    display: block;
+
+    width: 100%;
+
+    min-width: 0;
+  }
+
+  .admin-student-details-x9p4-table thead {
+    display: none;
+  }
+
+  .admin-student-details-x9p4-table tbody tr {
+    width: 100%;
+
+    display: block;
+
+    margin-bottom: 0.8rem;
+
+    padding: 0.75rem;
+
+    background: #fff;
+
+    border: 1px solid #e8e8e8;
+
+    border-radius: 13px;
+
+    box-shadow:
+      0 4px 14px rgba(0, 0, 0, 0.04);
+  }
+
+  .admin-student-details-x9p4-table tbody tr:last-child {
+    margin-bottom: 0;
+  }
+
+  .admin-student-details-x9p4-table tbody tr:hover {
+    background: #fff;
+  }
+
+  .admin-student-details-x9p4-table td {
+    width: 100%;
+
+    min-width: 0;
+
+    display: grid;
+
+    grid-template-columns:
+      82px minmax(0, 1fr);
+
+    align-items: center;
+
+    gap: 0.65rem;
+
+    min-height: 43px;
+
+    padding: 0.6rem 0.15rem;
+
+    border-bottom: 1px dashed #e5e5e5;
+
+    text-align: right;
+  }
+
+  .admin-student-details-x9p4-table td:last-child {
+    border-bottom: none;
+
+    padding-bottom: 0.15rem;
+  }
+
+  .admin-student-details-x9p4-table td::before {
+    content: attr(data-label);
+
+    display: block;
+
+    color: var(--primary);
+
+    font-size: 0.68rem;
+    font-weight: 800;
+
+    line-height: 1.6;
+
+    text-align: right;
+  }
+
+  .admin-student-details-x9p4-table td > * {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .admin-student-details-x9p4-class-cell {
+    min-width: 0;
+  }
+
+  .admin-student-details-x9p4-class-cell strong {
+    font-size: 0.8rem;
+  }
+
+  .admin-student-details-x9p4-class-cell small {
+    font-size: 0.68rem;
+  }
+
+  .admin-student-details-x9p4-price {
+    white-space: normal;
+  }
+
+  .admin-student-details-x9p4-date {
+    white-space: normal;
+  }
+
+  .admin-student-details-x9p4-note {
+    max-width: 100%;
+
+    font-size: 0.72rem;
+  }
+
+  .admin-student-details-x9p4-payment-badge {
+    max-width: 100%;
+
+    justify-self: start;
+  }
+
+  /* -------------------------------------------------------
+     Mobile table actions
+  ------------------------------------------------------- */
+
+  .admin-student-details-x9p4-table-actions {
+    width: 100%;
+
+    min-width: 0;
+
+    display: grid;
+
+    grid-template-columns:
+      minmax(0, 1fr) 42px;
+
+    gap: 0.45rem;
+  }
+
+  .admin-student-details-x9p4-table-actions .tuition-action-btn {
+    width: 100%;
+  }
+
+  .admin-student-details-x9p4-table-actions .delete {
+    width: 42px;
+  }
+
+  /* -------------------------------------------------------
+     Modals
+  ------------------------------------------------------- */
+
+  .exam-modal-backdrop {
+    align-items: flex-end;
+
+    padding: 0.45rem;
+  }
+
+  .exam-modal-container {
+    width: 100%;
+    max-width: none;
+
+    max-height:
+      calc(100dvh - 0.9rem);
+
+    border-radius:
+      18px 18px 12px 12px;
+  }
+
+  .exam-modal-header {
+    padding: 0.9rem;
+  }
+
+  .exam-modal-body {
+    padding: 1rem;
+  }
+
+  .exam-modal-footer {
+    display: grid;
+
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 0.5rem;
+
+    padding: 0.8rem 0.9rem;
+  }
+
+  .exam-modal-footer > * {
+    width: 100%;
+
+    min-width: 0;
+  }
+
+  /* Payment summary */
+
+  .admin-student-details-x9p4-payment-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   SMALL MOBILE / <= 480px
+   ========================================================= */
+
+@media (max-width: 480px) {
+  .admin-student-details-x9p4-success-alert {
+    align-items: flex-start;
+
+    padding: 0.75rem;
+
+    font-size: 0.73rem;
+  }
+
+  .admin-student-details-x9p4-heading {
+    gap: 0.55rem;
+  }
+
+  .admin-student-details-x9p4-avatar {
+    width: 48px;
+    height: 48px;
+
+    flex-basis: 48px;
+
+    font-size: 1.1rem;
+  }
+
+  .admin-student-details-x9p4-heading-info h2 {
+    font-size: 1.02rem;
+  }
+
+  .admin-student-details-x9p4-subtitle {
+    font-size: 0.67rem;
+  }
+
+  .admin-student-details-x9p4-section {
+    padding: 0.8rem;
+
+    border-radius: 12px;
+  }
+
+  .admin-student-details-x9p4-title {
+    font-size: 0.94rem;
+  }
+
+  .admin-student-details-x9p4-description {
+    font-size: 0.69rem;
+  }
+
+  .admin-student-details-x9p4-info-card {
+    padding: 0.7rem;
+
+    gap: 0.55rem;
+  }
+
+  .admin-student-details-x9p4-info-icon {
+    width: 34px;
+    height: 34px;
+
+    flex-basis: 34px;
+
+    border-radius: 9px;
+  }
+
+  .admin-student-details-x9p4-info-icon svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .admin-student-details-x9p4-info-card span {
+    font-size: 0.64rem;
+  }
+
+  .admin-student-details-x9p4-info-card strong {
+    font-size: 0.76rem;
+
+    line-height: 1.7;
+  }
+
+  /* -------------------------------------------------------
+     Mobile table
+  ------------------------------------------------------- */
+
+  .admin-student-details-x9p4-table tbody tr {
+    padding: 0.6rem;
+
+    border-radius: 11px;
+  }
+
+  .admin-student-details-x9p4-table td {
+    grid-template-columns:
+      68px minmax(0, 1fr);
+
+    gap: 0.45rem;
+
+    min-height: 41px;
+
+    padding: 0.55rem 0.05rem;
+
+    font-size: 0.74rem;
+  }
+
+  .admin-student-details-x9p4-table td::before {
+    font-size: 0.63rem;
+  }
+
+  .admin-student-details-x9p4-class-cell strong {
+    font-size: 0.76rem;
+  }
+
+  .admin-student-details-x9p4-class-cell small {
+    font-size: 0.64rem;
+  }
+
+  .admin-student-details-x9p4-note {
+    font-size: 0.68rem;
+  }
+
+  .admin-student-details-x9p4-table-actions {
+    grid-template-columns:
+      minmax(0, 1fr) 40px;
+  }
+
+  .tuition-action-btn {
+    min-height: 38px;
+
+    padding: 0.4rem 0.45rem;
+
+    font-size: 0.68rem;
+  }
+
+  .tuition-action-btn.delete {
+    width: 40px;
+  }
+
+  /* -------------------------------------------------------
+     Password
+  ------------------------------------------------------- */
+
+  .student-password-val {
+    font-size: 0.78rem;
+  }
+
+  /* -------------------------------------------------------
+     Modal
+  ------------------------------------------------------- */
+
+  .exam-modal-header {
+    gap: 0.55rem;
+
+    padding: 0.8rem;
+  }
+
+  .modal-header-info {
+    gap: 0.5rem;
+  }
+
+  .exam-icon-circle {
+    width: 35px;
+    height: 35px;
+
+    flex-basis: 35px;
+  }
+
+  .exam-icon-circle svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .modal-header-info h4 {
+    font-size: 0.82rem;
+  }
+
+  .modal-header-info p {
+    font-size: 0.65rem;
+  }
+
+  .modal-close-btn {
+    width: 32px;
+    height: 32px;
+
+    flex-basis: 32px;
+  }
+
+  .exam-modal-body {
+    padding: 0.85rem !important;
+  }
+
+  .exam-modal-footer {
+    grid-template-columns: 1fr;
+
+    padding: 0.75rem 0.85rem;
+  }
+
+  .exam-modal-footer > * {
+    min-height: 42px;
+  }
+
+  .class-form-group label {
+    font-size: 0.7rem;
+  }
+
+  .class-form-group select,
+  .class-form-group input,
+  .admin-student-details-x9p4-input {
+    min-height: 42px;
+
+    font-size: 0.75rem;
+  }
+
+  .admin-student-details-x9p4-checkbox-label {
+    padding: 0.65rem;
+
+    gap: 0.5rem;
+  }
+
+  .admin-student-details-x9p4-checkbox-label span {
+    font-size: 0.69rem;
+  }
+
+  .admin-student-details-x9p4-payment-summary > div {
+    padding: 0.7rem;
+  }
+
+  .admin-student-details-x9p4-payment-summary span {
+    font-size: 0.66rem;
+  }
+
+  .admin-student-details-x9p4-payment-summary strong {
+    font-size: 0.75rem;
+  }
+
+  .admin-student-details-x9p4-password-help {
+    font-size: 0.67rem;
+
+    line-height: 1.9;
+  }
+}
+
+/* =========================================================
+   VERY SMALL DEVICES / <= 360px
+   ========================================================= */
+
+@media (max-width: 360px) {
+  .admin-student-details-x9p4-avatar {
+    width: 43px;
+    height: 43px;
+
+    flex-basis: 43px;
+
+    font-size: 1rem;
+  }
+
+  .admin-student-details-x9p4-heading {
+    gap: 0.45rem;
+  }
+
+  .admin-student-details-x9p4-heading-info h2 {
+    font-size: 0.94rem;
+  }
+
+  .admin-student-details-x9p4-subtitle {
+    font-size: 0.62rem;
+  }
+
+  .admin-student-details-x9p4-section {
+    padding: 0.65rem;
+  }
+
+  .admin-student-details-x9p4-title {
+    font-size: 0.88rem;
+  }
+
+  .admin-student-details-x9p4-description {
+    font-size: 0.65rem;
+  }
+
+  .admin-student-details-x9p4-info-card {
+    padding: 0.6rem;
+  }
+
+  .admin-student-details-x9p4-info-icon {
+    width: 31px;
+    height: 31px;
+
+    flex-basis: 31px;
+  }
+
+  .admin-student-details-x9p4-info-card strong {
+    font-size: 0.72rem;
+  }
+
+  .admin-student-details-x9p4-table tbody tr {
+    padding: 0.5rem;
+  }
+
+  .admin-student-details-x9p4-table td {
+    grid-template-columns:
+      61px minmax(0, 1fr);
+
+    gap: 0.4rem;
+
+    font-size: 0.7rem;
+  }
+
+  .admin-student-details-x9p4-table td::before {
+    font-size: 0.59rem;
+  }
+
+  .tuition-action-btn {
+    font-size: 0.63rem;
+  }
+
+  .tuition-action-btn svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .student-password-val {
+    font-size: 0.72rem;
+  }
+
+  .password-actions-inline {
+    grid-template-columns:
+      36px minmax(0, 1fr);
+  }
+
+  .password-toggle-btn {
+    width: 36px;
+  }
+}
+
+/* =========================================================
+   TOUCH DEVICES
+   ========================================================= */
+
+@media (hover: none) {
+  .admin-student-details-x9p4-section:hover,
+  .admin-student-details-x9p4-info-card:hover,
+  .tuition-action-btn:hover,
+  .student-credentials-edit-btn:hover {
+    transform: none;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-student-details-x9p4-section,
+  .admin-student-details-x9p4-info-card,
+  .tuition-action-btn,
+  .student-credentials-edit-btn,
+  .password-copy-btn,
+  .password-toggle-btn {
+    transition: none;
+  }
+
+  .admin-student-details-x9p4-progress-fill {
+    transition: none;
+  }
+}
+
+/* =========================================================
+   SAFETY AGAINST LONG CONTENT
+   ========================================================= */
+
+.admin-student-details-x9p4-root img,
+.admin-student-details-x9p4-root svg,
+.admin-student-details-x9p4-root input,
+.admin-student-details-x9p4-root select,
+.admin-student-details-x9p4-root textarea,
+.admin-student-details-x9p4-root button {
+  max-width: 100%;
+}
+
+.admin-student-details-x9p4-root input,
+.admin-student-details-x9p4-root select,
+.admin-student-details-x9p4-root textarea {
+  min-width: 0;
+}
+
+.admin-student-details-x9p4-root button {
+  font-family: inherit;
+}
+
+.admin-student-details-x9p4-root a {
+  max-width: 100%;
+}

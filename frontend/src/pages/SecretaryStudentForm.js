@@ -10,6 +10,7 @@ import {
   Save,
   UserRound,
   BookOpen,
+  Check,
 } from "lucide-react";
 
 import DashboardLayout from "../components/DashboardLayout";
@@ -72,9 +73,13 @@ function SecretaryStudentForm() {
         ]);
 
         if (!alive) return;
-        const activeTermIds = (termsData || []).filter((t) => t.is_active).map((t) => t.id);
+        const activeTermIds = (termsData || [])
+          .filter((t) => t.is_active)
+          .map((t) => t.id);
         const activeClasses = (classroomsData || []).filter(
-          (c) => activeTermIds.length === 0 || activeTermIds.includes(c.term || c.term?.id),
+          (c) =>
+            activeTermIds.length === 0 ||
+            activeTermIds.includes(c.term || c.term?.id),
         );
         setClassrooms(activeClasses);
 
@@ -114,7 +119,11 @@ function SecretaryStudentForm() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword) {
+    if (
+      formData.password &&
+      formData.confirmPassword &&
+      formData.password !== formData.confirmPassword
+    ) {
       alert("رمز عبور و تکرار رمز عبور یکسان نیستند.");
       return;
     }
@@ -307,7 +316,10 @@ function SecretaryStudentForm() {
               </label>
 
               {/* Persian Date Picker for Birth Date */}
-              <div className="secretary-student-form-field full" style={{ marginTop: "0.25rem" }}>
+              <div
+                className="secretary-student-form-field full"
+                style={{ marginTop: "0.25rem" }}
+              >
                 <JalaliDatePicker
                   label="تاریخ تولد (شمسی)"
                   value={formData.birthDate}
@@ -337,12 +349,17 @@ function SecretaryStudentForm() {
           {!id && (
             <section className="secretary-student-form-card">
               <div className="secretary-student-form-card-header">
-                <div className="secretary-student-form-card-icon" style={{ background: "var(--primary)" }}>
+                <div
+                  className="secretary-student-form-card-icon"
+                  style={{ background: "var(--primary)" }}
+                >
                   <BookOpen size={20} />
                 </div>
                 <div>
                   <h2>تعیین کلاس اولیه</h2>
-                  <p>کلاس آموزشی ترم جاری را برای دانش‌آموز تعیین کنید (اختیاری)</p>
+                  <p>
+                    کلاس آموزشی ترم جاری را برای دانش‌آموز تعیین کنید (اختیاری)
+                  </p>
                 </div>
               </div>
 
@@ -353,10 +370,16 @@ function SecretaryStudentForm() {
                     value={selectedClassId}
                     onChange={(e) => setSelectedClassId(e.target.value)}
                   >
-                    <option value="">بدون کلاس فعلاً (بعداً در پرونده تعیین شود)</option>
+                    <option value="">
+                      بدون کلاس فعلاً (بعداً در پرونده تعیین شود)
+                    </option>
                     {classrooms.map((cls) => (
                       <option key={cls.id} value={cls.id}>
-                        {cls.name} (شهریه: {toPersianDigits((cls.tuition_fee || 2500000).toLocaleString("fa-IR"))} تومان)
+                        {cls.name} (شهریه:{" "}
+                        {toPersianDigits(
+                          (cls.tuition_fee || 2500000).toLocaleString("fa-IR"),
+                        )}{" "}
+                        تومان)
                       </option>
                     ))}
                   </select>
@@ -364,13 +387,24 @@ function SecretaryStudentForm() {
 
                 {selectedClassId && (
                   <div className="secretary-student-form-field full">
-                    <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", fontWeight: "700" }}>
+                    <label
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.5rem",
+                        cursor: "pointer",
+                        fontWeight: "700",
+                      }}
+                    >
                       <input
                         type="checkbox"
                         checked={initialIsPaid}
                         onChange={(e) => setInitialIsPaid(e.target.checked)}
                       />
-                      <span>شهریه این کلاس هم‌اکنون به صورت نقدی/کارتخوان در دفتر تسویه شد.</span>
+                      <span>
+                        شهریه این کلاس هم‌اکنون به صورت نقدی/کارتخوان در دفتر
+                        تسویه شد.
+                      </span>
                     </label>
                   </div>
                 )}
@@ -469,7 +503,11 @@ function SecretaryStudentForm() {
                         onClick={() => setShowPassword((prev) => !prev)}
                         title={showPassword ? "مخفی کردن" : "نمایش رمز"}
                       >
-                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        {showPassword ? (
+                          <EyeOff size={16} />
+                        ) : (
+                          <Eye size={16} />
+                        )}
                       </button>
                     </div>
                   </div>
@@ -489,26 +527,70 @@ function SecretaryStudentForm() {
                       required
                     />
                   </div>
-
                   <div className="secretary-student-form-password-actions full">
-                    <button
-                      type="button"
-                      className="secretary-student-form-action-btn"
-                      onClick={generatePassword}
-                    >
-                      <RefreshCw size={15} />
-                      <span>تولید رمز تصادفی</span>
-                    </button>
+                    <div className="secretary-student-form-password-tools-content">
+                      <div className="secretary-student-form-password-tools-title">
+                        <div className="secretary-student-form-password-tools-icon">
+                          <Lock size={17} />
+                        </div>
 
-                    <button
-                      type="button"
-                      className={`secretary-student-form-action-btn ${passwordCopied ? "copied" : ""}`}
-                      onClick={copyPassword}
-                      disabled={!formData.password}
-                    >
-                      <Copy size={15} />
-                      <span>{passwordCopied ? "کپی شد" : "کپی رمز"}</span>
-                    </button>
+                        <div>
+                          <strong>ابزارهای رمز عبور</strong>
+
+                          <span>
+                            برای امنیت بیشتر می‌توانید یک رمز قوی و تصادفی تولید
+                            کنید.
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="secretary-student-form-password-buttons">
+                        {/* Generate */}
+                        <button
+                          type="button"
+                          className="secretary-student-form-action-btn generate"
+                          onClick={generatePassword}
+                        >
+                          <span className="secretary-student-form-action-icon">
+                            <RefreshCw size={16} />
+                          </span>
+
+                          <span className="secretary-student-form-action-text">
+                            <strong>تولید رمز امن</strong>
+                          </span>
+                        </button>
+
+                        {/* Copy */}
+                        <button
+                          type="button"
+                          className={`secretary-student-form-action-btn copy ${
+                            passwordCopied ? "copied" : ""
+                          }`}
+                          onClick={copyPassword}
+                          disabled={!formData.password}
+                        >
+                          <span className="secretary-student-form-action-icon">
+                            {passwordCopied ? (
+                              <Check size={16} />
+                            ) : (
+                              <Copy size={16} />
+                            )}
+                          </span>
+
+                          <span className="secretary-student-form-action-text">
+                            <strong>
+                              {passwordCopied ? "کپی شد" : "کپی رمز"}
+                            </strong>
+
+                            <small>
+                              {passwordCopied
+                                ? "رمز در کلیپ‌بورد ذخیره شد"
+                                : "کپی سریع رمز فعلی"}
+                            </small>
+                          </span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </>
               )}
@@ -536,7 +618,11 @@ function SecretaryStudentForm() {
               disabled={submitting}
               icon={<Save size={18} />}
             >
-              {submitting ? "در حال ثبت..." : id ? "ذخیره تغییرات" : "ثبت دانش‌آموز"}
+              {submitting
+                ? "در حال ثبت..."
+                : id
+                  ? "ذخیره تغییرات"
+                  : "ثبت دانش‌آموز"}
             </AnimatedButton>
           </div>
         </form>

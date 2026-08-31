@@ -313,11 +313,6 @@ function SecretaryTuitions() {
     safeCurrentPage * itemsPerPage,
     filteredItems.length
   );
-
-  /* =========================================================
-     Reset Pagination When Filters Change
-     ========================================================= */
-
   useEffect(() => {
     setCurrentPage(1);
   }, [
@@ -570,8 +565,8 @@ function SecretaryTuitions() {
       <div className="secretary-tuitions-page">
         <div className="term-selector-banner">
           <div className="term-banner-info">
-            <div className="term-icon-circle">
-              <Layers size={22} />
+            <div className="term-icon-circle-tit">
+              <CreditCard size={25} />
             </div>
             <div className="term-banner-text">
               <h3>

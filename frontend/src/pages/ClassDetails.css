@@ -1,69 +1,139 @@
 /* =========================================================
-   Class Details (Matches AdminStudentDetails / AdminTeacherDetails)
+   Class Details
+   Fully Responsive — RTL
+   Desktop / Tablet / Mobile / Small Phones
    ========================================================= */
 
 .class-details-page {
+  width: 100%;
+  max-width: 1200px;
+  min-width: 0;
+  margin: 0 auto;
+
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
+
   direction: rtl;
+  box-sizing: border-box;
 }
 
+/* جلوگیری از overflow ناشی از فرزندان */
+.class-details-page,
+.class-details-page * {
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   Header
+   ========================================================= */
+
 .class-details-header {
+  width: 100%;
+  min-width: 0;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 1.25rem;
+
+  padding: 1.5rem 1.75rem;
+
   background: oklch(100% 0 0 / 0.88);
   border: 1px solid oklch(0% 0 0 / 0.055);
   border-radius: 18px;
-  padding: 1.5rem 1.75rem;
+
   box-shadow: 0 7px 28px oklch(0% 0 0 / 0.04);
   backdrop-filter: blur(12px);
-  flex-wrap: wrap;
+
+  overflow: hidden;
 }
 
 .class-details-title-box {
+  min-width: 0;
+  flex: 1 1 auto;
+
   display: flex;
   align-items: center;
-  gap: 1.25rem;
+  gap: 1rem;
+}
+
+.class-details-title-box > a {
+  flex: 0 0 auto;
+  text-decoration: none;
 }
 
 .class-details-badge-icon {
   width: 58px;
   height: 58px;
-  border-radius: 50%;
-  background: var(--red-5, oklch(55.799% 0.17067 24.538));
-  color: #ffffff;
+  min-width: 58px;
+
+  flex: 0 0 58px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
+  border-radius: 50%;
+
+  background: var(
+    --red-5,
+    oklch(55.799% 0.17067 24.538)
+  );
+
+  color: #fff;
+
   box-shadow: 0 6px 18px oklch(60% 0.19 29 / 0.25);
-  flex-shrink: 0;
+}
+
+.class-details-title-box > div:last-child {
+  min-width: 0;
+  flex: 1;
 }
 
 .class-title-row {
+  min-width: 0;
+
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.25rem;
+  gap: 0.65rem;
+
+  margin-bottom: 0.3rem;
+
+  flex-wrap: wrap;
 }
 
 .class-title-row h2 {
+  min-width: 0;
+  max-width: 100%;
+
+  margin: 0;
+
+  color: oklch(25% 0 0);
+
   font-size: 1.4rem;
   font-weight: 800;
-  color: oklch(25% 0 0);
-  margin: 0;
+  line-height: 1.5;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .term-status-pill {
+  flex: 0 0 auto;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0.22rem 0.65rem;
+
+  border-radius: 999px;
+
   font-size: 0.75rem;
-  padding: 0.2rem 0.65rem;
-  border-radius: 20px;
   font-weight: 700;
+
+  white-space: nowrap;
 }
 
 .term-status-pill.active {
@@ -79,210 +149,501 @@
 }
 
 .class-term-name {
+  min-width: 0;
+
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  font-size: 0.85rem;
-  color: oklch(55% 0 0);
+  flex-wrap: wrap;
+
+  gap: 0.35rem;
+
   margin: 0;
+
+  color: oklch(55% 0 0);
+
+  font-size: 0.85rem;
+  line-height: 1.7;
+
+  overflow-wrap: anywhere;
 }
+
+.class-term-name svg {
+  flex: 0 0 auto;
+}
+
+/* =========================================================
+   Header Actions
+   ========================================================= */
 
 .class-details-header-actions {
+  flex: 0 0 auto;
+
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
+  justify-content: flex-end;
+
+  gap: 0.65rem;
+
+  min-width: 0;
 }
 
+.class-details-header-actions > a {
+  display: block;
+  text-decoration: none;
+}
+
+.class-details-header-actions > a > button,
+.class-details-header-actions > button {
+  white-space: nowrap;
+}
+
+/* =========================================================
+   Stats
+   ========================================================= */
+
 .class-details-stats-grid {
+  width: 100%;
+  min-width: 0;
+
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
   gap: 1.25rem;
 }
 
+/* جلوگیری از شکستن StatCard */
+.class-details-stats-grid > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* =========================================================
+   Main Grid
+   ========================================================= */
+
 .class-details-main-grid {
+  width: 100%;
+  min-width: 0;
+
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+
   gap: 1.5rem;
 }
 
+.class-details-main-grid > * {
+  min-width: 0;
+}
+
+/* =========================================================
+   Generic Card
+   ========================================================= */
+
 .class-card {
+  width: 100%;
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 1.25rem;
+
+  padding: 1.5rem;
+
   background: oklch(100% 0 0 / 0.88);
+
   border: 1px solid oklch(0% 0 0 / 0.055);
   border-radius: 18px;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
+
   box-shadow: 0 7px 28px oklch(0% 0 0 / 0.04);
+
   backdrop-filter: blur(12px);
+
+  overflow: hidden;
 }
+
+/* =========================================================
+   Card Heading
+   ========================================================= */
 
 .card-heading {
+  width: 100%;
+  min-width: 0;
+
   display: flex;
   align-items: center;
+
   gap: 0.5rem;
+
+  margin: 0;
+  padding-bottom: 0.85rem;
+
+  border-bottom: 1px solid oklch(0% 0 0 / 0.055);
+
+  color: oklch(25% 0 0);
+
   font-size: 1.05rem;
   font-weight: 800;
-  color: oklch(25% 0 0);
-  padding-bottom: 0.85rem;
-  margin: 0;
-  border-bottom: 1px solid oklch(0% 0 0 / 0.055);
+
+  line-height: 1.5;
+
+  overflow-wrap: anywhere;
 }
 
+.card-heading svg {
+  flex: 0 0 auto;
+}
+
+/* =========================================================
+   Teacher
+   ========================================================= */
+
 .teacher-profile-body {
+  width: 100%;
+  min-width: 0;
+
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
+
   gap: 0.65rem;
+
   padding: 0.75rem 0;
+
+  text-align: center;
 }
 
 .teacher-avatar {
   width: 72px;
   height: 72px;
-  border-radius: 50%;
-  background: var(--red-5, oklch(55.799% 0.17067 24.538));
-  color: #ffffff;
-  font-size: 1.6rem;
-  font-weight: 800;
+  min-width: 72px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
+  border-radius: 50%;
+
+  background: var(
+    --red-5,
+    oklch(55.799% 0.17067 24.538)
+  );
+
+  color: #fff;
+
+  font-size: 1.6rem;
+  font-weight: 800;
+
   box-shadow: 0 6px 18px oklch(60% 0.19 29 / 0.25);
 }
 
 .teacher-name {
+  max-width: 100%;
+
+  margin: 0;
+
+  color: oklch(25% 0 0);
+
   font-size: 1.15rem;
   font-weight: 800;
-  color: oklch(25% 0 0);
-  margin: 0;
+
+  line-height: 1.5;
+
+  overflow-wrap: anywhere;
 }
 
 .teacher-role-badge {
+  max-width: 100%;
+
+  padding: 0.3rem 0.7rem;
+
+  border-radius: 12px;
+
+  background: oklch(96% 0.02 29);
+
+  color: var(--primary, oklch(55% 0.18 25));
+
   font-size: 0.78rem;
   font-weight: 700;
-  background: oklch(96% 0.02 29);
-  color: var(--primary, oklch(55% 0.18 25));
-  padding: 0.25rem 0.7rem;
-  border-radius: 12px;
+
+  line-height: 1.5;
+
+  text-align: center;
+  overflow-wrap: anywhere;
 }
 
 .teacher-contacts {
+  width: 100%;
+  min-width: 0;
+
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
-  width: 100%;
+
+  gap: 0.55rem;
+
   margin-top: 0.5rem;
-  padding-top: 0.75rem;
+  padding-top: 0.8rem;
+
   border-top: 1px dashed oklch(0% 0 0 / 0.08);
 }
 
 .contact-item {
+  width: 100%;
+  min-width: 0;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   gap: 0.4rem;
-  font-size: 0.82rem;
+
   color: oklch(55% 0 0);
+
+  font-size: 0.82rem;
+}
+
+.contact-item svg {
+  flex: 0 0 auto;
+}
+
+.contact-item span {
+  min-width: 0;
+  max-width: 100%;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .view-teacher-link {
+  max-width: 100%;
+
+  margin-top: 0.5rem;
+
+  color: var(--primary, oklch(55% 0.18 25));
+
   font-size: 0.82rem;
   font-weight: 700;
-  color: var(--primary, oklch(55% 0.18 25));
+
+  line-height: 1.6;
+
+  text-align: center;
   text-decoration: none;
-  margin-top: 0.5rem;
+
+  overflow-wrap: anywhere;
 }
 
 .view-teacher-link:hover {
   text-decoration: underline;
 }
 
+/* =========================================================
+   Enrolled Students Header
+   ========================================================= */
+
 .enrolled-students-header {
+  width: 100%;
+  min-width: 0;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 1rem;
 }
 
+.enrolled-students-header .card-heading {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .add-student-shortcut-btn {
+  flex: 0 0 auto;
+
+  min-height: 36px;
+
+  padding: 0.35rem 0.75rem;
+
   background: oklch(97% 0.02 29);
+
   border: 1px solid oklch(60% 0.19 29 / 0.3);
+  border-radius: 8px;
+
   color: var(--primary, oklch(55% 0.18 25));
+
+  font-family: inherit;
   font-size: 0.8rem;
   font-weight: 700;
-  padding: 0.35rem 0.75rem;
-  border-radius: 8px;
+
+  white-space: nowrap;
+
   cursor: pointer;
-  transition: all 0.2s ease;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .add-student-shortcut-btn:hover {
-  background: var(--red-5, oklch(55.799% 0.17067 24.538));
-  color: #ffffff;
+  background: var(
+    --red-5,
+    oklch(55.799% 0.17067 24.538)
+  );
+
+  color: #fff;
 }
+
+/* =========================================================
+   Tables Container
+   ========================================================= */
 
 .enrolled-table-wrap,
 .sessions-table-wrap {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+
   overflow-x: auto;
+  overflow-y: hidden;
+
+  -webkit-overflow-scrolling: touch;
+
+  scrollbar-width: thin;
+
+  border-radius: 10px;
 }
+
+/* =========================================================
+   Tables
+   ========================================================= */
 
 .enrolled-table,
 .sessions-table {
   width: 100%;
+
+  min-width: 700px;
+
   border-collapse: collapse;
+
   text-align: right;
+
+  table-layout: auto;
 }
 
 .enrolled-table th,
 .sessions-table th {
   padding: 0.75rem 1rem;
-  font-size: 0.82rem;
+
   color: oklch(55% 0 0);
+
+  font-size: 0.82rem;
   font-weight: 700;
+
   border-bottom: 1px solid oklch(0% 0 0 / 0.07);
+
+  white-space: nowrap;
 }
 
 .enrolled-table td,
 .sessions-table td {
   padding: 0.85rem 1rem;
-  font-size: 0.88rem;
+
   color: oklch(25% 0 0);
+
+  font-size: 0.88rem;
+
   border-bottom: 1px solid oklch(0% 0 0 / 0.04);
+
+  white-space: nowrap;
 }
 
+.enrolled-table tbody tr,
+.sessions-table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.enrolled-table tbody tr:hover,
+.sessions-table tbody tr:hover {
+  background: oklch(98% 0.01 29);
+}
+
+/* =========================================================
+   Student Row
+   ========================================================= */
+
 .student-row-info {
+  min-width: 180px;
+
   display: flex;
   align-items: center;
+
   gap: 0.75rem;
 }
 
 .student-small-avatar {
   width: 36px;
   height: 36px;
-  border-radius: 50%;
-  background: oklch(95% 0.03 29);
-  color: var(--primary, oklch(55% 0.18 25));
+  min-width: 36px;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
+
+  border-radius: 50%;
+
+  background: oklch(95% 0.03 29);
+
+  color: var(--primary, oklch(55% 0.18 25));
+
   font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.student-row-info > div:last-child {
+  min-width: 0;
+}
+
+.student-row-info strong {
+  display: block;
+
+  max-width: 180px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .student-row-info small {
   display: block;
-  font-size: 0.75rem;
+
+  max-width: 180px;
+
   color: oklch(55% 0 0);
+
+  font-size: 0.75rem;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
+/* =========================================================
+   Attendance
+   ========================================================= */
+
 .att-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0.2rem 0.55rem;
+
+  border-radius: 12px;
+
   font-size: 0.78rem;
   font-weight: 700;
-  padding: 0.2rem 0.55rem;
-  border-radius: 12px;
+
+  white-space: nowrap;
 }
 
 .att-pill.high {
@@ -300,48 +661,1202 @@
   color: oklch(45% 0.18 25);
 }
 
+/* =========================================================
+   Dates / Counts
+   ========================================================= */
+
 .shamsi-date-tag {
   display: inline-flex;
   align-items: center;
+
   gap: 0.35rem;
+
+  padding: 0.25rem 0.6rem;
+
+  border-radius: 6px;
+
+  background: oklch(97% 0.005 29);
+
+  color: oklch(35% 0 0);
+
   font-size: 0.82rem;
   font-weight: 600;
-  color: oklch(35% 0 0);
-  background: oklch(97% 0.005 29);
-  padding: 0.25rem 0.6rem;
-  border-radius: 6px;
+
+  white-space: nowrap;
+}
+
+.shamsi-date-tag svg {
+  flex: 0 0 auto;
+}
+
+.present-count,
+.absent-count {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 0.3rem;
+
+  white-space: nowrap;
 }
 
 .present-count {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
   color: oklch(40% 0.15 145);
   font-weight: 700;
 }
 
 .absent-count {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
   color: oklch(45% 0.18 25);
   font-weight: 700;
 }
 
+/* =========================================================
+   Empty States
+   ========================================================= */
+
 .empty-students-box,
 .empty-sessions-box,
 .no-teacher-assigned {
-  text-align: center;
-  padding: 2.5rem 1rem;
-  color: oklch(55% 0 0);
+  width: 100%;
+  min-width: 0;
+
   display: flex;
   flex-direction: column;
   align-items: center;
+
   gap: 0.75rem;
+
+  padding: 2.5rem 1rem;
+
+  color: oklch(55% 0 0);
+
+  text-align: center;
+
+  line-height: 1.8;
 }
+
+.empty-students-box svg,
+.empty-sessions-box svg {
+  opacity: 0.65;
+}
+
+.empty-students-box p,
+.empty-sessions-box p {
+  margin: 0;
+}
+
+/* =========================================================
+   1200px
+   ========================================================= */
+
+@media (max-width: 1200px) {
+  .class-details-page {
+    max-width: 100%;
+  }
+}
+
+/* =========================================================
+   1050px
+   ========================================================= */
+
+@media (max-width: 1050px) {
+  .class-details-main-grid {
+    grid-template-columns: 270px minmax(0, 1fr);
+    gap: 1.15rem;
+  }
+
+  .class-details-header {
+    padding: 1.35rem;
+  }
+
+  .class-details-title-box {
+    gap: 0.85rem;
+  }
+
+  .class-title-row h2 {
+    font-size: 1.25rem;
+  }
+}
+
+/* =========================================================
+   900px
+   ========================================================= */
 
 @media (max-width: 900px) {
   .class-details-main-grid {
     grid-template-columns: 1fr;
+  }
+
+  .teacher-info-card {
+    width: 100%;
+  }
+
+  .teacher-profile-body {
+    width: 100%;
+    max-width: 500px;
+
+    margin: 0 auto;
+  }
+
+  .teacher-contacts {
+    max-width: 430px;
+  }
+
+  .class-details-header {
+    flex-wrap: wrap;
+  }
+
+  .class-details-title-box {
+    flex: 1 1 100%;
+  }
+
+  .class-details-header-actions {
+    width: 100%;
+
+    justify-content: flex-start;
+  }
+}
+
+/* =========================================================
+   768px — Tablet
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .class-details-page {
+    gap: 1rem;
+  }
+
+  /* ---------------- Header ---------------- */
+
+  .class-details-header {
+    flex-direction: column;
+    align-items: stretch;
+
+    gap: 1rem;
+
+    padding: 1.1rem;
+
+    border-radius: 16px;
+  }
+
+  .class-details-title-box {
+    width: 100%;
+    flex: none;
+
+    align-items: flex-start;
+
+    gap: 0.75rem;
+  }
+
+  .class-details-badge-icon {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    flex-basis: 50px;
+
+    border-radius: 15px;
+  }
+
+  .class-details-badge-icon svg {
+    width: 23px;
+    height: 23px;
+  }
+
+  .class-title-row {
+    gap: 0.45rem;
+  }
+
+  .class-title-row h2 {
+    font-size: 1.1rem;
+  }
+
+  .term-status-pill {
+    font-size: 0.7rem;
+  }
+
+  .class-term-name {
+    font-size: 0.77rem;
+  }
+
+  /* ---------------- Header Actions ---------------- */
+
+  .class-details-header-actions {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 0.6rem;
+  }
+
+  .class-details-header-actions > a,
+  .class-details-header-actions > button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .class-details-header-actions > a > button,
+  .class-details-header-actions > button {
+    width: 100%;
+  }
+
+  /* ---------------- Stats ---------------- */
+
+  .class-details-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
+  }
+
+  /* ---------------- Cards ---------------- */
+
+  .class-card {
+    padding: 1.1rem;
+    border-radius: 16px;
+  }
+
+  /* ---------------- Students Header ---------------- */
+
+  .enrolled-students-header {
+    flex-direction: column;
+    align-items: stretch;
+
+    gap: 0.75rem;
+  }
+
+  .enrolled-students-header .card-heading {
+    width: 100%;
+  }
+
+  .add-student-shortcut-btn {
+    width: 100%;
+
+    min-height: 42px;
+  }
+
+  /* ---------------- Tables ---------------- */
+
+  .enrolled-table,
+  .sessions-table {
+    min-width: 680px;
+  }
+
+  .enrolled-table th,
+  .sessions-table th {
+    padding: 0.7rem 0.8rem;
+
+    font-size: 0.77rem;
+  }
+
+  .enrolled-table td,
+  .sessions-table td {
+    padding: 0.75rem 0.8rem;
+
+    font-size: 0.8rem;
+  }
+}
+
+/* =========================================================
+   600px — Mobile
+   ========================================================= */
+
+@media (max-width: 600px) {
+  .class-details-page {
+    gap: 0.85rem;
+  }
+
+  /* ---------------- Header ---------------- */
+
+  .class-details-header {
+    padding: 0.9rem;
+
+    border-radius: 14px;
+  }
+
+  .class-details-title-box {
+    gap: 0.65rem;
+  }
+
+  .class-details-badge-icon {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    flex-basis: 44px;
+
+    border-radius: 13px;
+  }
+
+  .class-details-badge-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .class-title-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 0.3rem;
+  }
+
+  .class-title-row h2 {
+    font-size: 1rem;
+
+    line-height: 1.55;
+  }
+
+  .term-status-pill {
+    font-size: 0.67rem;
+
+    padding: 0.18rem 0.5rem;
+  }
+
+  .class-term-name {
+    font-size: 0.71rem;
+
+    line-height: 1.8;
+  }
+
+  /* ---------------- Header Buttons ---------------- */
+
+  .class-details-header-actions {
+    grid-template-columns: 1fr;
+  }
+
+  /* ---------------- Stats ---------------- */
+
+  .class-details-stats-grid {
+    grid-template-columns: 1fr;
+
+    gap: 0.7rem;
+  }
+
+  /* ---------------- Cards ---------------- */
+
+  .class-card {
+    padding: 0.95rem;
+
+    border-radius: 14px;
+
+    gap: 0.9rem;
+  }
+
+  .card-heading {
+    font-size: 0.9rem;
+
+    padding-bottom: 0.7rem;
+  }
+
+  /* ---------------- Teacher ---------------- */
+
+  .teacher-avatar {
+    width: 62px;
+    height: 62px;
+    min-width: 62px;
+
+    font-size: 1.3rem;
+  }
+
+  .teacher-name {
+    font-size: 1.02rem;
+  }
+
+  .teacher-role-badge {
+    font-size: 0.7rem;
+  }
+
+  .contact-item {
+    font-size: 0.74rem;
+  }
+
+  /* ---------------- Tables ---------------- */
+
+  .enrolled-table-wrap,
+  .sessions-table-wrap {
+    width: calc(100% + 0.4rem);
+
+    margin-right: -0.2rem;
+    margin-left: -0.2rem;
+
+    padding-bottom: 0.25rem;
+  }
+
+  .enrolled-table,
+  .sessions-table {
+    min-width: 630px;
+  }
+
+  .enrolled-table th,
+  .sessions-table th {
+    padding: 0.65rem 0.7rem;
+
+    font-size: 0.72rem;
+  }
+
+  .enrolled-table td,
+  .sessions-table td {
+    padding: 0.65rem 0.7rem;
+
+    font-size: 0.76rem;
+  }
+
+  .student-row-info {
+    min-width: 155px;
+
+    gap: 0.5rem;
+  }
+
+  .student-small-avatar {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+
+    font-size: 0.8rem;
+  }
+
+  .student-row-info strong,
+  .student-row-info small {
+    max-width: 135px;
+  }
+
+  /* ---------------- Empty ---------------- */
+
+  .empty-students-box,
+  .empty-sessions-box,
+  .no-teacher-assigned {
+    padding: 1.8rem 0.6rem;
+
+    font-size: 0.8rem;
+  }
+}
+
+/* =========================================================
+   480px — Small Phones
+   ========================================================= */
+
+@media (max-width: 480px) {
+  .class-details-page {
+    gap: 0.7rem;
+  }
+
+  .class-details-header {
+    padding: 0.75rem;
+  }
+
+  .class-details-title-box {
+    gap: 0.55rem;
+  }
+
+  .class-details-badge-icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    flex-basis: 40px;
+
+    border-radius: 11px;
+  }
+
+  .class-details-badge-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .class-title-row h2 {
+    font-size: 0.9rem;
+  }
+
+  .term-status-pill {
+    font-size: 0.64rem;
+
+    padding: 0.15rem 0.45rem;
+  }
+
+  .class-term-name {
+    font-size: 0.67rem;
+  }
+
+  .class-card {
+    padding: 0.8rem;
+
+    border-radius: 13px;
+  }
+
+  .card-heading {
+    font-size: 0.83rem;
+  }
+
+  /* Teacher */
+
+  .teacher-avatar {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+
+    font-size: 1.15rem;
+  }
+
+  .teacher-name {
+    font-size: 0.95rem;
+  }
+
+  .teacher-role-badge {
+    font-size: 0.65rem;
+
+    padding-inline: 0.5rem;
+  }
+
+  .contact-item {
+    font-size: 0.68rem;
+  }
+
+  /* Tables */
+
+  .enrolled-table,
+  .sessions-table {
+    min-width: 600px;
+  }
+
+  .enrolled-table th,
+  .sessions-table th {
+    padding: 0.6rem;
+
+    font-size: 0.69rem;
+  }
+
+  .enrolled-table td,
+  .sessions-table td {
+    padding: 0.6rem;
+
+    font-size: 0.73rem;
+  }
+
+  .student-row-info {
+    min-width: 145px;
+  }
+
+  .student-row-info strong,
+  .student-row-info small {
+    max-width: 120px;
+  }
+
+  .student-small-avatar {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+  }
+}
+
+/* =========================================================
+   380px
+   ========================================================= */
+
+@media (max-width: 380px) {
+  .class-details-header {
+    padding: 0.65rem;
+  }
+
+  .class-details-title-box {
+    gap: 0.45rem;
+  }
+
+  .class-details-badge-icon {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    flex-basis: 36px;
+
+    border-radius: 10px;
+  }
+
+  .class-title-row h2 {
+    font-size: 0.84rem;
+  }
+
+  .class-term-name {
+    font-size: 0.63rem;
+  }
+
+  .class-card {
+    padding: 0.7rem;
+  }
+
+  .card-heading {
+    font-size: 0.79rem;
+  }
+
+  .teacher-avatar {
+    width: 52px;
+    height: 52px;
+    min-width: 52px;
+  }
+
+  .teacher-name {
+    font-size: 0.9rem;
+  }
+
+  .teacher-role-badge {
+    font-size: 0.62rem;
+  }
+
+  .contact-item {
+    font-size: 0.64rem;
+  }
+
+  .enrolled-table,
+  .sessions-table {
+    min-width: 570px;
+  }
+}
+
+/* =========================================================
+   320px — Extremely Small Devices
+   ========================================================= */
+
+@media (max-width: 320px) {
+  .class-details-header {
+    padding: 0.55rem;
+  }
+
+  .class-details-title-box {
+    gap: 0.4rem;
+  }
+
+  .class-details-badge-icon {
+    width: 33px;
+    height: 33px;
+    min-width: 33px;
+    flex-basis: 33px;
+  }
+
+  .class-details-badge-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .class-title-row h2 {
+    font-size: 0.78rem;
+  }
+
+  .class-term-name {
+    font-size: 0.59rem;
+  }
+
+  .class-card {
+    padding: 0.6rem;
+  }
+
+  .teacher-avatar {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+  }
+
+  .enrolled-table,
+  .sessions-table {
+    min-width: 540px;
+  }
+}
+
+/* =========================================================
+   Touch Devices
+   ========================================================= */
+
+@media (hover: none) and (pointer: coarse) {
+  .add-student-shortcut-btn {
+    min-height: 44px;
+  }
+
+  .enrolled-table-wrap,
+  .sessions-table-wrap {
+    scrollbar-width: auto;
+  }
+
+  .class-details-header-actions button {
+    min-height: 44px;
+  }
+}
+
+/* =========================================================
+   Reduced Motion
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .enrolled-table tbody tr,
+  .sessions-table tbody tr,
+  .add-student-shortcut-btn {
+    transition: none;
+  }
+}
+.desktop-only {
+  display: block;
+}
+
+.students-mobile-list,
+.sessions-mobile-list {
+  display: none;
+}
+
+
+/* =========================================================
+   Student Mobile Card
+   ========================================================= */
+
+.student-mobile-card {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
+  background: #ffffff;
+  border: 1px solid oklch(0% 0 0 / 0.06);
+  border-radius: 14px;
+
+  padding: 0.9rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+
+  box-shadow:
+    0 3px 12px oklch(0% 0 0 / 0.035);
+}
+
+.student-mobile-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 0.75rem;
+  min-width: 0;
+
+  padding-bottom: 0.8rem;
+
+  border-bottom: 1px solid oklch(0% 0 0 / 0.055);
+}
+
+.student-mobile-top .student-row-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.student-mobile-top .student-row-info > div:last-child {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.student-mobile-top .student-row-info strong {
+  max-width: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.student-mobile-top .student-row-info small {
+  max-width: none;
+}
+
+.student-mobile-top .att-pill {
+  flex-shrink: 0;
+}
+
+
+/* =========================================================
+   Student Information Grid
+   ========================================================= */
+
+.student-mobile-info {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.mobile-info-item {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+
+  background: oklch(98% 0.008 29);
+  border-radius: 9px;
+
+  padding: 0.6rem 0.7rem;
+}
+
+.mobile-info-item span {
+  font-size: 0.68rem;
+  color: oklch(58% 0 0);
+  font-weight: 600;
+}
+
+.mobile-info-item strong {
+  font-size: 0.76rem;
+  color: oklch(28% 0 0);
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   Student Action
+   ========================================================= */
+
+.student-mobile-action {
+  width: 100%;
+}
+
+.student-mobile-action a {
+  display: block;
+  width: 100%;
+  text-decoration: none;
+}
+
+.student-mobile-action button {
+  width: 100%;
+  justify-content: center;
+}
+
+
+/* =========================================================
+   Sessions Mobile Card
+   ========================================================= */
+
+.session-mobile-card {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border: 1px solid oklch(0% 0 0 / 0.06);
+  border-radius: 14px;
+
+  padding: 0.9rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+
+  box-shadow:
+    0 3px 12px oklch(0% 0 0 / 0.035);
+}
+
+.session-mobile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 0.75rem;
+
+  min-width: 0;
+
+  padding-bottom: 0.8rem;
+
+  border-bottom: 1px solid oklch(0% 0 0 / 0.055);
+}
+
+.session-number {
+  display: flex;
+  align-items: center;
+
+  gap: 0.45rem;
+
+  color: oklch(28% 0 0);
+
+  min-width: 0;
+}
+
+.session-number svg {
+  flex-shrink: 0;
+  color: var(
+    --primary,
+    oklch(55% 0.18 25)
+  );
+}
+
+.session-number strong {
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   Session Stats
+   ========================================================= */
+
+.session-mobile-stats {
+  display: grid;
+
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 0.55rem;
+
+  min-width: 0;
+}
+
+.session-stat {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 0.45rem;
+
+  border-radius: 10px;
+
+  padding: 0.65rem 0.5rem;
+
+  background: oklch(98% 0.008 29);
+}
+
+.session-stat svg {
+  flex-shrink: 0;
+}
+
+.session-stat > div {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+}
+
+.session-stat span {
+  font-size: 0.62rem;
+  color: oklch(57% 0 0);
+
+  white-space: nowrap;
+}
+
+.session-stat strong {
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+.session-stat strong small {
+  font-size: 0.62rem;
+  font-weight: 600;
+}
+
+
+/* Colors */
+
+.session-stat.present {
+  color: oklch(40% 0.15 145);
+  background: oklch(97% 0.025 145);
+}
+
+.session-stat.absent {
+  color: oklch(45% 0.18 25);
+  background: oklch(97% 0.025 25);
+}
+
+.session-stat.other {
+  color: oklch(45% 0.12 85);
+  background: oklch(97% 0.035 85);
+}
+
+
+/* =========================================================
+   768px
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+  .desktop-only {
+    display: none !important;
+  }
+
+  .students-mobile-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 0.75rem;
+
+    width: 100%;
+    min-width: 0;
+  }
+
+  .sessions-mobile-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 0.75rem;
+
+    width: 100%;
+    min-width: 0;
+  }
+
+  /*
+     مهم:
+     دیگر جدول هیچ عرض اجباری ندارد
+     و overflow افقی هم لازم نیست.
+  */
+
+  .enrolled-table-wrap,
+  .sessions-table-wrap {
+    display: none !important;
+  }
+
+  .enrolled-students-card,
+  .sessions-history-card {
+    min-width: 0;
+    width: 100%;
+    overflow: hidden;
+  }
+}
+
+
+/* =========================================================
+   600px
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  .student-mobile-card,
+  .session-mobile-card {
+    border-radius: 12px;
+    padding: 0.8rem;
+  }
+
+  .student-mobile-info {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .mobile-info-item {
+    padding: 0.55rem 0.6rem;
+  }
+
+  .mobile-info-item span {
+    font-size: 0.63rem;
+  }
+
+  .mobile-info-item strong {
+    font-size: 0.72rem;
+  }
+
+  .session-mobile-stats {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .session-stat {
+    padding: 0.6rem 0.65rem;
+  }
+
+  .session-stat span {
+    font-size: 0.68rem;
+  }
+
+  .session-stat strong {
+    font-size: 0.82rem;
+  }
+}
+
+
+/* =========================================================
+   480px
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+  .student-mobile-top {
+    align-items: flex-start;
+  }
+
+  .student-mobile-top .student-row-info {
+    gap: 0.5rem;
+  }
+
+  .student-mobile-top .student-small-avatar {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+  }
+
+  .student-mobile-top .student-row-info strong {
+    font-size: 0.78rem;
+  }
+
+  .student-mobile-top .student-row-info small {
+    font-size: 0.66rem;
+  }
+
+  .student-mobile-info {
+    grid-template-columns: 1fr;
+  }
+
+  .mobile-info-item {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 0.5rem;
+  }
+
+  .mobile-info-item strong {
+    max-width: 65%;
+    text-align: left;
+  }
+
+  .session-mobile-header {
+    align-items: flex-start;
+  }
+
+  .session-number strong {
+    font-size: 0.78rem;
+  }
+
+  .shamsi-date-tag {
+    font-size: 0.68rem;
+    padding: 0.22rem 0.45rem;
+  }
+}
+
+
+/* =========================================================
+   360px
+   ========================================================= */
+
+@media (max-width: 360px) {
+
+  .student-mobile-card,
+  .session-mobile-card {
+    padding: 0.7rem;
+  }
+
+  .student-mobile-top {
+    gap: 0.4rem;
+  }
+
+  .student-mobile-top .att-pill {
+    font-size: 0.65rem;
+    padding-inline: 0.4rem;
+  }
+
+  .mobile-info-item {
+    padding: 0.5rem;
+  }
+
+  .mobile-info-item span {
+    font-size: 0.6rem;
+  }
+
+  .mobile-info-item strong {
+    font-size: 0.68rem;
+  }
+
+  .session-stat {
+    padding: 0.55rem;
+  }
+
+  .session-stat span {
+    font-size: 0.63rem;
+  }
+
+  .session-stat strong {
+    font-size: 0.76rem;
   }
 }

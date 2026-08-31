@@ -1,12 +1,20 @@
 /* =========================================================
    ADMIN STUDENTS
-   RTL / Responsive / Modern Admin UI
+   RTL / RESPONSIVE / MODERN ADMIN UI
    ========================================================= */
 
 .admin-students-x7k2-section {
   width: 100%;
+  max-width: 100%;
   min-width: 0;
   direction: rtl;
+  box-sizing: border-box;
+}
+
+.admin-students-x7k2-section *,
+.admin-students-x7k2-section *::before,
+.admin-students-x7k2-section *::after {
+  box-sizing: border-box;
 }
 
 /* =========================================================
@@ -14,53 +22,89 @@
    ========================================================= */
 
 .admin-students-x7k2-header {
+  width: 100%;
+  min-width: 0;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1.25rem;
-  margin-bottom: 1.5rem;
+
+  gap: 1rem;
+
+  padding: 1.15rem 1.35rem;
+
+  background: #ffffff;
+  border: 1px solid #eceff3;
+  border-radius: 18px;
+
+  box-shadow: 0 6px 20px rgba(37, 41, 45, 0.035);
+
+  margin-bottom: 20px;
 }
 
 .admin-students-x7k2-heading {
+  min-width: 0;
+  flex: 1;
+
   display: flex;
   align-items: center;
-  gap: 0.9rem;
+
+  gap: 0.85rem;
+}
+
+.admin-students-x7k2-heading > div:last-child {
   min-width: 0;
 }
 
 .admin-students-x7k2-heading-icon {
-  width: 48px;
-  height: 48px;
-  flex: 0 0 48px;
+  width: 50px;
+  height: 50px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  color: var(--primary);
-  background: #fff1ef;
-  border: 1px solid #ffe0db;
+  background: var(--red-5);
+  color: #ffffff;
+
   border-radius: 14px;
+
+  box-shadow: 0 6px 16px rgba(231, 76, 60, 0.18);
 }
 
 .admin-students-x7k2-title {
   margin: 0;
-  color: #25292d;
-  font-size: 1.35rem;
-  font-weight: 850;
-  line-height: 1.6;
+
+  color: #2d3436;
+
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.7;
+
+  overflow-wrap: anywhere;
 }
 
 .admin-students-x7k2-description {
-  margin: 0.2rem 0 0;
+  margin: 0.25rem 0 0;
+
   color: #7f8c8d;
+
   font-size: 0.84rem;
-  line-height: 1.7;
+  line-height: 1.8;
+
+  overflow-wrap: anywhere;
 }
 
 .admin-students-x7k2-add-link {
-  flex-shrink: 0;
+  flex: 0 0 auto;
+
+  min-width: 0;
+
   text-decoration: none;
+}
+
+.admin-students-x7k2-add-link > * {
+  max-width: 100%;
 }
 
 /* =========================================================
@@ -68,10 +112,15 @@
    ========================================================= */
 
 .admin-students-x7k2-stats {
+  width: 100%;
+  min-width: 0;
+
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.1rem;
-  margin-bottom: 1.5rem;
+
+  gap: 1.25rem;
+
+  margin-bottom: 1.75rem;
 }
 
 /* =========================================================
@@ -82,13 +131,16 @@
   width: 100%;
   min-width: 0;
 
-  padding: 1.6rem;
+  padding: 2rem;
 
   background: #ffffff;
+
   border: 1px solid #eceff3;
   border-radius: 22px;
 
-  box-shadow: 0 8px 30px rgba(37, 41, 45, 0.045);
+  box-shadow: 0 8px 25px rgba(37, 41, 45, 0.04);
+
+  margin-bottom: 2rem;
 }
 
 /* =========================================================
@@ -96,26 +148,39 @@
    ========================================================= */
 
 .admin-students-x7k2-content-header {
+  width: 100%;
+  min-width: 0;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 1rem;
 
+  margin-bottom: 1.5rem;
   padding-bottom: 1.2rem;
-  margin-bottom: 1.25rem;
 
-  border-bottom: 1px solid #f0f2f4;
+  border-bottom: 2px solid #f3f4f6;
+}
+
+.admin-students-x7k2-content-header > div:first-child {
+  min-width: 0;
+  flex: 1;
 }
 
 .admin-students-x7k2-content-header h3 {
   position: relative;
 
   margin: 0;
-  padding-right: 0.85rem;
+  padding-right: 0.9rem;
 
   color: var(--primary);
-  font-size: 1.15rem;
-  font-weight: 850;
+
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.7;
+
+  overflow-wrap: anywhere;
 }
 
 .admin-students-x7k2-content-header h3::before {
@@ -126,34 +191,46 @@
   right: 0;
 
   width: 4px;
-  height: 23px;
+  height: 25px;
 
-  background: linear-gradient(180deg, var(--primary), var(--primary-dark));
+  background: linear-gradient(
+    180deg,
+    var(--primary),
+    var(--primary-dark)
+  );
 
   border-radius: 999px;
+
   transform: translateY(-50%);
 }
 
 .admin-students-x7k2-content-header p {
   margin: 0.35rem 0 0;
 
-  color: #8a9298;
-  font-size: 0.82rem;
+  color: #7f8c8d;
+
+  font-size: 0.84rem;
+  line-height: 1.8;
+
+  overflow-wrap: anywhere;
 }
 
 .admin-students-x7k2-count {
+  flex: 0 0 auto;
+
   display: inline-flex;
   align-items: center;
+  justify-content: center;
 
-  padding: 0.4rem 0.8rem;
+  padding: 0.4rem 0.75rem;
 
+  background: #fff1ef;
   color: var(--primary);
-  background: #fff3f1;
 
-  border: 1px solid #ffe1dc;
+  border: 1px solid rgba(231, 76, 60, 0.15);
   border-radius: 999px;
 
-  font-size: 0.76rem;
+  font-size: 0.72rem;
   font-weight: 800;
 
   white-space: nowrap;
@@ -164,45 +241,56 @@
    ========================================================= */
 
 .admin-students-x7k2-filters {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 260px;
+  width: 100%;
+  min-width: 0;
 
-  gap: 0.8rem;
-  margin-bottom: 1rem;
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr);
+
+  gap: 1rem;
+
+  margin-bottom: 1.5rem;
 }
 
 .admin-students-x7k2-search-wrapper,
 .admin-students-x7k2-select-wrapper {
   position: relative;
+
+  width: 100%;
   min-width: 0;
+
+  display: flex;
+  align-items: center;
 }
 
 .admin-students-x7k2-search-icon,
 .admin-students-x7k2-filter-icon {
   position: absolute;
-  top: 50%;
-  right: 0.95rem;
+  right: 0.9rem;
 
-  color: #8b9399;
+  color: #7f8c8d;
+
   pointer-events: none;
 
-  transform: translateY(-50%);
-  z-index: 2;
+  z-index: 1;
 }
 
 .admin-students-x7k2-search-input,
 .admin-students-x7k2-select {
   width: 100%;
-  height: 46px;
+  min-width: 0;
+  min-height: 46px;
 
-  border: 1px solid #e5e9ed;
+  padding: 0.65rem 2.5rem 0.65rem 2.5rem;
+
+  background: #ffffff;
+  color: #2d3436;
+
+  border: 1px solid #eceff3;
   border-radius: 12px;
 
-  background: #fff;
-  color: #25292d;
-
   font-family: inherit;
-  font-size: 0.84rem;
+  font-size: 0.85rem;
 
   transition:
     border-color 0.2s ease,
@@ -210,19 +298,8 @@
     background 0.2s ease;
 }
 
-.admin-students-x7k2-search-input {
-  padding: 0 2.8rem 0 2.8rem;
-}
-
-.admin-students-x7k2-select {
-  padding: 0 2.8rem 0 0.9rem;
-
-  cursor: pointer;
-  font-weight: 700;
-}
-
 .admin-students-x7k2-search-input::placeholder {
-  color: #a2a9ae;
+  color: #a0a5aa;
 }
 
 .admin-students-x7k2-search-input:focus,
@@ -231,35 +308,53 @@
 
   border-color: var(--primary);
 
-  box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.08);
+  box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.09);
+}
+
+.admin-students-x7k2-select {
+  padding-left: 2rem;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  appearance: auto;
 }
 
 .admin-students-x7k2-clear-search {
   position: absolute;
-  top: 50%;
   left: 0.65rem;
+  top: 50%;
 
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  border: 0;
-  border-radius: 8px;
+  padding: 0;
 
-  background: #f3f4f5;
-  color: #70787e;
+  background: #f8f9fa;
+  color: #7f8c8d;
+
+  border: 1px solid #eceff3;
+  border-radius: 8px;
 
   cursor: pointer;
 
   transform: translateY(-50%);
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .admin-students-x7k2-clear-search:hover {
-  background: #eceeef;
-  color: #25292d;
+  background: #fff1ef;
+  color: var(--primary);
+  border-color: rgba(231, 76, 60, 0.15);
 }
 
 /* =========================================================
@@ -267,29 +362,42 @@
    ========================================================= */
 
 .admin-students-x7k2-result-info {
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
 
   gap: 1rem;
 
-  min-height: 38px;
-  margin-bottom: 0.85rem;
+  margin-bottom: 0.9rem;
 
-  color: #8a9298;
+  color: #7f8c8d;
+
   font-size: 0.78rem;
 }
 
+.admin-students-x7k2-result-info span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .admin-students-x7k2-result-info strong {
-  color: #454b50;
+  color: #495057;
   font-weight: 800;
 }
 
 .admin-students-x7k2-result-info button {
-  border: 0;
-  background: transparent;
+  flex: 0 0 auto;
 
+  padding: 0;
+
+  background: transparent;
   color: var(--primary);
+
+  border: 0;
 
   font-family: inherit;
   font-size: 0.78rem;
@@ -304,20 +412,26 @@
 
 .admin-students-x7k2-table-shell {
   width: 100%;
+  min-width: 0;
 
   overflow: hidden;
 
+  background: #ffffff;
+
   border: 1px solid #eceff3;
   border-radius: 16px;
-
-  background: #fff;
 }
 
 .admin-students-x7k2-table-scroll {
   width: 100%;
+  max-width: 100%;
+
   overflow-x: auto;
+  overflow-y: hidden;
 
   -webkit-overflow-scrolling: touch;
+
+  scrollbar-width: thin;
 }
 
 .admin-students-x7k2-table {
@@ -336,7 +450,7 @@
 .admin-students-x7k2-table th {
   padding: 0.95rem 1rem;
 
-  color: #7c858b;
+  color: #7f8c8d;
 
   font-size: 0.78rem;
   font-weight: 800;
@@ -359,7 +473,7 @@
 }
 
 .admin-students-x7k2-table tbody tr {
-  transition: background 0.18s ease;
+  transition: background 0.2s ease;
 }
 
 .admin-students-x7k2-table tbody tr:hover {
@@ -375,48 +489,65 @@
    ========================================================= */
 
 .admin-students-x7k2-name {
+  min-width: 180px;
+
   display: flex;
   align-items: center;
-  gap: 0.7rem;
 
-  min-width: 180px;
+  gap: 0.7rem;
 }
 
 .admin-students-x7k2-avatar {
-  width: 40px;
-  height: 40px;
-  flex: 0 0 40px;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  color: #fff;
-
   background: var(--red-5);
+  color: #ffffff;
 
-  border-radius: 12px;
+  border-radius: 13px;
 
-  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.16);
+  box-shadow: 0 6px 16px rgba(231, 76, 60, 0.18);
+}
+
+.admin-students-x7k2-name > div:last-child {
+  min-width: 0;
 }
 
 .admin-students-x7k2-name strong {
   display: block;
 
+  max-width: 180px;
+
+  overflow: hidden;
+
   color: #30363a;
 
   font-size: 0.86rem;
   font-weight: 800;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .admin-students-x7k2-name small {
   display: block;
+
+  max-width: 180px;
 
   margin-top: 0.12rem;
 
   color: #92999e;
 
   font-size: 0.72rem;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* =========================================================
@@ -425,17 +556,22 @@
 
 .admin-students-x7k2-id {
   display: inline-flex;
+  align-items: center;
 
-  padding: 0.32rem 0.55rem;
+  max-width: 100%;
 
+  padding: 0.3rem 0.55rem;
+
+  background: #f1f2f6;
   color: #687177;
-  background: #f5f6f7;
 
-  border: 1px solid #eceeef;
+  border: 1px solid #e4e7eb;
   border-radius: 7px;
 
-  font-size: 0.75rem;
+  font-size: 0.74rem;
   font-weight: 800;
+
+  white-space: nowrap;
 }
 
 /* =========================================================
@@ -445,7 +581,8 @@
 .admin-students-x7k2-phone {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+
+  gap: 0.4rem;
 
   color: #5f686e;
 
@@ -456,33 +593,43 @@
 }
 
 .admin-students-x7k2-phone svg {
-  color: #90989e;
+  flex: 0 0 auto;
+
+  color: var(--primary);
 }
 
 /* =========================================================
-   CLASS
+   CLASS BADGE
    ========================================================= */
 
 .admin-students-x7k2-class-badge {
   display: inline-flex;
   align-items: center;
+
+  max-width: 190px;
+
   gap: 0.35rem;
 
-  padding: 0.38rem 0.65rem;
+  padding: 0.35rem 0.65rem;
 
-  color: #4e78a5;
   background: #f1f6fc;
+  color: #4e78a5;
 
   border: 1px solid #e1ebf6;
   border-radius: 8px;
 
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   font-weight: 750;
 
   white-space: nowrap;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .admin-students-x7k2-class-badge svg {
+  flex: 0 0 auto;
+
   opacity: 0.8;
 }
 
@@ -493,33 +640,40 @@
 .admin-students-x7k2-status {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
 
-  padding: 0.36rem 0.7rem;
+  max-width: 100%;
+
+  padding: 0.3rem 0.65rem;
 
   border-radius: 999px;
 
-  font-size: 0.73rem;
+  font-size: 0.7rem;
   font-weight: 800;
 
   white-space: nowrap;
+  text-align: center;
 }
 
 .admin-students-x7k2-status-pending {
-  color: #b45309;
   background: #fff7e8;
+  color: #b45309;
+
   border: 1px solid #fde9bd;
 }
 
 .admin-students-x7k2-status-paid {
-  color: #15803d;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  background: #edf8f1;
+  color: #2e8b57;
+
+  border: 1px solid #d9f0e1;
 }
 
 .admin-students-x7k2-status-unassigned {
-  color: #64748b;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: #f1f2f6;
+  color: #7f8c8d;
+
+  border: 1px solid #e4e7eb;
 }
 
 /* =========================================================
@@ -531,10 +685,263 @@
 }
 
 /* =========================================================
+   MOBILE STUDENT CARD
+   ========================================================= */
+
+.admin-students-x7k2-student-card {
+  position: relative;
+
+  width: 100%;
+  min-width: 0;
+
+  overflow: hidden;
+
+  background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    #fffafa 100%
+  );
+
+  border: 1px solid #eceff3;
+  border-radius: 16px;
+
+  box-shadow: 0 5px 18px rgba(37, 41, 45, 0.035);
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.admin-students-x7k2-student-card::before {
+  content: "";
+
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  width: 100%;
+  height: 3px;
+
+  background: linear-gradient(
+    90deg,
+    var(--primary),
+    #f29a8f
+  );
+
+  opacity: 0;
+
+  transition: opacity 0.3s ease;
+}
+
+.admin-students-x7k2-student-card:hover {
+  transform: translateY(-3px);
+
+  border-color: rgba(231, 76, 60, 0.18);
+
+  box-shadow: 0 12px 30px rgba(37, 41, 45, 0.08);
+}
+
+.admin-students-x7k2-student-card:hover::before {
+  opacity: 1;
+}
+
+/* =========================================================
+   CARD TOP
+   ========================================================= */
+
+.admin-students-x7k2-card-top {
+  width: 100%;
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 0.7rem;
+
+  padding: 0.95rem;
+
+  border-bottom: 1px solid #f0f2f4;
+}
+
+.admin-students-x7k2-card-user {
+  min-width: 0;
+  flex: 1;
+
+  display: flex;
+  align-items: center;
+
+  gap: 0.65rem;
+}
+
+.admin-students-x7k2-card-user .admin-students-x7k2-avatar {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+
+  border-radius: 13px;
+}
+
+.admin-students-x7k2-card-user > div:last-child {
+  min-width: 0;
+}
+
+.admin-students-x7k2-card-user strong {
+  display: block;
+
+  max-width: 100%;
+
+  overflow: hidden;
+
+  color: #30363a;
+
+  font-size: 0.86rem;
+  font-weight: 850;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-students-x7k2-card-user span {
+  display: block;
+
+  margin-top: 0.15rem;
+
+  color: #9aa1a6;
+
+  font-size: 0.7rem;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   CARD DETAILS
+   ========================================================= */
+
+.admin-students-x7k2-card-details {
+  width: 100%;
+  min-width: 0;
+
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  padding: 0.75rem 0.95rem;
+}
+
+.admin-students-x7k2-card-details > div {
+  min-width: 0;
+
+  padding: 0.6rem 0;
+
+  border-bottom: 1px solid #f3f4f5;
+}
+
+.admin-students-x7k2-card-details > div:nth-child(odd) {
+  padding-left: 0.65rem;
+
+  border-left: 1px solid #f0f2f4;
+}
+
+.admin-students-x7k2-card-details > div:nth-child(even) {
+  padding-right: 0.65rem;
+}
+
+.admin-students-x7k2-card-details > div:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.admin-students-x7k2-card-details span {
+  display: block;
+
+  margin-bottom: 0.25rem;
+
+  color: #9aa1a6;
+
+  font-size: 0.68rem;
+}
+
+.admin-students-x7k2-card-details strong {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 0.3rem;
+
+  overflow: hidden;
+
+  color: #4b5358;
+
+  font-size: 0.76rem;
+  font-weight: 750;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-students-x7k2-card-details svg {
+  flex: 0 0 auto;
+
+  color: var(--primary);
+}
+
+/* =========================================================
+   CARD FOOTER
+   ========================================================= */
+
+.admin-students-x7k2-card-footer {
+  width: 100%;
+
+  padding: 0.75rem 0.95rem;
+
+  background: #fafbfc;
+
+  border-top: 1px solid #f0f2f4;
+}
+
+.admin-students-x7k2-card-action {
+  width: 100%;
+  min-height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 0.35rem;
+
+  padding: 0.5rem 0.85rem;
+
+  background: #fff1ef;
+  color: var(--primary);
+
+  border: 1px solid rgba(231, 76, 60, 0.15);
+  border-radius: 10px;
+
+  font-size: 0.76rem;
+  font-weight: 800;
+
+  text-decoration: none;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.admin-students-x7k2-card-action:hover {
+  background: #ffe5e1;
+
+  transform: translateY(-1px);
+}
+
+/* =========================================================
    LOADING
    ========================================================= */
 
 .admin-students-x7k2-loading {
+  width: 100%;
   min-height: 280px;
 
   display: flex;
@@ -548,12 +955,15 @@
 }
 
 .admin-students-x7k2-loading strong {
-  color: #454b50;
+  color: #495057;
+
   font-size: 0.9rem;
+  font-weight: 800;
 }
 
 .admin-students-x7k2-loading span {
   color: #9aa1a6;
+
   font-size: 0.78rem;
 }
 
@@ -582,6 +992,7 @@
    ========================================================= */
 
 .admin-students-x7k2-empty {
+  width: 100%;
   min-height: 280px;
 
   display: flex;
@@ -593,23 +1004,23 @@
 
   padding: 2rem;
 
+  color: #7f8c8d;
+
   text-align: center;
-
-  color: #a0a7ac;
-}
-
-.admin-students-x7k2-empty svg {
-  margin-bottom: 0.35rem;
 }
 
 .admin-students-x7k2-empty strong {
-  color: #4c5358;
+  color: #2d3436;
+
   font-size: 0.95rem;
+  font-weight: 800;
 }
 
 .admin-students-x7k2-empty span {
   color: #949ca1;
+
   font-size: 0.78rem;
+  line-height: 1.8;
 }
 
 .admin-students-x7k2-empty button {
@@ -617,11 +1028,11 @@
 
   padding: 0.5rem 0.9rem;
 
-  border: 0;
-  border-radius: 9px;
-
   background: #fff1ef;
   color: var(--primary);
+
+  border: 1px solid rgba(231, 76, 60, 0.15);
+  border-radius: 9px;
 
   font-family: inherit;
   font-size: 0.76rem;
@@ -643,6 +1054,9 @@
    ========================================================= */
 
 .admin-students-x7k2-pagination {
+  width: 100%;
+  min-width: 0;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -656,7 +1070,10 @@
 }
 
 .admin-students-x7k2-pagination-info {
+  flex: 0 0 auto;
+
   color: #899197;
+
   font-size: 0.76rem;
   font-weight: 600;
 }
@@ -667,8 +1084,11 @@
 }
 
 .admin-students-x7k2-pagination-controls {
+  min-width: 0;
+
   display: flex;
   align-items: center;
+
   gap: 0.35rem;
 }
 
@@ -676,6 +1096,7 @@
 .admin-students-x7k2-page-number {
   width: 34px;
   height: 34px;
+  flex: 0 0 34px;
 
   display: flex;
   align-items: center;
@@ -683,11 +1104,11 @@
 
   padding: 0;
 
+  background: #ffffff;
+  color: #687177;
+
   border: 1px solid #e6e9ec;
   border-radius: 9px;
-
-  background: #fff;
-  color: #687177;
 
   font-family: inherit;
   font-size: 0.76rem;
@@ -696,10 +1117,10 @@
   cursor: pointer;
 
   transition:
-    background 0.18s ease,
-    border-color 0.18s ease,
-    color 0.18s ease,
-    transform 0.18s ease;
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .admin-students-x7k2-page-btn:hover:not(:disabled),
@@ -719,28 +1140,33 @@
 }
 
 .admin-students-x7k2-page-number.active {
-  color: #fff;
-
   background: var(--red-5);
+  color: #ffffff;
 
   border-color: var(--primary);
 
-  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.18);
+  box-shadow: 0 5px 14px rgba(231, 76, 60, 0.18);
 }
 
 .admin-students-x7k2-page-numbers {
+  min-width: 0;
+
   display: flex;
   align-items: center;
+
   gap: 0.35rem;
 }
 
 .admin-students-x7k2-page-dots {
   width: 24px;
+  flex: 0 0 24px;
 
   display: flex;
+  align-items: center;
   justify-content: center;
 
   color: #a0a7ac;
+
   font-weight: 800;
 }
 
@@ -750,40 +1176,58 @@
 
 @media (max-width: 1200px) {
   .admin-students-x7k2-content {
-    padding: 1.35rem;
+    padding: 1.6rem;
   }
 
-  .admin-students-x7k2-filters {
-    grid-template-columns: minmax(0, 1fr) 220px;
-  }
-}
-
-/* =========================================================
-   900px
-   ========================================================= */
-
-@media (max-width: 900px) {
   .admin-students-x7k2-stats {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
   }
 
   .admin-students-x7k2-filters {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1.5fr) minmax(200px, 1fr);
+  }
+
+  .admin-students-x7k2-table {
+    min-width: 800px;
   }
 }
 
 /* =========================================================
-   700px
+   1050px
    ========================================================= */
 
-@media (max-width: 700px) {
+@media (max-width: 1050px) {
   .admin-students-x7k2-header {
-    align-items: stretch;
+    align-items: flex-start;
+  }
+
+  .admin-students-x7k2-add-link {
+    min-width: 150px;
+  }
+
+  .admin-students-x7k2-filters {
+    grid-template-columns: 1fr 0.75fr;
+  }
+}
+
+/* =========================================================
+   992px
+   ========================================================= */
+
+@media (max-width: 992px) {
+  .admin-students-x7k2-header {
     flex-direction: column;
+
+    padding: 1.15rem;
+  }
+
+  .admin-students-x7k2-heading {
+    width: 100%;
   }
 
   .admin-students-x7k2-add-link {
     width: 100%;
+    min-width: 0;
   }
 
   .admin-students-x7k2-add-link > * {
@@ -791,226 +1235,300 @@
     justify-content: center;
   }
 
+  .admin-students-x7k2-content-header {
+    align-items: flex-start;
+  }
+
+  .admin-students-x7k2-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-students-x7k2-stats {
+    gap: 0.9rem;
+  }
+}
+
+/* =========================================================
+   850px
+   ========================================================= */
+
+@media (max-width: 850px) {
+  .admin-students-x7k2-content {
+    padding: 1.25rem;
+  }
+
+  .admin-students-x7k2-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .admin-students-x7k2-pagination {
+    align-items: flex-start;
+  }
+}
+
+/* =========================================================
+   768px
+   ========================================================= */
+
+@media (max-width: 768px) {
   .admin-students-x7k2-stats {
     grid-template-columns: 1fr;
     gap: 0.8rem;
   }
 
   .admin-students-x7k2-content {
-    padding: 1rem;
+    padding: 1.1rem;
 
     border-radius: 18px;
   }
 
   .admin-students-x7k2-content-header {
-    align-items: flex-start;
-    flex-direction: column;
+    margin-bottom: 1.15rem;
+    padding-bottom: 1rem;
+  }
+
+  .admin-students-x7k2-content-header h3 {
+    font-size: 1.15rem;
+  }
+
+  .admin-students-x7k2-content-header p {
+    font-size: 0.8rem;
   }
 
   .admin-students-x7k2-count {
     align-self: flex-start;
   }
 
-  /* Hide table */
+  /* Desktop table OFF */
   .admin-students-x7k2-table-shell {
     display: none;
   }
 
-  /* Show cards */
+  /* Mobile cards ON */
   .admin-students-x7k2-mobile-list {
+    width: 100%;
+    min-width: 0;
+
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+
+    gap: 0.85rem;
   }
 
-  .admin-students-x7k2-student-card {
-    overflow: hidden;
+  .admin-students-x7k2-result-info {
+    flex-wrap: wrap;
+  }
+}
 
-    background: #fff;
+/* =========================================================
+   600px
+   ========================================================= */
 
-    border: 1px solid #eceff3;
+@media (max-width: 600px) {
+  .admin-students-x7k2-header {
+    padding: 1rem;
+
+    margin-bottom: 1rem;
+
     border-radius: 15px;
-
-    transition:
-      border-color 0.2s ease,
-      box-shadow 0.2s ease;
   }
 
-  .admin-students-x7k2-student-card:hover {
-    border-color: #e3e6e9;
+  .admin-students-x7k2-heading {
+    align-items: flex-start;
 
-    box-shadow: 0 7px 20px rgba(37, 41, 45, 0.05);
+    gap: 0.65rem;
   }
 
-  .admin-students-x7k2-card-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  .admin-students-x7k2-heading-icon {
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
 
-    gap: 0.7rem;
+    border-radius: 12px;
+  }
 
+  .admin-students-x7k2-heading-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .admin-students-x7k2-title {
+    font-size: 0.95rem;
+    line-height: 1.8;
+  }
+
+  .admin-students-x7k2-description {
+    margin-top: 0.2rem;
+
+    font-size: 0.72rem;
+    line-height: 1.75;
+  }
+
+  .admin-students-x7k2-content {
     padding: 0.95rem;
 
-    border-bottom: 1px solid #f0f2f4;
+    margin-bottom: 1rem;
+
+    border-radius: 15px;
   }
 
-  .admin-students-x7k2-card-user {
-    display: flex;
-    align-items: center;
+  .admin-students-x7k2-content-header {
+    gap: 0.65rem;
+  }
+
+  .admin-students-x7k2-content-header h3 {
+    font-size: 1rem;
+  }
+
+  .admin-students-x7k2-content-header p {
+    font-size: 0.73rem;
+  }
+
+  .admin-students-x7k2-count {
+    font-size: 0.66rem;
+    padding: 0.3rem 0.55rem;
+  }
+
+  /* Filters */
+
+  .admin-students-x7k2-filters {
     gap: 0.65rem;
 
-    min-width: 0;
+    margin-bottom: 1rem;
   }
 
-  .admin-students-x7k2-card-user .admin-students-x7k2-avatar {
-    width: 42px;
-    height: 42px;
-    flex-basis: 42px;
+  .admin-students-x7k2-search-input,
+  .admin-students-x7k2-select {
+    min-height: 43px;
+
+    font-size: 0.76rem;
+
+    border-radius: 10px;
   }
 
-  .admin-students-x7k2-card-user strong {
-    display: block;
-
-    overflow: hidden;
-
-    color: #30363a;
-
-    font-size: 0.86rem;
-    font-weight: 850;
-
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .admin-students-x7k2-search-icon,
+  .admin-students-x7k2-filter-icon {
+    right: 0.75rem;
   }
 
-  .admin-students-x7k2-card-user span {
-    display: block;
+  .admin-students-x7k2-clear-search {
+    left: 0.55rem;
 
-    margin-top: 0.15rem;
-
-    color: #9aa1a6;
-
-    font-size: 0.7rem;
+    width: 26px;
+    height: 26px;
   }
 
-  .admin-students-x7k2-card-details {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* Result */
 
-    gap: 0;
+  .admin-students-x7k2-result-info {
+    min-height: 32px;
 
-    padding: 0.75rem 0.95rem;
-  }
-
-  .admin-students-x7k2-card-details > div {
-    min-width: 0;
-
-    padding: 0.6rem 0;
-
-    border-bottom: 1px solid #f3f4f5;
-  }
-
-  .admin-students-x7k2-card-details > div:nth-child(odd) {
-    padding-left: 0.65rem;
-    border-left: 1px solid #f0f2f4;
-  }
-
-  .admin-students-x7k2-card-details > div:nth-child(even) {
-    padding-right: 0.65rem;
-  }
-
-  .admin-students-x7k2-card-details > div:nth-last-child(-n + 2) {
-    border-bottom: 0;
-  }
-
-  .admin-students-x7k2-card-details span {
-    display: block;
-
-    margin-bottom: 0.25rem;
-
-    color: #9aa1a6;
+    align-items: flex-start;
 
     font-size: 0.68rem;
   }
 
-  .admin-students-x7k2-card-details strong {
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-
-    overflow: hidden;
-
-    color: #4b5358;
-
-    font-size: 0.76rem;
-    font-weight: 750;
-
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .admin-students-x7k2-result-info button {
+    font-size: 0.68rem;
   }
 
-  .admin-students-x7k2-card-details svg {
-    flex-shrink: 0;
-    color: #8d969c;
+  /* Cards */
+
+  .admin-students-x7k2-student-card {
+    border-radius: 14px;
+  }
+
+  .admin-students-x7k2-card-top {
+    padding: 0.85rem;
+
+    gap: 0.55rem;
+  }
+
+  .admin-students-x7k2-card-user {
+    gap: 0.55rem;
+  }
+
+  .admin-students-x7k2-card-user .admin-students-x7k2-avatar {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+
+    border-radius: 11px;
+  }
+
+  .admin-students-x7k2-card-user strong {
+    font-size: 0.8rem;
+  }
+
+  .admin-students-x7k2-card-user span {
+    font-size: 0.65rem;
+  }
+
+  .admin-students-x7k2-status {
+    max-width: 46%;
+
+    padding: 0.26rem 0.45rem;
+
+    font-size: 0.6rem;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .admin-students-x7k2-card-details {
+    padding: 0.65rem 0.85rem;
+  }
+
+  .admin-students-x7k2-card-details > div {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .admin-students-x7k2-card-details span {
+    margin-bottom: 0.2rem;
+
+    font-size: 0.63rem;
+  }
+
+  .admin-students-x7k2-card-details strong {
+    font-size: 0.71rem;
   }
 
   .admin-students-x7k2-card-footer {
-    padding: 0.75rem 0.95rem;
-
-    background: #fafbfc;
-
-    border-top: 1px solid #f0f2f4;
+    padding: 0.65rem 0.85rem;
   }
 
   .admin-students-x7k2-card-action {
-    width: 100%;
-    min-height: 40px;
+    min-height: 39px;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    gap: 0.35rem;
-
-    color: var(--primary);
-    background: #fff1ef;
-
-    border: 1px solid #ffe0db;
-    border-radius: 10px;
-
-    font-size: 0.76rem;
-    font-weight: 800;
-
-    text-decoration: none;
-
-    transition:
-      background 0.18s ease,
-      transform 0.18s ease;
+    font-size: 0.7rem;
   }
 
-  .admin-students-x7k2-card-action:hover {
-    background: #ffe9e5;
-  }
-
-  .admin-students-x7k2-card-action:active {
-    transform: scale(0.98);
-  }
+  /* Pagination */
 
   .admin-students-x7k2-pagination {
-    align-items: center;
     flex-direction: column;
+    align-items: center;
 
-    gap: 0.7rem;
+    gap: 0.65rem;
+  }
+
+  .admin-students-x7k2-pagination-info {
+    font-size: 0.7rem;
   }
 
   .admin-students-x7k2-pagination-controls {
     width: 100%;
+
     justify-content: center;
+
+    gap: 0.25rem;
   }
 
   .admin-students-x7k2-page-numbers {
-    overflow-x: auto;
+    max-width: calc(100vw - 150px);
 
-    max-width: calc(100vw - 170px);
+    overflow-x: auto;
 
     scrollbar-width: none;
   }
@@ -1029,41 +1547,65 @@
    ========================================================= */
 
 @media (max-width: 480px) {
-  .admin-students-x7k2-heading {
-    align-items: flex-start;
+  .admin-students-x7k2-header {
+    padding: 0.85rem;
+
+    border-radius: 14px;
   }
 
   .admin-students-x7k2-heading-icon {
-    width: 43px;
-    height: 43px;
-    flex-basis: 43px;
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+
+    border-radius: 11px;
+  }
+
+  .admin-students-x7k2-heading-icon svg {
+    width: 18px;
+    height: 18px;
   }
 
   .admin-students-x7k2-title {
-    font-size: 1.1rem;
+    font-size: 0.88rem;
   }
 
   .admin-students-x7k2-description {
-    font-size: 0.76rem;
+    font-size: 0.68rem;
   }
 
   .admin-students-x7k2-content {
     padding: 0.8rem;
   }
 
+  .admin-students-x7k2-content-header h3 {
+    font-size: 0.94rem;
+  }
+
+  .admin-students-x7k2-content-header p {
+    font-size: 0.69rem;
+  }
+
   .admin-students-x7k2-search-input,
   .admin-students-x7k2-select {
-    height: 44px;
-    font-size: 0.78rem;
+    min-height: 41px;
+
+    padding-top: 0.55rem;
+    padding-bottom: 0.55rem;
+
+    font-size: 0.72rem;
+  }
+
+  .admin-students-x7k2-result-info {
+    font-size: 0.64rem;
+  }
+
+  .admin-students-x7k2-result-info button {
+    font-size: 0.64rem;
   }
 
   .admin-students-x7k2-card-top {
     align-items: flex-start;
-  }
-
-  .admin-students-x7k2-status {
-    padding: 0.3rem 0.55rem;
-    font-size: 0.66rem;
   }
 
   .admin-students-x7k2-card-details {
@@ -1076,6 +1618,7 @@
     padding-right: 0;
 
     border-left: 0;
+
     border-bottom: 1px solid #f3f4f5;
   }
 
@@ -1083,23 +1626,93 @@
     border-bottom: 0;
   }
 
-  .admin-students-x7k2-result-info {
-    font-size: 0.7rem;
+  .admin-students-x7k2-card-details strong {
+    font-size: 0.72rem;
   }
 
   .admin-students-x7k2-pagination-controls {
-    gap: 0.2rem;
+    gap: 0.15rem;
   }
 
   .admin-students-x7k2-page-btn,
   .admin-students-x7k2-page-number {
-    width: 32px;
-    height: 32px;
+    width: 31px;
+    height: 31px;
+    flex-basis: 31px;
+
+    border-radius: 8px;
+
+    font-size: 0.7rem;
   }
 }
 
 /* =========================================================
-   Very Small Devices
+   400px
+   ========================================================= */
+
+@media (max-width: 400px) {
+  .admin-students-x7k2-heading {
+    gap: 0.55rem;
+  }
+
+  .admin-students-x7k2-heading-icon {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+  }
+
+  .admin-students-x7k2-heading-icon svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .admin-students-x7k2-title {
+    font-size: 0.83rem;
+  }
+
+  .admin-students-x7k2-description {
+    font-size: 0.64rem;
+  }
+
+  .admin-students-x7k2-content {
+    padding: 0.7rem;
+  }
+
+  .admin-students-x7k2-card-top {
+    padding: 0.75rem;
+  }
+
+  .admin-students-x7k2-card-user .admin-students-x7k2-avatar {
+    width: 37px;
+    height: 37px;
+    flex-basis: 37px;
+  }
+
+  .admin-students-x7k2-card-user strong {
+    font-size: 0.76rem;
+  }
+
+  .admin-students-x7k2-card-user span {
+    font-size: 0.61rem;
+  }
+
+  .admin-students-x7k2-status {
+    max-width: 48%;
+
+    font-size: 0.57rem;
+  }
+
+  .admin-students-x7k2-card-details {
+    padding: 0.55rem 0.75rem;
+  }
+
+  .admin-students-x7k2-card-footer {
+    padding: 0.6rem 0.75rem;
+  }
+}
+
+/* =========================================================
+   360px
    ========================================================= */
 
 @media (max-width: 360px) {
@@ -1108,11 +1721,22 @@
   }
 
   .admin-students-x7k2-content {
-    border-radius: 15px;
+    padding: 0.6rem;
+
+    border-radius: 13px;
+  }
+
+  .admin-students-x7k2-content-header h3 {
+    font-size: 0.88rem;
+  }
+
+  .admin-students-x7k2-content-header p {
+    font-size: 0.65rem;
   }
 
   .admin-students-x7k2-card-top {
     flex-direction: column;
+    align-items: stretch;
   }
 
   .admin-students-x7k2-card-user {
@@ -1121,13 +1745,60 @@
 
   .admin-students-x7k2-status {
     align-self: flex-start;
+
+    max-width: 100%;
   }
 
-  .admin-students-x7k2-page-btn:nth-child(2) {
-    display: none;
-  }
-
+  .admin-students-x7k2-page-btn:nth-child(2),
   .admin-students-x7k2-page-btn:nth-last-child(2) {
     display: none;
+  }
+
+  .admin-students-x7k2-page-numbers {
+    max-width: calc(100vw - 90px);
+  }
+}
+
+/* =========================================================
+   TOUCH DEVICES
+   ========================================================= */
+
+@media (hover: none) {
+  .admin-students-x7k2-student-card:hover {
+    transform: none;
+
+    border-color: #eceff3;
+
+    box-shadow: 0 5px 18px rgba(37, 41, 45, 0.035);
+  }
+
+  .admin-students-x7k2-student-card:hover::before {
+    opacity: 0;
+  }
+
+  .admin-students-x7k2-card-action:hover {
+    transform: none;
+
+    background: #fff1ef;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-students-x7k2-student-card,
+  .admin-students-x7k2-card-action,
+  .admin-students-x7k2-search-input,
+  .admin-students-x7k2-select,
+  .admin-students-x7k2-page-btn,
+  .admin-students-x7k2-page-number,
+  .admin-students-x7k2-clear-search {
+    transition: none;
+  }
+
+  .admin-students-x7k2-spinner {
+    animation: none;
   }
 }
