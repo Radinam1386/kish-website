@@ -1562,6 +1562,23 @@ export default function TeacherExams() {
                           question.max_score || 1
                         );
 
+                      const studentChoiceId =
+                        typeof answer?.selected_choice === "object"
+                          ? answer?.selected_choice?.id
+                          : answer?.selected_choice;
+
+                      const studentChoice = (question.choices || []).find(
+                        (c) => String(c.id) === String(studentChoiceId)
+                      );
+
+                      const correctChoice = (question.choices || []).find(
+                        (c) => c.is_correct
+                      );
+
+                      const isStudentCorrect = Boolean(
+                        studentChoice && studentChoice.is_correct
+                      );
+
                       return (
                         <div
                           key={
@@ -1612,50 +1629,99 @@ export default function TeacherExams() {
                               پاسخ ثبت‌شده دانش‌آموز:
                             </span>
 
-                            <div className="ans-content-box">
+                            <div className="ans-content-box" style={{ width: "100%" }}>
 
                               {answer ? (
 
                                 isMultiple ? (
 
-                                  <div>
-                                    <strong>
-                                      گزینه انتخابی:
-                                    </strong>{" "}
+                                  <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", width: "100%" }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
+                                      <strong style={{ color: "#2c3e50" }}>
+                                        گزینه انتخابی دانش‌آموز:
+                                      </strong>{" "}
+                                      <span
+                                        style={{
+                                          fontWeight: "800",
+                                          color: isStudentCorrect ? "#27ae60" : studentChoice ? "#c0392b" : "#7f8c8d",
+                                          background: isStudentCorrect ? "#eaf8f0" : studentChoice ? "#fff5f5" : "#f8f9fa",
+                                          padding: "3px 10px",
+                                          borderRadius: "8px",
+                                          border: isStudentCorrect ? "1px solid #c2eed4" : studentChoice ? "1px solid #fadbd8" : "1px solid #e2e8f0"
+                                        }}
+                                      >
+                                        {studentChoice ? studentChoice.text : "بدون پاسخ (پاسخی انتخاب نکرده)"}
+                                      </span>
+                                    </div>
 
-                                    <span>
-                                      {answer.selected_choice_text ||
-                                        `گزینه ${
-                                          answer.selected_choice ??
-                                          "-"
-                                        }`}
-                                    </span>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
+                                      <strong style={{ color: "#2c3e50" }}>
+                                        پاسخ صحیح سؤال:
+                                      </strong>{" "}
+                                      <span
+                                        style={{
+                                          fontWeight: "800",
+                                          color: "#27ae60",
+                                          background: "#eaf8f0",
+                                          padding: "3px 10px",
+                                          borderRadius: "8px",
+                                          border: "1px solid #c2eed4"
+                                        }}
+                                      >
+                                        {correctChoice ? correctChoice.text : "مشخص نشده"}
+                                      </span>
+                                    </div>
+
+                                    <div style={{ marginTop: "0.2rem" }}>
+                                      {isStudentCorrect ? (
+                                        <span style={{ color: "#27ae60", fontSize: "0.82rem", fontWeight: "800" }}>
+                                          ✅ پاسخ صحیح است — بارم کامل ({toPersianDigits(maxQuestionScore)} نمره) به طور خودکار لحاظ گردید.
+                                        </span>
+                                      ) : studentChoice ? (
+                                        <span style={{ color: "#c0392b", fontSize: "0.82rem", fontWeight: "800" }}>
+                                          ❌ پاسخ نادرست است — نمره ۰ محاسبه شد.
+                                        </span>
+                                      ) : (
+                                        <span style={{ color: "#7f8c8d", fontSize: "0.82rem", fontWeight: "800" }}>
+                                          ⚪ بدون پاسخ — نمره ۰ محاسبه شد.
+                                        </span>
+                                      )}
+                                    </div>
                                   </div>
 
                                 ) : (
 
-                                  <p
-                                    style={{
-                                      margin: 0,
-                                      whiteSpace:
-                                        "pre-wrap",
-                                    }}
-                                  >
-                                    {answer.text_response ? (
-                                      answer.text_response
-                                    ) : (
-                                      <span
-                                        style={{
-                                          color:
-                                            "#95a5a6",
-                                          fontStyle:
-                                            "italic",
-                                        }}
-                                      >
-                                        پاسخی تایپ نشده است
-                                      </span>
-                                    )}
-                                  </p>
+                                  <div style={{ width: "100%" }}>
+                                    <p
+                                      style={{
+                                        margin: 0,
+                                        whiteSpace:
+                                          "pre-wrap",
+                                        padding: "0.85rem 1rem",
+                                        background: "#ffffff",
+                                        border: "1px solid #e2e8f0",
+                                        borderRadius: "10px",
+                                        fontSize: "0.95rem",
+                                        lineHeight: "1.8",
+                                        color: "#2d3748"
+                                      }}
+                                    >
+                                      {answer.essay_text ? (
+                                        answer.essay_text
+                                      ) : (
+                                        <span
+                                          style={{
+                                            color:
+                                              "#95a5a6",
+                                            fontStyle:
+                                              "italic",
+                                          }}
+                                        >
+                                          دانش‌آموز پاسخی برای این سوال تایپ نکرده است.
+                                        </span>
+                                      )}
+                                    </p>
+                                  </div>
 
                                 )
 
@@ -1669,7 +1735,7 @@ export default function TeacherExams() {
                                       "italic",
                                   }}
                                 >
-                                  پاسخی دریافت نشد
+                                  پاسخی برای این سوال در سیستم دریافت نشد
                                 </span>
 
                               )}

@@ -22,7 +22,7 @@ class Question(models.Model):
     exam = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name='questions')
     text = models.TextField()
     question_type = models.CharField(max_length=20, choices=QuestionType.choices)
-    max_score = models.PositiveIntegerField(default=1)
+    max_score = models.FloatField(default=1.0, verbose_name="بارم نمره سوال")
     order = models.PositiveIntegerField(default=1)
 
     class Meta:

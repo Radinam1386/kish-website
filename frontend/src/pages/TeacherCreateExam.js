@@ -15,7 +15,7 @@ import "./TeacherCreateExam.css";
 import { AnimatedButton } from "../components/AnimatedButton";
 import JalaliDatePicker from "../components/JalaliDatePicker";
 import { api } from "../services/api";
-import { getTodayJalali } from "../utils/dateUtils";
+import { getTodayJalali, toPersianDigits } from "../utils/dateUtils";
 
 function TeacherCreateExam() {
   const today = getTodayJalali();
@@ -32,6 +32,7 @@ function TeacherCreateExam() {
 
   const [options, setOptions] = useState(["", "", "", ""]);
   const [correctOption, setCorrectOption] = useState(0);
+  const [questionScore, setQuestionScore] = useState(1);
 
   const [questions, setQuestions] = useState([]);
   const [saving, setSaving] = useState(false);
@@ -71,6 +72,7 @@ function TeacherCreateExam() {
     setDescriptiveImage(null);
     setOptions(["", "", "", ""]);
     setCorrectOption(0);
+    setQuestionScore(1);
     setEditingQuestionId(null);
   };
 
@@ -82,6 +84,7 @@ function TeacherCreateExam() {
     setDescriptiveImage(null);
     setOptions(["", "", "", ""]);
     setCorrectOption(0);
+    setQuestionScore(1);
   };
 
   const handleOptionChange = (index, value) => {
@@ -115,11 +118,14 @@ function TeacherCreateExam() {
       return;
     }
 
+    const parsedScore = Math.max(0.25, parseFloat(questionScore) || 1);
+
     const newQuestion = {
       id: editingQuestionId || Date.now(),
       type: questionType,
       text: questionText,
       image: descriptiveImage,
+      score: parsedScore,
       options:
         questionType === "multiple" ? [...options] : [],
       correctOption:
@@ -149,6 +155,7 @@ function TeacherCreateExam() {
     setQuestionType(question.type);
     setQuestionText(question.text);
     setDescriptiveImage(question.image || null);
+    setQuestionScore(question.score || 1);
 
     if (question.type === "multiple") {
       setOptions(question.options);
@@ -202,7 +209,7 @@ function TeacherCreateExam() {
           text: question.text,
           question_type:
             question.type === "multiple" ? "multiple_choice" : "essay",
-          max_score: 1,
+          max_score: Number(question.score) || 1,
           order: index + 1,
           choices:
             question.type === "multiple"
@@ -407,15 +414,36 @@ function TeacherCreateExam() {
           {/* متن سؤال */}
 
           <div className="xqv-teacher-exam-field xqv-teacher-exam-question-field">
-            <label>متن سؤال</label>
+            <label>متن سؤال <span style={{ color: "red" }}>*</span></label>
 
             <input
               className="xqv-teacher-exam-input"
               value={questionText}
               dir="ltr"
+              placeholder="متن سؤال را اینجا وارد کنید..."
               onChange={(event) =>
                 setQuestionText(event.target.value)
               }
+            />
+          </div>
+
+          {/* بارم نمره این سؤال */}
+
+          <div className="xqv-teacher-exam-field" style={{ marginBottom: "1.25rem" }}>
+            <label>بارم نمره این سؤال <span style={{ color: "red" }}>*</span></label>
+
+            <input
+              className="xqv-teacher-exam-input"
+              type="number"
+              min="0.25"
+              max="100"
+              step="0.25"
+              placeholder="مثلاً 1 یا 2 یا 1.5"
+              value={questionScore}
+              onChange={(event) =>
+                setQuestionScore(event.target.value)
+              }
+              required
             />
           </div>
 
@@ -578,8 +606,12 @@ function TeacherCreateExam() {
             </p>
           </div>
 
-          <div className="xqv-teacher-exam-question-counter">
-            {questions.length} سؤال
+          <div className="xqv-teacher-exam-question-counter" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <span>{toPersianDigits(questions.length)} سؤال</span>
+            <span>•</span>
+            <span style={{ color: "var(--primary, #e74c3c)", fontWeight: "800" }}>
+              مجموع بارم: {toPersianDigits(questions.reduce((sum, q) => sum + (Number(q.score) || 1), 0))} نمره
+            </span>
           </div>
         </div>
 
@@ -630,6 +662,22 @@ function TeacherCreateExam() {
                       </>
                     )}
                   </div>
+
+                  <span
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      padding: "4px 10px",
+                      background: "oklch(96% 0.04 29)",
+                      border: "1px solid oklch(60% 0.19 29 / 0.2)",
+                      borderRadius: "8px",
+                      fontSize: "0.78rem",
+                      fontWeight: "800",
+                      color: "var(--primary, #e74c3c)",
+                    }}
+                  >
+                    بارم: {toPersianDigits(question.score || 1)} نمره
+                  </span>
 
                   <div className="xqv-teacher-exam-question-actions">
                     <button
