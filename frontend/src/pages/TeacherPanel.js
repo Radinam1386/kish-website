@@ -7,6 +7,9 @@ import {
   PlusCircle,
   Award,
   ChevronLeft,
+  Terminal,
+  Plus,
+  PaperBag,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -204,50 +207,53 @@ function TeacherPanel() {
         {/* =========================
             Classes
         ========================== */}
+        <section className="secretary-terms-header">
+          <div className="secretary-terms-heading">
+            <div className="secretary-terms-avatar">
+              <Terminal size={25} />
+            </div>
 
-        <section className="teacher-panel-x7k2-section">
-          <div className="teacher-panel-x7k2-section-head">
-            <div className="teacher-panel-x7k2-section-heading">
-              <h3 className="teacher-panel-x7k2-section-title">
-                کلاس‌های من در{" "}
-                {activeTerm?.name ? `«${activeTerm.name}»` : "ترم جاری"}
+            <div className="secretary-terms-heading-content">
+              <h3>
+                کلاس‌های من در
+                {activeTerm?.name ? `«${activeTerm.name}»` : "ترم جاری"}{" "}
               </h3>
 
-              <p className="teacher-panel-x7k2-section-description">
+              <p>
                 تنها کلاس‌های مربوط به ترم‌های فعال در این بخش نمایش داده
                 می‌شوند.
               </p>
             </div>
-
-            <div className="teacher-panel-x7k2-actions">
-              <Link
-                to="/panel/teacher/exams"
-                className="teacher-panel-x7k2-action-link"
-              >
-                <AnimatedButton
-                  variant="secondary"
-                  icon={<Award size={17} />}
-                  size="small"
-                >
-                  میز نمره‌دهی و تصحیح
-                </AnimatedButton>
-              </Link>
-
-              <Link
-                to="/panel/teacher/create-exam"
-                className="teacher-panel-x7k2-action-link"
-              >
-                <AnimatedButton
-                  variant="danger"
-                  icon={<PlusCircle size={18} />}
-                  size="small"
-                >
-                  ایجاد آزمون جدید
-                </AnimatedButton>
-              </Link>
-            </div>
           </div>
+          <div className="teacher-panel-x7k2-actions">
+            <Link
+              to="/panel/teacher/exams"
+              className="teacher-panel-x7k2-action-link"
+            >
+              <AnimatedButton
+                variant="secondary"
+                icon={<Award size={17} />}
+                size="small"
+              >
+                میز نمره‌دهی و تصحیح
+              </AnimatedButton>
+            </Link>
 
+            <Link
+              to="/panel/teacher/create-exam"
+              className="teacher-panel-x7k2-action-link"
+            >
+              <AnimatedButton
+                variant="danger"
+                icon={<PlusCircle size={18} />}
+                size="small"
+              >
+                ایجاد آزمون جدید
+              </AnimatedButton>
+            </Link>
+          </div>
+        </section>
+        <section className="teacher-panel-x7k2-section">
           <div className="teacher-panel-x7k2-table-shell">
             <div className="teacher-panel-x7k2-table-scroll">
               <table className="teacher-panel-x7k2-table teacher-panel-x7k2-table--classes">
@@ -359,26 +365,32 @@ function TeacherPanel() {
           </div>
         </section>
         <section className="teacher-panel-x7k2-section">
-          <div className="teacher-panel-x7k2-section-head">
-            <div className="teacher-panel-x7k2-section-heading">
-              <h3 className="teacher-panel-x7k2-section-title">
-                آزمون‌های ترم فعال
-              </h3>
+          <section className="secretary-terms-header">
+            <div className="secretary-terms-heading">
+              <div className="secretary-terms-avatar">
+                <PaperBag size={25} />
+              </div>
 
-              <p className="teacher-panel-x7k2-section-description">
-                آزمون‌های تعریف‌شده برای کلاس‌های ترم جاری
-              </p>
+              <div className="secretary-terms-heading-content">
+                <h3>آزمون‌های ترم فعال</h3>
+
+                <p>آزمون‌های تعریف‌شده برای کلاس‌های ترم جاری</p>
+              </div>
             </div>
 
             <Link
               to="/panel/teacher/exams"
               className="teacher-panel-x7k2-view-all"
             >
-              <span>مشاهده همه و تصحیح</span>
-              <ChevronLeft size={15} />
+              <AnimatedButton
+                variant="primary"
+                size="small"
+                icon={<ChevronLeft size={15} />}
+              >
+                <span>مشاهده همه و تصحیح</span>
+              </AnimatedButton>
             </Link>
-          </div>
-
+          </section>
           <div className="teacher-panel-x7k2-table-shell">
             <div className="teacher-panel-x7k2-table-scroll">
               <table className="teacher-panel-x7k2-table teacher-panel-x7k2-table--exams">

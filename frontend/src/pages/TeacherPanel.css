@@ -231,7 +231,6 @@
 
   overflow: hidden;
 
-  border: 1px solid gainsboro;
 
   border-radius: 16px;
 
@@ -247,6 +246,7 @@
   transition:
     box-shadow 0.35s var(--teacher-panel-x7k2-ease),
     border-color 0.35s var(--teacher-panel-x7k2-ease);
+  margin-top: 20px;
 }
 
 .teacher-panel-x7k2-table-shell:hover {

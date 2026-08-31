@@ -49,6 +49,7 @@
   width: 100%;
   min-width: 0;
 
+  margin-top: 1.5rem;
   margin-bottom: 1.5rem;
 }
 
@@ -184,7 +185,6 @@
   width: 100%;
   min-width: 0;
 
-  margin-bottom: 1.25rem;
 }
 
 
@@ -204,7 +204,6 @@
 .teacher-students-k7p2-section-description {
   max-width: 800px;
 
-  margin: 0.35rem 0 0;
 
   color:
     var(--teacher-students-k7p2-muted);

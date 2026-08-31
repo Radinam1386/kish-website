@@ -75,7 +75,7 @@ function AdminStudentDetails() {
 
   const [showPasswordState, setShowPasswordState] = useState(false);
   const [passwordCopied, setPasswordCopied] = useState(false);
-  const [copiedPassword, setcopiedPassword] = useState(false);
+  const [copiedPassword] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
 
   const [newPasswordInput, setNewPasswordInput] = useState("");

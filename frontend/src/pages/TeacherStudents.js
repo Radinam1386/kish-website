@@ -13,6 +13,7 @@ import DashboardLayout from "../components/DashboardLayout";
 import "./TeacherStudents.css";
 import StatCard from "../components/StatCard";
 import { api, getFullName } from "../services/api";
+import { AnimatedButton } from "../components/AnimatedButton";
 
 function TeacherStudents() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -35,9 +36,13 @@ function TeacherStudents() {
           ]);
 
         if (!alive) return;
-        const activeTermIds = (termsData || []).filter((t) => t.is_active).map((t) => t.id);
+        const activeTermIds = (termsData || [])
+          .filter((t) => t.is_active)
+          .map((t) => t.id);
         const activeClasses = (classroomsData || []).filter(
-          (c) => activeTermIds.length === 0 || activeTermIds.includes(c.term || c.term?.id),
+          (c) =>
+            activeTermIds.length === 0 ||
+            activeTermIds.includes(c.term || c.term?.id),
         );
         setClassrooms(activeClasses || []);
         setAttendanceRecords(attendanceData || []);
@@ -131,56 +136,57 @@ function TeacherStudents() {
       menuType="teacher"
     >
       <div className="teacher-students-k7p2-root">
-        {/* =========================
-            Stats
-        ========================== */}
-
-        <div className="teacher-students-k7p2-stats">
-          <StatCard
-            title="کل دانش‌آموزان شما"
-            value={`${studentsData.length} نفر`}
-            icon={<Users size={23} />}
-            color="red"
-          />
-          <StatCard
-            title="میانگین نمرات کلاس‌ها"
-            value={
-              submissions.length
-                ? (
-                    submissions.reduce(
-                      (sum, item) => sum + Number(item.total_score || 0),
-                      0,
-                    ) / submissions.length
-                  ).toFixed(1)
-                : "-"
-            }
-            icon={<TrendingUp size={23} />}
-            color="green"
-          />
-          <StatCard
-            title="دانش‌آموزان ممتاز"
-            value={
-              submissions.filter((item) => Number(item.total_score || 0) >= 18)
-                .length
-            }
-            icon={<Award size={23} />}
-            color="orange"
-          />
-        </div>
         <section className="teacher-students-k7p2-section">
-          <div className="teacher-students-k7p2-section-header">
-            <div>
-              <h3 className="teacher-students-k7p2-section-title">
-                لیست دانش‌آموزان
-              </h3>
+          <section className="secretary-terms-header">
+            <div className="secretary-terms-heading">
+              <div className="secretary-terms-avatar">
+                <GraduationCap size={25} />
+              </div>
 
-              <p className="teacher-students-k7p2-section-description">
-                مشاهده اطلاعات تحصیلی، شماره تماس و حضور و غیاب دانش‌آموزان تحت
-                آموزش شما
-              </p>
+              <div className="secretary-terms-heading-content">
+                <h3> لیست دانش‌آموزان</h3>
+
+                <p>
+                  مشاهده اطلاعات تحصیلی، شماره تماس و حضور و غیاب دانش‌آموزان
+                  تحت آموزش شما
+                </p>
+              </div>
             </div>
-          </div>
+          </section>
 
+          <div className="teacher-students-k7p2-stats">
+            <StatCard
+              title="کل دانش‌آموزان شما"
+              value={`${studentsData.length} نفر`}
+              icon={<Users size={23} />}
+              color="red"
+            />
+            <StatCard
+              title="میانگین نمرات کلاس‌ها"
+              value={
+                submissions.length
+                  ? (
+                      submissions.reduce(
+                        (sum, item) => sum + Number(item.total_score || 0),
+                        0,
+                      ) / submissions.length
+                    ).toFixed(1)
+                  : "-"
+              }
+              icon={<TrendingUp size={23} />}
+              color="green"
+            />
+            <StatCard
+              title="دانش‌آموزان ممتاز"
+              value={
+                submissions.filter(
+                  (item) => Number(item.total_score || 0) >= 18,
+                ).length
+              }
+              icon={<Award size={23} />}
+              color="orange"
+            />
+          </div>
           {/* =========================
               Filters
           ========================== */}

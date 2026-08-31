@@ -12,7 +12,6 @@ import {
   Search,
   Trash2,
   Users,
-  Layers,
   CreditCard,
   Sparkles,
   CalendarDaysIcon,
@@ -399,31 +398,34 @@ function SecretaryClasses() {
 
                   {/* Card Actions */}
                   <div className="class-card-actions-row">
-                    <Link
-                      to={`${basePath}/classes/${classItem.id}`}
-                      className="class-btn-action view"
-                    >
-                      <Eye size={15} />
-                      <span>جزئیات</span>
+                    <Link to={`${basePath}/classes/${classItem.id}`}>
+                      <AnimatedButton
+                        variant="primary"
+                        size="small"
+                        icon={<Eye size={15} />}
+                      >
+                        <span>جزئیات</span>
+                      </AnimatedButton>
                     </Link>
 
-                    <Link
-                      to={`${basePath}/classes/${classItem.id}/edit`}
-                      className="class-btn-action edit"
-                    >
-                      <Edit3 size={15} />
-                      <span>ویرایش</span>
+                    <Link to={`${basePath}/classes/${classItem.id}/edit`}>
+                      <AnimatedButton
+                        variant="ghost"
+                        size="small"
+                        icon={<Edit3 size={15} />}
+                      >
+                        <span>ویرایش</span>
+                      </AnimatedButton>
                     </Link>
 
-                    <button
-                      type="button"
-                      className="class-btn-action delete"
+                    <AnimatedButton
+                      variant="primary"
+                      size="small"
+                      icon={<Trash2 size={18} />}
                       onClick={() =>
                         handleDeleteClass(classItem.id, classItem.title)
                       }
-                    >
-                      <Trash2 size={15} />
-                    </button>
+                    ></AnimatedButton>
                   </div>
                 </article>
               ))}
