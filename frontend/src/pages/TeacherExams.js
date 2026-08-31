@@ -646,14 +646,6 @@ export default function TeacherExams() {
     }
   };
 
-  /* =======================================================
-     CLOSE ALL MODALS
-  ======================================================= */
-
-  const closeAllModals = () => {
-    setGradingSubmission(null);
-    setInspectedExam(null);
-  };
 
   /* =======================================================
      RENDER

@@ -8,6 +8,12 @@ class Term(models.Model):
     end_date = models.DateField()
     is_active = models.BooleanField(default=True)
 
+    def save(self, *args, **kwargs):
+        if self.is_active:
+            # اگر این ترم فعال شود، بقیه ترم‌ها غیرفعال شوند
+            Term.objects.exclude(pk=self.pk).update(is_active=False)
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.name
 
@@ -23,6 +29,8 @@ class ClassRoom(models.Model):
         limit_choices_to={'role': 'teacher'},
     )
     tuition_fee = models.PositiveIntegerField(default=2500000, verbose_name="شهریه کلاس (تومان)")
+    schedule = models.CharField(max_length=150, blank=True, null=True, default="روزهای زوج (شنبه، دوشنبه، چهارشنبه)", verbose_name="برنامه و روزهای برگزاری")
+    time_slot = models.CharField(max_length=100, blank=True, null=True, default="۱۶:۰۰ الی ۱۷:۳۰", verbose_name="ساعت برگزاری")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -43,7 +51,6 @@ class Enrollment(models.Model):
     enrolled_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        # یک دانش‌آموز نمی‌تونه دوبار توی یک کلاس ثبت‌نام بشه
         unique_together = ('student', 'classroom')
 
     def __str__(self):

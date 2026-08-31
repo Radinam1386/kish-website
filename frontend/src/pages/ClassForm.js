@@ -13,6 +13,7 @@ import {
   AlertCircle,
   Sparkles,
   CreditCard,
+  Clock,
 } from "lucide-react";
 
 import DashboardLayout from "../components/DashboardLayout";
@@ -35,6 +36,8 @@ export default function ClassForm() {
   const [termId, setTermId] = useState("");
   const [teacherId, setTeacherId] = useState("");
   const [tuitionFee, setTuitionFee] = useState(2500000);
+  const [schedule, setSchedule] = useState("روزهای زوج (شنبه، دوشنبه، چهارشنبه)");
+  const [timeSlot, setTimeSlot] = useState("۱۶:۰۰ الی ۱۷:۳۰");
   const [selectedStudentIds, setSelectedStudentIds] = useState([]);
   const [studentSearch, setStudentSearch] = useState("");
 
@@ -87,6 +90,8 @@ export default function ClassForm() {
           setTermId(cls.term || "");
           setTeacherId(cls.teacher || "");
           setTuitionFee(cls.tuition_fee !== undefined ? cls.tuition_fee : 2500000);
+          setSchedule(cls.schedule || "روزهای زوج (شنبه، دوشنبه، چهارشنبه)");
+          setTimeSlot(cls.time_slot || "۱۶:۰۰ الی ۱۷:۳۰");
 
           const enrollments = cls.enrollments || [];
           setExistingEnrollments(enrollments);
@@ -153,6 +158,8 @@ export default function ClassForm() {
         term: Number(termId),
         teacher: Number(teacherId),
         tuition_fee: Number(tuitionFee) || 0,
+        schedule: schedule.trim(),
+        time_slot: timeSlot.trim(),
       };
 
       let classroomId = id;
@@ -295,6 +302,32 @@ export default function ClassForm() {
                       </option>
                     ))}
                   </select>
+                </label>
+
+                <label className="class-form-field-wrapper">
+                  <span>
+                    <Calendar size={14} style={{ marginLeft: "4px" }} />
+                    روزهای برگزاری کلاس
+                  </span>
+                  <input
+                    type="text"
+                    placeholder="مثال: روزهای زوج (شنبه، دوشنبه، چهارشنبه)"
+                    value={schedule}
+                    onChange={(e) => setSchedule(e.target.value)}
+                  />
+                </label>
+
+                <label className="class-form-field-wrapper">
+                  <span>
+                    <Clock size={14} style={{ marginLeft: "4px" }} />
+                    ساعت و زمان برگزاری
+                  </span>
+                  <input
+                    type="text"
+                    placeholder="مثال: ۱۶:۰۰ الی ۱۷:۳۰"
+                    value={timeSlot}
+                    onChange={(e) => setTimeSlot(e.target.value)}
+                  />
                 </label>
 
                 <label className="class-form-field-wrapper full-col">

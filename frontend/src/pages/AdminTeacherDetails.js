@@ -13,12 +13,22 @@ import {
   TrendingUp,
   Edit3,
   GraduationCap,
+  MapPin,
+  Calendar,
+  Lock,
+  Eye,
+  EyeOff,
+  Copy,
+  Check,
+  KeyRound,
+  RefreshCw,
+  X,
 } from "lucide-react";
 
 import DashboardLayout from "../components/DashboardLayout";
 import { AnimatedButton } from "../components/AnimatedButton";
 import { api, getFullName } from "../services/api";
-import { toPersianDigits } from "../utils/dateUtils";
+import { toJalaliDateString, toPersianDigits } from "../utils/dateUtils";
 import "./AdminTeacherDetails.css";
 import StatCard from "../components/StatCard";
 
@@ -39,6 +49,58 @@ function AdminTeacherDetails() {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showPasswordState, setShowPasswordState] = useState(false);
+  const [copiedPassword, setCopiedPassword] = useState(false);
+
+  // Change Password Modal
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+  const [newPasswordInput, setNewPasswordInput] = useState("");
+  const [showNewPasswordInModal, setShowNewPasswordInModal] = useState(false);
+  const [changingPasswordLoading, setChangingPasswordLoading] = useState(false);
+
+  const copyPassword = () => {
+    if (!teacherUser?.plain_password) return;
+    navigator.clipboard.writeText(teacherUser.plain_password);
+    setCopiedPassword(true);
+    setTimeout(() => setCopiedPassword(false), 2500);
+  };
+
+  const generateRandomPassword = () => {
+    const chars = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789#@!";
+    let pwd = "";
+    for (let i = 0; i < 8; i++) {
+      pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setNewPasswordInput(pwd);
+    setShowNewPasswordInModal(true);
+  };
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    if (!newPasswordInput || newPasswordInput.trim().length < 4) {
+      alert("رمز عبور باید حداقل ۴ کاراکتر باشد.");
+      return;
+    }
+
+    try {
+      setChangingPasswordLoading(true);
+      await api.users.update(teacherId, {
+        password: newPasswordInput.trim(),
+      });
+
+      setTeacherUser((prev) => ({
+        ...prev,
+        plain_password: newPasswordInput.trim(),
+      }));
+
+      setShowChangePasswordModal(false);
+      alert("رمز عبور استاد با موفقیت به‌روزرسانی شد.");
+    } catch (err) {
+      alert(err.message || "خطا در تغییر رمز عبور استاد");
+    } finally {
+      setChangingPasswordLoading(false);
+    }
+  };
 
   useEffect(() => {
     let alive = true;
@@ -85,15 +147,15 @@ function AdminTeacherDetails() {
 
   const teacherClassesData = useMemo(() => {
     return classrooms.map((cls) => {
-      const term = terms.find((t) => t.id === cls.term);
+      const term = terms.find((t) => t.id === (cls.term || cls.term?.id));
       return {
         id: cls.id,
         name: cls.name,
         code: `کلاس ${cls.id}`,
         level: term?.name || "ترم جاری",
-        students: `${cls.student_count || 0}`,
-        schedule: "در مدل بک‌اند ثبت نشده",
-        time: "-",
+        students: `${cls.student_count || cls.enrollments?.length || 0}`,
+        schedule: cls.schedule || "روزهای زوج (شنبه، دوشنبه، چهارشنبه)",
+        time: cls.time_slot || "۱۶:۰۰ الی ۱۷:۳۰",
         status: term?.is_active ? "در حال اجرا" : "پایان یافته",
       };
     });
@@ -238,15 +300,27 @@ function AdminTeacherDetails() {
         {/* ================= Personal Information ================= */}
 
         <section className="admin-teacher-details-x7k2-section">
-          <div className="admin-teacher-details-x7k2-section-header">
+          <div className="admin-teacher-details-x7k2-section-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
             <div>
               <h3>
                 <User size={20} />
-                اطلاعات مدرس
+                اطلاعات و مشخصات مدرس
               </h3>
 
-              <p>اطلاعات شخصی و ارتباطی مدرس</p>
+              <p>اطلاعات فردی، ارتباطی و کلمه عبور ثبت‌شده مدرس جهت استفاده منشی و مدیریت</p>
             </div>
+
+            <button
+              type="button"
+              className="teacher-credentials-edit-btn"
+              onClick={() => {
+                setNewPasswordInput("");
+                setShowChangePasswordModal(true);
+              }}
+            >
+              <KeyRound size={16} />
+              <span>تغییر / تنظیم رمز عبور جدید</span>
+            </button>
           </div>
 
           <div className="admin-teacher-details-x7k2-info-grid">
@@ -258,6 +332,32 @@ function AdminTeacherDetails() {
               <div>
                 <span>نام و نام خانوادگی</span>
                 <strong>{teacherName}</strong>
+              </div>
+            </div>
+
+            <div className="admin-teacher-details-x7k2-info-card">
+              <div className="admin-teacher-details-x7k2-info-icon">
+                <Award size={18} />
+              </div>
+
+              <div>
+                <span>کد ملی</span>
+                <strong>{teacherUser.national_code || "-"}</strong>
+              </div>
+            </div>
+
+            <div className="admin-teacher-details-x7k2-info-card">
+              <div className="admin-teacher-details-x7k2-info-icon">
+                <Calendar size={18} />
+              </div>
+
+              <div>
+                <span>تاریخ تولد (شمسی)</span>
+                <strong>
+                  {teacherUser.birth_date
+                    ? toJalaliDateString(teacherUser.birth_date)
+                    : "-"}
+                </strong>
               </div>
             </div>
 
@@ -289,38 +389,99 @@ function AdminTeacherDetails() {
 
             <div className="admin-teacher-details-x7k2-info-card">
               <div className="admin-teacher-details-x7k2-info-icon">
+                <BookOpen size={18} />
+              </div>
+
+              <div>
+                <span>رشته / تخصص تدریس</span>
+                <strong>{teacherUser.level || "-"}</strong>
+              </div>
+            </div>
+
+            <div className="admin-teacher-details-x7k2-info-card">
+              <div className="admin-teacher-details-x7k2-info-icon">
                 <GraduationCap size={18} />
               </div>
 
               <div>
                 <span>نام کاربری</span>
-                <strong>{teacherUser.username}</strong>
+                <strong style={{ direction: "ltr", display: "inline-block" }}>{teacherUser.username}</strong>
               </div>
             </div>
 
-            <div className="admin-teacher-details-x7k2-info-card">
-              <div className="admin-teacher-details-x7k2-info-icon">
-                <Award size={18} />
+            <div className="admin-teacher-details-x7k2-info-card" style={{ background: "#fffaf9", borderColor: "rgba(231, 76, 60, 0.2)" }}>
+              <div className="admin-teacher-details-x7k2-info-icon" style={{ background: "linear-gradient(135deg, var(--primary), var(--primary-dark))", color: "#fff" }}>
+                <Lock size={18} />
               </div>
 
-              <div>
-                <span>نقش سیستم</span>
-                <strong>
-                  {teacherUser.role === "teacher" ? "مدرس" : teacherUser.role}
-                </strong>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <span>رمز عبور حساب</span>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem", marginTop: "0.2rem" }}>
+                  <strong style={{ fontFamily: "monospace, sans-serif", fontSize: "0.95rem" }}>
+                    {teacherUser.plain_password ? (
+                      showPasswordState ? teacherUser.plain_password : "••••••••"
+                    ) : (
+                      <span style={{ color: "#95a5a6", fontSize: "0.8rem" }}>تعیین نشده</span>
+                    )}
+                  </strong>
+                  {teacherUser.plain_password && (
+                    <div style={{ display: "flex", gap: "0.3rem" }}>
+                      <button
+                        type="button"
+                        onClick={() => setShowPasswordState((p) => !p)}
+                        style={{
+                          background: "#fff",
+                          border: "1px solid #eceff3",
+                          borderRadius: "6px",
+                          width: "28px",
+                          height: "28px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {showPasswordState ? <EyeOff size={14} /> : <Eye size={14} />}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={copyPassword}
+                        style={{
+                          background: copiedPassword ? "#edf8f1" : "#fff",
+                          color: copiedPassword ? "#2e8b57" : "#2d3436",
+                          border: `1px solid ${copiedPassword ? "#2e8b57" : "#eceff3"}`,
+                          borderRadius: "6px",
+                          padding: "0 0.5rem",
+                          height: "28px",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.2rem",
+                          fontSize: "0.74rem",
+                          fontWeight: "700",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {copiedPassword ? <Check size={13} /> : <Copy size={13} />}
+                        <span>{copiedPassword ? "کپی شد" : "کپی"}</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
-            <div className="admin-teacher-details-x7k2-info-card">
-              <div className="admin-teacher-details-x7k2-info-icon">
-                <CalendarDays size={18} />
-              </div>
+            {teacherUser.address && (
+              <div className="admin-teacher-details-x7k2-info-card" style={{ gridColumn: "1 / -1" }}>
+                <div className="admin-teacher-details-x7k2-info-icon">
+                  <MapPin size={18} />
+                </div>
 
-              <div>
-                <span>وضعیت حساب</span>
-                <strong>{teacherUser.is_active ? "فعال" : "غیرفعال"}</strong>
+                <div>
+                  <span>آدرس محل سکونت</span>
+                  <strong>{teacherUser.address}</strong>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </section>
 
@@ -402,6 +563,117 @@ function AdminTeacherDetails() {
             )}
           </div>
         </section>
+        {/* Modal: Change / Reset Teacher Password */}
+        {showChangePasswordModal && (
+          <div
+            className="exam-modal-backdrop"
+            onClick={() => setShowChangePasswordModal(false)}
+          >
+            <div
+              className="exam-modal-container"
+              style={{ maxWidth: "480px" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="exam-modal-header">
+                <div className="modal-header-info">
+                  <div className="exam-icon-circle">
+                    <KeyRound size={20} />
+                  </div>
+                  <div>
+                    <h4>تغییر یا تنظیم رمز عبور جدید</h4>
+                    <p>مدرس: {teacherName} ({teacherUser.username})</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="modal-close-btn"
+                  onClick={() => setShowChangePasswordModal(false)}
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <form onSubmit={handleChangePassword}>
+                <div className="exam-modal-body" style={{ padding: "1.5rem" }}>
+                  <div className="class-form-group full-width" style={{ marginBottom: "1rem" }}>
+                    <label style={{ fontWeight: "700", marginBottom: "0.5rem", display: "block" }}>
+                      رمز عبور جدید مدرس <span style={{ color: "red" }}>*</span>
+                    </label>
+                    <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                      <input
+                        type={showNewPasswordInModal ? "text" : "password"}
+                        placeholder="حداقل ۴ کاراکتر یا تولید رمز تصادفی..."
+                        value={newPasswordInput}
+                        onChange={(e) => setNewPasswordInput(e.target.value)}
+                        required
+                        style={{
+                          width: "100%",
+                          padding: "0.75rem",
+                          paddingLeft: "2.75rem",
+                          borderRadius: "10px",
+                          border: "1px solid oklch(85% 0 0)",
+                          fontFamily: "inherit",
+                          fontSize: "0.95rem",
+                          direction: "ltr",
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPasswordInModal((p) => !p)}
+                        style={{
+                          position: "absolute",
+                          left: "0.5rem",
+                          background: "transparent",
+                          border: "none",
+                          color: "#7f8c8d",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        {showNewPasswordInModal ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem" }}>
+                    <button
+                      type="button"
+                      className="secretary-student-form-action-btn"
+                      onClick={generateRandomPassword}
+                      style={{ fontSize: "0.78rem", padding: "0.4rem 0.75rem" }}
+                    >
+                      <RefreshCw size={14} />
+                      <span>تولید رمز تصادفی</span>
+                    </button>
+                  </div>
+
+                  <p style={{ fontSize: "0.78rem", color: "#7f8c8d", margin: 0, lineHeight: 1.6 }}>
+                    با ثبت کلمه عبور جدید، رمز ورود مدرس بلافاصله در دیتابیس بروزرسانی شده و در پنل مدیریت و منشی قابل مشاهده و کپی خواهد بود.
+                  </p>
+                </div>
+
+                <div className="exam-modal-footer">
+                  <AnimatedButton
+                    variant="secondary"
+                    type="button"
+                    onClick={() => setShowChangePasswordModal(false)}
+                  >
+                    انصراف
+                  </AnimatedButton>
+                  <AnimatedButton
+                    variant="primary"
+                    type="submit"
+                    disabled={changingPasswordLoading}
+                  >
+                    {changingPasswordLoading ? "در حال ذخیره..." : "ثبت و تغییر رمز"}
+                  </AnimatedButton>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </DashboardLayout>
   );

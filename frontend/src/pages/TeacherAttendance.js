@@ -6,7 +6,6 @@ import {
   Clock,
   AlertCircle,
   Sparkles,
-  ArrowRight,
   UserCheck,
   UserX,
   BookOpen,

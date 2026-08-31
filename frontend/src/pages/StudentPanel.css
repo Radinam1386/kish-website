@@ -418,6 +418,18 @@
   color: oklch(45% 0.15 85);
 }
 
+.status-pill.in-progress {
+  background: #fef5e7;
+  color: #d35400;
+  border: 1px solid rgba(243, 156, 18, 0.4);
+  animation: pulse-status 1.8s infinite;
+}
+
+@keyframes pulse-status {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.65; }
+}
+
 .status-pill.open {
   background: oklch(96% 0.04 230 / 0.9);
   color: oklch(35% 0.15 230);
@@ -446,6 +458,17 @@
 .btn-exam-action.start:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px oklch(60% 0.19 29 / 0.32);
+}
+
+.btn-exam-action.resume {
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+}
+
+.btn-exam-action.resume:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(243, 156, 18, 0.45);
 }
 
 .btn-exam-action.review {

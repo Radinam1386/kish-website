@@ -130,9 +130,7 @@ export default function SecretaryTerms() {
     try {
       const nextStatus = !term.is_active;
       await api.terms.update(term.id, { is_active: nextStatus });
-      setTerms((prev) =>
-        prev.map((t) => (t.id === term.id ? { ...t, is_active: nextStatus } : t)),
-      );
+      await loadData();
       setSuccessMsg(
         `وضعیت ترم «${term.name}» به ${nextStatus ? "فعال" : "غیرفعال"} تغییر یافت.`,
       );

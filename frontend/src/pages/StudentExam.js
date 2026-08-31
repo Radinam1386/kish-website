@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   CheckCircle2,
@@ -9,6 +9,9 @@ import {
   CircleHelp,
   BadgeCheck,
   Award,
+  Hourglass,
+  Timer,
+  AlertCircle,
 } from "lucide-react";
 import DashboardLayout from "../components/DashboardLayout";
 import { AnimatedButton } from "../components/AnimatedButton";
@@ -19,6 +22,12 @@ import "./ExamPage.css";
 
 function StudentExam() {
   const { examId } = useParams();
+  const currentUser = storage.getUser();
+  const userId = currentUser?.id || "guest";
+
+  const storageKey = `kish_exam_start_time_${examId}_${userId}`;
+  const draftKey = `kish_exam_draft_answers_${examId}_${userId}`;
+
   const [answers, setAnswers] = useState({});
   const [exam, setExam] = useState(null);
   const [questions, setQuestions] = useState([]);
@@ -28,6 +37,30 @@ function StudentExam() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
+  // Timer states
+  const [timeLeft, setTimeLeft] = useState(null);
+  const [isTimeUp, setIsTimeUp] = useState(false);
+  const [autoSubmittedDueToTime, setAutoSubmittedDueToTime] = useState(false);
+
+  const answersRef = useRef(answers);
+  answersRef.current = answers;
+
+  // Restore saved draft answers on initial load
+  useEffect(() => {
+    try {
+      const savedDraft = localStorage.getItem(draftKey);
+      if (savedDraft) {
+        const parsed = JSON.parse(savedDraft);
+        if (parsed && typeof parsed === "object") {
+          setAnswers(parsed);
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to parse saved exam draft:", e);
+    }
+  }, [draftKey]);
+
+  // Load Exam Data
   useEffect(() => {
     let alive = true;
 
@@ -48,11 +81,15 @@ function StudentExam() {
         setQuestions(examData.questions || currentExam.questions || []);
 
         const sub = (submissionsData || []).find(
-          (s) => s.exam === Number(examId) || s.exam?.id === Number(examId),
+          (s) =>
+            (s.exam === Number(examId) || s.exam?.id === Number(examId)) &&
+            (!currentUser?.id || s.student === currentUser.id || s.student?.id === currentUser.id),
         );
 
         if (sub) {
           setExistingSubmission(sub);
+          localStorage.removeItem(storageKey);
+          localStorage.removeItem(draftKey);
         }
       } catch (err) {
         if (alive) setError(err.message || "دریافت اطلاعات آزمون ناموفق بود.");
@@ -66,14 +103,115 @@ function StudentExam() {
     return () => {
       alive = false;
     };
-  }, [examId]);
+  }, [examId, currentUser?.id, storageKey, draftKey]);
+
+  // Execute Auto Submit when time expires
+  const triggerAutoSubmit = useCallback(async () => {
+    if (submitted || existingSubmission || saving) return;
+
+    setIsTimeUp(true);
+    setSaving(true);
+    setAutoSubmittedDueToTime(true);
+
+    try {
+      const user = storage.getUser();
+      const submissionPayload = {
+        exam: Number(examId),
+      };
+      if (user?.id) {
+        submissionPayload.student = user.id;
+      }
+
+      const submission = await api.submissions.create(submissionPayload);
+      const currentAnswers = answersRef.current;
+
+      await Promise.all(
+        questions.map((question) => {
+          const ans = currentAnswers[question.id];
+          const isMultiple = question.question_type === "multiple_choice";
+
+          const answerPayload = {
+            submission: submission.id,
+            question: question.id,
+          };
+
+          if (isMultiple) {
+            if (ans !== undefined && ans !== null && ans !== "") {
+              answerPayload.selected_choice = Number(ans);
+            }
+          } else {
+            answerPayload.essay_text = ans ? String(ans) : "";
+          }
+
+          return api.answers.create(answerPayload);
+        }),
+      );
+
+      localStorage.removeItem(storageKey);
+      localStorage.removeItem(draftKey);
+      setSubmitted(true);
+    } catch (err) {
+      setError(err.message || "خطا در ثبت خودکار پاسخ‌های آزمون پس از پایان زمان");
+    } finally {
+      setSaving(false);
+    }
+  }, [submitted, existingSubmission, saving, examId, questions, storageKey, draftKey]);
+
+  // Timer Countdown Effect (Real absolute wall-clock countdown)
+  useEffect(() => {
+    if (!exam || submitted || existingSubmission || loading) return;
+
+    // Use duration_minutes specified by teacher, fallback to 45 if not set
+    const durMinutes = Number(exam.duration_minutes) || 45;
+    const durSeconds = durMinutes * 60;
+
+    let startTime = localStorage.getItem(storageKey);
+    if (!startTime) {
+      startTime = Date.now().toString();
+      localStorage.setItem(storageKey, startTime);
+    }
+
+    const calcRemaining = () => {
+      const elapsed = Math.floor((Date.now() - Number(startTime)) / 1000);
+      const remaining = Math.max(0, durSeconds - elapsed);
+      return remaining;
+    };
+
+    const initialRemaining = calcRemaining();
+    setTimeLeft(initialRemaining);
+
+    if (initialRemaining <= 0) {
+      triggerAutoSubmit();
+      return;
+    }
+
+    const interval = setInterval(() => {
+      const remaining = calcRemaining();
+      setTimeLeft(remaining);
+
+      if (remaining <= 0) {
+        clearInterval(interval);
+        triggerAutoSubmit();
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [exam, submitted, existingSubmission, loading, storageKey, triggerAutoSubmit]);
 
   function handleSelect(questionId, value) {
-    if (submitted || existingSubmission) return;
-    setAnswers((prev) => ({
-      ...prev,
-      [questionId]: value,
-    }));
+    if (submitted || existingSubmission || isTimeUp || saving) return;
+    setAnswers((prev) => {
+      const next = {
+        ...prev,
+        [questionId]: value,
+      };
+      try {
+        localStorage.setItem(draftKey, JSON.stringify(next));
+      } catch (e) {
+        console.warn("Failed to persist draft answers:", e);
+      }
+      return next;
+    });
   }
 
   const totalQuestions = questions.length;
@@ -89,6 +227,8 @@ function StudentExam() {
   const isAllAnswered = totalQuestions > 0 && answeredCount === totalQuestions;
 
   async function handleSubmit() {
+    if (isTimeUp || saving) return;
+
     if (answeredCount === 0) {
       alert("لطفاً حداقل به یک سوال پاسخ دهید.");
       return;
@@ -140,6 +280,8 @@ function StudentExam() {
         }),
       );
 
+      localStorage.removeItem(storageKey);
+      localStorage.removeItem(draftKey);
       setSubmitted(true);
     } catch (err) {
       setError(err.message || "ثبت پاسخ‌ها ناموفق بود. لطفاً مجدداً تلاش نمایید.");
@@ -147,6 +289,37 @@ function StudentExam() {
       setSaving(false);
     }
   }
+
+  const totalDurationMinutes = Number(exam?.duration_minutes) || 45;
+  const totalDurationSeconds = totalDurationMinutes * 60;
+
+  // Format digital countdown string
+  const formatTime = (secs) => {
+    if (secs === null || secs === undefined) return "--:--";
+    const s = Math.max(0, secs);
+    const hours = Math.floor(s / 3600);
+    const minutes = Math.floor((s % 3600) / 60);
+    const seconds = s % 60;
+    const pad = (n) => n.toString().padStart(2, "0");
+
+    if (hours > 0) {
+      return `${toPersianDigits(pad(hours))}:${toPersianDigits(pad(minutes))}:${toPersianDigits(pad(seconds))}`;
+    }
+    return `${toPersianDigits(pad(minutes))}:${toPersianDigits(pad(seconds))}`;
+  };
+
+  const progressPercent =
+    timeLeft !== null && totalDurationSeconds > 0
+      ? Math.max(0, Math.min(100, (timeLeft / totalDurationSeconds) * 100))
+      : 100;
+
+  const isUrgent = timeLeft !== null && timeLeft > 60 && timeLeft <= 300;
+  const isCritical = timeLeft !== null && timeLeft <= 60;
+  const timerBannerClass = isCritical
+    ? "student-exam-timer-banner critical"
+    : isUrgent
+      ? "student-exam-timer-banner warning"
+      : "student-exam-timer-banner";
 
   if (loading) {
     return (
@@ -221,6 +394,58 @@ function StudentExam() {
       <div className="exam-page">
         {!submitted ? (
           <>
+            {/* Live Countdown Timer Widget */}
+            <div className={timerBannerClass}>
+              <div className="timer-main-row">
+                <div className="timer-info-box">
+                  <div className="timer-icon-circle">
+                    {isCritical ? <Hourglass size={24} /> : <Timer size={24} />}
+                  </div>
+                  <div className="timer-title-group">
+                    <h4>زمان باقی‌مانده آزمون</h4>
+                    <p>
+                      مدت کل آزمون: {toPersianDigits(totalDurationMinutes)} دقیقه
+                      {isCritical
+                        ? " — کمتر از یک دقیقه فرصت دارید!"
+                        : isUrgent
+                          ? " — زمان روبه‌اتمام است"
+                          : " — پس از اتمام زمان، پاسخ‌ها خودکار ثبت می‌شوند"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="timer-countdown-display">
+                  <span
+                    className={`timer-status-chip ${
+                      isCritical ? "critical" : isUrgent ? "warning" : "normal"
+                    }`}
+                  >
+                    {isCritical ? "لحظات پایانی" : isUrgent ? "هشدار زمان" : "زمان کافی"}
+                  </span>
+                  <div className="timer-digits-badge">{formatTime(timeLeft)}</div>
+                </div>
+              </div>
+
+              {/* Smooth Progress Bar */}
+              <div className="timer-progress-track">
+                <div
+                  className="timer-progress-fill"
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Expired / Auto submit banner if timeout triggered */}
+            {isTimeUp && (
+              <div className="exam-time-expired-card">
+                <AlertCircle size={24} />
+                <div>
+                  <h4>زمان آزمون به پایان رسید</h4>
+                  <p>در حال ارسال و ثبت خودکار پاسخ‌های پاسخ‌داده‌شده شما به سرور...</p>
+                </div>
+              </div>
+            )}
+
             <section className="exam-stats-grid">
               <StatCard
                 title="تعداد کل سوالات"
@@ -243,15 +468,17 @@ function StudentExam() {
             </section>
 
             {error && (
-              <div style={{
-                background: "oklch(95% 0.05 25 / 0.8)",
-                border: "1px solid oklch(75% 0.15 25 / 0.3)",
-                color: "oklch(45% 0.18 25)",
-                padding: "0.85rem 1.25rem",
-                borderRadius: "14px",
-                marginBottom: "1.5rem",
-                fontWeight: "700"
-              }}>
+              <div
+                style={{
+                  background: "oklch(95% 0.05 25 / 0.8)",
+                  border: "1px solid oklch(75% 0.15 25 / 0.3)",
+                  color: "oklch(45% 0.18 25)",
+                  padding: "0.85rem 1.25rem",
+                  borderRadius: "14px",
+                  marginBottom: "1.5rem",
+                  fontWeight: "700",
+                }}
+              >
                 {error}
               </div>
             )}
@@ -264,6 +491,7 @@ function StudentExam() {
                   questionIndex={questionIndex}
                   selectedAnswer={answers[question.id]}
                   onSelect={handleSelect}
+                  disabled={isTimeUp || saving || submitted}
                 />
               ))}
             </section>
@@ -296,10 +524,14 @@ function StudentExam() {
 
                 <AnimatedButton
                   variant={answeredCount > 0 ? "primary" : "soft"}
-                  disabled={answeredCount === 0 || saving}
+                  disabled={answeredCount === 0 || saving || isTimeUp}
                   onClick={handleSubmit}
                 >
-                  {saving ? "در حال ثبت نهایی..." : "ثبت و پایان آزمون"}
+                  {saving
+                    ? isTimeUp
+                      ? "در حال ثبت خودکار..."
+                      : "در حال ثبت نهایی..."
+                    : "ثبت و پایان آزمون"}
                 </AnimatedButton>
               </div>
             </section>
@@ -311,11 +543,18 @@ function StudentExam() {
                 <CheckCircle2 size={44} />
               </div>
 
-              <span className="exam-result-kicker">ثبت موفق</span>
-              <h2>آزمون با موفقیت ثبت شد</h2>
+              <span className="exam-result-kicker">
+                {autoSubmittedDueToTime ? "پایان زمان و ثبت خودکار" : "ثبت موفق"}
+              </span>
+              <h2>
+                {autoSubmittedDueToTime
+                  ? "زمان آزمون به پایان رسید و پاسخ‌های شما با موفقیت ثبت شدند"
+                  : "آزمون با موفقیت ثبت شد"}
+              </h2>
               <p>
-                پاسخ‌های شما ذخیره شد. نتیجه نهایی پس از تصحیح سوال‌های تشریحی
-                توسط مدرس در بخش نتایج نمایش داده می‌شود.
+                {autoSubmittedDueToTime
+                  ? "پاسخ‌هایی که تا لحظه پایان زمان آزمون وارد کرده بودید ذخیره شدند و امکان ویرایش بیشتر وجود ندارد."
+                  : "پاسخ‌های شما ذخیره شد. نتیجه نهایی پس از تصحیح سوال‌های تشریحی توسط مدرس در بخش نتایج نمایش داده می‌شود."}
               </p>
 
               <div className="exam-score-pill">
@@ -404,7 +643,13 @@ function StudentExam() {
   );
 }
 
-function QuestionCard({ question, questionIndex, selectedAnswer, onSelect }) {
+function QuestionCard({
+  question,
+  questionIndex,
+  selectedAnswer,
+  onSelect,
+  disabled,
+}) {
   const isEssay = question.question_type === "essay";
   const isAnswered =
     selectedAnswer !== undefined &&
@@ -412,7 +657,7 @@ function QuestionCard({ question, questionIndex, selectedAnswer, onSelect }) {
     (typeof selectedAnswer !== "string" || selectedAnswer.trim() !== "");
 
   return (
-    <article className="question-card">
+    <article className={`question-card ${disabled ? "disabled-card" : ""}`}>
       <div className="question-card-header">
         <div className="question-number-badge">
           سوال {toPersianDigits(questionIndex + 1)}
@@ -434,7 +679,12 @@ function QuestionCard({ question, questionIndex, selectedAnswer, onSelect }) {
           rows="5"
           value={selectedAnswer || ""}
           onChange={(event) => onSelect(question.id, event.target.value)}
-          placeholder="پاسخ تشریحی خود را اینجا تایپ کنید..."
+          disabled={disabled}
+          placeholder={
+            disabled
+              ? "زمان آزمون به پایان رسیده است."
+              : "پاسخ تشریحی خود را اینجا تایپ کنید..."
+          }
         />
       ) : (
         <div className="question-options-grid">
@@ -447,6 +697,7 @@ function QuestionCard({ question, questionIndex, selectedAnswer, onSelect }) {
                 type="button"
                 className={`question-option-btn ${isSelected ? "selected" : ""}`}
                 onClick={() => onSelect(question.id, option.id)}
+                disabled={disabled}
               >
                 <span className="option-label" dir="rtl">
                   {option.text}

@@ -44,14 +44,14 @@ class ExamStudentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Exam
-        fields = ('id', 'classroom', 'title', 'date', 'questions', 'created_at')
+        fields = ('id', 'classroom', 'title', 'date', 'duration_minutes', 'questions', 'created_at')
 
 class ExamSerializer(serializers.ModelSerializer):
     questions = QuestionSerializer(many=True, read_only=True)
 
     class Meta:
         model = Exam
-        fields = ('id', 'classroom', 'title', 'date', 'questions', 'created_at')
+        fields = ('id', 'classroom', 'title', 'date', 'duration_minutes', 'questions', 'created_at')
 
 
 class AnswerSerializer(serializers.ModelSerializer):

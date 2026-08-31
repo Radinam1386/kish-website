@@ -52,6 +52,8 @@ class ClassRoomSerializer(serializers.ModelSerializer):
             'teacher',
             'teacher_detail',
             'tuition_fee',
+            'schedule',
+            'time_slot',
             'enrollments',
             'student_count',
             'created_at',

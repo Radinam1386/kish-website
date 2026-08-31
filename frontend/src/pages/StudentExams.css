@@ -735,6 +735,13 @@
   color: var(--student-exams-green-dark);
 }
 
+.student-exams-status.in-progress {
+  border: 1px solid rgba(243, 156, 18, 0.35);
+
+  background: #fef5e7;
+
+  color: #d35400;
+}
 
 .student-exams-status.completed {
   border: 1px solid rgba(52, 152, 219, 0.15);
@@ -755,6 +762,12 @@
 
   box-shadow:
     0 0 0 3px rgba(39, 174, 96, 0.1);
+}
+
+.student-exams-status-dot.in-progress {
+  background: #f39c12;
+  box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.25);
+  animation: pulse-status 1.8s infinite;
 }
 
 

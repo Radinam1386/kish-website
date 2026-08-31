@@ -13,7 +13,11 @@ class User(AbstractUser):
         max_length=20,
         choices=Role.choices,
     )
-    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    phone_number = models.CharField(max_length=15, blank=True, null=True, verbose_name="شماره تماس")
+    national_code = models.CharField(max_length=20, blank=True, null=True, verbose_name="کد ملی")
+    birth_date = models.CharField(max_length=50, blank=True, null=True, verbose_name="تاریخ تولد")
+    address = models.TextField(blank=True, null=True, verbose_name="آدرس محل سکونت")
+    level = models.CharField(max_length=100, blank=True, null=True, verbose_name="سطح آموزشی / مدرک / تخصص")
     plain_password = models.CharField(
         max_length=128,
         blank=True,

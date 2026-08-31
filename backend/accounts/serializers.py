@@ -15,6 +15,10 @@ class UserSerializer(serializers.ModelSerializer):
             'last_name',
             'email',
             'phone_number',
+            'national_code',
+            'birth_date',
+            'address',
+            'level',
             'role',
             'is_active',
             'plain_password',
@@ -44,7 +48,12 @@ class CreateUserSerializer(serializers.ModelSerializer):
             'last_name',
             'email',
             'phone_number',
+            'national_code',
+            'birth_date',
+            'address',
+            'level',
             'role',
+            'is_active',
             'plain_password',
         )
 

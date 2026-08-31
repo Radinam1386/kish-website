@@ -207,6 +207,20 @@ function StudentPanel() {
           statusLabel = "در انتظار تصحیح";
           scoreDisplay = "در انتظار نمره";
         }
+      } else {
+        // Check if student has started this exam
+        const userId = currentUser?.id || "guest";
+        const startTimeStr = localStorage.getItem(`kish_exam_start_time_${exam.id}_${userId}`);
+        if (startTimeStr) {
+          const durMinutes = Number(exam.duration_minutes) || 45;
+          const durSeconds = durMinutes * 60;
+          const elapsed = Math.floor((Date.now() - Number(startTimeStr)) / 1000);
+          if (elapsed < durSeconds) {
+            status = "in_progress";
+            statusLabel = "در حال برگزاری";
+            scoreDisplay = "در جریان";
+          }
+        }
       }
 
       return {
@@ -448,6 +462,8 @@ function StudentPanel() {
                           </div>
                         ) : exam.status === "pending_grade" ? (
                           <span className="status-pill pending">منتظر تصحیح</span>
+                        ) : exam.status === "in_progress" ? (
+                          <span className="status-pill in-progress">در حال برگزاری</span>
                         ) : (
                           <span className="status-pill open">شروع نشده</span>
                         )}
@@ -458,6 +474,13 @@ function StudentPanel() {
                           <button type="button" className="btn-exam-action review">
                             <History size={14} />
                             <span>کارنامه</span>
+                          </button>
+                        </Link>
+                      ) : exam.status === "in_progress" ? (
+                        <Link to={`/panel/student/exam/${exam.id}`}>
+                          <button type="button" className="btn-exam-action resume">
+                            <Play size={14} />
+                            <span>ادامه آزمون</span>
                           </button>
                         </Link>
                       ) : (

@@ -804,3 +804,242 @@
     transform: translateY(0);
   }
 }
+
+/* =====================================================
+   Student Exam Live Timer Banner
+===================================================== */
+
+.student-exam-timer-banner {
+  position: sticky;
+  top: 15px;
+  z-index: 99;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 22px;
+  margin-bottom: 24px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(231, 76, 60, 0.22);
+  border-radius: 20px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 10px 30px rgba(38, 50, 56, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  transition: all 0.3s ease;
+}
+
+.student-exam-timer-banner.warning {
+  border-color: rgba(243, 156, 18, 0.45);
+  background: rgba(255, 253, 245, 0.96);
+  box-shadow: 0 12px 35px rgba(243, 156, 18, 0.15);
+}
+
+.student-exam-timer-banner.critical {
+  border-color: rgba(231, 76, 60, 0.6);
+  background: rgba(255, 245, 245, 0.98);
+  box-shadow: 0 12px 35px rgba(231, 76, 60, 0.22);
+  animation: timer-critical-pulse 1.8s infinite;
+}
+
+@keyframes timer-critical-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(231, 76, 60, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
+  }
+}
+
+.timer-main-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.timer-info-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.timer-icon-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f05b4b, #c0392b);
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(231, 76, 60, 0.25);
+  transition: transform 0.3s ease;
+}
+
+.student-exam-timer-banner.warning .timer-icon-circle {
+  background: linear-gradient(135deg, #f39c12, #d35400);
+  box-shadow: 0 6px 16px rgba(243, 156, 18, 0.25);
+}
+
+.student-exam-timer-banner.critical .timer-icon-circle {
+  background: linear-gradient(135deg, #e74c3c, #962d22);
+  box-shadow: 0 6px 16px rgba(231, 76, 60, 0.35);
+  animation: timer-icon-wiggle 1s ease-in-out infinite;
+}
+
+@keyframes timer-icon-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-8deg); }
+  75% { transform: rotate(8deg); }
+}
+
+.timer-title-group h4 {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: #263238;
+}
+
+.timer-title-group p {
+  margin: 0.15rem 0 0;
+  font-size: 0.78rem;
+  color: #7f8c8d;
+}
+
+.timer-countdown-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.timer-digits-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 18px;
+  background: #ffffff;
+  border: 2px solid #eceff3;
+  border-radius: 14px;
+  font-family: monospace, "Vazirmatn", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #2c3e50;
+  letter-spacing: 2px;
+  direction: ltr;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.student-exam-timer-banner.warning .timer-digits-badge {
+  border-color: rgba(243, 156, 18, 0.4);
+  color: #d35400;
+  background: #fffdf5;
+}
+
+.student-exam-timer-banner.critical .timer-digits-badge {
+  border-color: rgba(231, 76, 60, 0.6);
+  color: #c0392b;
+  background: #fff5f5;
+}
+
+.timer-status-chip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.timer-status-chip.normal {
+  background: #eaf8f0;
+  color: #27ae60;
+  border: 1px solid #c2eed4;
+}
+
+.timer-status-chip.warning {
+  background: #fef5e7;
+  color: #d35400;
+  border: 1px solid #f9e1b5;
+}
+
+.timer-status-chip.critical {
+  background: #fdecea;
+  color: #c0392b;
+  border: 1px solid #fadbd8;
+  animation: blink-tag 1s infinite;
+}
+
+@keyframes blink-tag {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.timer-progress-track {
+  width: 100%;
+  height: 6px;
+  background: #f0f3f6;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.timer-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #27ae60, #2ecc71);
+  transition: width 1s linear, background 0.3s ease;
+}
+
+.student-exam-timer-banner.warning .timer-progress-fill {
+  background: linear-gradient(90deg, #f39c12, #f1c40f);
+}
+
+.student-exam-timer-banner.critical .timer-progress-fill {
+  background: linear-gradient(90deg, #c0392b, #e74c3c);
+}
+
+.exam-time-expired-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  background: #fff5f5;
+  border: 1px solid #fadbd8;
+  border-radius: 16px;
+  color: #c0392b;
+}
+
+.exam-time-expired-card h4 {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 800;
+}
+
+.exam-time-expired-card p {
+  margin: 0.2rem 0 0;
+  font-size: 0.82rem;
+  color: #7f8c8d;
+}
+
+@media (max-width: 600px) {
+  .student-exam-timer-banner {
+    padding: 12px 16px;
+    top: 10px;
+  }
+
+  .timer-main-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .timer-countdown-display {
+    justify-content: space-between;
+  }
+
+  .timer-digits-badge {
+    font-size: 1.15rem;
+    padding: 6px 14px;
+  }
+}

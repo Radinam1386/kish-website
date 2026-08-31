@@ -813,3 +813,26 @@
   }
 
 }
+
+.teacher-credentials-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.9rem;
+  background: #ffffff;
+  color: var(--primary);
+  border: 1px solid rgba(231, 76, 60, 0.25);
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
+}
+
+.teacher-credentials-edit-btn:hover {
+  background: #fff1ef;
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}

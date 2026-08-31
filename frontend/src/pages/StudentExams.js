@@ -98,12 +98,26 @@ function StudentExams() {
             0,
           ) || 20;
 
+          let status = submission ? "completed" : "active";
+          if (!submission) {
+            const userId = currentUser?.id || "guest";
+            const startTimeStr = localStorage.getItem(`kish_exam_start_time_${exam.id}_${userId}`);
+            if (startTimeStr) {
+              const durMinutes = Number(exam.duration_minutes) || 45;
+              const durSeconds = durMinutes * 60;
+              const elapsed = Math.floor((Date.now() - Number(startTimeStr)) / 1000);
+              if (elapsed < durSeconds) {
+                status = "in_progress";
+              }
+            }
+          }
+
           return {
             ...exam,
             subject: classroom?.name || `کلاس ${exam.classroom}`,
             teacher: getFullName(classroom?.teacher_detail) || "استاد آکادمی",
             questionsCount: exam.questions?.length || 0,
-            status: submission ? "completed" : "active",
+            status,
             isGraded: submission?.is_graded,
             maxScore,
             score:
@@ -119,7 +133,7 @@ function StudentExams() {
   );
 
   const activeExams = useMemo(
-    () => examsData.filter((exam) => exam.status === "active"),
+    () => examsData.filter((exam) => exam.status === "active" || exam.status === "in_progress"),
     [examsData],
   );
 
@@ -229,7 +243,12 @@ function StudentExams() {
                       {exam.subject}
                     </div>
 
-                    {exam.status === "active" ? (
+                    {exam.status === "in_progress" ? (
+                      <span className="student-exams-status in-progress">
+                        <span className="student-exams-status-dot in-progress" />
+                        در حال برگزاری
+                      </span>
+                    ) : exam.status === "active" ? (
                       <span className="student-exams-status active">
                         <span className="student-exams-status-dot" />
                         آماده شروع
@@ -272,6 +291,14 @@ function StudentExams() {
                     </div>
 
                     <div className="student-exams-detail">
+                      <Timer size={15} />
+                      <div>
+                        <span>مدت زمان</span>
+                        <strong>{toPersianDigits(exam.duration_minutes || 45)} دقیقه</strong>
+                      </div>
+                    </div>
+
+                    <div className="student-exams-detail">
                       <Clock3 size={15} />
                       <div>
                         <span>بارم کل</span>
@@ -292,11 +319,13 @@ function StudentExams() {
                       <div>
                         <span>وضعیت</span>
                         <strong>
-                          {exam.status === "active"
-                            ? "شروع نشده"
-                            : exam.isGraded
-                              ? "تصحیح نهایی"
-                              : "منتظر نمره"}
+                          {exam.status === "in_progress"
+                            ? "در حال برگزاری"
+                            : exam.status === "active"
+                              ? "شروع نشده"
+                              : exam.isGraded
+                                ? "تصحیح نهایی"
+                                : "منتظر نمره"}
                         </strong>
                       </div>
                     </div>
@@ -317,7 +346,18 @@ function StudentExams() {
                   )}
 
                   <div className="student-exams-card-footer">
-                    {exam.status === "active" ? (
+                    {exam.status === "in_progress" ? (
+                      <Link to={`/panel/student/exam/${exam.id}`}>
+                        <button
+                          type="button"
+                          className="student-exams-start-btn"
+                          style={{ background: "linear-gradient(135deg, #f39c12, #e67e22)" }}
+                        >
+                          <Play size={17} />
+                          ادامه آزمون
+                        </button>
+                      </Link>
+                    ) : exam.status === "active" ? (
                       <Link to={`/panel/student/exam/${exam.id}`}>
                         <button
                           type="button"

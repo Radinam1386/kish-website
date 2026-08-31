@@ -49,7 +49,14 @@ class ExamViewSet(viewsets.ModelViewSet):
         questions = exam.questions.all()
         serializer = QuestionStudentSerializer(questions, many=True)
         return Response({
-            'exam': {'id': exam.id, 'title': exam.title, 'date': exam.date},
+            'exam': {
+                'id': exam.id,
+                'title': exam.title,
+                'date': exam.date,
+                'duration_minutes': exam.duration_minutes,
+                'classroom': exam.classroom_id,
+                'created_at': exam.created_at,
+            },
             'questions': serializer.data,
         })
 

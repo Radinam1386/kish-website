@@ -28,6 +28,7 @@ function AdminStudents() {
   const [users, setUsers] = useState([]);
   const [enrollments, setEnrollments] = useState([]);
   const [classrooms, setClassrooms] = useState([]);
+  const [terms, setTerms] = useState([]);
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -44,11 +45,12 @@ function AdminStudents() {
         setLoading(true);
         setError("");
 
-        const [usersData, enrollmentsData, classroomsData] =
+        const [usersData, enrollmentsData, classroomsData, termsData] =
           await Promise.all([
             api.users.list(),
             api.enrollments.list(),
             api.classrooms.list(),
+            api.terms.list(),
           ]);
 
         if (!alive) return;
@@ -56,6 +58,7 @@ function AdminStudents() {
         setUsers(usersData || []);
         setEnrollments(enrollmentsData || []);
         setClassrooms(classroomsData || []);
+        setTerms(termsData || []);
       } catch (err) {
         if (alive) {
           setError(err.message || "دریافت دانش‌آموزان ناموفق بود.");
@@ -79,26 +82,56 @@ function AdminStudents() {
       users
         .filter((user) => user.role === "student")
         .map((user) => {
-          const enrollment = enrollments.find(
-            (item) => item.student === user.id,
+          // Get all enrollments for this student
+          const studentEnrollments = enrollments.filter(
+            (item) => item.student === user.id || item.student?.id === user.id,
           );
 
+          // Sort enrollments: active term first, then by enrollment id descending (most recent)
+          studentEnrollments.sort((a, b) => {
+            const aTerm = terms.find((t) => t.id === (a.term_id || a.classroom?.term));
+            const bTerm = terms.find((t) => t.id === (b.term_id || b.classroom?.term));
+            const aActive = a.is_term_active ?? aTerm?.is_active;
+            const bActive = b.is_term_active ?? bTerm?.is_active;
+            if (aActive && !bActive) return -1;
+            if (!aActive && bActive) return 1;
+            return (b.id || 0) - (a.id || 0);
+          });
+
+          const currentEnrollment = studentEnrollments[0];
+
           const classroom = classrooms.find(
-            (item) => item.id === enrollment?.classroom,
+            (item) => item.id === (currentEnrollment?.classroom || currentEnrollment?.classroom?.id),
           );
+
+          const className = classroom?.name || currentEnrollment?.classroom_name || "بدون کلاس";
+          const classId = classroom?.id || currentEnrollment?.classroom || "none";
+
+          let tuitionStatus = "بدون کلاس";
+          let tuitionStatusClass = "unassigned";
+
+          if (currentEnrollment) {
+            if (currentEnrollment.is_paid) {
+              tuitionStatus = "پرداخت شده (تسویه)";
+              tuitionStatusClass = "paid";
+            } else {
+              tuitionStatus = "در انتظار پرداخت";
+              tuitionStatusClass = "pending";
+            }
+          }
 
           return {
             id: user.id,
             username: user.username,
             name: getFullName(user),
             phone: user.phone_number || "-",
-            className: classroom?.name || "بدون کلاس",
-            classId: classroom?.id || "none",
-            tuitionStatus: "ثبت نشده",
-            tuitionStatusClass: "pending",
+            className,
+            classId,
+            tuitionStatus,
+            tuitionStatusClass,
           };
         }),
-    [users, enrollments, classrooms],
+    [users, enrollments, classrooms, terms],
   );
 
   const classes = useMemo(() => {

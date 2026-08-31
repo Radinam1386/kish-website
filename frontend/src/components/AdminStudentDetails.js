@@ -22,6 +22,10 @@ import {
   KeyRound,
   RefreshCw,
   Lock,
+  Mail,
+  MapPin,
+  Calendar,
+  Award,
 } from "lucide-react";
 
 import DashboardLayout from "../components/DashboardLayout";
@@ -576,6 +580,30 @@ function AdminStudentDetails() {
 
             <div className="admin-student-details-x9p4-info-card">
               <div className="admin-student-details-x9p4-info-icon">
+                <Award size={19} />
+              </div>
+              <div>
+                <span>کد ملی</span>
+                <strong>{studentUser.national_code || "-"}</strong>
+              </div>
+            </div>
+
+            <div className="admin-student-details-x9p4-info-card">
+              <div className="admin-student-details-x9p4-info-icon">
+                <Calendar size={19} />
+              </div>
+              <div>
+                <span>تاریخ تولد (شمسی)</span>
+                <strong>
+                  {studentUser.birth_date
+                    ? toJalaliDateString(studentUser.birth_date)
+                    : "-"}
+                </strong>
+              </div>
+            </div>
+
+            <div className="admin-student-details-x9p4-info-card">
+              <div className="admin-student-details-x9p4-info-icon">
                 <Phone size={19} />
               </div>
               <div>
@@ -583,6 +611,28 @@ function AdminStudentDetails() {
                 <strong className="admin-student-details-x9p4-phone">
                   {studentUser.phone_number || "-"}
                 </strong>
+              </div>
+            </div>
+
+            <div className="admin-student-details-x9p4-info-card">
+              <div className="admin-student-details-x9p4-info-icon">
+                <Mail size={19} />
+              </div>
+              <div>
+                <span>ایمیل</span>
+                <strong className="admin-student-details-x9p4-email">
+                  {studentUser.email || "-"}
+                </strong>
+              </div>
+            </div>
+
+            <div className="admin-student-details-x9p4-info-card">
+              <div className="admin-student-details-x9p4-info-icon">
+                <BookOpen size={19} />
+              </div>
+              <div>
+                <span>سطح آموزشی / رشته</span>
+                <strong>{studentUser.level || "-"}</strong>
               </div>
             </div>
 
@@ -634,6 +684,18 @@ function AdminStudentDetails() {
                 </div>
               </div>
             </div>
+
+            {studentUser.address && (
+              <div className="admin-student-details-x9p4-info-card" style={{ gridColumn: "1 / -1" }}>
+                <div className="admin-student-details-x9p4-info-icon">
+                  <MapPin size={19} />
+                </div>
+                <div>
+                  <span>آدرس محل سکونت</span>
+                  <strong>{studentUser.address}</strong>
+                </div>
+              </div>
+            )}
           </div>
         </section>
 

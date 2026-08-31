@@ -21,6 +21,7 @@ function TeacherCreateExam() {
   const today = getTodayJalali();
   const [examTitle, setExamTitle] = useState("");
   const [examDate, setExamDate] = useState(today.isoGregorian);
+  const [durationMinutes, setDurationMinutes] = useState(45);
   const [classroomId, setClassroomId] = useState("");
   const [classrooms, setClassrooms] = useState([]);
   const [questionType, setQuestionType] = useState("multiple");
@@ -192,6 +193,7 @@ function TeacherCreateExam() {
         title: examTitle,
         date: examDate,
         classroom: Number(classroomId),
+        duration_minutes: Number(durationMinutes) || 45,
       });
 
       for (const [index, question] of questions.entries()) {
@@ -280,12 +282,17 @@ function TeacherCreateExam() {
             </div>
 
             <div className="xqv-teacher-exam-field">
-              <label>مدت زمان امتحان</label>
+              <label>مدت زمان امتحان (دقیقه)</label>
 
               <input
                 className="xqv-teacher-exam-input"
                 type="number"
-                placeholder="مثلاً 20 دقیقه"
+                min="1"
+                max="300"
+                placeholder="مثلاً 45 دقیقه"
+                value={durationMinutes}
+                onChange={(event) => setDurationMinutes(event.target.value)}
+                required
               />
             </div>
 

@@ -78,9 +78,15 @@ function AdminTeacherForm() {
           ...prev,
           firstName: user.first_name || "",
           lastName: user.last_name || "",
+          nationalId: user.national_code || "",
+          birthDate: user.birth_date || "",
           phone: user.phone_number || "",
           email: user.email || "",
+          address: user.address || "",
+          level: user.level || "",
           username: user.username || "",
+          password: user.plain_password || "",
+          confirmPassword: user.plain_password || "",
           status: user.is_active ? "active" : "inactive",
         }));
       } catch (error) {
@@ -99,7 +105,7 @@ function AdminTeacherForm() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!id && formData.password !== formData.confirmPassword) {
+    if (formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword) {
       alert("رمز عبور و تکرار رمز عبور یکسان نیستند.");
       return;
     }
@@ -114,17 +120,22 @@ function AdminTeacherForm() {
         last_name: formData.lastName,
         email: formData.email,
         phone_number: formData.phone,
+        national_code: formData.nationalId,
+        birth_date: formData.birthDate,
+        address: formData.address,
+        level: formData.level,
         role: "teacher",
         is_active: formData.status === "active",
       };
 
+      if (formData.password) {
+        payload.password = formData.password;
+      }
+
       if (id) {
         await api.users.update(id, payload);
       } else {
-        await api.users.create({
-          ...payload,
-          password: formData.password,
-        });
+        await api.users.create(payload);
       }
 
       alert(

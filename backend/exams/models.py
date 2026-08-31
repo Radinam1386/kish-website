@@ -7,6 +7,7 @@ class Exam(models.Model):
     classroom = models.ForeignKey(ClassRoom, on_delete=models.CASCADE, related_name='exams')
     title = models.CharField(max_length=200)
     date = models.DateField()
+    duration_minutes = models.PositiveIntegerField(default=45, verbose_name="مدت زمان آزمون (دقیقه)")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
