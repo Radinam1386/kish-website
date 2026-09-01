@@ -8,12 +8,14 @@ import {
   TrendingUp,
   Award,
   GraduationCap,
+  ChevronLeft,
+  UserRound,
 } from "lucide-react";
+
 import DashboardLayout from "../components/DashboardLayout";
 import "./TeacherStudents.css";
 import StatCard from "../components/StatCard";
 import { api, getFullName } from "../services/api";
-import { AnimatedButton } from "../components/AnimatedButton";
 
 function TeacherStudents() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -36,19 +38,29 @@ function TeacherStudents() {
           ]);
 
         if (!alive) return;
+
         const activeTermIds = (termsData || [])
-          .filter((t) => t.is_active)
-          .map((t) => t.id);
-        const activeClasses = (classroomsData || []).filter(
-          (c) =>
-            activeTermIds.length === 0 ||
-            activeTermIds.includes(c.term || c.term?.id),
-        );
-        setClassrooms(activeClasses || []);
+          .filter((term) => term.is_active)
+          .map((term) => term.id);
+
+        const activeClasses = (classroomsData || []).filter((classroom) => {
+          const termId =
+            typeof classroom.term === "object"
+              ? classroom.term?.id
+              : classroom.term;
+
+          return activeTermIds.length === 0 || activeTermIds.includes(termId);
+        });
+
+        setClassrooms(activeClasses);
         setAttendanceRecords(attendanceData || []);
         setSubmissions(submissionsData || []);
       } catch {
-        if (alive) setClassrooms([]);
+        if (alive) {
+          setClassrooms([]);
+          setAttendanceRecords([]);
+          setSubmissions([]);
+        }
       }
     }
 
@@ -76,24 +88,42 @@ function TeacherStudents() {
     classrooms.forEach((classroom) => {
       (classroom.enrollments || []).forEach((enrollment) => {
         const student = enrollment.student_detail;
-        const records = attendanceRecords.filter(
-          (record) => record.student === student.id,
-        );
+
+        if (!student) return;
+
+        const records = attendanceRecords.filter((record) => {
+          const studentId =
+            typeof record.student === "object"
+              ? record.student?.id
+              : record.student;
+
+          return studentId === student.id;
+        });
+
         const presentRecords = records.filter(
           (record) => record.status === "present" || record.status === "late",
         );
-        const graded = submissions.filter(
-          (submission) =>
-            submission.student === student.id &&
+
+        const graded = submissions.filter((submission) => {
+          const studentId =
+            typeof submission.student === "object"
+              ? submission.student?.id
+              : submission.student;
+
+          return (
+            studentId === student.id &&
             submission.total_score !== null &&
-            submission.total_score !== undefined,
-        );
+            submission.total_score !== undefined
+          );
+        });
+
         const averageGrade = graded.length
           ? (
               graded.reduce((sum, item) => sum + Number(item.total_score), 0) /
               graded.length
             ).toFixed(1)
           : "-";
+
         const attendanceRate = records.length
           ? `${Math.round((presentRecords.length / records.length) * 100)}٪`
           : "-";
@@ -115,19 +145,58 @@ function TeacherStudents() {
     return rows;
   }, [classrooms, attendanceRecords, submissions]);
 
-  const filteredStudents = studentsData.filter((student) => {
-    const normalizedSearch = searchTerm.trim();
+  const filteredStudents = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
 
-    const matchesSearch =
-      student.name.includes(normalizedSearch) ||
-      String(student.id).includes(normalizedSearch) ||
-      student.phone.includes(normalizedSearch);
+    return studentsData.filter((student) => {
+      const matchesSearch =
+        !normalizedSearch ||
+        student.name.toLowerCase().includes(normalizedSearch) ||
+        String(student.id).includes(normalizedSearch) ||
+        student.phone.includes(normalizedSearch);
 
-    const matchesClass =
-      selectedClass === "all" || student.classId === selectedClass;
+      const matchesClass =
+        selectedClass === "all" ||
+        String(student.classId) === String(selectedClass);
 
-    return matchesSearch && matchesClass;
-  });
+      return matchesSearch && matchesClass;
+    });
+  }, [studentsData, searchTerm, selectedClass]);
+
+  const averageAllGrades = useMemo(() => {
+    const validGrades = submissions.filter(
+      (item) =>
+        item.total_score !== null &&
+        item.total_score !== undefined &&
+        !Number.isNaN(Number(item.total_score)),
+    );
+
+    if (!validGrades.length) return "-";
+
+    return (
+      validGrades.reduce((sum, item) => sum + Number(item.total_score), 0) /
+      validGrades.length
+    ).toFixed(1);
+  }, [submissions]);
+
+  const excellentStudents = useMemo(() => {
+    const studentIds = new Set();
+
+    submissions.forEach((submission) => {
+      if (Number(submission.total_score || 0) >= 18) {
+        const studentId =
+          typeof submission.student === "object"
+            ? submission.student?.id
+            : submission.student;
+
+        if (studentId) {
+          studentIds.add(studentId);
+        }
+      }
+    });
+
+    return studentIds.size;
+  }, [submissions]);
 
   return (
     <DashboardLayout
@@ -136,23 +205,29 @@ function TeacherStudents() {
       menuType="teacher"
     >
       <div className="teacher-students-k7p2-root">
+        {/* =========================
+            Header
+        ========================== */}
+
         <section className="teacher-students-k7p2-section">
-          <section className="secretary-terms-header">
-            <div className="secretary-terms-heading">
-              <div className="secretary-terms-avatar">
-                <GraduationCap size={25} />
-              </div>
+          <section className="teacher-students-k7p2-header">
+            <div className="teacher-students-k7p2-header-icon">
+              <GraduationCap size={25} />
+            </div>
 
-              <div className="secretary-terms-heading-content">
-                <h3> لیست دانش‌آموزان</h3>
+            <div className="teacher-students-k7p2-header-content">
+              <h3>لیست دانش‌آموزان</h3>
 
-                <p>
-                  مشاهده اطلاعات تحصیلی، شماره تماس و حضور و غیاب دانش‌آموزان
-                  تحت آموزش شما
-                </p>
-              </div>
+              <p>
+                مشاهده اطلاعات تحصیلی، شماره تماس و وضعیت دانش‌آموزان تحت آموزش
+                شما
+              </p>
             </div>
           </section>
+
+          {/* =========================
+              Stats
+          ========================== */}
 
           <div className="teacher-students-k7p2-stats">
             <StatCard
@@ -161,135 +236,189 @@ function TeacherStudents() {
               icon={<Users size={23} />}
               color="red"
             />
+
             <StatCard
               title="میانگین نمرات کلاس‌ها"
-              value={
-                submissions.length
-                  ? (
-                      submissions.reduce(
-                        (sum, item) => sum + Number(item.total_score || 0),
-                        0,
-                      ) / submissions.length
-                    ).toFixed(1)
-                  : "-"
-              }
+              value={averageAllGrades}
               icon={<TrendingUp size={23} />}
               color="green"
             />
+
             <StatCard
               title="دانش‌آموزان ممتاز"
-              value={
-                submissions.filter(
-                  (item) => Number(item.total_score || 0) >= 18,
-                ).length
-              }
+              value={excellentStudents}
               icon={<Award size={23} />}
               color="orange"
             />
           </div>
+
           {/* =========================
               Filters
           ========================== */}
 
-          <div className="teacher-students-k7p2-filter-row">
-            <div className="teacher-students-k7p2-search-wrapper">
-              <Search className="teacher-students-k7p2-search-icon" size={18} />
-
-              <input
-                type="text"
-                placeholder="جستجو بر اساس نام، شناسه یا شماره تماس..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="teacher-students-k7p2-search-input"
-              />
+          <div className="teacher-students-k7p2-filter-panel">
+            <div className="teacher-students-k7p2-filter-title">
+              <Filter size={18} />
+              <span>جستجو و فیلتر دانش‌آموزان</span>
             </div>
 
-            <div className="teacher-students-k7p2-select-wrapper">
-              <Filter className="teacher-students-k7p2-filter-icon" size={18} />
+            <div className="teacher-students-k7p2-filter-row">
+              <div className="teacher-students-k7p2-search-wrapper">
+                <Search
+                  className="teacher-students-k7p2-search-icon"
+                  size={18}
+                />
 
-              <select
-                value={selectedClass}
-                onChange={(e) => setSelectedClass(e.target.value)}
-                className="teacher-students-k7p2-select"
-              >
-                {teacherClasses.map((cls) => (
-                  <option key={cls.id} value={cls.id}>
-                    {cls.name}
-                  </option>
-                ))}
-              </select>
+                <input
+                  type="text"
+                  placeholder="نام، شناسه یا شماره تماس را جستجو کنید..."
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  className="teacher-students-k7p2-search-input"
+                />
+              </div>
+
+              <div className="teacher-students-k7p2-select-wrapper">
+                <BookOpen
+                  className="teacher-students-k7p2-filter-icon"
+                  size={18}
+                />
+
+                <select
+                  value={selectedClass}
+                  onChange={(event) => setSelectedClass(event.target.value)}
+                  className="teacher-students-k7p2-select"
+                >
+                  {teacherClasses.map((cls) => (
+                    <option key={cls.id} value={cls.id}>
+                      {cls.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="teacher-students-k7p2-results-info">
+              <span>نتایج:</span>
+
+              <strong>{filteredStudents.length}</strong>
+
+              <span>دانش‌آموز</span>
             </div>
           </div>
 
           {/* =========================
-              Desktop / Tablet Table
+              Desktop Table
           ========================== */}
 
-          <div className="teacher-students-k7p2-desktop-table">
-            {filteredStudents.length > 0 ? (
+          {filteredStudents.length > 0 && (
+            <div className="teacher-students-k7p2-table-shell">
+              <div className="teacher-students-k7p2-table-top">
+                <div>
+                  <h3>دانش‌آموزان</h3>
+                  <span>اطلاعات آموزشی و وضعیت دانش‌آموزان</span>
+                </div>
+
+                <div className="teacher-students-k7p2-table-count">
+                  {filteredStudents.length} نفر
+                </div>
+              </div>
+
               <div className="teacher-students-k7p2-table-wrapper">
                 <table className="teacher-students-k7p2-table">
                   <thead>
                     <tr>
-                      <th>شناسه دانش‌آموز</th>
-                      <th>نام و نام خانوادگی</th>
+                      <th className="student-id-column">#</th>
+
+                      <th>دانش‌آموز</th>
+
                       <th>شماره تماس</th>
-                      <th>کلاس فعال</th>
-                      <th>معدل نمرات</th>
-                      <th>درصد حضور</th>
+
+                      <th>کلاس</th>
+
+                      <th>معدل</th>
+
+                      <th>حضور</th>
+
                       <th>وضعیت</th>
                     </tr>
                   </thead>
 
                   <tbody>
-                    {filteredStudents.map((student) => (
-                      <tr key={student.id}>
-                        <td>
-                          <span className="teacher-students-k7p2-id-badge">
-                            {student.id}
+                    {filteredStudents.map((student, index) => (
+                      <tr key={`${student.id}-${student.classId}`}>
+                        <td className="student-id-column">
+                          <span className="teacher-students-k7p2-row-number">
+                            {index + 1}
                           </span>
                         </td>
 
                         <td>
                           <div className="teacher-students-k7p2-name-cell">
-                            <GraduationCap
-                              size={18}
-                              className="teacher-students-k7p2-avatar-icon"
-                            />
+                            <div className="teacher-students-k7p2-avatar">
+                              <UserRound size={18} />
+                            </div>
 
-                            <strong>{student.name}</strong>
+                            <div className="teacher-students-k7p2-name-content">
+                              <strong>{student.name}</strong>
+
+                              <span>شناسه: {student.id}</span>
+                            </div>
                           </div>
                         </td>
 
                         <td>
-                          <span className="teacher-students-k7p2-phone">
-                            <Phone size={14} />
-                            {student.phone}
-                          </span>
+                          {student.phone !== "-" ? (
+                            <a
+                              href={`tel:${student.phone}`}
+                              className="teacher-students-k7p2-phone"
+                            >
+                              <Phone size={15} />
+                              <span>{student.phone}</span>
+                            </a>
+                          ) : (
+                            <span className="teacher-students-k7p2-muted">
+                              ثبت نشده
+                            </span>
+                          )}
                         </td>
 
                         <td>
                           <span className="teacher-students-k7p2-class-badge">
+                            <BookOpen size={13} />
                             {student.className}
                           </span>
                         </td>
 
                         <td>
-                          <strong className="teacher-students-k7p2-vazir-num teacher-students-k7p2-grade">
-                            {student.averageGrade}
-                          </strong>
+                          <div className="teacher-students-k7p2-grade-cell">
+                            <strong
+                              className={
+                                student.averageGrade === "-" ? "is-empty" : ""
+                              }
+                            >
+                              {student.averageGrade}
+                            </strong>
+
+                            {student.averageGrade !== "-" && <span>از 100</span>}
+                          </div>
                         </td>
 
                         <td>
-                          <span className="teacher-students-k7p2-vazir-num teacher-students-k7p2-attendance">
+                          <span
+                            className={`teacher-students-k7p2-attendance ${
+                              student.attendanceRate === "-" ? "is-empty" : ""
+                            }`}
+                          >
                             {student.attendanceRate}
                           </span>
                         </td>
 
                         <td>
                           <span
-                            className={`teacher-students-k7p2-status-badge teacher-students-k7p2-status-${student.statusClass}`}
+                            className={`teacher-students-k7p2-status teacher-students-k7p2-status-${student.statusClass}`}
                           >
+                            <span className="teacher-students-k7p2-status-dot" />
                             {student.status}
                           </span>
                         </td>
@@ -298,92 +427,119 @@ function TeacherStudents() {
                   </tbody>
                 </table>
               </div>
-            ) : null}
-          </div>
+            </div>
+          )}
 
           {/* =========================
               Mobile Cards
           ========================== */}
 
-          <div className="teacher-students-k7p2-mobile-list">
-            {filteredStudents.length > 0
-              ? filteredStudents.map((student) => (
-                  <article
-                    className="teacher-students-k7p2-mobile-card"
-                    key={student.id}
-                  >
-                    <div className="teacher-students-k7p2-mobile-card-header">
-                      <div className="teacher-students-k7p2-mobile-student">
-                        <div className="teacher-students-k7p2-mobile-avatar">
-                          <GraduationCap size={20} />
-                        </div>
-
-                        <div className="teacher-students-k7p2-mobile-student-info">
-                          <strong>{student.name}</strong>
-
-                          <span className="teacher-students-k7p2-mobile-id">
-                            {student.id}
-                          </span>
-                        </div>
+          {filteredStudents.length > 0 && (
+            <div className="teacher-students-k7p2-mobile-list">
+              {filteredStudents.map((student, index) => (
+                <article
+                  key={`${student.id}-mobile-${student.classId}`}
+                  className="teacher-students-k7p2-mobile-card"
+                >
+                  <div className="teacher-students-k7p2-mobile-header">
+                    <div className="teacher-students-k7p2-mobile-profile">
+                      <div className="teacher-students-k7p2-mobile-avatar">
+                        <UserRound size={20} />
                       </div>
 
-                      <span
-                        className={`teacher-students-k7p2-status-badge teacher-students-k7p2-status-${student.statusClass}`}
-                      >
-                        {student.status}
-                      </span>
+                      <div className="teacher-students-k7p2-mobile-name">
+                        <strong>{student.name}</strong>
+
+                        <span>شناسه: {student.id}</span>
+                      </div>
                     </div>
 
-                    <div className="teacher-students-k7p2-mobile-divider" />
+                    <span
+                      className={`teacher-students-k7p2-status teacher-students-k7p2-status-${student.statusClass}`}
+                    >
+                      <span className="teacher-students-k7p2-status-dot" />
+                      {student.status}
+                    </span>
+                  </div>
 
-                    <div className="teacher-students-k7p2-mobile-info-grid">
-                      <div className="teacher-students-k7p2-mobile-info">
-                        <span>شماره تماس</span>
+                  <div className="teacher-students-k7p2-mobile-class">
+                    <BookOpen size={15} />
+                    <span>{student.className}</span>
+                  </div>
 
-                        <strong className="teacher-students-k7p2-mobile-phone">
+                  <div className="teacher-students-k7p2-mobile-grid">
+                    <div className="teacher-students-k7p2-mobile-item">
+                      <span>شماره تماس</span>
+
+                      {student.phone !== "-" ? (
+                        <a
+                          href={`tel:${student.phone}`}
+                          className="teacher-students-k7p2-mobile-phone"
+                        >
                           <Phone size={14} />
                           {student.phone}
-                        </strong>
-                      </div>
-
-                      <div className="teacher-students-k7p2-mobile-info">
-                        <span>کلاس فعال</span>
-
-                        <strong className="teacher-students-k7p2-mobile-class">
-                          {student.className}
-                        </strong>
-                      </div>
-
-                      <div className="teacher-students-k7p2-mobile-info">
-                        <span>معدل نمرات</span>
-
-                        <strong className="teacher-students-k7p2-mobile-grade">
-                          {student.averageGrade}
-                        </strong>
-                      </div>
-
-                      <div className="teacher-students-k7p2-mobile-info">
-                        <span>درصد حضور</span>
-
-                        <strong className="teacher-students-k7p2-mobile-attendance">
-                          {student.attendanceRate}
-                        </strong>
-                      </div>
+                        </a>
+                      ) : (
+                        <strong className="is-empty">ثبت نشده</strong>
+                      )}
                     </div>
-                  </article>
-                ))
-              : null}
-          </div>
+
+                    <div className="teacher-students-k7p2-mobile-item">
+                      <span>معدل</span>
+
+                      <strong
+                        className={
+                          student.averageGrade === "-" ? "is-empty" : "grade"
+                        }
+                      >
+                        {student.averageGrade}
+                      </strong>
+                    </div>
+
+                    <div className="teacher-students-k7p2-mobile-item">
+                      <span>درصد حضور</span>
+
+                      <strong
+                        className={
+                          student.attendanceRate === "-"
+                            ? "is-empty"
+                            : "attendance"
+                        }
+                      >
+                        {student.attendanceRate}
+                      </strong>
+                    </div>
+
+                    <div className="teacher-students-k7p2-mobile-item">
+                      <span>ردیف</span>
+
+                      <strong>{index + 1}</strong>
+                    </div>
+                  </div>
+
+                  <div className="teacher-students-k7p2-mobile-footer">
+                    <span>اطلاعات آموزشی دانش‌آموز</span>
+
+                    <ChevronLeft size={16} />
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
 
           {/* =========================
-              Empty State
+              Empty
           ========================== */}
 
           {filteredStudents.length === 0 && (
             <div className="teacher-students-k7p2-empty">
-              <BookOpen size={36} />
+              <div className="teacher-students-k7p2-empty-icon">
+                <BookOpen size={30} />
+              </div>
 
-              <p>هیچ دانش‌آموزی یافت نشد.</p>
+              <h3>دانش‌آموزی پیدا نشد</h3>
+
+              <p>با تغییر عبارت جستجو یا انتخاب کلاس دیگر دوباره تلاش کنید.</p>
             </div>
           )}
         </section>

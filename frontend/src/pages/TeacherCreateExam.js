@@ -8,6 +8,7 @@ import {
   ImagePlus,
   Pencil,
   X,
+  FileTextIcon,
 } from "lucide-react";
 
 import DashboardLayout from "../components/DashboardLayout";
@@ -48,9 +49,13 @@ function TeacherCreateExam() {
           api.terms.list(),
         ]);
         if (!alive) return;
-        const activeTermIds = (terms || []).filter((t) => t.is_active).map((t) => t.id);
+        const activeTermIds = (terms || [])
+          .filter((t) => t.is_active)
+          .map((t) => t.id);
         const activeClasses = (classes || []).filter(
-          (c) => activeTermIds.length === 0 || activeTermIds.includes(c.term || c.term?.id),
+          (c) =>
+            activeTermIds.length === 0 ||
+            activeTermIds.includes(c.term || c.term?.id),
         );
         setClassrooms(activeClasses || []);
         setClassroomId(activeClasses[0]?.id || "");
@@ -126,25 +131,18 @@ function TeacherCreateExam() {
       text: questionText,
       image: descriptiveImage,
       score: parsedScore,
-      options:
-        questionType === "multiple" ? [...options] : [],
-      correctOption:
-        questionType === "multiple" ? correctOption : null,
+      options: questionType === "multiple" ? [...options] : [],
+      correctOption: questionType === "multiple" ? correctOption : null,
     };
 
     if (editingQuestionId) {
       setQuestions((previousQuestions) =>
         previousQuestions.map((question) =>
-          question.id === editingQuestionId
-            ? newQuestion
-            : question
-        )
+          question.id === editingQuestionId ? newQuestion : question,
+        ),
       );
     } else {
-      setQuestions((previousQuestions) => [
-        ...previousQuestions,
-        newQuestion,
-      ]);
+      setQuestions((previousQuestions) => [...previousQuestions, newQuestion]);
     }
 
     resetQuestionForm();
@@ -173,7 +171,7 @@ function TeacherCreateExam() {
 
   const handleDeleteQuestion = (id) => {
     setQuestions((previousQuestions) =>
-      previousQuestions.filter((question) => question.id !== id)
+      previousQuestions.filter((question) => question.id !== id),
     );
 
     if (editingQuestionId === id) {
@@ -234,30 +232,23 @@ function TeacherCreateExam() {
   };
 
   return (
-    <DashboardLayout
-      role="پنل معلم"
-      title="ایجاد امتحان"
-      menuType="teacher"
-    >
+    <DashboardLayout role="پنل معلم" title="ایجاد امتحان" menuType="teacher">
       {/* ================= اطلاعات امتحان ================= */}
 
       <section className="xqv-teacher-exam-section">
-        <div className="xqv-teacher-exam-section-head">
-          <div>
-            <h3 className="xqv-teacher-exam-section-title">
-              مشخصات امتحان
-            </h3>
+        <section className="secretary-terms-header">
+          <div className="secretary-terms-heading">
+            <div className="secretary-terms-avatar">
+              <FileTextIcon size={25} />
+            </div>
 
-            <p className="xqv-teacher-exam-section-subtitle">
-              اطلاعات کلی آزمون را وارد کنید
-            </p>
+            <div className="secretary-terms-heading-content">
+              <h3>مشخصات امتحان</h3>
+
+              <p> اطلاعات کلی آزمون را وارد کنید</p>
+            </div>
           </div>
-
-          <div className="xqv-teacher-exam-form-badge">
-            فرم ایجاد آزمون
-          </div>
-        </div>
-
+        </section>
         <div className="xqv-teacher-exam-info-card">
           <div className="xqv-teacher-exam-form-grid">
             <div className="xqv-teacher-exam-field">
@@ -318,41 +309,26 @@ function TeacherCreateExam() {
       {/* ================= ساخت سؤال ================= */}
 
       <section className="xqv-teacher-exam-section">
-        <div className="xqv-teacher-exam-section-head">
-          <div>
-            <h3 className="xqv-teacher-exam-section-title">
-              {editingQuestionId
-                ? "ویرایش سؤال"
-                : "ساخت سؤال جدید"}
-            </h3>
-
-            <p className="xqv-teacher-exam-section-subtitle">
-              نوع سؤال را انتخاب کرده و محتوای آن را وارد کنید
-            </p>
+        <section className="secretary-terms-header">
+          <div className="secretary-terms-heading">
+            <div className="secretary-terms-avatar">
+              <FileTextIcon size={25} />
+            </div>
+            <div className="secretary-terms-heading-content">
+              <h3>{editingQuestionId ? "ویرایش سؤال" : "ساخت سؤال جدید"}</h3>
+              <p> نوع سؤال را انتخاب کرده و محتوای آن را وارد کنید</p>
+            </div>
+            {editingQuestionId && (
+              <AnimatedButton small="small" onClick={resetQuestionForm}>
+                <X size={17} />
+                لغو ویرایش
+              </AnimatedButton>
+            )}
           </div>
-
-          {editingQuestionId && (
-            <button
-              type="button"
-              className="xqv-teacher-exam-cancel-edit"
-              onClick={resetQuestionForm}
-            >
-              <X size={17} />
-              لغو ویرایش
-            </button>
-          )}
-        </div>
-
+        </section>
         <div className="xqv-teacher-exam-builder-card">
-
-          {/* انتخاب نوع سؤال */}
-
-          <div className="xqv-teacher-exam-type-title">
-            نوع سؤال
-          </div>
-
+          <div className="xqv-teacher-exam-type-title">نوع سؤال</div>
           <div className="xqv-teacher-exam-type-selector">
-
             <button
               type="button"
               className={`xqv-teacher-exam-type-option ${
@@ -369,15 +345,11 @@ function TeacherCreateExam() {
               <div className="xqv-teacher-exam-type-content">
                 <strong>سؤال تستی</strong>
 
-                <span>
-                  چهار گزینه و یک پاسخ صحیح
-                </span>
+                <span>چهار گزینه و یک پاسخ صحیح</span>
               </div>
 
               <div className="xqv-teacher-exam-radio">
-                {questionType === "multiple" && (
-                  <span />
-                )}
+                {questionType === "multiple" && <span />}
               </div>
             </button>
 
@@ -397,40 +369,40 @@ function TeacherCreateExam() {
               <div className="xqv-teacher-exam-type-content">
                 <strong>سؤال تشریحی</strong>
 
-                <span>
-                  پاسخ آزاد همراه با امکان درج تصویر
-                </span>
+                <span>پاسخ آزاد همراه با امکان درج تصویر</span>
               </div>
 
               <div className="xqv-teacher-exam-radio">
-                {questionType === "descriptive" && (
-                  <span />
-                )}
+                {questionType === "descriptive" && <span />}
               </div>
             </button>
-
           </div>
 
           {/* متن سؤال */}
 
           <div className="xqv-teacher-exam-field xqv-teacher-exam-question-field">
-            <label>متن سؤال <span style={{ color: "red" }}>*</span></label>
+            <label>
+              متن سؤال <span style={{ color: "red" }}>*</span>
+            </label>
 
             <input
               className="xqv-teacher-exam-input"
               value={questionText}
               dir="ltr"
               placeholder="متن سؤال را اینجا وارد کنید..."
-              onChange={(event) =>
-                setQuestionText(event.target.value)
-              }
+              onChange={(event) => setQuestionText(event.target.value)}
             />
           </div>
 
           {/* بارم نمره این سؤال */}
 
-          <div className="xqv-teacher-exam-field" style={{ marginBottom: "1.25rem" }}>
-            <label>بارم نمره این سؤال <span style={{ color: "red" }}>*</span></label>
+          <div
+            className="xqv-teacher-exam-field"
+            style={{ marginBottom: "1.25rem" }}
+          >
+            <label>
+              بارم نمره این سؤال <span style={{ color: "red" }}>*</span>
+            </label>
 
             <input
               className="xqv-teacher-exam-input"
@@ -440,9 +412,7 @@ function TeacherCreateExam() {
               step="0.25"
               placeholder="مثلاً 1 یا 2 یا 1.5"
               value={questionScore}
-              onChange={(event) =>
-                setQuestionScore(event.target.value)
-              }
+              onChange={(event) => setQuestionScore(event.target.value)}
               required
             />
           </div>
@@ -451,13 +421,10 @@ function TeacherCreateExam() {
 
           {questionType === "multiple" && (
             <div className="xqv-teacher-exam-multiple-area">
-
               <div className="xqv-teacher-exam-options-title">
                 <span>گزینه‌های پاسخ</span>
 
-                <small>
-                  یکی از گزینه‌ها را به عنوان پاسخ صحیح انتخاب کنید
-                </small>
+                <small>یکی از گزینه‌ها را به عنوان پاسخ صحیح انتخاب کنید</small>
               </div>
 
               <div className="xqv-teacher-exam-options-grid">
@@ -473,14 +440,10 @@ function TeacherCreateExam() {
                     <button
                       type="button"
                       className="xqv-teacher-exam-option-radio"
-                      onClick={() =>
-                        setCorrectOption(index)
-                      }
+                      onClick={() => setCorrectOption(index)}
                       aria-label={`انتخاب گزینه ${index + 1} به عنوان پاسخ صحیح`}
                     >
-                      {correctOption === index && (
-                        <span />
-                      )}
+                      {correctOption === index && <span />}
                     </button>
 
                     <span className="xqv-teacher-exam-option-number">
@@ -493,10 +456,7 @@ function TeacherCreateExam() {
                       dir="ltr"
                       value={option}
                       onChange={(event) =>
-                        handleOptionChange(
-                          index,
-                          event.target.value
-                        )
+                        handleOptionChange(index, event.target.value)
                       }
                       placeholder={`متن گزینه ${index + 1}`}
                     />
@@ -516,7 +476,6 @@ function TeacherCreateExam() {
 
           {questionType === "descriptive" && (
             <div className="xqv-teacher-exam-descriptive-area">
-
               <div className="xqv-teacher-exam-descriptive-info">
                 <FileText size={20} />
 
@@ -524,8 +483,8 @@ function TeacherCreateExam() {
                   <strong>سؤال تشریحی</strong>
 
                   <span>
-                    می‌توانید سؤال را به صورت متنی بنویسید
-                    و در صورت نیاز یک تصویر نیز اضافه کنید.
+                    می‌توانید سؤال را به صورت متنی بنویسید و در صورت نیاز یک
+                    تصویر نیز اضافه کنید.
                   </span>
                 </div>
               </div>
@@ -542,13 +501,9 @@ function TeacherCreateExam() {
                 </div>
 
                 <div className="xqv-teacher-exam-upload-text">
-                  <strong>
-                    افزودن تصویر به سؤال
-                  </strong>
+                  <strong>افزودن تصویر به سؤال</strong>
 
-                  <span>
-                    JPG، PNG یا WEBP
-                  </span>
+                  <span>JPG، PNG یا WEBP</span>
                 </div>
               </label>
 
@@ -561,9 +516,7 @@ function TeacherCreateExam() {
 
                   <button
                     type="button"
-                    onClick={() =>
-                      setDescriptiveImage(null)
-                    }
+                    onClick={() => setDescriptiveImage(null)}
                     aria-label="حذف تصویر"
                   >
                     <Trash2 size={17} />
@@ -572,7 +525,6 @@ function TeacherCreateExam() {
               )}
             </div>
           )}
-
 
           <div className="xqv-teacher-exam-builder-footer">
             <AnimatedButton
@@ -597,20 +549,27 @@ function TeacherCreateExam() {
       <section className="xqv-teacher-exam-section">
         <div className="xqv-teacher-exam-section-head">
           <div>
-            <h3 className="xqv-teacher-exam-section-title">
-              سؤالات آزمون
-            </h3>
+            <h3 className="xqv-teacher-exam-section-title">سؤالات آزمون</h3>
 
             <p className="xqv-teacher-exam-section-subtitle">
               سؤالات اضافه‌شده را مشاهده، ویرایش یا حذف کنید
             </p>
           </div>
 
-          <div className="xqv-teacher-exam-question-counter" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <div
+            className="xqv-teacher-exam-question-counter"
+            style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+          >
             <span>{toPersianDigits(questions.length)} سؤال</span>
             <span>•</span>
-            <span style={{ color: "var(--primary, #e74c3c)", fontWeight: "800" }}>
-              مجموع بارم: {toPersianDigits(questions.reduce((sum, q) => sum + (Number(q.score) || 1), 0))} نمره
+            <span
+              style={{ color: "var(--primary, #e74c3c)", fontWeight: "800" }}
+            >
+              مجموع بارم:{" "}
+              {toPersianDigits(
+                questions.reduce((sum, q) => sum + (Number(q.score) || 1), 0),
+              )}{" "}
+              نمره
             </span>
           </div>
         </div>
@@ -621,13 +580,9 @@ function TeacherCreateExam() {
               <FileText size={28} />
             </div>
 
-            <strong>
-              هنوز سؤالی به آزمون اضافه نشده است
-            </strong>
+            <strong>هنوز سؤالی به آزمون اضافه نشده است</strong>
 
-            <span>
-              اولین سؤال خود را از بخش بالا ایجاد کنید.
-            </span>
+            <span>اولین سؤال خود را از بخش بالا ایجاد کنید.</span>
           </div>
         ) : (
           <div className="xqv-teacher-exam-question-list">
@@ -637,7 +592,6 @@ function TeacherCreateExam() {
                 key={question.id}
               >
                 <div className="xqv-teacher-exam-question-card-head">
-
                   <div className="xqv-teacher-exam-question-number">
                     <span>سؤال</span>
                     <strong>{index + 1}</strong>
@@ -683,9 +637,7 @@ function TeacherCreateExam() {
                     <button
                       type="button"
                       className="xqv-teacher-exam-edit-button"
-                      onClick={() =>
-                        handleEditQuestion(question)
-                      }
+                      onClick={() => handleEditQuestion(question)}
                     >
                       <Pencil size={17} />
                       ویرایش
@@ -694,9 +646,7 @@ function TeacherCreateExam() {
                     <button
                       type="button"
                       className="xqv-teacher-exam-delete-button"
-                      onClick={() =>
-                        handleDeleteQuestion(question.id)
-                      }
+                      onClick={() => handleDeleteQuestion(question.id)}
                     >
                       <Trash2 size={17} />
                     </button>
@@ -710,44 +660,35 @@ function TeacherCreateExam() {
 
                   {question.type === "multiple" && (
                     <div className="xqv-teacher-exam-saved-options">
-                      {question.options.map(
-                        (option, optionIndex) => (
-                          <div
-                            className={`xqv-teacher-exam-saved-option ${
-                              optionIndex ===
-                              question.correctOption
-                                ? "xqv-teacher-exam-saved-option--correct"
-                                : ""
-                            }`}
-                            key={optionIndex}
-                          >
-                            <span>
-                              {optionIndex + 1}
-                            </span>
+                      {question.options.map((option, optionIndex) => (
+                        <div
+                          className={`xqv-teacher-exam-saved-option ${
+                            optionIndex === question.correctOption
+                              ? "xqv-teacher-exam-saved-option--correct"
+                              : ""
+                          }`}
+                          key={optionIndex}
+                        >
+                          <span>{optionIndex + 1}</span>
 
-                            <p>{option}</p>
+                          <p>{option}</p>
 
-                            {optionIndex ===
-                              question.correctOption && (
-                              <strong>
-                                پاسخ صحیح
-                              </strong>
-                            )}
-                          </div>
-                        )
-                      )}
+                          {optionIndex === question.correctOption && (
+                            <strong>پاسخ صحیح</strong>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   )}
 
-                  {question.type === "descriptive" &&
-                    question.image && (
-                      <div className="xqv-teacher-exam-saved-image">
-                        <img
-                          src={question.image.preview}
-                          alt="تصویر سؤال تشریحی"
-                        />
-                      </div>
-                    )}
+                  {question.type === "descriptive" && question.image && (
+                    <div className="xqv-teacher-exam-saved-image">
+                      <img
+                        src={question.image.preview}
+                        alt="تصویر سؤال تشریحی"
+                      />
+                    </div>
+                  )}
                 </div>
               </article>
             ))}

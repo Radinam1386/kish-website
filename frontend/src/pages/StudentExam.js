@@ -256,8 +256,6 @@ function StudentExam() {
       }
 
       const submission = await api.submissions.create(submissionPayload);
-
-      // Submit answers for all questions
       await Promise.all(
         questions.map((question) => {
           const ans = answers[question.id];
@@ -292,8 +290,6 @@ function StudentExam() {
 
   const totalDurationMinutes = Number(exam?.duration_minutes) || 45;
   const totalDurationSeconds = totalDurationMinutes * 60;
-
-  // Format digital countdown string
   const formatTime = (secs) => {
     if (secs === null || secs === undefined) return "--:--";
     const s = Math.max(0, secs);
@@ -343,8 +339,6 @@ function StudentExam() {
       </DashboardLayout>
     );
   }
-
-  // If the student already completed this exam previously:
   if (existingSubmission && !submitted) {
     return (
       <DashboardLayout
@@ -394,7 +388,6 @@ function StudentExam() {
       <div className="exam-page">
         {!submitted ? (
           <>
-            {/* Live Countdown Timer Widget */}
             <div className={timerBannerClass}>
               <div className="timer-main-row">
                 <div className="timer-info-box">
@@ -435,7 +428,6 @@ function StudentExam() {
               </div>
             </div>
 
-            {/* Expired / Auto submit banner if timeout triggered */}
             {isTimeUp && (
               <div className="exam-time-expired-card">
                 <AlertCircle size={24} />
@@ -699,7 +691,7 @@ function QuestionCard({
                 onClick={() => onSelect(question.id, option.id)}
                 disabled={disabled}
               >
-                <span className="option-label" dir="rtl">
+                <span className="option-label">
                   {option.text}
                 </span>
                 <span className="option-letter">

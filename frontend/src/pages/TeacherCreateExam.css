@@ -37,7 +37,7 @@
 .xqv-teacher-exam-question-counter {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
   padding: 0.45rem 0.85rem;
   border-radius: 999px;
   background: #fff1ef;
@@ -58,6 +58,7 @@
   border-radius: 22px;
   padding: 1.6rem;
   box-shadow: 0 10px 30px rgba(37, 41, 45, 0.055);
+  margin-top: 25px;
 }
 
 .xqv-teacher-exam-form-grid {
@@ -506,6 +507,7 @@
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.65);
   text-align: center;
+  margin-top: 25px;
 }
 
 .xqv-teacher-exam-empty-icon {

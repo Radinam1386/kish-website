@@ -44,6 +44,11 @@ function DashboardLayout({ role, title, children, menuType }) {
         to: "/panel/teacher",
       },
       {
+        label: "دانش‌آموزان",
+        icon: <UsersRound size={19} />,
+        to: "/panel/teacher/students",
+      },
+      {
         label: "حضور و غیاب",
         icon: <ClipboardCheck size={19} />,
         to: "/panel/teacher/attendance",
@@ -57,11 +62,6 @@ function DashboardLayout({ role, title, children, menuType }) {
         label: "ایجاد امتحان",
         icon: <FileText size={19} />,
         to: "/panel/teacher/create-exam",
-      },
-      {
-        label: "دانش‌آموزان",
-        icon: <UsersRound size={19} />,
-        to: "/panel/teacher/students",
       },
     ],
 

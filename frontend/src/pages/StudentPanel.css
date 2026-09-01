@@ -1,69 +1,138 @@
 /* =========================================================
-   Student Dashboard Panel (Light Theme White/Red Glassmorphism)
+   STUDENT PANEL
+   Responsive / RTL / Mobile First Hardened Layout
    ========================================================= */
 
 .student-panel-page {
+  --sp-primary: var(--primary, oklch(55% 0.18 25));
+  --sp-red: var(--red-5, oklch(55.799% 0.17067 24.538));
+
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.5rem 0;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  padding: 0.5rem 0;
-  max-width: 1200px;
-  margin: 0 auto;
   direction: rtl;
+
+  /* جلوگیری از overflow ناشی از child ها */
+  min-width: 0;
+  box-sizing: border-box;
 }
 
+.student-panel-page *,
+.student-panel-page *::before,
+.student-panel-page *::after {
+  box-sizing: border-box;
+}
+
+.student-panel-page img,
+.student-panel-page svg {
+  max-width: 100%;
+}
+
+.student-panel-page button,
+.student-panel-page a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+/* =========================================================
+   ERROR ALERT
+   ========================================================= */
+
 .student-alert.error {
+  width: 100%;
+  min-width: 0;
+
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.75rem;
-  padding: 0.85rem 1.25rem;
+
+  padding: 0.85rem 1.1rem;
+
   border-radius: 12px;
   background: oklch(95% 0.05 25 / 0.85);
   border: 1px solid oklch(75% 0.15 25 / 0.3);
+
   color: oklch(45% 0.18 25);
   font-weight: 700;
   font-size: 0.88rem;
+  line-height: 1.7;
+
+  overflow-wrap: anywhere;
 }
 
-/* Active Class Hero Banner */
+.student-alert.error svg {
+  flex: 0 0 auto;
+  margin-top: 0.2rem;
+}
+
+
+/* =========================================================
+   ACTIVE CLASS HERO
+   ========================================================= */
+
 .active-class-hero-banner {
+  width: 100%;
+  min-width: 0;
+
   background: oklch(100% 0 0 / 0.88);
   border: 1px solid oklch(0% 0 0 / 0.055);
   border-radius: 20px;
+
   padding: 1.5rem 1.75rem;
+
   display: flex;
   flex-direction: column;
   gap: 1rem;
+
   box-shadow: 0 7px 28px oklch(0% 0 0 / 0.04);
   backdrop-filter: blur(12px);
+
+  overflow: hidden;
 }
 
 .banner-badge-row {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.6rem;
+
+  min-width: 0;
 }
 
-.active-term-badge {
+.active-term-badge,
+.active-class-live-pill {
+  max-width: 100%;
+  min-width: 0;
+
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
+
+  white-space: nowrap;
+}
+
+.active-term-badge {
   background: oklch(96% 0.02 29);
-  color: var(--primary, oklch(55% 0.18 25));
-  padding: 0.25rem 0.75rem;
+  color: var(--sp-primary);
+
+  padding: 0.3rem 0.75rem;
   border-radius: 10px;
+
   font-size: 0.78rem;
   font-weight: 800;
 }
 
 .active-class-live-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
   background: oklch(95% 0.05 145 / 0.9);
   color: oklch(35% 0.15 145);
-  padding: 0.25rem 0.7rem;
+
+  padding: 0.3rem 0.7rem;
   border-radius: 12px;
+
   font-size: 0.78rem;
   font-weight: 800;
 }
@@ -71,17 +140,34 @@
 .live-dot {
   width: 8px;
   height: 8px;
+  min-width: 8px;
+
   border-radius: 50%;
   background: oklch(50% 0.2 145);
+
   animation: pulseDot 2s infinite ease-in-out;
 }
 
 @keyframes pulseDot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.85); }
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
 }
 
+
+/* Hero main */
+
 .banner-main-row {
+  width: 100%;
+  min-width: 0;
+
   display: flex;
   align-items: center;
   gap: 1.25rem;
@@ -90,194 +176,393 @@
 .class-hero-icon {
   width: 56px;
   height: 56px;
+  min-width: 56px;
+
   border-radius: 16px;
-  background: var(--red-5, oklch(55.799% 0.17067 24.538));
-  color: #ffffff;
+
+  background: var(--sp-red);
+  color: #fff;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   box-shadow: 0 8px 20px oklch(60% 0.19 29 / 0.28);
-  flex-shrink: 0;
+}
+
+.class-hero-info {
+  min-width: 0;
+  flex: 1;
 }
 
 .class-hero-info h2 {
-  font-size: 1.35rem;
+  margin: 0 0 0.35rem;
+
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  line-height: 1.5;
+
   font-weight: 900;
   color: oklch(25% 0 0);
-  margin: 0 0 0.35rem;
+
+  overflow-wrap: anywhere;
 }
 
 .class-hero-info p {
-  font-size: 0.84rem;
-  color: oklch(50% 0 0);
   margin: 0;
+
+  font-size: clamp(0.75rem, 1.4vw, 0.84rem);
+  line-height: 1.9;
+
+  color: oklch(50% 0 0);
+
+  overflow-wrap: anywhere;
 }
 
+
+/* =========================================================
+   NO ACTIVE CLASS
+   ========================================================= */
+
 .no-active-class-box {
+  width: 100%;
+  min-width: 0;
+
   background: oklch(100% 0 0 / 0.88);
   border: 1px solid oklch(0% 0 0 / 0.055);
   border-radius: 20px;
-  padding: 3rem 2rem;
+
+  padding: clamp(2rem, 5vw, 3rem) 1.25rem;
+
   text-align: center;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
+
   color: oklch(50% 0 0);
+
   box-shadow: 0 7px 28px oklch(0% 0 0 / 0.04);
+
+  overflow: hidden;
 }
 
 .no-active-class-box h3 {
-  font-size: 1.15rem;
+  max-width: 700px;
+
+  margin: 0;
+
+  font-size: clamp(0.95rem, 2vw, 1.15rem);
+  line-height: 1.7;
+
   font-weight: 800;
   color: oklch(25% 0 0);
-  margin: 0;
+
+  overflow-wrap: anywhere;
 }
 
-/* Stats Grid */
+.no-active-class-box p {
+  max-width: 650px;
+
+  margin: 0;
+
+  font-size: 0.82rem;
+  line-height: 1.9;
+
+  overflow-wrap: anywhere;
+}
+
+
+/* =========================================================
+   STATS GRID
+   ========================================================= */
+
 .student-panel-stats-grid {
+  width: 100%;
+  min-width: 0;
+
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
   gap: 1.25rem;
 }
 
-/* Main Grid */
+
+/* =========================================================
+   MAIN CONTENT GRID
+   ========================================================= */
+
 .student-panel-main-grid {
+  width: 100%;
+  min-width: 0;
+
   display: grid;
-  grid-template-columns: 1fr 1fr;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
   gap: 1.5rem;
+
+  align-items: start;
 }
 
+
+/* =========================================================
+   MAIN CARDS
+   ========================================================= */
+
 .student-panel-card {
+  width: 100%;
+  min-width: 0;
+
   background: oklch(100% 0 0 / 0.88);
   border: 1px solid oklch(0% 0 0 / 0.055);
   border-radius: 20px;
+
   padding: 1.5rem;
+
   display: flex;
   flex-direction: column;
+
   gap: 1.25rem;
+
   box-shadow: 0 7px 28px oklch(0% 0 0 / 0.04);
+
   backdrop-filter: blur(12px);
+
+  overflow: hidden;
 }
 
+
+/* =========================================================
+   CARD HEADER
+   ========================================================= */
+
 .student-card-header {
+  width: 100%;
+  min-width: 0;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 1rem;
+
   padding-bottom: 0.85rem;
+
   border-bottom: 1px solid oklch(0% 0 0 / 0.055);
+}
+
+.header-info {
+  min-width: 0;
+  flex: 1;
 }
 
 .header-info h3 {
   display: flex;
   align-items: center;
+
   gap: 0.5rem;
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: oklch(25% 0 0);
+
   margin: 0 0 0.2rem;
+
+  font-size: clamp(0.9rem, 1.6vw, 1.05rem);
+  line-height: 1.6;
+
+  font-weight: 800;
+
+  color: oklch(25% 0 0);
+
+  overflow-wrap: anywhere;
 }
 
 .header-info h3 svg {
-  color: var(--primary, oklch(55% 0.18 25));
+  flex: 0 0 auto;
+  color: var(--sp-primary);
 }
 
 .header-info p {
-  font-size: 0.78rem;
-  color: oklch(55% 0 0);
   margin: 0;
+
+  font-size: 0.78rem;
+  line-height: 1.8;
+
+  color: oklch(55% 0 0);
+
+  overflow-wrap: anywhere;
 }
 
 .present-ratio-tag {
+  flex: 0 0 auto;
+
   background: oklch(95% 0.05 145 / 0.85);
   color: oklch(35% 0.15 145);
-  padding: 0.25rem 0.65rem;
+
+  padding: 0.3rem 0.65rem;
+
   border-radius: 8px;
+
   font-size: 0.78rem;
   font-weight: 800;
+
   white-space: nowrap;
 }
 
 .view-all-link {
+  flex: 0 0 auto;
+
   display: inline-flex;
   align-items: center;
+
   gap: 0.2rem;
+
   font-size: 0.8rem;
   font-weight: 700;
-  color: var(--primary, oklch(55% 0.18 25));
+
+  color: var(--sp-primary);
+
   text-decoration: none;
-  transition: transform 0.2s ease;
+
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .view-all-link:hover {
   transform: translateX(-3px);
 }
 
-/* Attendance List */
+.view-all-link:active {
+  opacity: 0.7;
+}
+
+
+/* =========================================================
+   ATTENDANCE LIST
+   ========================================================= */
+
 .sessions-attendance-list {
+  width: 100%;
+  min-width: 0;
+
   display: flex;
   flex-direction: column;
+
   gap: 0.65rem;
+
   max-height: 480px;
+
   overflow-y: auto;
+  overflow-x: hidden;
+
   padding-left: 0.25rem;
+
+  scrollbar-width: thin;
 }
 
 .session-attendance-row {
+  width: 100%;
+  min-width: 0;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 0.75rem;
+
   padding: 0.85rem 1rem;
+
   background: oklch(98% 0.003 29);
+
   border: 1px solid oklch(0% 0 0 / 0.06);
+
   border-radius: 14px;
-  transition: all 0.2s ease;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .session-attendance-row:hover {
-  background: #ffffff;
+  background: #fff;
   border-color: oklch(0% 0 0 / 0.1);
   box-shadow: 0 4px 14px oklch(0% 0 0 / 0.03);
 }
 
 .session-number-col {
+  min-width: 0;
+  flex: 1;
+
   display: flex;
   align-items: center;
+
   gap: 0.75rem;
 }
 
 .session-num-badge {
+  flex: 0 0 auto;
+
   background: oklch(100% 0 0);
+
   border: 1px solid oklch(0% 0 0 / 0.08);
+
   color: oklch(25% 0 0);
+
   padding: 0.2rem 0.55rem;
+
   border-radius: 8px;
+
   font-size: 0.78rem;
   font-weight: 800;
+
+  white-space: nowrap;
 }
 
 .session-date-text {
+  min-width: 0;
+
   font-size: 0.82rem;
+
   color: oklch(45% 0 0);
+
   font-weight: 600;
+
+  overflow-wrap: anywhere;
 }
 
 .session-status-col {
+  min-width: 0;
+  max-width: 55%;
+
   display: flex;
   align-items: center;
+
+  justify-content: flex-end;
+
   gap: 0.5rem;
 }
 
 .attendance-status-badge {
+  max-width: 100%;
+
   display: inline-flex;
   align-items: center;
+
   gap: 0.35rem;
+
   padding: 0.25rem 0.65rem;
+
   border-radius: 10px;
+
   font-size: 0.76rem;
   font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.attendance-status-badge svg {
+  flex: 0 0 auto;
 }
 
 .attendance-status-badge.present {
@@ -306,98 +591,177 @@
 }
 
 .session-teacher-note {
-  font-size: 0.72rem;
-  color: oklch(55% 0 0);
-  background: oklch(100% 0 0);
-  padding: 0.15rem 0.5rem;
-  border-radius: 6px;
+  min-width: 0;
   max-width: 140px;
+
+  font-size: 0.72rem;
+
+  color: oklch(55% 0 0);
+
+  background: #fff;
+
+  padding: 0.15rem 0.5rem;
+
+  border-radius: 6px;
+
   overflow: hidden;
+
   text-overflow: ellipsis;
+
   white-space: nowrap;
 }
 
-/* Active Exams List */
+
+/* =========================================================
+   EXAMS LIST
+   ========================================================= */
+
 .active-exams-list {
+  width: 100%;
+  min-width: 0;
+
   display: flex;
   flex-direction: column;
+
   gap: 0.75rem;
+
   max-height: 480px;
+
   overflow-y: auto;
+  overflow-x: hidden;
+
   padding-left: 0.25rem;
+
+  scrollbar-width: thin;
 }
 
 .active-exam-item-card {
+  width: 100%;
+  min-width: 0;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
+
+  gap: 1rem;
+
   padding: 1rem 1.15rem;
+
   background: oklch(98% 0.003 29);
+
   border: 1px solid oklch(0% 0 0 / 0.06);
+
   border-radius: 14px;
-  transition: all 0.2s ease;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .active-exam-item-card:hover {
-  background: #ffffff;
+  background: #fff;
+
   border-color: oklch(0% 0 0 / 0.1);
+
   box-shadow: 0 4px 14px oklch(0% 0 0 / 0.03);
 }
 
 .exam-main-details {
+  min-width: 0;
+  flex: 1;
+
   display: flex;
   align-items: center;
+
   gap: 0.85rem;
 }
 
 .exam-icon-box {
   width: 40px;
   height: 40px;
+  min-width: 40px;
+
   border-radius: 10px;
+
   background: oklch(96% 0.02 29);
-  color: var(--primary, oklch(55% 0.18 25));
+
+  color: var(--sp-primary);
+
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+}
+
+.exam-main-details > div:last-child {
+  min-width: 0;
 }
 
 .exam-main-details h4 {
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: oklch(25% 0 0);
+  min-width: 0;
+
   margin: 0 0 0.2rem;
+
+  font-size: 0.95rem;
+  line-height: 1.6;
+
+  font-weight: 800;
+
+  color: oklch(25% 0 0);
+
+  overflow-wrap: anywhere;
 }
 
 .exam-sub-info {
+  min-width: 0;
+
   display: flex;
   align-items: center;
+
+  flex-wrap: wrap;
+
   gap: 0.4rem;
+
   font-size: 0.75rem;
+  line-height: 1.7;
+
   color: oklch(55% 0 0);
 }
 
+
+/* =========================================================
+   EXAM ACTION / SCORE
+   ========================================================= */
+
 .exam-action-score-col {
+  flex: 0 0 auto;
+
   display: flex;
   align-items: center;
+
   gap: 0.75rem;
 }
 
 .score-badge-box {
+  min-width: 0;
+
   text-align: left;
 }
 
 .score-final {
   display: flex;
   align-items: baseline;
+
   gap: 0.2rem;
+
   font-weight: 900;
+
+  white-space: nowrap;
 }
 
 .score-final .score-num {
   font-size: 1.15rem;
-  color: var(--primary, oklch(55% 0.18 25));
+  color: var(--sp-primary);
 }
 
 .score-final .score-denom {
@@ -407,10 +771,17 @@
 
 .status-pill {
   display: inline-block;
+
   padding: 0.2rem 0.55rem;
+
   border-radius: 8px;
+
   font-size: 0.72rem;
+  line-height: 1.5;
+
   font-weight: 700;
+
+  white-space: nowrap;
 }
 
 .status-pill.pending {
@@ -421,13 +792,21 @@
 .status-pill.in-progress {
   background: #fef5e7;
   color: #d35400;
+
   border: 1px solid rgba(243, 156, 18, 0.4);
+
   animation: pulse-status 1.8s infinite;
 }
 
 @keyframes pulse-status {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.65; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.65;
+  }
 }
 
 .status-pill.open {
@@ -435,71 +814,605 @@
   color: oklch(35% 0.15 230);
 }
 
+
+/* =========================================================
+   EXAM BUTTONS
+   ========================================================= */
+
 .btn-exam-action {
+  min-height: 36px;
+
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+
   gap: 0.35rem;
+
   padding: 0.45rem 0.85rem;
+
   border-radius: 10px;
+
   font-size: 0.8rem;
   font-weight: 800;
+
   cursor: pointer;
+
   border: none;
+
   font-family: inherit;
-  transition: all 0.2s ease;
+
+  white-space: nowrap;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 .btn-exam-action.start {
-  background: var(--red-5, oklch(55.799% 0.17067 24.538));
-  color: #ffffff;
+  background: var(--sp-red);
+  color: #fff;
+
   box-shadow: 0 4px 12px oklch(60% 0.19 29 / 0.22);
 }
 
 .btn-exam-action.start:hover {
   transform: translateY(-2px);
+
   box-shadow: 0 6px 16px oklch(60% 0.19 29 / 0.32);
 }
 
 .btn-exam-action.resume {
   background: linear-gradient(135deg, #f39c12, #e67e22);
-  color: #ffffff;
+  color: #fff;
+
   box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
 }
 
 .btn-exam-action.resume:hover {
   transform: translateY(-2px);
+
   box-shadow: 0 6px 16px rgba(243, 156, 18, 0.45);
 }
 
 .btn-exam-action.review {
   background: oklch(96% 0.02 29);
+
   border: 1px solid oklch(60% 0.19 29 / 0.25);
-  color: var(--primary, oklch(55% 0.18 25));
+
+  color: var(--sp-primary);
 }
 
 .btn-exam-action.review:hover {
-  background: var(--red-5, oklch(55.799% 0.17067 24.538));
-  color: #ffffff;
+  background: var(--sp-red);
+  color: #fff;
 }
 
+
+/* =========================================================
+   EMPTY / LOADING
+   ========================================================= */
+
 .panel-empty-box {
+  width: 100%;
+
+  min-height: 180px;
+
   text-align: center;
-  padding: 3rem 1rem;
+
+  padding: 2.5rem 1rem;
+
   color: oklch(55% 0 0);
+
   display: flex;
   flex-direction: column;
+
   align-items: center;
+  justify-content: center;
+
   gap: 0.5rem;
 }
 
-.panel-loading-text {
-  text-align: center;
-  padding: 2.5rem 1rem;
-  color: oklch(55% 0 0);
+.panel-empty-box p {
+  margin: 0;
+
+  font-size: 0.85rem;
+  line-height: 1.8;
+
+  overflow-wrap: anywhere;
 }
 
-@media (max-width: 992px) {
+.panel-loading-text {
+  width: 100%;
+
+  text-align: center;
+
+  padding: 2.5rem 1rem;
+
+  color: oklch(55% 0 0);
+
+  font-size: 0.85rem;
+}
+
+
+/* =========================================================
+   TABLET / SMALL LAPTOP
+   <= 1100px
+   ========================================================= */
+
+@media (max-width: 1100px) {
+  .student-panel-page {
+    gap: 1.25rem;
+  }
+
+  .student-panel-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .student-panel-main-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+
+/* =========================================================
+   TABLET
+   <= 768px
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .student-panel-page {
+    width: 100%;
+    padding: 0.25rem 0;
+    gap: 1rem;
+  }
+
+  .active-class-hero-banner {
+    border-radius: 16px;
+    padding: 1.15rem;
+    gap: 0.9rem;
+  }
+
+  .banner-main-row {
+    align-items: flex-start;
+    gap: 0.85rem;
+  }
+
+  .class-hero-icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    border-radius: 13px;
+  }
+
+  .student-panel-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
+  }
+
+  .student-panel-main-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
+
+  .student-panel-card {
+    border-radius: 16px;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .student-card-header {
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .present-ratio-tag {
+    font-size: 0.72rem;
+  }
+
+  .sessions-attendance-list,
+  .active-exams-list {
+    max-height: 420px;
+  }
+
+  .active-exam-item-card {
+    padding: 0.85rem;
+    gap: 0.75rem;
+  }
+
+  .exam-action-score-col {
+    gap: 0.5rem;
+  }
+
+  .btn-exam-action {
+    padding-inline: 0.7rem;
+  }
+}
+
+
+/* =========================================================
+   LARGE MOBILE
+   <= 600px
+   ========================================================= */
+
+@media (max-width: 600px) {
+  .student-panel-page {
+    gap: 0.85rem;
+  }
+
+  .student-alert.error {
+    padding: 0.75rem 0.85rem;
+    font-size: 0.8rem;
+  }
+
+  .banner-badge-row {
+    gap: 0.45rem;
+  }
+
+  .active-term-badge,
+  .active-class-live-pill {
+    font-size: 0.7rem;
+  }
+
+  .banner-main-row {
+    flex-direction: row;
+  }
+
+  .class-hero-info h2 {
+    font-size: 1rem;
+  }
+
+  .class-hero-info p {
+    font-size: 0.73rem;
+    line-height: 1.8;
+  }
+
+  .no-active-class-box {
+    border-radius: 16px;
+    padding: 2rem 1rem;
+  }
+
+  .student-panel-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+  }
+
+  .student-panel-card {
+    padding: 0.85rem;
+  }
+
+  .student-card-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .student-card-header .present-ratio-tag,
+  .student-card-header .view-all-link {
+    align-self: flex-start;
+  }
+
+  .session-attendance-row {
+    align-items: stretch;
+    flex-direction: column;
+
+    gap: 0.65rem;
+
+    padding: 0.8rem;
+  }
+
+  .session-number-col {
+    width: 100%;
+
+    justify-content: space-between;
+
+    gap: 0.5rem;
+  }
+
+  .session-status-col {
+    width: 100%;
+    max-width: none;
+
+    justify-content: space-between;
+
+    flex-wrap: wrap;
+  }
+
+  .session-teacher-note {
+    max-width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .active-exam-item-card {
+    flex-direction: column;
+    align-items: stretch;
+
+    gap: 0.85rem;
+  }
+
+  .exam-main-details {
+    width: 100%;
+  }
+
+  .exam-action-score-col {
+    width: 100%;
+
+    justify-content: space-between;
+
+    gap: 0.65rem;
+
+    padding-top: 0.7rem;
+
+    border-top: 1px solid oklch(0% 0 0 / 0.05);
+  }
+
+  .score-badge-box {
+    text-align: right;
+  }
+
+  .btn-exam-action {
+    min-width: 100px;
+  }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   <= 480px
+   ========================================================= */
+
+@media (max-width: 480px) {
+  .student-panel-page {
+    gap: 0.75rem;
+  }
+
+  .active-class-hero-banner {
+    padding: 0.95rem;
+  }
+
+  .class-hero-icon {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+
+    border-radius: 12px;
+  }
+
+  .class-hero-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .class-hero-info h2 {
+    font-size: 0.92rem;
+  }
+
+  .class-hero-info p {
+    font-size: 0.7rem;
+  }
+
+  .student-panel-stats-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.65rem;
+  }
+
+  .student-panel-card {
+    border-radius: 14px;
+    padding: 0.8rem;
+  }
+
+  .header-info h3 {
+    font-size: 0.9rem;
+  }
+
+  .header-info p {
+    font-size: 0.72rem;
+  }
+
+  .session-num-badge {
+    font-size: 0.7rem;
+  }
+
+  .session-date-text {
+    font-size: 0.72rem;
+    text-align: left;
+  }
+
+  .attendance-status-badge {
+    font-size: 0.7rem;
+  }
+
+  .exam-icon-box {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+  }
+
+  .exam-main-details h4 {
+    font-size: 0.85rem;
+  }
+
+  .exam-sub-info {
+    font-size: 0.68rem;
+  }
+
+  .score-final .score-num {
+    font-size: 1rem;
+  }
+
+  .score-final .score-denom {
+    font-size: 0.7rem;
+  }
+
+  .btn-exam-action {
+    min-height: 34px;
+    min-width: 92px;
+
+    padding: 0.4rem 0.65rem;
+
+    font-size: 0.72rem;
+  }
+
+  .panel-empty-box {
+    min-height: 150px;
+    padding: 2rem 0.75rem;
+  }
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+   <= 360px
+   ========================================================= */
+
+@media (max-width: 360px) {
+  .student-panel-page {
+    gap: 0.65rem;
+  }
+
+  .active-class-hero-banner {
+    padding: 0.8rem;
+    border-radius: 13px;
+  }
+
+  .banner-badge-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .banner-main-row {
+    gap: 0.65rem;
+  }
+
+  .class-hero-icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+  }
+
+  .class-hero-info h2 {
+    font-size: 0.85rem;
+  }
+
+  .class-hero-info p {
+    font-size: 0.65rem;
+  }
+
+  .student-panel-card {
+    padding: 0.7rem;
+  }
+
+  .session-number-col {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .session-date-text {
+    text-align: right;
+  }
+
+  .exam-action-score-col {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .score-badge-box {
+    text-align: center;
+  }
+
+  .btn-exam-action {
+    width: 100%;
+  }
+}
+
+
+/* =========================================================
+   ULTRA SMALL
+   <= 320px
+   ========================================================= */
+
+@media (max-width: 320px) {
+  .student-panel-page {
+    font-size: 14px;
+  }
+
+  .student-alert.error {
+    font-size: 0.72rem;
+  }
+
+  .active-class-live-pill,
+  .active-term-badge {
+    max-width: 100%;
+
+    white-space: normal;
+
+    line-height: 1.5;
+  }
+
+  .class-hero-info h2 {
+    font-size: 0.8rem;
+  }
+
+  .class-hero-info p {
+    font-size: 0.62rem;
+  }
+
+  .header-info h3 {
+    font-size: 0.82rem;
+  }
+
+  .header-info p {
+    font-size: 0.68rem;
+  }
+
+  .session-attendance-row,
+  .active-exam-item-card {
+    padding: 0.65rem;
+  }
+
+  .session-num-badge {
+    width: 100%;
+    text-align: center;
+  }
+
+  .attendance-status-badge {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+
+/* =========================================================
+   ACCESSIBILITY / REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .live-dot,
+  .status-pill.in-progress {
+    animation: none;
+  }
+
+  .view-all-link,
+  .btn-exam-action,
+  .session-attendance-row,
+  .active-exam-item-card {
+    transition: none;
+  }
+}
+
+
+/* =========================================================
+   TOUCH DEVICES
+   ========================================================= */
+
+@media (hover: none) {
+  .btn-exam-action:hover,
+  .view-all-link:hover {
+    transform: none;
+  }
+
+  .session-attendance-row:hover,
+  .active-exam-item-card:hover {
+    box-shadow: none;
   }
 }

@@ -18,7 +18,7 @@ import JalaliDatePicker from "../components/JalaliDatePicker";
 import { AnimatedButton } from "../components/AnimatedButton";
 import { api, getFullName } from "../services/api";
 import { toPersianDigits, getTodayJalali } from "../utils/dateUtils";
-
+import Attendance from "./Attendance";
 import "./TeacherAttendance.css";
 
 const statusOptions = [
@@ -432,6 +432,8 @@ function TeacherAttendance() {
               />
             </div>
           </div>
+
+          <Attendance />
 
           {/* =================================================
               Statistics

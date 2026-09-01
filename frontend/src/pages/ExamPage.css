@@ -241,6 +241,7 @@
 }
 
 .question-option-btn {
+  direction: ltr;
   display: flex;
   align-items: center;
   justify-content: end;
@@ -305,6 +306,8 @@
   font-size: 0.92rem;
   font-weight: 700;
   line-height: 1.7;
+  direction: rtl;
+  text-align: right;
 }
 
 .question-option-btn.selected .option-label {
@@ -340,7 +343,10 @@
   min-height: 120px;
   direction: rtl;
   text-align: right;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
 }
 
 .question-essay-input:focus {
@@ -792,7 +798,6 @@
   }
 }
 
-
 @keyframes exam-fade-up {
   from {
     opacity: 0;
@@ -819,11 +824,12 @@
   padding: 16px 22px;
   margin-bottom: 24px;
   background: rgba(255, 255, 255, 0.94);
-  border: 1px solid rgba(231, 76, 60, 0.22);
   border-radius: 20px;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 10px 30px rgba(38, 50, 56, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  box-shadow:
+    0 10px 30px rgba(38, 50, 56, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
   transition: all 0.3s ease;
 }
 
@@ -891,9 +897,16 @@
 }
 
 @keyframes timer-icon-wiggle {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-8deg); }
-  75% { transform: rotate(8deg); }
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-8deg);
+  }
+  75% {
+    transform: rotate(8deg);
+  }
 }
 
 .timer-title-group h4 {
@@ -971,8 +984,13 @@
 }
 
 @keyframes blink-tag {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 
 .timer-progress-track {
@@ -987,7 +1005,9 @@
   height: 100%;
   border-radius: 999px;
   background: linear-gradient(90deg, #27ae60, #2ecc71);
-  transition: width 1s linear, background 0.3s ease;
+  transition:
+    width 1s linear,
+    background 0.3s ease;
 }
 
 .student-exam-timer-banner.warning .timer-progress-fill {
