@@ -95,7 +95,7 @@ jobs:
             echo ""
             echo "📦 Installing dependencies..."
 
-            npm ci
+            npm install
 
             echo ""
             echo "🏗️ Building React application..."
