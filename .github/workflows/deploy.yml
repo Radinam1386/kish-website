@@ -1,22 +1,37 @@
-- name: Deploy via SSH
-  uses: appleboy/ssh-action@v1.0.3
-  with:
-    host: ${{ secrets.SERVER_HOST }}
-    username: ${{ secrets.SERVER_USER }}
-    key: ${{ secrets.SERVER_SSH_KEY }}
-    port: 22
+name: SSH Test
 
-    timeout: 60s
-    command_timeout: 30m
-    debug: true
+on:
+  workflow_dispatch:
 
-    script: |
-      set -e
+jobs:
+  test:
+    runs-on: ubuntu-latest
 
-      echo "=============================================="
-      echo "SSH AUTHENTICATED SUCCESSFULLY"
-      echo "=============================================="
+    steps:
+      - name: Test SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: 22
+          timeout: 60s
+          command_timeout: 2m
+          debug: true
 
-      whoami
-      hostname
-      pwd
+          script: |
+            echo "================================"
+            echo "SSH CONNECTION SUCCESS"
+            echo "================================"
+
+            echo "User:"
+            whoami
+
+            echo "Hostname:"
+            hostname
+
+            echo "Date:"
+            date
+
+            echo "Working directory:"
+            pwd
