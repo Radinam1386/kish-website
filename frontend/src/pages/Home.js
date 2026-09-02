@@ -125,7 +125,7 @@ export default function Landing() {
             <div className="hero-badge reveal" ref={r}>
               <span className="badge-dot" />
               <span>آموزشگاه تخصصی زبان انگلیسی فوق العاده</span>
-            </div>
+            </div>  
 
             <h1 className="hero-title reveal" ref={r}>
               زبان
