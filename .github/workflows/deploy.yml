@@ -1,26 +1,212 @@
-name: Test SSH
+name: Deploy Kish Website
 
 on:
+  push:
+    branches:
+      - main
+
   workflow_dispatch:
 
+concurrency:
+  group: kish-production
+  cancel-in-progress: false
+
 jobs:
-  test:
+  deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
-      - name: Test SSH
+      - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
+
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
+
           port: 22
           timeout: 60s
-          command_timeout: 2m
+          command_timeout: 30m
 
           script: |
-            echo "SSH SUCCESS"
+            set -e
+
+            echo ""
+            echo "=============================================="
+            echo "        🚀 KISH DEPLOYMENT START"
+            echo "=============================================="
+            echo ""
+
+            echo "🔍 Server information"
+            echo "----------------------------------------------"
+
             whoami
             hostname
             pwd
-            date
+
+            echo ""
+            echo "=============================================="
+            echo "        📦 UPDATE PROJECT"
+            echo "=============================================="
+            echo ""
+
+            cd /var/www/kish-website
+
+            echo "📁 Project:"
+            pwd
+
+            echo ""
+            echo "🔄 Fetching latest code..."
+
+            git fetch origin main
+
+            echo ""
+            echo "🔄 Resetting project to origin/main..."
+
+            git reset --hard origin/main
+
+            echo ""
+            echo "✅ Git update completed"
+
+            echo ""
+            echo "📌 Current commit:"
+            git log -1 --oneline
+
+            echo ""
+            echo "=============================================="
+            echo "        🎨 FRONTEND DEPLOY"
+            echo "=============================================="
+            echo ""
+
+            cd /var/www/kish-website/frontend
+
+            echo "📁 Frontend:"
+            pwd
+
+            echo ""
+            echo "🟢 Node:"
+            node -v
+
+            echo ""
+            echo "🟢 NPM:"
+            npm -v
+
+            echo ""
+            echo "📦 Installing dependencies..."
+
+            npm install
+
+            echo ""
+            echo "🏗️ Building React application..."
+
+            npm run build
+
+            echo ""
+            echo "=============================================="
+            echo "        ✅ FRONTEND BUILD SUCCESS"
+            echo "=============================================="
+            echo ""
+
+            if [ ! -f "/var/www/kish-website/frontend/build/index.html" ]; then
+              echo "❌ ERROR: React build/index.html not found!"
+              exit 1
+            fi
+
+            echo "✅ React build verified"
+
+            echo ""
+            echo "=============================================="
+            echo "        🐍 BACKEND DEPLOY"
+            echo "=============================================="
+            echo ""
+
+            cd /var/www/kish-website/backend
+
+            echo "📁 Backend:"
+            pwd
+
+            echo ""
+            echo "🐍 Activating virtual environment..."
+
+            source venv/bin/activate
+
+            echo ""
+            echo "🐍 Python:"
+            python --version
+
+            echo ""
+            echo "🔎 Django check..."
+
+            python manage.py check
+
+            echo ""
+            echo "=============================================="
+            echo "        ✅ DJANGO CHECK SUCCESS"
+            echo "=============================================="
+            echo ""
+
+            echo "=============================================="
+            echo "        🔄 RESTART GUNICORN"
+            echo "=============================================="
+            echo ""
+
+            echo "🔄 Restarting kish service..."
+
+            systemctl restart kish
+
+            echo ""
+            echo "⏳ Waiting for Gunicorn..."
+
+            sleep 3
+
+            echo ""
+            echo "🔎 Checking kish service..."
+
+            if ! systemctl is-active --quiet kish; then
+              echo ""
+              echo "❌ KISH SERVICE FAILED!"
+              echo ""
+              systemctl status kish --no-pager --lines=30
+              exit 1
+            fi
+
+            echo ""
+            echo "✅ KISH SERVICE IS RUNNING"
+
+            systemctl status kish --no-pager --lines=10
+
+            echo ""
+            echo "=============================================="
+            echo "        🌐 NGINX"
+            echo "=============================================="
+            echo ""
+
+            echo "🔎 Testing nginx configuration..."
+
+            nginx -t
+
+            echo ""
+            echo "🔄 Reloading nginx..."
+
+            systemctl reload nginx
+
+            echo ""
+            echo "=============================================="
+            echo "        🎉 DEPLOY SUCCESS"
+            echo "=============================================="
+            echo ""
+
+            echo "✅ Code updated"
+            echo "✅ Frontend dependencies installed"
+            echo "✅ React application built"
+            echo "✅ Frontend build verified"
+            echo "✅ Django check passed"
+            echo "✅ Gunicorn restarted"
+            echo "✅ Gunicorn service verified"
+            echo "✅ Nginx configuration verified"
+            echo "✅ Nginx reloaded"
+
+            echo ""
+            echo "🚀 KISH WEBSITE DEPLOYED SUCCESSFULLY!"
+            echo ""
