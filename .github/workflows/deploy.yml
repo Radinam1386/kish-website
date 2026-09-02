@@ -1,184 +1,22 @@
-name: Deploy Kish Website
+- name: Deploy via SSH
+  uses: appleboy/ssh-action@v1.0.3
+  with:
+    host: ${{ secrets.SERVER_HOST }}
+    username: ${{ secrets.SERVER_USER }}
+    key: ${{ secrets.SERVER_SSH_KEY }}
+    port: 22
 
-on:
-  push:
-    branches:
-      - main
+    timeout: 60s
+    command_timeout: 30m
+    debug: true
 
-  workflow_dispatch:
+    script: |
+      set -e
 
-concurrency:
-  group: kish-production
-  cancel-in-progress: false
+      echo "=============================================="
+      echo "SSH AUTHENTICATED SUCCESSFULLY"
+      echo "=============================================="
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
-
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          port: 22
-
-          timeout: 60s
-          command_timeout: 30m
-
-          script: |
-            set -e
-
-            echo ""
-            echo "=============================================="
-            echo "        🚀 KISH DEPLOYMENT START"
-            echo "=============================================="
-            echo ""
-
-            echo "🔍 Server:"
-            whoami
-            hostname
-            pwd
-
-            echo ""
-            echo "=============================================="
-            echo "        📦 UPDATE PROJECT"
-            echo "=============================================="
-            echo ""
-
-            cd /var/www/kish-website
-
-            echo "📁 Current directory:"
-            pwd
-
-            echo ""
-            echo "🔄 Fetching latest code..."
-
-            git fetch origin main
-
-            echo "🔄 Resetting to origin/main..."
-
-            git reset --hard origin/main
-
-            echo ""
-            echo "✅ Git update completed."
-
-            git log -1 --oneline
-
-            echo ""
-            echo "=============================================="
-            echo "        🎨 FRONTEND DEPLOY"
-            echo "=============================================="
-            echo ""
-
-            cd /var/www/kish-website/frontend
-
-            echo "📁 Frontend directory:"
-            pwd
-
-            echo ""
-            echo "🟢 Node version:"
-            node -v
-
-            echo ""
-            echo "📦 NPM version:"
-            npm -v
-
-            echo ""
-            echo "📦 Installing frontend dependencies..."
-
-            npm ci
-
-            echo ""
-            echo "🏗️ Building React application..."
-
-            npm run build
-
-            echo ""
-            echo "✅ FRONTEND BUILD SUCCESS"
-
-            echo ""
-            echo "=============================================="
-            echo "        🐍 BACKEND DEPLOY"
-            echo "=============================================="
-            echo ""
-
-            cd /var/www/kish-website/backend
-
-            echo "📁 Backend directory:"
-            pwd
-
-            echo ""
-            echo "🐍 Activating virtual environment..."
-
-            source venv/bin/activate
-
-            echo ""
-            echo "🐍 Python version:"
-            python --version
-
-            echo ""
-            echo "🔎 Running Django checks..."
-
-            python manage.py check
-
-            echo ""
-            echo "✅ DJANGO CHECK SUCCESS"
-
-            echo ""
-            echo "=============================================="
-            echo "        🔄 RESTART GUNICORN"
-            echo "=============================================="
-            echo ""
-
-            echo "🔄 Restarting kish service..."
-
-            systemctl restart kish
-
-            echo ""
-            echo "⏳ Waiting for service..."
-
-            sleep 3
-
-            echo ""
-            echo "🔎 Checking service status..."
-
-            systemctl is-active --quiet kish
-
-            echo ""
-            echo "✅ KISH SERVICE IS RUNNING"
-
-            systemctl status kish --no-pager --lines=10
-
-            echo ""
-            echo "=============================================="
-            echo "        🌐 NGINX"
-            echo "=============================================="
-            echo ""
-
-            echo "🔎 Testing nginx configuration..."
-
-            nginx -t
-
-            echo ""
-            echo "🔄 Reloading nginx..."
-
-            systemctl reload nginx
-
-            echo ""
-            echo "=============================================="
-            echo "        🎉 DEPLOY SUCCESS"
-            echo "=============================================="
-            echo ""
-
-            echo "✅ Frontend built"
-            echo "✅ Backend checked"
-            echo "✅ Gunicorn restarted"
-            echo "✅ Nginx reloaded"
-
-            echo ""
-            echo "🚀 KISH WEBSITE DEPLOYED SUCCESSFULLY!"
-            echo ""
+      whoami
+      hostname
+      pwd
