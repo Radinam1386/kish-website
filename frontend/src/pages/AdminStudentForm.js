@@ -493,7 +493,6 @@ function AdminStudentForm() {
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
-                        placeholder="حداقل ۶ کاراکتر"
                         dir="ltr"
                         required
                       />

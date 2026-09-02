@@ -58,23 +58,54 @@ function AdminTeacherDetails() {
   const [showNewPasswordInModal, setShowNewPasswordInModal] = useState(false);
   const [changingPasswordLoading, setChangingPasswordLoading] = useState(false);
 
-  const copyPassword = () => {
-    if (!teacherUser?.plain_password) return;
-    navigator.clipboard.writeText(teacherUser.plain_password);
-    setCopiedPassword(true);
-    setTimeout(() => setCopiedPassword(false), 2500);
-  };
+  const generatePassword = () => {
+    const upper = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+    const lower = "abcdefghijkmnopqrstuvwxyz";
+    const numbers = "23456789";
+    const symbols = "!@#$%&*";
 
-  const generateRandomPassword = () => {
-    const chars = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789#@!";
-    let pwd = "";
-    for (let i = 0; i < 8; i++) {
-      pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+    const getRandom = (chars) =>
+      chars[Math.floor(Math.random() * chars.length)];
+
+    const allChars = upper + lower + numbers + symbols;
+
+    let password =
+      getRandom(upper) +
+      getRandom(lower) +
+      getRandom(numbers) +
+      getRandom(symbols);
+
+    for (let i = password.length; i < 12; i++) {
+      password += getRandom(allChars);
     }
-    setNewPasswordInput(pwd);
+
+    password = password
+      .split("")
+      .sort(() => Math.random() - 0.5)
+      .join("");
+
+    setNewPasswordInput(password);
     setShowNewPasswordInModal(true);
+    setCopiedPassword(false);
   };
 
+  const copyPassword = async () => {
+    if (!newPasswordInput) return;
+
+    try {
+      await navigator.clipboard.writeText(newPasswordInput);
+
+      setCopiedPassword(true);
+
+      window.setTimeout(() => {
+        setCopiedPassword(false);
+      }, 1800);
+    } catch (error) {
+      console.error("Password copy failed:", error);
+
+      alert("کپی رمز عبور انجام نشد.");
+    }
+  };
   const handleChangePassword = async (e) => {
     e.preventDefault();
     if (!newPasswordInput || newPasswordInput.trim().length < 4) {
@@ -250,9 +281,7 @@ function AdminTeacherDetails() {
       <div className="admin-teacher-details-x7k2-page">
         <div className="admin-teacher-details-x7k2-header">
           <div className="admin-teacher-details-x7k2-header-right">
-            <Link
-              to={basePath}
-            >
+            <Link to={basePath}>
               <AnimatedButton
                 variant="secondary"
                 size="small"
@@ -300,19 +329,31 @@ function AdminTeacherDetails() {
         {/* ================= Personal Information ================= */}
 
         <section className="admin-teacher-details-x7k2-section">
-          <div className="admin-teacher-details-x7k2-section-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
+          <div
+            className="admin-teacher-details-x7k2-section-header"
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: "1rem",
+            }}
+          >
             <div>
               <h3>
                 <User size={20} />
                 اطلاعات و مشخصات مدرس
               </h3>
 
-              <p>اطلاعات فردی، ارتباطی و کلمه عبور ثبت‌شده مدرس جهت استفاده منشی و مدیریت</p>
+              <p>
+                اطلاعات فردی، ارتباطی و کلمه عبور ثبت‌شده مدرس جهت استفاده منشی
+                و مدیریت
+              </p>
             </div>
 
-            <button
-              type="button"
-              className="teacher-credentials-edit-btn"
+            <AnimatedButton
+              variant="secondary"
+              size="small"
               onClick={() => {
                 setNewPasswordInput("");
                 setShowChangePasswordModal(true);
@@ -320,7 +361,7 @@ function AdminTeacherDetails() {
             >
               <KeyRound size={16} />
               <span>تغییر / تنظیم رمز عبور جدید</span>
-            </button>
+            </AnimatedButton>
           </div>
 
           <div className="admin-teacher-details-x7k2-info-grid">
@@ -405,23 +446,57 @@ function AdminTeacherDetails() {
 
               <div>
                 <span>نام کاربری</span>
-                <strong style={{ direction: "ltr", display: "inline-block" }}>{teacherUser.username}</strong>
+                <strong style={{ direction: "ltr", display: "inline-block" }}>
+                  {teacherUser.username}
+                </strong>
               </div>
             </div>
 
-            <div className="admin-teacher-details-x7k2-info-card" style={{ background: "#fffaf9", borderColor: "rgba(231, 76, 60, 0.2)" }}>
-              <div className="admin-teacher-details-x7k2-info-icon" style={{ background: "linear-gradient(135deg, var(--primary), var(--primary-dark))", color: "#fff" }}>
+            <div
+              className="admin-teacher-details-x7k2-info-card"
+              style={{
+                background: "#fffaf9",
+                borderColor: "rgba(231, 76, 60, 0.2)",
+              }}
+            >
+              <div
+                className="admin-teacher-details-x7k2-info-icon"
+                style={{
+                  background:
+                    "linear-gradient(135deg, var(--primary), var(--primary-dark))",
+                  color: "#fff",
+                }}
+              >
                 <Lock size={18} />
               </div>
 
               <div style={{ flex: 1, minWidth: 0 }}>
                 <span>رمز عبور حساب</span>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem", marginTop: "0.2rem" }}>
-                  <strong style={{ fontFamily: "monospace, sans-serif", fontSize: "0.95rem" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: "0.5rem",
+                    marginTop: "0.2rem",
+                  }}
+                >
+                  <strong
+                    style={{
+                      fontFamily: "monospace, sans-serif",
+                      fontSize: "0.95rem",
+                    }}
+                  >
                     {teacherUser.plain_password ? (
-                      showPasswordState ? teacherUser.plain_password : "••••••••"
+                      showPasswordState ? (
+                        teacherUser.plain_password
+                      ) : (
+                        "••••••••"
+                      )
                     ) : (
-                      <span style={{ color: "#95a5a6", fontSize: "0.8rem" }}>تعیین نشده</span>
+                      <span style={{ color: "#95a5a6", fontSize: "0.8rem" }}>
+                        تعیین نشده
+                      </span>
                     )}
                   </strong>
                   {teacherUser.plain_password && (
@@ -441,7 +516,11 @@ function AdminTeacherDetails() {
                           cursor: "pointer",
                         }}
                       >
-                        {showPasswordState ? <EyeOff size={14} /> : <Eye size={14} />}
+                        {showPasswordState ? (
+                          <EyeOff size={14} />
+                        ) : (
+                          <Eye size={14} />
+                        )}
                       </button>
                       <button
                         type="button"
@@ -461,7 +540,11 @@ function AdminTeacherDetails() {
                           cursor: "pointer",
                         }}
                       >
-                        {copiedPassword ? <Check size={13} /> : <Copy size={13} />}
+                        {copiedPassword ? (
+                          <Check size={13} />
+                        ) : (
+                          <Copy size={13} />
+                        )}
                         <span>{copiedPassword ? "کپی شد" : "کپی"}</span>
                       </button>
                     </div>
@@ -471,7 +554,10 @@ function AdminTeacherDetails() {
             </div>
 
             {teacherUser.address && (
-              <div className="admin-teacher-details-x7k2-info-card" style={{ gridColumn: "1 / -1" }}>
+              <div
+                className="admin-teacher-details-x7k2-info-card"
+                style={{ gridColumn: "1 / -1" }}
+              >
                 <div className="admin-teacher-details-x7k2-info-icon">
                   <MapPin size={18} />
                 </div>
@@ -581,7 +667,9 @@ function AdminTeacherDetails() {
                   </div>
                   <div>
                     <h4>تغییر یا تنظیم رمز عبور جدید</h4>
-                    <p>مدرس: {teacherName} ({teacherUser.username})</p>
+                    <p>
+                      مدرس: {teacherName} ({teacherUser.username})
+                    </p>
                   </div>
                 </div>
                 <button
@@ -595,14 +683,28 @@ function AdminTeacherDetails() {
 
               <form onSubmit={handleChangePassword}>
                 <div className="exam-modal-body" style={{ padding: "1.5rem" }}>
-                  <div className="class-form-group full-width" style={{ marginBottom: "1rem" }}>
-                    <label style={{ fontWeight: "700", marginBottom: "0.5rem", display: "block" }}>
+                  <div
+                    className="class-form-group full-width"
+                    style={{ marginBottom: "1rem" }}
+                  >
+                    <label
+                      style={{
+                        fontWeight: "700",
+                        marginBottom: "0.5rem",
+                        display: "block",
+                      }}
+                    >
                       رمز عبور جدید مدرس <span style={{ color: "red" }}>*</span>
                     </label>
-                    <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                    <div
+                      style={{
+                        position: "relative",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
                       <input
                         type={showNewPasswordInModal ? "text" : "password"}
-                        placeholder="حداقل ۴ کاراکتر یا تولید رمز تصادفی..."
                         value={newPasswordInput}
                         onChange={(e) => setNewPasswordInput(e.target.value)}
                         required
@@ -632,28 +734,71 @@ function AdminTeacherDetails() {
                           justifyContent: "center",
                         }}
                       >
-                        {showNewPasswordInModal ? <EyeOff size={16} /> : <Eye size={16} />}
+                        {showNewPasswordInModal ? (
+                          <EyeOff size={16} />
+                        ) : (
+                          <Eye size={16} />
+                        )}
                       </button>
                     </div>
                   </div>
-
-                  <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem" }}>
-                    <button
-                      type="button"
-                      className="secretary-student-form-action-btn"
-                      onClick={generateRandomPassword}
-                      style={{ fontSize: "0.78rem", padding: "0.4rem 0.75rem" }}
-                    >
-                      <RefreshCw size={14} />
-                      <span>تولید رمز تصادفی</span>
-                    </button>
-                  </div>
-
-                  <p style={{ fontSize: "0.78rem", color: "#7f8c8d", margin: 0, lineHeight: 1.6 }}>
-                    با ثبت کلمه عبور جدید، رمز ورود مدرس بلافاصله در دیتابیس بروزرسانی شده و در پنل مدیریت و منشی قابل مشاهده و کپی خواهد بود.
-                  </p>
                 </div>
+                {/* Password Tools */}
+                <div className="secretary-student-form-password-actions full">
+                  <div className="secretary-student-form-password-tools-content">
+                    <div className="secretary-student-form-password-tools-title">
+                      <div className="secretary-student-form-password-tools-icon">
+                        <Lock size={17} />
+                      </div>
 
+                      <div>
+                        <strong>ابزارهای رمز عبور</strong>
+                      </div>
+                    </div>
+
+                    <div className="secretary-student-form-password-buttons">
+                      {/* Generate Password */}
+                      <button
+                        type="button"
+                        className="secretary-student-form-action-btn generate"
+                        onClick={generatePassword}
+                        disabled={changingPasswordLoading}
+                      >
+                        <span className="secretary-student-form-action-icon">
+                          <RefreshCw size={16} />
+                        </span>
+
+                        <span className="secretary-student-form-action-text">
+                          <strong>تولید رمز امن</strong>
+                        </span>
+                      </button>
+
+                      {/* Copy Password */}
+                      <button
+                        type="button"
+                        className={`secretary-student-form-action-btn copy ${
+                          copiedPassword ? "copied" : ""
+                        }`}
+                        onClick={copyPassword}
+                        disabled={!newPasswordInput || changingPasswordLoading}
+                      >
+                        <span className="secretary-student-form-action-icon">
+                          {copiedPassword ? (
+                            <Check size={16} />
+                          ) : (
+                            <Copy size={16} />
+                          )}
+                        </span>
+
+                        <span className="secretary-student-form-action-text">
+                          <strong>
+                            {copiedPassword ? "کپی شد" : "کپی رمز"}
+                          </strong>
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
                 <div className="exam-modal-footer">
                   <AnimatedButton
                     variant="secondary"
@@ -667,7 +812,9 @@ function AdminTeacherDetails() {
                     type="submit"
                     disabled={changingPasswordLoading}
                   >
-                    {changingPasswordLoading ? "در حال ذخیره..." : "ثبت و تغییر رمز"}
+                    {changingPasswordLoading
+                      ? "در حال ذخیره..."
+                      : "ثبت و تغییر رمز"}
                   </AnimatedButton>
                 </div>
               </form>

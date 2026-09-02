@@ -1,194 +1,620 @@
-/* Button.css */
+/* =========================================================
+   Animated Button
+   Responsive / Touch Optimized / RTL Friendly
+   ========================================================= */
+
 @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap');
 
 .animated-btn {
-  font-family:var(--font);
+  --btn-height: 42px;
+  --btn-padding-x: 20px;
+  --btn-font-size: 14px;
+  --btn-radius: 8px;
+  --btn-gap: 8px;
+
   position: relative;
   overflow: hidden;
+
+  min-width: 0;
+  max-width: 100%;
+  min-height: var(--btn-height);
+
+  padding: 0 var(--btn-padding-x);
+
   border: none;
-  cursor: pointer;
+  border-radius: var(--btn-radius);
+
+  font-family: var(--font, 'Vazirmatn', sans-serif);
+  font-size: var(--btn-font-size);
   font-weight: 600;
-  border-radius: 8px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  outline: none;
+  line-height: 1.4;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+
+  cursor: pointer;
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--btn-gap);
+
+  vertical-align: middle;
   user-select: none;
+  -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
+
+  outline: none;
+
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  isolation: isolate;
 }
 
-.animated-btn:active {
-  transform: scale(0.97);
+/* Prevent oversized children */
+.animated-btn > *,
+.animated-btn__content > * {
+  max-width: 100%;
 }
 
-/* Sizes */
+/* =========================================================
+   Sizes
+   ========================================================= */
+
 .animated-btn--small {
-  padding: 6px 14px;
-  font-size: 13px;
-  border-radius: 6px;
+  --btn-height: 34px;
+  --btn-padding-x: 14px;
+  --btn-font-size: 13px;
+  --btn-radius: 6px;
+  --btn-gap: 6px;
 }
 
 .animated-btn--medium {
-  padding: 10px 20px;
-  font-size: 14px;
+  --btn-height: 42px;
+  --btn-padding-x: 20px;
+  --btn-font-size: 14px;
+  --btn-radius: 8px;
+  --btn-gap: 8px;
 }
 
 .animated-btn--large {
-  padding: 14px 28px;
-  font-size: 16px;
-  border-radius: 10px;
+  --btn-height: 50px;
+  --btn-padding-x: 28px;
+  --btn-font-size: 16px;
+  --btn-radius: 10px;
+  --btn-gap: 9px;
 }
 
-/* Variants */
+/* =========================================================
+   Variants
+   ========================================================= */
+
 .animated-btn--primary {
   background: var(--red-5);
-  color: white;
-  box-shadow: 0 2px 8px oklch(52% 0.22 25 / 0.25);
+  color: #fff;
+
+  box-shadow:
+    0 2px 8px oklch(52% 0.22 25 / 0.25);
 }
 
 .animated-btn--primary:hover:not(.animated-btn--disabled) {
   background: var(--red-7);
-  box-shadow: 0 4px 16px oklch(52% 0.22 25 / 0.35);
+
+  box-shadow:
+    0 5px 18px oklch(52% 0.22 25 / 0.35);
+
   transform: translateY(-1px);
 }
 
 .animated-btn--secondary {
-  background: white;
+  background: #fff;
   color: var(--red-5);
+
   border: 2px solid var(--red-5);
-  box-shadow: 0 2px 6px oklch(0% 0 0 / 0.08);
+
+  box-shadow:
+    0 2px 6px oklch(0% 0 0 / 0.08);
 }
 
 .animated-btn--secondary:hover:not(.animated-btn--disabled) {
   background: var(--red-0);
   border-color: var(--red-7);
   color: var(--red-7);
-  box-shadow: 0 4px 12px oklch(0% 0 0 / 0.12);
+
+  box-shadow:
+    0 5px 14px oklch(0% 0 0 / 0.12);
+
+  transform: translateY(-1px);
 }
 
 .animated-btn--ghost {
   background: transparent;
   color: var(--neu-7);
+
   border: 1px solid var(--neu-1);
+
+  box-shadow: none;
 }
 
 .animated-btn--ghost:hover:not(.animated-btn--disabled) {
   background: var(--neu-0);
   border-color: var(--neu-3);
   color: var(--neu-9);
+
+  transform: translateY(-1px);
 }
 
 .animated-btn--danger {
   background: var(--danger);
-  color: white;
-  box-shadow: 0 2px 8px oklch(52% 0.22 25 / 0.25);
+  color: #fff;
+
+  box-shadow:
+    0 2px 8px oklch(52% 0.22 25 / 0.25);
 }
 
 .animated-btn--danger:hover:not(.animated-btn--disabled) {
   background: var(--red-9);
-  box-shadow: 0 4px 16px oklch(52% 0.22 25 / 0.35);
-  color: white;
+  color: #fff;
+
+  box-shadow:
+    0 5px 18px oklch(52% 0.22 25 / 0.35);
+
+  transform: translateY(-1px);
 }
 
-/* States */
+/* =========================================================
+   States
+   ========================================================= */
+
 .animated-btn--disabled {
   opacity: 0.5;
   cursor: not-allowed;
   pointer-events: none;
+  transform: none !important;
+  box-shadow: none;
 }
 
 .animated-btn--loading {
   cursor: wait;
+  pointer-events: none;
 }
 
-/* Content wrapper */
+/* =========================================================
+   Content
+   ========================================================= */
+
 .animated-btn__content {
   position: relative;
-  z-index: 1;
+  z-index: 2;
+
+  min-width: 0;
+  max-width: 100%;
+
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+
+  gap: var(--btn-gap);
+
+  overflow: hidden;
 }
 
-/* Icon */
+/* Text inside button */
+.animated-btn__content > span,
+.animated-btn__content > div {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* =========================================================
+   Icon
+   ========================================================= */
+
 .animated-btn__icon {
+  position: relative;
+  z-index: 2;
+
+  flex: 0 0 auto;
+
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 1.15em;
+  height: 1.15em;
+
   font-size: 1.1em;
+  line-height: 1;
 }
 
-/* Spinner */
+/* Make SVG icons responsive */
+.animated-btn__icon svg,
+.animated-btn svg {
+  width: 1em;
+  height: 1em;
+
+  flex: 0 0 auto;
+
+  max-width: 100%;
+}
+
+/* =========================================================
+   Spinner
+   ========================================================= */
+
 .animated-btn__spinner {
   width: 14px;
   height: 14px;
+
+  flex: 0 0 auto;
+
   border: 2px solid currentColor;
   border-top-color: transparent;
+
   border-radius: 50%;
-  animation: spin 0.6s linear infinite;
+
+  animation: animated-btn-spin 0.6s linear infinite;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+@keyframes animated-btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-/* Ripple effect */
+/* =========================================================
+   Ripple
+   ========================================================= */
+
 .animated-btn__ripple {
   position: absolute;
+  z-index: 1;
+
+  width: 20px;
+  height: 20px;
+
   border-radius: 50%;
+
   background: oklch(100% 0 0 / 0.3);
+
   pointer-events: none;
-  transform: scale(0);
-  animation: ripple 0.6s ease-out;
+
+  transform: translate(-50%, -50%) scale(0);
+
+  animation: animated-btn-ripple 0.6s ease-out;
 }
 
-@keyframes ripple {
+@keyframes animated-btn-ripple {
   to {
-    transform: scale(2.5);
+    transform: translate(-50%, -50%) scale(2.5);
     opacity: 0;
   }
 }
 
-/* Shine effect on hover */
+/* =========================================================
+   Shine Effect
+   ========================================================= */
+
 .animated-btn--primary::before,
 .animated-btn--danger::before {
   content: '';
+
   position: absolute;
+  z-index: 0;
+
   top: 0;
-  left: -100%;
+  left: -120%;
+
   width: 100%;
   height: 100%;
+
   background: linear-gradient(
     90deg,
     transparent,
     oklch(100% 0 0 / 0.2),
     transparent
   );
-  transition: left 0.5s;
-  color: black;
+
+  pointer-events: none;
+
+  transition: left 0.55s ease;
 }
 
 .animated-btn--primary:hover:not(.animated-btn--disabled)::before,
 .animated-btn--danger:hover:not(.animated-btn--disabled)::before {
-  left: 100%;
+  left: 120%;
 }
 
-/* Focus visible for accessibility */
+/* =========================================================
+   Focus
+   ========================================================= */
+
 .animated-btn:focus-visible {
   outline: 2px solid var(--red-5);
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 
-/* Pulse animation for primary */
-@keyframes pulse {
-  0%, 100% {
-    box-shadow: 0 2px 8px oklch(52% 0.22 25 / 0.25);
+/* =========================================================
+   Active
+   ========================================================= */
+
+.animated-btn:active:not(.animated-btn--disabled) {
+  transform: scale(0.97);
+}
+
+/* =========================================================
+   Pulse
+   ========================================================= */
+
+@keyframes animated-btn-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 2px 8px oklch(52% 0.22 25 / 0.25);
   }
+
   50% {
-    box-shadow: 0 2px 16px oklch(52% 0.22 25 / 0.45);
+    box-shadow:
+      0 3px 18px oklch(52% 0.22 25 / 0.45);
   }
 }
 
 .animated-btn--primary.animated-btn--pulse {
-  animation: pulse 2s infinite;
+  animation: animated-btn-pulse 2s infinite;
+}
+
+/* =========================================================
+   TABLET
+   769px → 1024px
+   ========================================================= */
+
+@media (max-width: 1024px) {
+  .animated-btn {
+    --btn-padding-x: 18px;
+  }
+
+  .animated-btn--large {
+    --btn-height: 48px;
+    --btn-padding-x: 24px;
+    --btn-font-size: 15px;
+  }
+}
+
+/* =========================================================
+   MOBILE
+   481px → 768px
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .animated-btn {
+    --btn-height: 42px;
+    --btn-padding-x: 16px;
+    --btn-font-size: 14px;
+    --btn-radius: 8px;
+
+    max-width: 100%;
+  }
+
+  .animated-btn--small {
+    --btn-height: 36px;
+    --btn-padding-x: 12px;
+    --btn-font-size: 12.5px;
+  }
+
+  .animated-btn--medium {
+    --btn-height: 42px;
+    --btn-padding-x: 16px;
+    --btn-font-size: 13.5px;
+  }
+
+  .animated-btn--large {
+    --btn-height: 48px;
+    --btn-padding-x: 20px;
+    --btn-font-size: 15px;
+    --btn-radius: 9px;
+  }
+
+  .animated-btn__spinner {
+    width: 13px;
+    height: 13px;
+  }
+}
+
+/* =========================================================
+   SMALL MOBILE
+   361px → 480px
+   ========================================================= */
+
+@media (max-width: 480px) {
+  .animated-btn {
+    --btn-height: 40px;
+    --btn-padding-x: 14px;
+    --btn-font-size: 13px;
+    --btn-gap: 6px;
+
+    border-radius: 7px;
+  }
+
+  .animated-btn--small {
+    --btn-height: 34px;
+    --btn-padding-x: 10px;
+    --btn-font-size: 12px;
+    --btn-gap: 5px;
+  }
+
+  .animated-btn--medium {
+    --btn-height: 40px;
+    --btn-padding-x: 14px;
+    --btn-font-size: 13px;
+  }
+
+  .animated-btn--large {
+    --btn-height: 46px;
+    --btn-padding-x: 17px;
+    --btn-font-size: 14px;
+    --btn-gap: 7px;
+    --btn-radius: 8px;
+  }
+
+  .animated-btn__icon {
+    font-size: 1.05em;
+  }
+
+  .animated-btn__spinner {
+    width: 12px;
+    height: 12px;
+    border-width: 2px;
+  }
+}
+
+/* =========================================================
+   EXTRA SMALL MOBILE
+   ≤ 360px
+   ========================================================= */
+
+@media (max-width: 360px) {
+  .animated-btn {
+    --btn-height: 38px;
+    --btn-padding-x: 11px;
+    --btn-font-size: 12px;
+    --btn-gap: 5px;
+
+    border-radius: 6px;
+  }
+
+  .animated-btn--small {
+    --btn-height: 32px;
+    --btn-padding-x: 8px;
+    --btn-font-size: 11px;
+  }
+
+  .animated-btn--medium {
+    --btn-height: 38px;
+    --btn-padding-x: 11px;
+    --btn-font-size: 12px;
+  }
+
+  .animated-btn--large {
+    --btn-height: 44px;
+    --btn-padding-x: 14px;
+    --btn-font-size: 13px;
+    --btn-radius: 7px;
+  }
+}
+
+/* =========================================================
+   Full Width Support
+   ========================================================= */
+
+.animated-btn--full {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Useful when buttons are inside flex/grid layouts */
+.animated-btn--fluid {
+  width: 100%;
+}
+
+/* =========================================================
+   Mobile Touch Optimization
+   ========================================================= */
+
+@media (hover: none) and (pointer: coarse) {
+  .animated-btn {
+    /*
+     * جلوگیری از hover مصنوعی روی موبایل
+     */
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.12s ease;
+  }
+
+  .animated-btn:hover:not(.animated-btn--disabled) {
+    transform: none;
+  }
+
+  .animated-btn:active:not(.animated-btn--disabled) {
+    transform: scale(0.96);
+  }
+
+  .animated-btn--primary:hover:not(.animated-btn--disabled) {
+    background: var(--red-5);
+  }
+
+  .animated-btn--secondary:hover:not(.animated-btn--disabled) {
+    background: #fff;
+    border-color: var(--red-5);
+    color: var(--red-5);
+  }
+
+  .animated-btn--ghost:hover:not(.animated-btn--disabled) {
+    background: transparent;
+    border-color: var(--neu-1);
+    color: var(--neu-7);
+  }
+
+  .animated-btn--danger:hover:not(.animated-btn--disabled) {
+    background: var(--danger);
+  }
+
+  /*
+   * حذف Shine روی تاچ برای جلوگیری از اجرای
+   * انیمیشن ناخواسته
+   */
+  .animated-btn--primary::before,
+  .animated-btn--danger::before {
+    display: none;
+  }
+}
+
+/* =========================================================
+   Reduced Motion
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .animated-btn,
+  .animated-btn::before,
+  .animated-btn__ripple,
+  .animated-btn__spinner {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .animated-btn:hover,
+  .animated-btn:active {
+    transform: none !important;
+  }
+}
+
+/* =========================================================
+   Dark Mode Compatibility
+   ========================================================= */
+
+@media (prefers-color-scheme: dark) {
+  .animated-btn--secondary {
+    background: #fff;
+  }
+}
+
+/* =========================================================
+   RTL
+   ========================================================= */
+
+[dir='rtl'] .animated-btn {
+  direction: rtl;
+}
+
+[dir='ltr'] .animated-btn {
+  direction: ltr;
 }
