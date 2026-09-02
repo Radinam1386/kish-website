@@ -134,7 +134,7 @@ export default function Landing() {
                 <span className="typing-cursor">|</span>
               </span>
               <br />
-              رو با ما حرفه‌ای تر یاد بگیر
+              رو با ما بسیار حرفه‌ای یاد بگیر
             </h1>
 
             <p className="hero-desc reveal" ref={r}>
