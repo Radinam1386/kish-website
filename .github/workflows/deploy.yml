@@ -1,86 +1,26 @@
-name: Deploy Kish Website
+name: Test SSH
 
 on:
-  push:
-    branches:
-      - main
-
-concurrency:
-  group: kish-production
-  cancel-in-progress: false
+  workflow_dispatch:
 
 jobs:
-  deploy:
+  test:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
 
     steps:
-      - name: Deploy to server
+      - name: Test SSH
         uses: appleboy/ssh-action@v1.0.3
-
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
+          port: 22
+          timeout: 60s
+          command_timeout: 2m
 
           script: |
-            set -e
-
-            echo "======================================"
-            echo "       KISH DEPLOYMENT START"
-            echo "======================================"
-
-            cd /var/www/kish-website
-
-            echo "Current directory:"
+            echo "SSH SUCCESS"
+            whoami
+            hostname
             pwd
-
-            echo "Checking Git..."
-            git status
-
-            echo "Pulling latest code..."
-            git pull --ff-only origin main
-
-            echo "======================================"
-            echo "       FRONTEND BUILD"
-            echo "======================================"
-
-            cd /var/www/kish-website/frontend
-
-            npm ci
-            npm run build
-
-            echo "Frontend build completed."
-
-            echo "======================================"
-            echo "       BACKEND CHECK"
-            echo "======================================"
-
-            cd /var/www/kish-website/backend
-
-            source venv/bin/activate
-
-            python manage.py check
-
-            echo "Django check completed."
-
-            echo "======================================"
-            echo "       RESTART BACKEND"
-            echo "======================================"
-
-            systemctl restart kish
-
-            echo "Backend restarted."
-
-            echo "======================================"
-            echo "       NGINX CHECK"
-            echo "======================================"
-
-            nginx -t
-            systemctl reload nginx
-
-            echo "Nginx reloaded."
-
-            echo "======================================"
-            echo "       DEPLOY SUCCESS"
-            echo "======================================"
+            date
