@@ -27,8 +27,8 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 # SECURITY WARNING: don't run with debug turned on in production!
 
 ALLOWED_HOSTS = [
-    "example.ir",
-    "www.example.ir",
+    "kishkhoban.ir",
+    "www.kishkhoban.ir",
     "78.157.61.183",
     "localhost",
     "127.0.0.1",
