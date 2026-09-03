@@ -134,7 +134,7 @@ export default function Landing() {
                 <span className="typing-cursor">|</span>
               </span>
               <br />
-              رو با ما بسیار حرفه‌ای یاد بگیر
+              رو با ما حرفه‌ای یاد بگیر
             </h1>
 
             <p className="hero-desc reveal" ref={r}>
@@ -156,7 +156,7 @@ export default function Landing() {
             <div className="hero-trust reveal" ref={r}>
               <div className="trust-item">
                 <span className="trust-icon">✅</span>
-                <span>مجوز رسمی از سازمان آموزش و پرورش</span>
+                <span></span>
               </div>
               <div className="trust-item">
                 <span className="trust-icon">🏆</span>
