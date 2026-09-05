@@ -12,6 +12,8 @@ import {
   ChevronLeft,
   ChevronsRight,
   ChevronsLeft,
+  Trash2,
+  Sparkles,
 } from "lucide-react";
 
 import "./AdminStudents.css";
@@ -37,9 +39,19 @@ function AdminStudents() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [successMsg, setSuccessMsg] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
+
+  useEffect(() => {
+    if (location.state?.message) {
+      setSuccessMsg(location.state.message);
+      window.history.replaceState({}, document.title);
+      const timer = setTimeout(() => setSuccessMsg(""), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     let alive = true;
@@ -80,6 +92,32 @@ function AdminStudents() {
       alive = false;
     };
   }, []);
+
+  const handleDeleteStudent = async (student) => {
+    const studentDisplayName = student.name || student.username;
+    if (
+      !window.confirm(
+        `آیا از حذف کامل پرونده دانش‌آموز «${studentDisplayName}» اطمینان دارید؟ تمامی اطلاعات، سوابق، نمرات و ثبت‌نام‌های این دانش‌آموز حذف خواهند شد.`
+      )
+    ) {
+      return;
+    }
+
+    try {
+      await api.users.remove(student.id);
+      setUsers((prev) => prev.filter((u) => u.id !== student.id));
+      setEnrollments((prev) =>
+        prev.filter(
+          (e) =>
+            (e.student === student.id || e.student?.id === student.id) === false,
+        ),
+      );
+      setSuccessMsg(`دانش‌آموز «${studentDisplayName}» با موفقیت حذف شد.`);
+      setTimeout(() => setSuccessMsg(""), 3500);
+    } catch (err) {
+      alert(err.message || "خطا در حذف دانش‌آموز");
+    }
+  };
 
   const students = useMemo(
     () =>
@@ -308,6 +346,13 @@ function AdminStudents() {
           />
         </div>
 
+        {successMsg && (
+          <div className="admin-students-x7k2-alert success">
+            <Sparkles size={18} />
+            <span>{successMsg}</span>
+          </div>
+        )}
+
         {/* ================= MAIN CARD ================= */}
 
         <div className="admin-students-x7k2-content">
@@ -491,14 +536,25 @@ function AdminStudents() {
                           </td>
 
                           <td data-label="عملیات">
-                            <Link
-                              to={`/panel/${menuType}/students/${student.id}`}
-                            >
-                              <AnimatedButton variant="secondary" size="small">
-                                <Eye size={16} />
-                                مشاهده
-                              </AnimatedButton>
-                            </Link>
+                            <div className="admin-students-x7k2-actions-cell">
+                              <Link
+                                to={`/panel/${menuType}/students/${student.id}`}
+                              >
+                                <AnimatedButton variant="secondary" size="small">
+                                  <Eye size={16} />
+                                  مشاهده
+                                </AnimatedButton>
+                              </Link>
+
+                              <button
+                                type="button"
+                                className="admin-students-x7k2-delete-btn"
+                                onClick={() => handleDeleteStudent(student)}
+                                title="حذف حساب دانش‌آموز"
+                              >
+                                <Trash2 size={15} />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -563,15 +619,19 @@ function AdminStudents() {
                         to={`/panel/${menuType}/students/${student.id}`}
                         className="admin-students-x7k2-card-action"
                       >
-                        <AnimatedButton
-                          variant="secondary"
-                          size="small"
-                          icon={<ChevronLeft size={16} />}
-                        >
-                          <Eye size={16} />
-                          مشاهده پرونده
-                        </AnimatedButton>
+                        <Eye size={16} />
+                        مشاهده پرونده
                       </Link>
+
+                      <button
+                        type="button"
+                        className="admin-students-x7k2-mobile-delete-btn"
+                        onClick={() => handleDeleteStudent(student)}
+                        title="حذف حساب دانش‌آموز"
+                      >
+                        <Trash2 size={15} />
+                        <span>حذف</span>
+                      </button>
                     </div>
                   </article>
                 ))}

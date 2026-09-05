@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useParams, Link, useLocation } from "react-router-dom";
+import { useParams, Link, useLocation, useNavigate } from "react-router-dom";
 import {
   User,
   Phone,
@@ -39,6 +39,7 @@ import "./AdminStudentDetails.css";
 function AdminStudentDetails() {
   const { id } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isSecretary = location.pathname.includes("/secretary/");
 
@@ -49,6 +50,7 @@ function AdminStudentDetails() {
   const [attendanceRecords, setAttendanceRecords] = useState([]);
 
   const [loading, setLoading] = useState(true);
+  const [deletingStudent, setDeletingStudent] = useState(false);
   const [error, setError] = useState("");
   const [actionSuccess, setActionSuccess] = useState("");
 
@@ -242,6 +244,27 @@ function AdminStudentDetails() {
       showSuccess(`دانش‌آموز از کلاس «${className}» حذف شد.`);
     } catch (err) {
       alert(err.message || "خطا در حذف ثبت‌نام");
+    }
+  };
+
+  const handleDeleteStudent = async () => {
+    if (
+      !window.confirm(
+        `آیا از حذف کامل پرونده دانش‌آموز «${studentName}» اطمینان دارید؟ تمامی سوابق، نمرات و کلاس‌های این دانش‌آموز حذف خواهند شد.`
+      )
+    ) {
+      return;
+    }
+
+    try {
+      setDeletingStudent(true);
+      await api.users.remove(id);
+      navigate(backUrl, {
+        state: { message: `دانش‌آموز «${studentName}» با موفقیت حذف شد.` },
+      });
+    } catch (err) {
+      alert(err.message || "خطا در حذف دانش‌آموز");
+      setDeletingStudent(false);
     }
   };
 
@@ -580,6 +603,16 @@ function AdminStudentDetails() {
               onClick={() => setShowEnrollModal(true)}
             >
               ثبت‌نام در کلاس جدید
+            </AnimatedButton>
+
+            <AnimatedButton
+              variant="danger"
+              size="small"
+              icon={<Trash2 size={17} />}
+              onClick={handleDeleteStudent}
+              disabled={deletingStudent}
+            >
+              {deletingStudent ? "در حال حذف..." : "حذف دانش‌آموز"}
             </AnimatedButton>
           </div>
         </div>
