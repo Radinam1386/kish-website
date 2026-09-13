@@ -921,6 +921,20 @@ function AdminStudentDetails() {
 
             <div className="admin-student-details-x9p4-info-card">
               <div className="admin-student-details-x9p4-info-icon">
+                <Phone size={19} />
+              </div>
+
+              <div>
+                <span>شماره تماس والدین</span>
+
+                <strong className="admin-student-details-x9p4-phone">
+                  {studentUser.parent_phone || "-"}
+                </strong>
+              </div>
+            </div>
+
+            <div className="admin-student-details-x9p4-info-card">
+              <div className="admin-student-details-x9p4-info-icon">
                 <Mail size={19} />
               </div>
 

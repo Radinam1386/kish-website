@@ -14,6 +14,7 @@ class User(AbstractUser):
         choices=Role.choices,
     )
     phone_number = models.CharField(max_length=15, blank=True, null=True, verbose_name="شماره تماس")
+    parent_phone = models.CharField(max_length=15, blank=True, null=True, verbose_name="شماره تماس والدین")
     national_code = models.CharField(max_length=20, blank=True, null=True, verbose_name="کد ملی")
     birth_date = models.CharField(max_length=50, blank=True, null=True, verbose_name="تاریخ تولد")
     address = models.TextField(blank=True, null=True, verbose_name="آدرس محل سکونت")

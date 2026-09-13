@@ -18,7 +18,11 @@ import DashboardLayout from "../components/DashboardLayout";
 import StatCard from "../components/StatCard";
 import { Link } from "react-router-dom";
 import { api, getFullName, storage } from "../services/api";
-import { toJalaliDateString, toPersianDigits } from "../utils/dateUtils";
+import {
+  toJalaliDateString,
+  toPersianDigits,
+  getExamTimeStatus,
+} from "../utils/dateUtils";
 
 function StudentExams() {
   const [activeTab, setActiveTab] = useState("active");
@@ -98,18 +102,19 @@ function StudentExams() {
             0,
           ) || 20;
 
-          let status = submission ? "completed" : "active";
-          if (!submission) {
-            const userId = currentUser?.id || "guest";
-            const startTimeStr = localStorage.getItem(`kish_exam_start_time_${exam.id}_${userId}`);
-            if (startTimeStr) {
-              const durMinutes = Number(exam.duration_minutes) || 45;
-              const durSeconds = durMinutes * 60;
-              const elapsed = Math.floor((Date.now() - Number(startTimeStr)) / 1000);
-              if (elapsed < durSeconds) {
-                status = "in_progress";
-              }
-            }
+          const timeStatus = getExamTimeStatus(exam, currentUser?.id);
+
+          let status = "active";
+          if (submission) {
+            status = "completed";
+          } else if (timeStatus.status === "in_progress") {
+            status = "in_progress";
+          } else if (timeStatus.status === "upcoming") {
+            status = "upcoming";
+          } else if (timeStatus.status === "expired" || timeStatus.status === "time_up") {
+            status = "expired";
+          } else {
+            status = "active";
           }
 
           return {
@@ -118,6 +123,7 @@ function StudentExams() {
             teacher: getFullName(classroom?.teacher_detail) || "استاد آکادمی",
             questionsCount: exam.questions?.length || 0,
             status,
+            timeStatus,
             isGraded: submission?.is_graded,
             maxScore,
             score:
@@ -133,7 +139,7 @@ function StudentExams() {
   );
 
   const activeExams = useMemo(
-    () => examsData.filter((exam) => exam.status === "active" || exam.status === "in_progress"),
+    () => examsData.filter((exam) => exam.status !== "completed"),
     [examsData],
   );
 
@@ -314,6 +320,18 @@ function StudentExams() {
                       </div>
                     </div>
 
+                    {exam.start_time && exam.end_time && (
+                      <div className="student-exams-detail">
+                        <Clock3 size={15} />
+                        <div>
+                          <span>مهلت ورود</span>
+                          <strong>
+                            {toPersianDigits(exam.start_time.slice(0, 5))} تا {toPersianDigits(exam.end_time.slice(0, 5))}
+                          </strong>
+                        </div>
+                      </div>
+                    )}
+
                     <div className="student-exams-detail">
                       <Award size={15} />
                       <div>
@@ -321,11 +339,15 @@ function StudentExams() {
                         <strong>
                           {exam.status === "in_progress"
                             ? "در حال برگزاری"
-                            : exam.status === "active"
-                              ? "شروع نشده"
-                              : exam.isGraded
-                                ? "تصحیح نهایی"
-                                : "منتظر نمره"}
+                            : exam.status === "upcoming"
+                              ? (exam.timeStatus?.windowLabel || "هنوز آغاز نشده")
+                              : exam.status === "expired"
+                                ? "پایان مهلت شرکت"
+                                : exam.status === "active"
+                                  ? "آماده شرکت"
+                                  : exam.isGraded
+                                    ? "تصحیح نهایی"
+                                    : "منتظر نمره"}
                         </strong>
                       </div>
                     </div>
@@ -367,6 +389,28 @@ function StudentExams() {
                           شروع آزمون
                         </button>
                       </Link>
+                    ) : exam.status === "upcoming" ? (
+                      <button
+                        type="button"
+                        className="student-exams-start-btn"
+                        disabled
+                        style={{ opacity: 0.65, cursor: "not-allowed", background: "#718096" }}
+                        title={`شروع از ساعت ${exam.start_time ? toPersianDigits(exam.start_time.slice(0, 5)) : ""}`}
+                      >
+                        <Clock3 size={17} />
+                        {exam.start_time ? `شروع از ${toPersianDigits(exam.start_time.slice(0, 5))}` : "هنوز آغاز نشده"}
+                      </button>
+                    ) : exam.status === "expired" ? (
+                      <button
+                        type="button"
+                        className="student-exams-start-btn"
+                        disabled
+                        style={{ opacity: 0.55, cursor: "not-allowed", background: "#e53e3e" }}
+                        title="مهلت شرکت در آزمون به پایان رسیده است"
+                      >
+                        <XCircle size={17} />
+                        پایان مهلت شرکت
+                      </button>
                     ) : (
                       <Link to={`/panel/student/examresult/${exam.id}`}>
                         <button
