@@ -17,7 +17,7 @@ import DashboardLayout from "../components/DashboardLayout";
 import { AnimatedButton } from "../components/AnimatedButton";
 import StatCard from "../components/StatCard";
 import { api, storage } from "../services/api";
-import { toPersianDigits, toJalaliDateString } from "../utils/dateUtils";
+import { toPersianDigits, toJalaliDateString, getExamTimeStatus } from "../utils/dateUtils";
 import "./ExamPage.css";
 
 function StudentExam() {
@@ -32,6 +32,7 @@ function StudentExam() {
   const [exam, setExam] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [existingSubmission, setExistingSubmission] = useState(null);
+  const [windowBlocked, setWindowBlocked] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -161,15 +162,35 @@ function StudentExam() {
   useEffect(() => {
     if (!exam || submitted || existingSubmission || loading) return;
 
-    // Use duration_minutes specified by teacher, fallback to 45 if not set
-    const durMinutes = Number(exam.duration_minutes) || 45;
-    const durSeconds = durMinutes * 60;
-
     let startTime = localStorage.getItem(storageKey);
+
+    // If student has not started yet, verify that we are within the allowed time window
     if (!startTime) {
+      const timeStatus = getExamTimeStatus(exam, userId);
+      if (timeStatus.status === "upcoming") {
+        setWindowBlocked({
+          type: "upcoming",
+          message: "این آزمون هنوز آغاز نشده است.",
+          detail: `زمان شروع مهلت شرکت در آزمون: ساعت ${toPersianDigits(timeStatus.startTimeStr)} (تا ساعت ${toPersianDigits(timeStatus.endTimeStr)})`,
+        });
+        return;
+      } else if (timeStatus.status === "expired" || timeStatus.status === "time_up") {
+        setWindowBlocked({
+          type: "expired",
+          message: "مهلت شرکت در این آزمون به پایان رسیده است.",
+          detail: `مهلت ورود به این آزمون تا ساعت ${toPersianDigits(timeStatus.endTimeStr)} بود.`,
+        });
+        return;
+      }
+
+      // Valid window: initialize start time!
       startTime = Date.now().toString();
       localStorage.setItem(storageKey, startTime);
     }
+
+    // Student has started: count down full duration_minutes
+    const durMinutes = Number(exam.duration_minutes) || 45;
+    const durSeconds = durMinutes * 60;
 
     const calcRemaining = () => {
       const elapsed = Math.floor((Date.now() - Number(startTime)) / 1000);
@@ -196,7 +217,7 @@ function StudentExam() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [exam, submitted, existingSubmission, loading, storageKey, triggerAutoSubmit]);
+  }, [exam, submitted, existingSubmission, loading, storageKey, triggerAutoSubmit, userId]);
 
   function handleSelect(questionId, value) {
     if (submitted || existingSubmission || isTimeUp || saving) return;
@@ -379,6 +400,51 @@ function StudentExam() {
     );
   }
 
+  if (windowBlocked && !submitted) {
+    return (
+      <DashboardLayout
+        role="پنل دانش‌آموز"
+        title={`آزمون: ${exam?.title || ""}`}
+        menuType="student"
+      >
+        <div className="exam-page">
+          <section className="exam-result-hero">
+            <div
+              className="exam-result-icon"
+              style={{
+                background: windowBlocked.type === "upcoming" ? "#ebf8ff" : "#fff5f5",
+                color: windowBlocked.type === "upcoming" ? "#3182ce" : "#e53e3e",
+              }}
+            >
+              {windowBlocked.type === "upcoming" ? <Clock3 size={44} /> : <AlertTriangle size={44} />}
+            </div>
+
+            <span className="exam-result-kicker">
+              {windowBlocked.type === "upcoming" ? "آزمون در انتظار شروع" : "پایان مهلت شرکت"}
+            </span>
+            <h2>{windowBlocked.message}</h2>
+            <p style={{ marginTop: "0.5rem", color: "oklch(40% 0 0)" }}>
+              {windowBlocked.detail}
+            </p>
+            {exam?.date && (
+              <p style={{ marginTop: "0.25rem", color: "oklch(55% 0 0)", fontSize: "0.9rem" }}>
+                تاریخ برگزاری: {toJalaliDateString(exam.date)}
+              </p>
+            )}
+
+            <div style={{ marginTop: "1.5rem", display: "flex", gap: "1rem", justifyContent: "center" }}>
+              <Link to="/panel/student/exams">
+                <AnimatedButton variant="primary">
+                  بازگشت به لیست آزمون‌ها
+                </AnimatedButton>
+              </Link>
+            </div>
+          </section>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout
       role="پنل دانش‌آموز"
@@ -398,6 +464,9 @@ function StudentExam() {
                     <h4>زمان باقی‌مانده آزمون</h4>
                     <p>
                       مدت کل آزمون: {toPersianDigits(totalDurationMinutes)} دقیقه
+                      {exam?.start_time && exam?.end_time && (
+                        <span> (مهلت شروع: {toPersianDigits(exam.start_time.slice(0, 5))} الی {toPersianDigits(exam.end_time.slice(0, 5))})</span>
+                      )}
                       {isCritical
                         ? " — کمتر از یک دقیقه فرصت دارید!"
                         : isUrgent

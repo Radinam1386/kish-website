@@ -7,6 +7,8 @@ class Exam(models.Model):
     classroom = models.ForeignKey(ClassRoom, on_delete=models.CASCADE, related_name='exams')
     title = models.CharField(max_length=200)
     date = models.DateField()
+    start_time = models.TimeField(default="18:00", verbose_name="ساعت شروع مهلت آزمون")
+    end_time = models.TimeField(default="20:00", verbose_name="ساعت پایان مهلت شروع آزمون")
     duration_minutes = models.PositiveIntegerField(default=45, verbose_name="مدت زمان آزمون (دقیقه)")
     created_at = models.DateTimeField(auto_now_add=True)
 

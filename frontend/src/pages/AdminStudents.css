@@ -900,11 +900,15 @@
   background: #fafbfc;
 
   border-top: 1px solid #f0f2f4;
+
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .admin-students-x7k2-card-action {
-  width: 100%;
-  min-height: 42px;
+  flex: 1;
+  min-height: 40px;
 
   display: flex;
   align-items: center;
@@ -934,6 +938,74 @@
   background: #ffe5e1;
 
   transform: translateY(-1px);
+}
+
+.admin-students-x7k2-mobile-delete-btn {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 0 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border-radius: 10px;
+  border: 1px solid #f4d8d4;
+  background: #fff5f3;
+  color: #c84b3e;
+  font-family: inherit;
+  font-size: 0.76rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-students-x7k2-mobile-delete-btn:hover {
+  background: #ffebe8;
+  color: #b9382d;
+  border-color: #efbdb7;
+  transform: translateY(-1px);
+}
+
+.admin-students-x7k2-actions-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-students-x7k2-delete-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid #f4d8d4;
+  background: #fff5f3;
+  color: #c84b3e;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.admin-students-x7k2-delete-btn:hover {
+  background: #ffebe8;
+  color: #b9382d;
+  border-color: #efbdb7;
+  transform: translateY(-1px);
+}
+
+.admin-students-x7k2-alert {
+  background: oklch(95% 0.05 145 / 0.85);
+  border: 1px solid oklch(75% 0.15 145 / 0.35);
+  color: oklch(35% 0.15 145);
+  padding: 0.85rem 1.25rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 0.88rem;
 }
 
 /* =========================================================

@@ -131,15 +131,14 @@ function ContactPage() {
                 ))}
               </div>
             </div>
-
             <div className="contact-map">
-              <iframe
-                src="https://balad.ir/embed?p=1M78BmsaUv4FqM"
-                title="موقعیت آموزشگاه کیش روی نقشه"
-                className="contact-map"
-                allowfullscreen=""
-                aria-hidden="false"
-                tabindex="0"
+              <iframe 
+              src="https://balad.ir/embed?p=2cloCikdZZhtSF" 
+              title="مشاهده «زبانسرا کیش» روی نقشه بلد" 
+              className="contact-map"
+              allowfullscreen=""
+              aria-hidden="false"
+              tabindex="0"
               ></iframe>
             </div>
           </div>

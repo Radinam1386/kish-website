@@ -53,6 +53,8 @@ class ExamViewSet(viewsets.ModelViewSet):
                 'id': exam.id,
                 'title': exam.title,
                 'date': exam.date,
+                'start_time': exam.start_time.strftime("%H:%M") if hasattr(exam.start_time, 'strftime') else str(exam.start_time or "18:00")[:5],
+                'end_time': exam.end_time.strftime("%H:%M") if hasattr(exam.end_time, 'strftime') else str(exam.end_time or "20:00")[:5],
                 'duration_minutes': exam.duration_minutes,
                 'classroom': exam.classroom_id,
                 'created_at': exam.created_at,

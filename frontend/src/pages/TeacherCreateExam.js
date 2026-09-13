@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   PlusCircle,
   Trash2,
@@ -19,9 +20,12 @@ import { api } from "../services/api";
 import { getTodayJalali, toPersianDigits } from "../utils/dateUtils";
 
 function TeacherCreateExam() {
+  const navigate = useNavigate();
   const today = getTodayJalali();
   const [examTitle, setExamTitle] = useState("");
   const [examDate, setExamDate] = useState(today.isoGregorian);
+  const [startTime, setStartTime] = useState("18:00");
+  const [endTime, setEndTime] = useState("20:00");
   const [durationMinutes, setDurationMinutes] = useState(45);
   const [classroomId, setClassroomId] = useState("");
   const [classrooms, setClassrooms] = useState([]);
@@ -197,6 +201,8 @@ function TeacherCreateExam() {
       const exam = await api.exams.create({
         title: examTitle,
         date: examDate,
+        start_time: startTime || "18:00",
+        end_time: endTime || "20:00",
         classroom: Number(classroomId),
         duration_minutes: Number(durationMinutes) || 45,
       });
@@ -221,9 +227,16 @@ function TeacherCreateExam() {
 
       setExamTitle("");
       setExamDate("");
+      setStartTime("18:00");
+      setEndTime("20:00");
       setQuestions([]);
       resetQuestionForm();
-      setMessage("آزمون با موفقیت در بک‌اند ثبت شد.");
+
+      navigate("/panel/teacher/exams", {
+        state: {
+          successMessage: `آزمون «${examTitle}» با موفقیت تعریف و ثبت گردید.`,
+        },
+      });
     } catch (err) {
       setMessage(err.message || "ثبت آزمون ناموفق بود.");
     } finally {
@@ -280,7 +293,7 @@ function TeacherCreateExam() {
             </div>
 
             <div className="xqv-teacher-exam-field">
-              <label>مدت زمان امتحان (دقیقه)</label>
+              <label>مدت زمان آزمون (دقیقه)</label>
 
               <input
                 className="xqv-teacher-exam-input"
@@ -294,11 +307,35 @@ function TeacherCreateExam() {
               />
             </div>
 
-            <div className="xqv-teacher-exam-field full-width">
+            <div className="xqv-teacher-exam-field">
               <JalaliDatePicker
                 label="تاریخ برگزاری آزمون (شمسی)"
                 value={examDate}
                 onChange={(iso) => setExamDate(iso)}
+                required
+              />
+            </div>
+
+            <div className="xqv-teacher-exam-field">
+              <label>ساعت شروع مهلت آزمون</label>
+
+              <input
+                className="xqv-teacher-exam-input"
+                type="time"
+                value={startTime}
+                onChange={(event) => setStartTime(event.target.value)}
+                required
+              />
+            </div>
+
+            <div className="xqv-teacher-exam-field">
+              <label>ساعت پایان مهلت شروع آزمون</label>
+
+              <input
+                className="xqv-teacher-exam-input"
+                type="time"
+                value={endTime}
+                onChange={(event) => setEndTime(event.target.value)}
                 required
               />
             </div>

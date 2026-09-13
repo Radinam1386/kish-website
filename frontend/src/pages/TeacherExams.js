@@ -16,7 +16,7 @@ import {
   UserX,
   Sparkles,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
 
 import DashboardLayout from "../components/DashboardLayout";
@@ -73,6 +73,20 @@ export default function TeacherExams() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.state?.successMessage) {
+      setSuccessMsg(location.state.successMessage);
+      navigate(location.pathname, { replace: true, state: {} });
+      const timer = setTimeout(() => {
+        setSuccessMsg("");
+      }, 6000);
+      return () => clearTimeout(timer);
+    }
+  }, [location, navigate]);
 
   /* -------------------------------------------------------
      FILTERS
@@ -576,6 +590,13 @@ export default function TeacherExams() {
           <div className="teacher-exams-alert success">
             <Sparkles size={18} />
             <span>{successMsg}</span>
+            <button
+              type="button"
+              onClick={() => setSuccessMsg("")}
+              aria-label="بستن"
+            >
+              <X size={15} />
+            </button>
           </div>
         )}
 
@@ -758,10 +779,17 @@ export default function TeacherExams() {
 
                       <td>
                         <span className="shamsi-date-pill">
-                          {exam.created_at
+                          {exam.date
+                            ? toJalaliDateString(exam.date)
+                            : exam.created_at
                             ? toJalaliDateString(exam.created_at)
                             : "-"}
                         </span>
+                        {exam.start_time && exam.end_time && (
+                          <div style={{ fontSize: "0.74rem", color: "oklch(45% 0 0)", marginTop: "4px" }}>
+                            مهلت: {toPersianDigits(exam.start_time.slice(0, 5))} تا {toPersianDigits(exam.end_time.slice(0, 5))}
+                          </div>
+                        )}
                       </td>
 
                       <td>
@@ -883,6 +911,15 @@ export default function TeacherExams() {
                         {toPersianDigits(inspectedExam.submissionsCount)} از{" "}
                         {toPersianDigits(inspectedExam.enrolledCount)} نفر
                       </strong>
+                      {inspectedExam.start_time && inspectedExam.end_time && (
+                        <>
+                          {" | "}
+                          مهلت ورود:{" "}
+                          <strong>
+                            {toPersianDigits(inspectedExam.start_time.slice(0, 5))} الی {toPersianDigits(inspectedExam.end_time.slice(0, 5))}
+                          </strong>
+                        </>
+                      )}
                     </p>
                   </div>
                 </div>
