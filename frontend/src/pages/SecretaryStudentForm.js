@@ -41,7 +41,6 @@ function SecretaryStudentForm() {
     nationalId: "",
     birthDate: "",
     phone: "",
-    parentPhone: "",
     email: "",
     address: "",
     username: "",
@@ -95,7 +94,6 @@ function SecretaryStudentForm() {
             nationalId: user.national_code || "",
             birthDate: user.birth_date || "",
             phone: user.phone_number || "",
-            parentPhone: user.parent_phone || "",
             email: user.email || "",
             address: user.address || "",
             level: user.level || "",
@@ -130,11 +128,6 @@ function SecretaryStudentForm() {
       return;
     }
 
-    if (!formData.parentPhone || !formData.parentPhone.trim()) {
-      alert("شماره تماس والدین الزامی است.");
-      return;
-    }
-
     setDatabaseError(null);
     setSubmitting(true);
 
@@ -145,7 +138,6 @@ function SecretaryStudentForm() {
         last_name: formData.lastName,
         email: formData.email,
         phone_number: formData.phone,
-        parent_phone: formData.parentPhone,
         national_code: formData.nationalId,
         birth_date: formData.birthDate,
         address: formData.address,
@@ -316,20 +308,6 @@ function SecretaryStudentForm() {
                 <input
                   name="phone"
                   value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="09123456789"
-                  inputMode="tel"
-                  required
-                />
-              </label>
-
-              <label className="secretary-student-form-field">
-                <span>
-                  شماره تماس والدین <b>*</b>
-                </span>
-                <input
-                  name="parentPhone"
-                  value={formData.parentPhone}
                   onChange={handleChange}
                   placeholder="09123456789"
                   inputMode="tel"

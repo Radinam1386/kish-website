@@ -41,7 +41,6 @@ function AdminStudentForm() {
     nationalId: "",
     birthDate: "",
     phone: "",
-    parentPhone: "",
     email: "",
     address: "",
     username: "",
@@ -95,7 +94,6 @@ function AdminStudentForm() {
             nationalId: user.national_code || "",
             birthDate: user.birth_date || "",
             phone: user.phone_number || "",
-            parentPhone: user.parent_phone || "",
             email: user.email || "",
             address: user.address || "",
             level: user.level || "",
@@ -130,11 +128,6 @@ function AdminStudentForm() {
       return;
     }
 
-    if (!formData.parentPhone || !formData.parentPhone.trim()) {
-      alert("شماره تماس والدین الزامی است.");
-      return;
-    }
-
     setDatabaseError(null);
     setSubmitting(true);
 
@@ -145,7 +138,6 @@ function AdminStudentForm() {
         last_name: formData.lastName,
         email: formData.email,
         phone_number: formData.phone,
-        parent_phone: formData.parentPhone,
         national_code: formData.nationalId,
         birth_date: formData.birthDate,
         address: formData.address,
@@ -326,11 +318,11 @@ function AdminStudentForm() {
 
               <label className="secretary-student-form-field">
                 <span>
-                  شماره تماس والدین <b>*</b>
+                  شماره تماس والدین  <b>*</b>
                 </span>
                 <input
-                  name="parentPhone"
-                  value={formData.parentPhone}
+                  name="phone"
+                  value={formData.phone}
                   onChange={handleChange}
                   placeholder="09123456789"
                   inputMode="tel"
@@ -482,11 +474,35 @@ function AdminStudentForm() {
                   onChange={handleChange}
                 >
                   <option value="">انتخاب سطح</option>
-                  <option value="Elementary">Elementary</option>
-                  <option value="Pre-Intermediate">Pre-Intermediate</option>
-                  <option value="Intermediate">Intermediate</option>
-                  <option value="Upper-Intermediate">Upper-Intermediate</option>
-                  <option value="Advanced">Advanced</option>
+                  <option value="fam1.1">fam1.1</option>
+                  <option value="fam1.2">fam1.2</option>
+                  <option value="fam1.3">fam1.3</option>
+                  <option value="fam1.4">fam1.4</option>
+                  <option value="top1.1">top1.1</option>
+                  <option value="top1.2">top1.2</option>
+                  <option value="top1.3">top1.3</option>
+                  <option value="top1.4">top1.4</option>
+                  <option value="top2.1">top2.1</option>
+                  <option value="top2.2">top2.2</option>
+                  <option value="top2.3">top2.3</option>
+                  <option value="top2.4">top2.4</option>
+                  <option value="top3.1">top3.1</option>
+                  <option value="top3.2">top3.2</option>
+                  <option value="top3.3">top3.3</option>
+                  <option value="top3.4">top3.4</option>
+                  <option value="sum1.1">sum1.1</option>
+                  <option value="sum1.2">sum1.2</option>
+                  <option value="sum1.3">sum1.3</option>
+                  <option value="sum1.4">sum1.4</option>
+                  <option value="sum2.1">sum2.1</option>
+                  <option value="sum2.2">sum2.2</option>
+                  <option value="sum2.3">sum2.3</option>
+                  <option value="sum2.4">sum2.4</option>
+                  <option value="fce1">fce1</option>
+                  <option value="fce2">fce2</option>
+                  <option value="fce3">fce3</option>
+                  <option value="fce4">fce4</option>
+                  <option value="IELTS1">IELTS1</option>
                 </select>
               </label>
 
@@ -515,7 +531,6 @@ function AdminStudentForm() {
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
-                        placeholder="حداقل ۶ کاراکتر"
                         dir="ltr"
                         required
                       />

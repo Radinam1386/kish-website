@@ -612,12 +612,12 @@ export default function ClassForm() {
             </section>
 
             {/* Form Actions */}
-            <div className="class-form-submit-actions">
+            <div className="class-form-submit-actions-edit">
               <Link
                 to={`${basePath}/classes`}
-                className="class-form-cancel-btn"
+                className="m-2"
               >
-                انصراف
+                <AnimatedButton variant="ghost">انصراف</AnimatedButton>
               </Link>
 
               <AnimatedButton

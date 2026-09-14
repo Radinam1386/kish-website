@@ -834,127 +834,134 @@
     flex: 1 1 auto;
   }
 }
-
 /* =========================================================
-   MOBILE
+   MOBILE SECTION HEADER
+   Desktop = بدون تغییر
+   Mobile = عنوان + دکمه در یک ردیف
 ========================================================= */
 
 @media (max-width: 700px) {
-  .admin-panel-x7k2-stats-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-
-    gap: 0.75rem;
-
-    margin-bottom: 1.15rem;
-  }
-
-  .admin-panel-x7k2-section {
-    padding: 1rem;
-
-    margin-bottom: 1.15rem;
-
-    border-radius: 17px;
-  }
-
-  /* -------------------------
-     TERM
-  ------------------------- */
-
-  .term-selector-banner {
-    gap: 0.9rem;
-
-    margin-bottom: 1.15rem;
-
-    padding: 1rem;
-
-    border-radius: 17px;
-  }
-
-  .term-banner-info {
-    align-items: flex-start;
-  }
-
-  .term-icon-circle-admin {
-    width: 42px;
-    height: 42px;
-
-    min-width: 42px;
-
-    border-radius: 12px;
-  }
-
-  .term-banner-info h3 {
-    font-size: 0.82rem;
-  }
-
-  .term-banner-info p {
-    font-size: 0.68rem;
-  }
-
-  .term-dropdown-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-
-    gap: 0.4rem;
-  }
-
-  .term-dropdown-wrapper label {
-    font-size: 0.75rem;
-  }
-
-  .term-select-input {
-    width: 100%;
-
-    min-height: 44px;
-
-    font-size: 0.76rem;
-  }
-
-  /* -------------------------
+  /* =======================================================
      SECTION HEADER
-  ------------------------- */
+     عنوان سمت راست
+     دکمه سمت چپ
+  ======================================================= */
 
   .admin-panel-x7k2-section-header {
-    align-items: stretch;
-    flex-direction: column;
+    display: flex;
 
-    gap: 0.75rem;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 0.65rem;
+
+    width: 100%;
+    min-width: 0;
 
     margin-bottom: 1rem;
     padding-bottom: 0.8rem;
   }
 
+  /* عنوان + count */
   .admin-panel-section-heading {
-    width: 100%;
+    display: flex;
+    align-items: center;
+
+    gap: 0.45rem;
+
+    min-width: 0;
+    width: auto;
+
+    flex: 1 1 auto;
+
+    overflow: hidden;
   }
 
   .admin-panel-x7k2-section-title {
-    font-size: 0.98rem;
+    min-width: 0;
+
+    max-width: 100%;
+
+    margin: 0;
+
+    padding-right: 0.7rem;
+
+    font-size: 0.92rem;
+    line-height: 1.6;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .admin-panel-section-count {
-    font-size: 0.63rem;
+    flex: 0 0 auto;
+
+    min-height: 23px;
+
+    padding: 0.15rem 0.45rem;
+
+    font-size: 0.59rem;
   }
 
-  .admin-panel-add-student-link {
-    width: 100%;
+  /* =======================================================
+     BUTTON WRAPPER
+     دیگه width:100% نیست
+  ======================================================= */
+
+  .admin-panel-add-student-link,
+  .admin-panel-section-link {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 auto;
+
+    width: auto;
+    max-width: 48%;
+
+    min-width: 0;
   }
 
-  .admin-panel-add-student-link > * {
-    width: 100%;
+  .admin-panel-add-student-link > *,
+  .admin-panel-section-link > * {
+    width: auto;
     max-width: 100%;
   }
 
-  .admin-panel-section-link {
-    width: 100%;
+  /* =======================================================
+     دکمه افزودن دانش‌آموز
+  ======================================================= */
 
-    justify-content: flex-start;
+  .admin-panel-add-student-link .animated-btn {
+    max-width: 100%;
+
+    min-height: 38px;
+
+    padding: 0 11px;
+
+    font-size: 0.7rem;
   }
 
-  /* -------------------------
-     STUDENT TABLE
-  ------------------------- */
+  /* =======================================================
+     دکمه‌های مدیریت معلمان / کلاس‌ها
+  ======================================================= */
+
+  .admin-panel-section-link .animated-btn {
+    min-height: 35px;
+
+    padding: 0 10px;
+
+    font-size: 0.68rem;
+
+    white-space: nowrap;
+  }
+
+  /* =======================================================
+     TABLE
+  ======================================================= */
 
   .admin-panel-x7k2-table-wrapper {
     overflow: visible;
@@ -1009,6 +1016,7 @@
 
   .admin-panel-x7k2-table td {
     display: flex;
+
     align-items: center;
     justify-content: space-between;
 
@@ -1069,16 +1077,21 @@
   }
 
   .admin-panel-student-action-link {
-    width: 100%;
+    width: auto;
+
+    max-width: 65%;
+
+    margin-right: auto;
   }
 
   .admin-panel-student-action-link > * {
-    width: 100%;
+    width: auto;
+    max-width: 100%;
   }
 
-  /* -------------------------
+  /* =======================================================
      PAGINATION
-  ------------------------- */
+  ======================================================= */
 
   .admin-panel-student-pagination {
     gap: 0.3rem;
@@ -1093,6 +1106,7 @@
     flex: 1 1 auto;
 
     overflow-x: auto;
+
     scrollbar-width: none;
   }
 
@@ -1116,9 +1130,9 @@
     font-size: 0.64rem;
   }
 
-  /* -------------------------
+  /* =======================================================
      TEACHERS / CLASSES
-  ------------------------- */
+  ======================================================= */
 
   .admin-panel-teacher-row-card,
   .admin-panel-class-row-card {
@@ -1164,50 +1178,79 @@
 ========================================================= */
 
 @media (max-width: 480px) {
-  .admin-panel-x7k2-stats-grid {
-    gap: 0.65rem;
-  }
-
   .admin-panel-x7k2-section {
     padding: 0.85rem;
 
     border-radius: 15px;
   }
 
-  .term-selector-banner {
-    padding: 0.85rem;
+  /* -------------------------------------------------------
+     HEADER
+  ------------------------------------------------------- */
 
-    border-radius: 15px;
+  .admin-panel-x7k2-section-header {
+    gap: 0.45rem;
+
+    margin-bottom: 0.85rem;
+    padding-bottom: 0.7rem;
   }
 
-  .term-banner-info {
-    gap: 0.6rem;
-  }
-
-  .term-icon-circle-admin {
-    width: 39px;
-    height: 39px;
-
-    min-width: 39px;
-
-    border-radius: 11px;
-  }
-
-  .term-banner-info h3 {
-    font-size: 0.76rem;
-  }
-
-  .term-banner-info p {
-    font-size: 0.64rem;
+  .admin-panel-section-heading {
+    gap: 0.3rem;
   }
 
   .admin-panel-x7k2-section-title {
-    font-size: 0.92rem;
+    padding-right: 0.6rem;
+
+    font-size: 0.82rem;
   }
 
   .admin-panel-section-count {
-    font-size: 0.59rem;
+    min-height: 21px;
+
+    padding: 0.12rem 0.4rem;
+
+    font-size: 0.55rem;
   }
+
+  /* دکمه */
+  .admin-panel-add-student-link {
+    max-width: 46%;
+  }
+
+  .admin-panel-add-student-link .animated-btn {
+    min-height: 36px;
+
+    padding: 0 8px;
+
+    font-size: 0.62rem;
+
+    gap: 5px;
+  }
+
+  .admin-panel-add-student-link .animated-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* مدیریت معلمان / کلاس‌ها */
+  .admin-panel-section-link {
+    max-width: 43%;
+  }
+
+  .admin-panel-section-link .animated-btn {
+    min-height: 34px;
+
+    padding: 0 8px;
+
+    font-size: 0.6rem;
+
+    gap: 4px;
+  }
+
+  /* -------------------------------------------------------
+     TABLE
+  ------------------------------------------------------- */
 
   .admin-panel-x7k2-table tbody tr {
     padding: 0.75rem;
@@ -1271,24 +1314,50 @@
 ========================================================= */
 
 @media (max-width: 380px) {
-  .admin-panel-x7k2-stats-grid {
-    grid-template-columns: 1fr;
-  }
-
   .admin-panel-x7k2-section {
-    padding: 0.75rem;
+    padding: 0.7rem;
   }
 
-  .term-selector-banner {
-    padding: 0.75rem;
+  .admin-panel-x7k2-section-header {
+    gap: 0.35rem;
   }
 
-  .term-banner-info h3 {
-    font-size: 0.72rem;
+  .admin-panel-x7k2-section-title {
+    font-size: 0.77rem;
   }
 
-  .term-banner-info p {
-    font-size: 0.61rem;
+  .admin-panel-section-count {
+    display: none;
+  }
+
+  /* دکمه‌ها جمع‌وجورتر */
+  .admin-panel-add-student-link {
+    max-width: 44%;
+  }
+
+  .admin-panel-add-student-link .animated-btn {
+    min-height: 34px;
+
+    padding: 0 7px;
+
+    font-size: 0.57rem;
+  }
+
+  .admin-panel-add-student-link .animated-btn svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .admin-panel-section-link {
+    max-width: 42%;
+  }
+
+  .admin-panel-section-link .animated-btn {
+    min-height: 32px;
+
+    padding: 0 7px;
+
+    font-size: 0.56rem;
   }
 
   .admin-panel-x7k2-table tbody {
@@ -1301,6 +1370,7 @@
 
   .admin-panel-x7k2-student-name {
     max-width: 58%;
+
     font-size: 0.71rem;
   }
 
@@ -1310,11 +1380,13 @@
 
   .admin-panel-x7k2-class-badge {
     max-width: 58%;
+
     font-size: 0.6rem;
   }
 
   .admin-panel-x7k2-status-badge {
     min-width: 46px;
+
     font-size: 0.58rem;
   }
 
@@ -1347,34 +1419,32 @@
 }
 
 /* =========================================================
-   ULTRA SMALL DEVICES
+   ULTRA SMALL
 ========================================================= */
 
 @media (max-width: 330px) {
-  .admin-panel-x7k2-stats-grid {
-    gap: 0.55rem;
-  }
-
-  .admin-panel-x7k2-section {
-    padding: 0.65rem;
-  }
-
-  .term-selector-banner {
-    padding: 0.65rem;
-  }
-
-  .term-dropdown-wrapper label {
-    font-size: 0.69rem;
-  }
-
-  .term-select-input {
-    min-height: 40px;
-
-    font-size: 0.68rem;
+  .admin-panel-x7k2-section-header {
+    gap: 0.25rem;
   }
 
   .admin-panel-x7k2-section-title {
-    font-size: 0.86rem;
+    font-size: 0.72rem;
+  }
+
+  .admin-panel-add-student-link .animated-btn {
+    min-height: 32px;
+
+    padding: 0 6px;
+
+    font-size: 0.53rem;
+  }
+
+  .admin-panel-section-link .animated-btn {
+    min-height: 30px;
+
+    padding: 0 6px;
+
+    font-size: 0.52rem;
   }
 
   .admin-panel-pagination-btn,

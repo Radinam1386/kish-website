@@ -102,6 +102,11 @@ function DashboardLayout({ role, title, children, menuType }) {
         icon: <FileText size={19} />,
         to: "/panel/secretary/exams",
       },
+      {
+        label: "صدور گواهی",
+        icon: <Award size={19} />,
+        to: "/panel/secretary/certificate",
+      },
     ],
 
     admin: [
@@ -145,6 +150,11 @@ function DashboardLayout({ role, title, children, menuType }) {
         label: "نظارت بر امتحانات",
         icon: <FileText size={19} />,
         to: "/panel/admin/exams",
+      },
+      {
+        label: "صدور گواهی",
+        icon: <Award size={19} />,
+        to: "/panel/admin/certificate",
       },
     ],
   };

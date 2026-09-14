@@ -1824,3 +1824,84 @@
   }
 
 }
+.student-exams-detail-time {
+  border-color: rgba(231, 76, 60, 0.12);
+  background: rgba(231, 76, 60, 0.045);
+}
+
+.student-exams-detail-time > svg {
+  color: var(--student-exams-red);
+}
+
+.student-exams-time-value {
+  color: var(--student-exams-red-dark) !important;
+  font-size: 0.72rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.02em;
+}
+
+.student-exams-action-link {
+  display: block;
+  width: 100%;
+  text-decoration: none;
+}
+
+.student-exams-continue-btn {
+  background: linear-gradient(
+    135deg,
+    #f39c12,
+    #e67e22
+  );
+}
+
+.student-exams-scheduled-btn {
+  cursor: pointer;
+}
+
+.student-exams-countdown {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+
+  border: 1px solid rgba(231, 76, 60, 0.12);
+  border-radius: 14px;
+
+  background: rgba(231, 76, 60, 0.06);
+}
+
+.student-exams-countdown-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+
+  border-radius: 10px;
+
+  background: rgba(231, 76, 60, 0.1);
+  color: var(--student-exams-red);
+}
+
+.student-exams-countdown-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+
+  min-width: 0;
+}
+
+.student-exams-countdown-content span {
+  color: #777;
+  font-size: 0.76rem;
+}
+
+.student-exams-countdown-content strong {
+  color: var(--student-exams-red);
+  font-size: 0.9rem;
+  font-weight: 900;
+}

@@ -51,6 +51,7 @@ import AdminStudentDetails from "./pages/AdminStudentDetails";
 
 import ClassForm from "./pages/ClassForm";
 import ClassDetails from "./pages/ClassDetails";
+import StudentCertificate from "./pages/StudentCertificate";
 
 function ScrollToAnchor() {
   const { hash } = useLocation();
@@ -131,6 +132,11 @@ function App() {
           <Route path="/panel/secretary" element={<SecretaryPanel />} />
 
           <Route
+            path="/panel/secretary/certificate"
+            element={<StudentCertificate />}
+          />
+
+          <Route
             path="/panel/secretary/classes"
             element={<SecretaryClasses />}
           />
@@ -200,6 +206,11 @@ function App() {
         </Route>
         <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
           <Route path="/panel/admin" element={<AdminPanel />} />
+
+          <Route
+            path="/panel/admin/certificate"
+            element={<StudentCertificate />}
+          />
 
           <Route path="/panel/admin/classes" element={<SecretaryClasses />} />
 

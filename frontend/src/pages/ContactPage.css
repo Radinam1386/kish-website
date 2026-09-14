@@ -171,11 +171,11 @@ a.contact-info-item:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
   border-radius: 10px;
-  background: oklch(92% 0.06 20 / 0.7);
-  color: oklch(50% 0.22 25);
+  background: var(--red-5);
+  color: white;
   flex-shrink: 0;
 }
 
@@ -211,15 +211,15 @@ a.contact-info-item:hover {
   width: 60px;
   height: 60px;
   border-radius: 18px;
-  background: oklch(92% 0.06 20 / 0.7);
-  color: oklch(45% 0.22 25);
+  background: oklch(55% 0.22 25);
+  color: white;
   transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 4px 14px oklch(40% 0.15 25 / 0.12);
 }
 
 .contact-social-btn:hover {
-  background: oklch(55% 0.22 25);
-  color: white;
+  background: oklch(92% 0.06 20 / 0.7);
+  color: oklch(45% 0.22 25);
   transform: translateY(-3px) scale(1.05);
   box-shadow: 0 8px 20px oklch(40% 0.2 25 / 0.25);
 }

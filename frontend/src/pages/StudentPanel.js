@@ -19,11 +19,7 @@ import { Link } from "react-router-dom";
 import DashboardLayout from "../components/DashboardLayout";
 import StatCard from "../components/StatCard";
 import { api, getFullName, storage } from "../services/api";
-import {
-  toJalaliDateString,
-  toPersianDigits,
-  getExamTimeStatus,
-} from "../utils/dateUtils";
+import { toJalaliDateString, toPersianDigits } from "../utils/dateUtils";
 
 import "./StudentPanel.css";
 
@@ -197,10 +193,8 @@ function StudentPanel() {
         0,
       ) || exam.questions?.length || 20;
 
-      const timeStatus = getExamTimeStatus(exam, currentUser?.id);
-
-      let status = "available";
-      let statusLabel = "شروع آزمون";
+      let status = "not_taken";
+      let statusLabel = "شرکت در آزمون";
       let scoreDisplay = "-";
 
       if (submission) {
@@ -213,22 +207,20 @@ function StudentPanel() {
           statusLabel = "در انتظار تصحیح";
           scoreDisplay = "در انتظار نمره";
         }
-      } else if (timeStatus.status === "in_progress") {
-        status = "in_progress";
-        statusLabel = "در حال برگزاری";
-        scoreDisplay = "در جریان";
-      } else if (timeStatus.status === "upcoming") {
-        status = "upcoming";
-        statusLabel = timeStatus.windowLabel || "هنوز آغاز نشده";
-        scoreDisplay = "-";
-      } else if (timeStatus.status === "expired" || timeStatus.status === "time_up") {
-        status = "expired";
-        statusLabel = "پایان مهلت شرکت";
-        scoreDisplay = "منقضی شده";
       } else {
-        status = "available";
-        statusLabel = "آماده شرکت";
-        scoreDisplay = "-";
+        // Check if student has started this exam
+        const userId = currentUser?.id || "guest";
+        const startTimeStr = localStorage.getItem(`kish_exam_start_time_${exam.id}_${userId}`);
+        if (startTimeStr) {
+          const durMinutes = Number(exam.duration_minutes) || 45;
+          const durSeconds = durMinutes * 60;
+          const elapsed = Math.floor((Date.now() - Number(startTimeStr)) / 1000);
+          if (elapsed < durSeconds) {
+            status = "in_progress";
+            statusLabel = "در حال برگزاری";
+            scoreDisplay = "در جریان";
+          }
+        }
       }
 
       return {
@@ -237,7 +229,6 @@ function StudentPanel() {
         isCompleted: Boolean(submission),
         status,
         statusLabel,
-        timeStatus,
         maxScore,
         scoreDisplay,
         questionsCount: exam.questions?.length || 0,
@@ -454,12 +445,6 @@ function StudentPanel() {
                           <span>تاریخ: {exam.shamsiDate}</span>
                           <span>•</span>
                           <span>{toPersianDigits(exam.questionsCount)} سوال</span>
-                          {exam.start_time && exam.end_time && (
-                            <>
-                              <span>•</span>
-                              <span>مهلت ورود: {toPersianDigits(exam.start_time.slice(0, 5))} تا {toPersianDigits(exam.end_time.slice(0, 5))}</span>
-                            </>
-                          )}
                         </div>
                       </div>
                     </div>
@@ -479,12 +464,8 @@ function StudentPanel() {
                           <span className="status-pill pending">منتظر تصحیح</span>
                         ) : exam.status === "in_progress" ? (
                           <span className="status-pill in-progress">در حال برگزاری</span>
-                        ) : exam.status === "upcoming" ? (
-                          <span className="status-pill pending">آغاز نشده</span>
-                        ) : exam.status === "expired" ? (
-                          <span className="status-pill absent">پایان مهلت</span>
                         ) : (
-                          <span className="status-pill open">آماده شروع</span>
+                          <span className="status-pill open">شروع نشده</span>
                         )}
                       </div>
 
@@ -502,35 +483,13 @@ function StudentPanel() {
                             <span>ادامه آزمون</span>
                           </button>
                         </Link>
-                      ) : exam.status === "available" ? (
+                      ) : (
                         <Link to={`/panel/student/exam/${exam.id}`}>
                           <button type="button" className="btn-exam-action start">
                             <Play size={14} />
                             <span>شروع</span>
                           </button>
                         </Link>
-                      ) : exam.status === "upcoming" ? (
-                        <button
-                          type="button"
-                          className="btn-exam-action"
-                          disabled
-                          style={{ opacity: 0.65, cursor: "not-allowed" }}
-                          title={`شروع از ساعت ${exam.start_time ? toPersianDigits(exam.start_time.slice(0, 5)) : ""}`}
-                        >
-                          <Clock3 size={14} />
-                          <span>{exam.start_time ? `از ${toPersianDigits(exam.start_time.slice(0, 5))}` : "آغاز نشده"}</span>
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          className="btn-exam-action"
-                          disabled
-                          style={{ opacity: 0.5, cursor: "not-allowed" }}
-                          title="مهلت شرکت در این آزمون به پایان رسیده است"
-                        >
-                          <XCircle size={14} />
-                          <span>پایان مهلت</span>
-                        </button>
                       )}
                     </div>
                   </div>

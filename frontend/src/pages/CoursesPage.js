@@ -111,15 +111,15 @@ const CoursesPage = () => {
               </div>
 
               <div className="klc-footer">
-                <AnimatedButton
-                  variant="secondary"
-                  size="medium"
-                  icon={<Phone size={18} aria-hidden="true" />}
-                >
-                  <Link className="klc-link" to="/contact">
+                <Link className="klc-link" to="/contact">
+                  <AnimatedButton
+                    // variant="secondary"
+                    size="medium"
+                    icon={<Phone size={18} aria-hidden="true" />}
+                  >
                     تماس
-                  </Link>
-                </AnimatedButton>
+                  </AnimatedButton>
+                </Link>
               </div>
             </article>
           ))}

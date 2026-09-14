@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useParams, Link, useLocation, useNavigate } from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
 import {
   User,
   Phone,
@@ -26,6 +26,8 @@ import {
   MapPin,
   Calendar,
   Award,
+  Printer,
+  FileDown,
 } from "lucide-react";
 
 import DashboardLayout from "../components/DashboardLayout";
@@ -39,7 +41,6 @@ import "./AdminStudentDetails.css";
 function AdminStudentDetails() {
   const { id } = useParams();
   const location = useLocation();
-  const navigate = useNavigate();
 
   const isSecretary = location.pathname.includes("/secretary/");
 
@@ -50,7 +51,6 @@ function AdminStudentDetails() {
   const [attendanceRecords, setAttendanceRecords] = useState([]);
 
   const [loading, setLoading] = useState(true);
-  const [deletingStudent, setDeletingStudent] = useState(false);
   const [error, setError] = useState("");
   const [actionSuccess, setActionSuccess] = useState("");
 
@@ -76,8 +76,12 @@ function AdminStudentDetails() {
   // ========================================
 
   const [showPasswordState, setShowPasswordState] = useState(false);
+
+  // FIX:
+  // قبلاً copiedPassword بدون setter تعریف شده بود
+  const [copiedPassword, setCopiedPassword] = useState(false);
+
   const [passwordCopied, setPasswordCopied] = useState(false);
-  const [copiedPassword] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
 
   const [newPasswordInput, setNewPasswordInput] = useState("");
@@ -247,27 +251,6 @@ function AdminStudentDetails() {
     }
   };
 
-  const handleDeleteStudent = async () => {
-    if (
-      !window.confirm(
-        `آیا از حذف کامل پرونده دانش‌آموز «${studentName}» اطمینان دارید؟ تمامی سوابق، نمرات و کلاس‌های این دانش‌آموز حذف خواهند شد.`
-      )
-    ) {
-      return;
-    }
-
-    try {
-      setDeletingStudent(true);
-      await api.users.remove(id);
-      navigate(backUrl, {
-        state: { message: `دانش‌آموز «${studentName}» با موفقیت حذف شد.` },
-      });
-    } catch (err) {
-      alert(err.message || "خطا در حذف دانش‌آموز");
-      setDeletingStudent(false);
-    }
-  };
-
   // ========================================
   // Password Generator
   // ========================================
@@ -303,21 +286,72 @@ function AdminStudentDetails() {
     setPasswordCopied(false);
   };
 
-  const copyPassword = async () => {
-    if (!newPasswordInput) return;
+  // ========================================
+  // Clipboard Helper
+  // ========================================
+
+  const copyTextToClipboard = async (text) => {
+    if (!text) return false;
 
     try {
-      await navigator.clipboard.writeText(newPasswordInput);
+      if (
+        navigator.clipboard &&
+        typeof navigator.clipboard.writeText === "function"
+      ) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
 
+      // Fallback برای بعضی مرورگرها / HTTP
+      const textarea = document.createElement("textarea");
+
+      textarea.value = text;
+      textarea.setAttribute("readonly", "");
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      textarea.style.pointerEvents = "none";
+
+      document.body.appendChild(textarea);
+
+      textarea.focus();
+      textarea.select();
+      textarea.setSelectionRange(0, textarea.value.length);
+
+      const successful = document.execCommand("copy");
+
+      document.body.removeChild(textarea);
+
+      return successful;
+    } catch (error) {
+      console.error("Clipboard copy failed:", error);
+      return false;
+    }
+  };
+
+  // ========================================
+  // Copy Password
+  // ========================================
+
+  const copyPassword = async () => {
+    const password = newPasswordInput || studentUser?.plain_password || "";
+
+    if (!password) {
+      alert("رمزی برای کپی کردن وجود ندارد.");
+      return;
+    }
+
+    const success = await copyTextToClipboard(password);
+
+    if (success) {
       setPasswordCopied(true);
+      setCopiedPassword(true);
 
       window.setTimeout(() => {
         setPasswordCopied(false);
+        setCopiedPassword(false);
       }, 1800);
-    } catch (error) {
-      console.error("Password copy failed:", error);
-
-      alert("کپی رمز عبور انجام نشد.");
+    } else {
+      alert("کپی رمز عبور انجام نشد. لطفاً کپی را دستی انجام دهید.");
     }
   };
 
@@ -359,6 +393,7 @@ function AdminStudentDetails() {
       setNewPasswordInput("");
       setShowNewPasswordInModal(true);
       setPasswordCopied(false);
+      setCopiedPassword(false);
     } catch (err) {
       alert(err.message || "خطا در تغییر رمز عبور");
     } finally {
@@ -481,6 +516,547 @@ function AdminStudentDetails() {
   }, [classrooms, enrollments]);
 
   // ========================================
+  // HTML Escape برای PDF / Print
+  // ========================================
+
+  const escapeHtml = (value) => {
+    if (value === null || value === undefined) return "";
+
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  };
+
+  // ========================================
+  // Export / Print PDF
+  // ========================================
+
+  const handleExportPDF = () => {
+    if (!studentUser) return;
+
+    const now = new Date();
+
+    const printDate = now.toLocaleDateString("fa-IR");
+
+    const password = studentUser.plain_password || "ثبت‌نشده";
+
+    const classesRows =
+      enrichedEnrollments.length > 0
+        ? enrichedEnrollments
+            .map(
+              (enrollment) => `
+                <tr>
+                  <td>
+                    <strong>${escapeHtml(enrollment.className)}</strong>
+                    <br />
+                    <small>${escapeHtml(enrollment.termName)}</small>
+                  </td>
+
+                  <td>
+                    ${escapeHtml(enrollment.teacherName)}
+                  </td>
+
+                  <td>
+                    ${escapeHtml(
+                      toPersianDigits(
+                        enrollment.tuitionFee.toLocaleString("fa-IR"),
+                      ),
+                    )}
+                    تومان
+                  </td>
+
+                  <td>
+                    <span class="${enrollment.is_paid ? "paid" : "unpaid"}">
+                      ${
+                        enrollment.is_paid
+                          ? "پرداخت شده / تسویه"
+                          : "در انتظار پرداخت"
+                      }
+                    </span>
+                  </td>
+
+                  <td>
+                    ${
+                      enrollment.paid_at
+                        ? escapeHtml(toJalaliDateString(enrollment.paid_at))
+                        : "-"
+                    }
+                  </td>
+
+                  <td>
+                    ${escapeHtml(enrollment.payment_notes || "-")}
+                  </td>
+                </tr>
+              `,
+            )
+            .join("")
+        : `
+            <tr>
+              <td colspan="6" class="empty">
+                این دانش‌آموز در هیچ کلاسی ثبت‌نام نشده است.
+              </td>
+            </tr>
+          `;
+
+    const printWindow = window.open("", "_blank");
+
+    if (!printWindow) {
+      alert(
+        "پنجره چاپ باز نشد. لطفاً اجازه باز شدن Pop-up را برای سایت فعال کنید.",
+      );
+      return;
+    }
+
+    const html = `
+      <!DOCTYPE html>
+      <html lang="fa" dir="rtl">
+        <head>
+          <meta charset="UTF-8" />
+
+          <title>
+            پرونده دانش‌آموز - ${escapeHtml(studentName)}
+          </title>
+
+          <style>
+            @page {
+              size: A4;
+              margin: 12mm;
+            }
+
+            * {
+              box-sizing: border-box;
+            }
+
+            html,
+            body {
+              margin: 0;
+              padding: 0;
+              background: #ffffff;
+              color: #17202a;
+              font-family:
+                Tahoma,
+                Arial,
+                "Segoe UI",
+                sans-serif;
+              direction: rtl;
+            }
+
+            body {
+              font-size: 12px;
+              line-height: 1.8;
+            }
+
+            .page {
+              width: 100%;
+              max-width: 100%;
+              margin: 0 auto;
+            }
+
+            .header {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 20px;
+              padding-bottom: 16px;
+              margin-bottom: 18px;
+              border-bottom: 2px solid #202a35;
+            }
+
+            .brand {
+              display: flex;
+              align-items: center;
+              gap: 12px;
+            }
+
+            .brand-logo {
+              width: 48px;
+              height: 48px;
+              border-radius: 12px;
+              background: #202a35;
+              color: #ffffff;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 18px;
+              font-weight: 900;
+            }
+
+            .brand h1 {
+              margin: 0;
+              font-size: 18px;
+            }
+
+            .brand p {
+              margin: 2px 0 0;
+              color: #68727d;
+              font-size: 10px;
+            }
+
+            .print-meta {
+              text-align: left;
+              color: #68727d;
+              font-size: 10px;
+            }
+
+            .student-header {
+              border: 1px solid #dce2e8;
+              border-radius: 12px;
+              padding: 16px;
+              margin-bottom: 16px;
+              background: #f8fafc;
+            }
+
+            .student-header-top {
+              display: flex;
+              align-items: center;
+              gap: 14px;
+            }
+
+            .avatar {
+              width: 58px;
+              height: 58px;
+              border-radius: 50%;
+              background: #202a35;
+              color: white;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 22px;
+              font-weight: 800;
+              flex-shrink: 0;
+            }
+
+            .student-header h2 {
+              margin: 0;
+              font-size: 19px;
+            }
+
+            .student-header p {
+              margin: 3px 0 0;
+              color: #68727d;
+            }
+
+            .section {
+              margin-top: 18px;
+              page-break-inside: avoid;
+            }
+
+            .section-title {
+              margin: 0 0 9px;
+              padding-bottom: 7px;
+              border-bottom: 1px solid #dfe4e8;
+              font-size: 14px;
+              font-weight: 800;
+            }
+
+            .info-grid {
+              display: grid;
+              grid-template-columns: repeat(2, 1fr);
+              gap: 8px;
+            }
+
+            .info-item {
+              border: 1px solid #e0e5e9;
+              border-radius: 8px;
+              padding: 9px 11px;
+              min-height: 58px;
+            }
+
+            .info-item span {
+              display: block;
+              color: #7b858e;
+              font-size: 9px;
+              margin-bottom: 2px;
+            }
+
+            .info-item strong {
+              display: block;
+              font-size: 11px;
+              color: #1c2732;
+              word-break: break-word;
+            }
+
+            .stats {
+              display: grid;
+              grid-template-columns: repeat(4, 1fr);
+              gap: 8px;
+            }
+
+            .stat {
+              border: 1px solid #dfe4e8;
+              border-radius: 9px;
+              padding: 10px;
+              text-align: center;
+            }
+
+            .stat-label {
+              display: block;
+              color: #747f88;
+              font-size: 9px;
+              margin-bottom: 3px;
+            }
+
+            .stat-value {
+              display: block;
+              font-size: 14px;
+              font-weight: 900;
+            }
+
+            .stat-hint {
+              display: block;
+              color: #89929a;
+              font-size: 8px;
+              margin-top: 2px;
+            }
+
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              table-layout: fixed;
+              font-size: 9px;
+            }
+
+            th {
+              background: #202a35;
+              color: #ffffff;
+              font-weight: 700;
+              padding: 7px 5px;
+              border: 1px solid #202a35;
+            }
+
+            td {
+              padding: 7px 5px;
+              border: 1px solid #dfe4e8;
+              vertical-align: middle;
+              word-break: break-word;
+            }
+
+            tbody tr:nth-child(even) {
+              background: #f8fafc;
+            }
+
+            .paid {
+              color: #087443;
+              font-weight: 800;
+            }
+
+            .unpaid {
+              color: #b42318;
+              font-weight: 800;
+            }
+
+            .empty {
+              text-align: center;
+              padding: 18px;
+              color: #7b858e;
+            }
+
+            .credentials {
+              direction: rtl;
+            }
+
+            .ltr {
+              direction: ltr;
+              text-align: right;
+              font-family: Arial, sans-serif;
+            }
+
+            .footer {
+              margin-top: 25px;
+              padding-top: 10px;
+              border-top: 1px solid #dfe4e8;
+              display: flex;
+              justify-content: space-between;
+              color: #7b858e;
+              font-size: 9px;
+            }
+
+            .no-print {
+              display: none !important;
+            }
+
+            @media print {
+              body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+              }
+
+              .section {
+                break-inside: avoid;
+              }
+
+              table {
+                break-inside: auto;
+              }
+
+              tr {
+                break-inside: avoid;
+                break-after: auto;
+              }
+            }
+          </style>
+        </head>
+
+        <body>
+          <div class="page">
+
+            <header class="header">
+              <div class="brand">
+                <div class="brand-logo">K</div>
+
+                <div>
+                  <h1>پرونده دانش‌آموز</h1>
+                  <p>گزارش اطلاعات ثبت‌شده در سامانه آموزشگاه</p>
+                </div>
+              </div>
+
+              <div class="print-meta">
+                <div>تاریخ گزارش: ${escapeHtml(printDate)}</div>
+                <div>شماره پرونده: ${escapeHtml(id)}</div>
+              </div>
+            </header>
+
+            <section class="student-header">
+              <div class="student-header-top">
+
+                <div class="avatar">
+                  ${escapeHtml(studentName?.charAt(0) || "؟")}
+                </div>
+
+                <div>
+                  <h2>${escapeHtml(studentName)}</h2>
+
+                  <p>
+                    نام کاربری:
+                    <strong class="ltr">
+                      ${escapeHtml(studentUser.username || "-")}
+                    </strong>
+                  </p>
+                </div>
+
+              </div>
+            </section>
+
+            <section class="section">
+
+              <h3 class="section-title">
+                اطلاعات فردی و حساب کاربری
+              </h3>
+
+              <div class="info-grid">
+
+                <div class="info-item">
+                  <span>نام و نام خانوادگی</span>
+                  <strong>${escapeHtml(studentName)}</strong>
+                </div>
+
+                <div class="info-item">
+                  <span>کد ملی</span>
+                  <strong>${escapeHtml(
+                    studentUser.national_code || "-",
+                  )}</strong>
+                </div>
+
+                <div class="info-item">
+                  <span>تاریخ تولد</span>
+                  <strong>
+                    ${
+                      studentUser.birth_date
+                        ? escapeHtml(toJalaliDateString(studentUser.birth_date))
+                        : "-"
+                    }
+                  </strong>
+                </div>
+
+                <div class="info-item">
+                  <span>شماره تماس</span>
+                  <strong class="ltr">
+                    ${escapeHtml(studentUser.phone_number || "-")}
+                  </strong>
+                </div>
+
+                <div class="info-item">
+                  <span>ایمیل</span>
+                  <strong class="ltr">
+                    ${escapeHtml(studentUser.email || "-")}
+                  </strong>
+                </div>
+
+                <div class="info-item">
+                  <span>سطح آموزشی / رشته</span>
+                  <strong>
+                    ${escapeHtml(studentUser.level || "-")}
+                  </strong>
+                </div>
+
+                <div class="info-item">
+                  <span>نام کاربری</span>
+                  <strong class="ltr">
+                    ${escapeHtml(studentUser.username || "-")}
+                  </strong>
+                </div>
+
+                <div class="info-item credentials">
+                  <span>رمز عبور حساب</span>
+                  <strong class="ltr">
+                    ${escapeHtml(password)}
+                  </strong>
+                </div>
+
+                ${
+                  studentUser.address
+                    ? `
+                      <div class="info-item">
+                        <span>آدرس محل سکونت</span>
+                        <strong>
+                          ${escapeHtml(studentUser.address)}
+                        </strong>
+                      </div>
+                    `
+                    : ""
+                }
+
+              </div>
+            </section>
+            <footer class="footer">
+              <span>
+                این گزارش از سامانه آموزشگاه تهیه شده است.
+              </span>
+
+              <span>
+                ${escapeHtml(printDate)}
+              </span>
+            </footer>
+
+          </div>
+
+          <script>
+            window.onload = function () {
+              setTimeout(function () {
+                window.print();
+              }, 400);
+            };
+
+            window.onafterprint = function () {
+              setTimeout(function () {
+                window.close();
+              }, 300);
+            };
+          </script>
+
+        </body>
+      </html>
+    `;
+
+    printWindow.document.open();
+    printWindow.document.write(html);
+    printWindow.document.close();
+  };
+
+  // ========================================
   // Loading
   // ========================================
 
@@ -493,6 +1069,7 @@ function AdminStudentDetails() {
       >
         <div className="admin-student-details-x9p4-loading">
           <div className="admin-student-details-x9p4-loading-spinner" />
+
           <span>در حال بارگذاری اطلاعات پرونده دانش‌آموز...</span>
         </div>
       </DashboardLayout>
@@ -548,6 +1125,7 @@ function AdminStudentDetails() {
         {/* ======================================
             Page Header
         ======================================= */}
+
         <div className="admin-teacher-details-x7k2-header">
           <div className="admin-student-details-x9p4-header-content">
             <div className="admin-student-details-x9p4-heading">
@@ -556,8 +1134,9 @@ function AdminStudentDetails() {
                   variant="secondary"
                   size="small"
                   icon={<ArrowRight size={18} />}
-                ></AnimatedButton>
+                />
               </Link>
+
               <div className="admin-student-details-x9p4-avatar">
                 {studentName?.charAt(0) || "؟"}
               </div>
@@ -604,18 +1183,9 @@ function AdminStudentDetails() {
             >
               ثبت‌نام در کلاس جدید
             </AnimatedButton>
-
-            <AnimatedButton
-              variant="danger"
-              size="small"
-              icon={<Trash2 size={17} />}
-              onClick={handleDeleteStudent}
-              disabled={deletingStudent}
-            >
-              {deletingStudent ? "در حال حذف..." : "حذف دانش‌آموز"}
-            </AnimatedButton>
           </div>
         </div>
+
         {/* ======================================
             Stats
         ======================================= */}
@@ -867,6 +1437,8 @@ function AdminStudentDetails() {
           </div>
 
           <div className="admin-student-details-x9p4-info-grid">
+            {/* Name */}
+
             <div className="admin-student-details-x9p4-info-card">
               <div className="admin-student-details-x9p4-info-icon">
                 <User size={19} />
@@ -878,6 +1450,8 @@ function AdminStudentDetails() {
               </div>
             </div>
 
+            {/* National Code */}
+
             <div className="admin-student-details-x9p4-info-card">
               <div className="admin-student-details-x9p4-info-icon">
                 <Award size={19} />
@@ -888,6 +1462,8 @@ function AdminStudentDetails() {
                 <strong>{studentUser.national_code || "-"}</strong>
               </div>
             </div>
+
+            {/* Birth Date */}
 
             <div className="admin-student-details-x9p4-info-card">
               <div className="admin-student-details-x9p4-info-icon">
@@ -905,6 +1481,8 @@ function AdminStudentDetails() {
               </div>
             </div>
 
+            {/* Phone */}
+
             <div className="admin-student-details-x9p4-info-card">
               <div className="admin-student-details-x9p4-info-icon">
                 <Phone size={19} />
@@ -919,6 +1497,7 @@ function AdminStudentDetails() {
               </div>
             </div>
 
+            {/* {bol} */}
             <div className="admin-student-details-x9p4-info-card">
               <div className="admin-student-details-x9p4-info-icon">
                 <Phone size={19} />
@@ -928,10 +1507,12 @@ function AdminStudentDetails() {
                 <span>شماره تماس والدین</span>
 
                 <strong className="admin-student-details-x9p4-phone">
-                  {studentUser.parent_phone || "-"}
+                  {studentUser.phone_number || "-"}
                 </strong>
               </div>
             </div>
+
+            {/* Email */}
 
             <div className="admin-student-details-x9p4-info-card">
               <div className="admin-student-details-x9p4-info-icon">
@@ -947,6 +1528,8 @@ function AdminStudentDetails() {
               </div>
             </div>
 
+            {/* Level */}
+
             <div className="admin-student-details-x9p4-info-card">
               <div className="admin-student-details-x9p4-info-icon">
                 <BookOpen size={19} />
@@ -958,6 +1541,8 @@ function AdminStudentDetails() {
                 <strong>{studentUser.level || "-"}</strong>
               </div>
             </div>
+
+            {/* Username */}
 
             <div className="admin-student-details-x9p4-info-card">
               <div className="admin-student-details-x9p4-info-icon">
@@ -1047,6 +1632,7 @@ function AdminStudentDetails() {
 
                 <div>
                   <span>آدرس محل سکونت</span>
+
                   <strong className="admin-student-details-x9p4-address">
                     {studentUser.address}
                   </strong>
@@ -1055,6 +1641,34 @@ function AdminStudentDetails() {
             )}
           </div>
         </section>
+
+        {/* ======================================
+            PRINT / PDF BUTTON
+        ======================================= */}
+        <div className="admin-teacher-details-x7k2-header">
+          <div className="admin-student-details-x9p4-header-content">
+            <div className="admin-student-details-x9p4-heading">
+              <div className="term-icon-circle-admin">
+                <FileDown size={24} />
+              </div>
+              <div className="admin-student-details-x9p4-print-info">
+                <h3>خروجی پرونده دانش‌آموز</h3>
+
+                <p>
+                  اطلاعات فردی، کلاس‌ها، وضعیت شهریه و آمار حضور را برای چاپ یا
+                  ذخیره به صورت PDF دریافت کنید.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="admin-student-details-x9p4-header-actions">
+            <AnimatedButton onClick={handleExportPDF}>
+              <Printer size={18} />
+              <span>چاپ / خروجی PDF</span>
+            </AnimatedButton>
+          </div>
+        </div>
 
         {/* ======================================
             Enrollment Modal
@@ -1111,7 +1725,9 @@ function AdminStudentDetails() {
 
                       {availableClassesToEnroll.map((classroom) => (
                         <option key={classroom.id} value={classroom.id}>
-                          {classroom.name} ( شهریه:{" "}
+                          {classroom.name}
+                          {" ("}
+                          شهریه:{" "}
                           {toPersianDigits(
                             (classroom.tuition_fee || 2500000).toLocaleString(
                               "fa-IR",
@@ -1284,7 +1900,6 @@ function AdminStudentDetails() {
               className="exam-modal-container admin-student-details-x9p4-modal"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Header */}
               <div className="exam-modal-header">
                 <div className="modal-header-info">
                   <div className="exam-icon-circle">
@@ -1313,7 +1928,6 @@ function AdminStudentDetails() {
 
               <form onSubmit={handleChangePassword}>
                 <div className="exam-modal-body admin-student-details-x9p4-modal-body">
-                  {/* Password Field */}
                   <div className="secretary-student-form-field full">
                     <span>
                       رمز عبور جدید <b>*</b>
@@ -1348,19 +1962,10 @@ function AdminStudentDetails() {
                         )}
                       </button>
                     </div>
-
-                    <small
-                      style={{
-                        display: "block",
-                        marginTop: "0.5rem",
-                        color: "#8a9299",
-                        fontSize: "0.72rem",
-                        lineHeight: 1.7,
-                      }}
-                    ></small>
                   </div>
 
                   {/* Password Tools */}
+
                   <div className="secretary-student-form-password-actions full">
                     <div className="secretary-student-form-password-tools-content">
                       <div className="secretary-student-form-password-tools-title">
@@ -1374,7 +1979,8 @@ function AdminStudentDetails() {
                       </div>
 
                       <div className="secretary-student-form-password-buttons">
-                        {/* Generate Password */}
+                        {/* Generate */}
+
                         <button
                           type="button"
                           className="secretary-student-form-action-btn generate"
@@ -1390,7 +1996,8 @@ function AdminStudentDetails() {
                           </span>
                         </button>
 
-                        {/* Copy Password */}
+                        {/* Copy */}
+
                         <button
                           type="button"
                           className={`secretary-student-form-action-btn copy ${
@@ -1420,7 +2027,6 @@ function AdminStudentDetails() {
                   </div>
                 </div>
 
-                {/* Footer */}
                 <div className="exam-modal-footer">
                   <AnimatedButton
                     variant="secondary"
