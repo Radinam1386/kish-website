@@ -557,11 +557,7 @@ function TeacherAttendance() {
         });
 
       draft[student.id] = {
-        status:
-          getAttendanceStatus(record) ===
-          "unknown"
-            ? "absent"
-            : getAttendanceStatus(record),
+        status: getAttendanceStatus(record),
         recordId: record?.id || null,
         note:
           record?.note ||
@@ -711,7 +707,10 @@ function TeacherAttendance() {
         const draft =
           attendanceDraft[student.id];
 
-        if (!draft?.status) {
+        if (
+          !draft?.status ||
+          draft.status === "unknown"
+        ) {
           continue;
         }
 
@@ -1421,6 +1420,20 @@ function TeacherAttendance() {
                       </strong>
                     </div>
                   </div>
+
+                  <div className="teacher-attendance-x4m2-stat unknown">
+                    <AlertCircle size={17} />
+
+                    <div>
+                      <span>ثبت نشده</span>
+
+                      <strong>
+                        {toPersianDigits(
+                          statistics.unknown,
+                        )}
+                      </strong>
+                    </div>
+                  </div>
                 </div>
 
                 {/* =================================================
@@ -1478,7 +1491,7 @@ function TeacherAttendance() {
 
                     <span>
                       ابتدا دانش‌آموزان را در این کلاس
-                      ثبت‌نام کنید.
+                      ثبت‌نام کنید تا در فرم حضور و غیاب نمایش داده شوند.
                     </span>
                   </div>
                 ) : filteredStudents.length ===
@@ -1574,6 +1587,13 @@ function TeacherAttendance() {
                                       "موجه",
                                       Check,
                                     )}
+
+                                    {renderStatusButton(
+                                      student,
+                                      "unknown",
+                                      "ثبت نشده",
+                                      AlertCircle,
+                                    )}
                                   </div>
                                 </td>
 
@@ -1632,8 +1652,8 @@ function TeacherAttendance() {
                       </strong>
 
                       <span>
-                        پس از انتخاب وضعیت همه دانش‌آموزان،
-                        روی ذخیره کلیک کنید.
+                        برای دانش‌آموزان حاضر، غایب، تأخیر یا موجه
+                        وضعیت را انتخاب کنید و سپس ذخیره کنید.
                       </span>
                     </div>
 

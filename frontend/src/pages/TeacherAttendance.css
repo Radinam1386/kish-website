@@ -598,7 +598,7 @@
 
 .teacher-attendance-x4m2-stats {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 9px;
   padding: 15px 20px;
   background: #fafbfc;
@@ -658,6 +658,11 @@
 .teacher-attendance-x4m2-stat.excused {
   color: #6d5aa8;
   background: #f4f0ff;
+}
+
+.teacher-attendance-x4m2-stat.unknown {
+  color: #6f7780;
+  background: #f3f5f7;
 }
 
 /* =========================================================
@@ -853,7 +858,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  min-width: 390px;
+  min-width: 470px;
 }
 
 .teacher-attendance-x4m2-status-button {
@@ -1292,6 +1297,10 @@
 ========================================================= */
 
 @media (max-width: 420px) {
+  .teacher-attendance-x4m2-statuses {
+    gap: 5px;
+  }
+
   .teacher-attendance-x4m2-header-info {
     gap: 9px;
   }
