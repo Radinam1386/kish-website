@@ -10,18 +10,9 @@ import {
   BookOpen,
   ChevronRight,
   ChevronLeft,
-  ChevronsRight,
-  ChevronsLeft,
   Trash2,
   Sparkles,
   CheckCircle2,
-  Eye,
-  Filter,
-  GraduationCap,
-  Search,
-  Trash2,
-  Users,
-  Sparkles,
 } from "lucide-react";
 
 import "./AdminStudents.css";
