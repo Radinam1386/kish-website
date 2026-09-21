@@ -14,7 +14,6 @@ import {
   ChevronsLeft,
   Trash2,
   Sparkles,
-  BookOpen,
   CheckCircle2,
   Eye,
   Filter,
