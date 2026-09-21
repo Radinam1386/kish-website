@@ -97,7 +97,7 @@ function AdminStudents() {
     const studentDisplayName = student.name || student.username;
     if (
       !window.confirm(
-        `آیا از حذف کامل پرونده دانش‌آموز «${studentDisplayName}» اطمینان دارید؟ تمامی اطلاعات، سوابق، نمرات و ثبت‌نام‌های این دانش‌آموز حذف خواهند شد.`
+        `آیا از حذف کامل پرونده دانش‌آموز «${studentDisplayName}» اطمینان دارید؟ تمامی اطلاعات، سوابق، نمرات و ثبت‌نام‌های این دانش‌آموز حذف خواهند شد.`,
       )
     ) {
       return;
@@ -109,7 +109,8 @@ function AdminStudents() {
       setEnrollments((prev) =>
         prev.filter(
           (e) =>
-            (e.student === student.id || e.student?.id === student.id) === false,
+            (e.student === student.id || e.student?.id === student.id) ===
+            false,
         ),
       );
       setSuccessMsg(`دانش‌آموز «${studentDisplayName}» با موفقیت حذف شد.`);
@@ -322,26 +323,28 @@ function AdminStudents() {
             </AnimatedButton>
           </Link>
         </div>
-
-        <div className="admin-students-x7k2-stats">
+        <div className="secretary-classes-stats-grid">
           <StatCard
-            title="کل دانش‌آموزان"
-            value={`${students.length} نفر`}
-            icon={<Users size={23} />}
+            title="کلاس‌های ترم"
+            value={`${toPersianDigits(classes.length)} کلاس`}
+            hint={activeTermObj?.name || "ترم انتخابی"}
+            icon={<BookOpen />}
             color="red"
           />
 
           <StatCard
             title="کلاس‌های فعال"
-            value={`${Math.max(classes.length - 1, 0)} کلاس`}
-            icon={<BookOpen size={23} />}
+            value={`${toPersianDigits(activeClassesCount)} کلاس`}
+            hint="در حال برگزاری"
+            icon={<CheckCircle2 />}
             color="green"
           />
 
           <StatCard
-            title="نمایش فعلی"
-            value={`${filteredStudents.length} نفر`}
-            icon={<GraduationCap size={23} />}
+            title="دانش‌آموزان ثبت‌نامی"
+            value={`${toPersianDigits(totalStudents)} نفر`}
+            hint="در این ترم"
+            icon={<Users />}
             color="blue"
           />
         </div>
@@ -540,7 +543,10 @@ function AdminStudents() {
                               <Link
                                 to={`/panel/${menuType}/students/${student.id}`}
                               >
-                                <AnimatedButton variant="secondary" size="small">
+                                <AnimatedButton
+                                  variant="secondary"
+                                  size="small"
+                                >
                                   <Eye size={16} />
                                   مشاهده
                                 </AnimatedButton>
