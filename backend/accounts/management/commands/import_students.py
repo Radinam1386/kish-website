@@ -45,6 +45,8 @@ class Command(BaseCommand):
 
         # حذف فاصله، خط تیره و سایر کاراکترها
         value = re.sub(r"\D", "", value)
+        if len(value) == 10 and value.startswith("9"):
+            value = "0" + value
 
         # اگر با 98 شروع شده باشد
         if value.startswith("98") and len(value) == 12:
