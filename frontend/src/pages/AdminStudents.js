@@ -14,6 +14,15 @@ import {
   ChevronsLeft,
   Trash2,
   Sparkles,
+  BookOpen,
+  CheckCircle2,
+  Eye,
+  Filter,
+  GraduationCap,
+  Search,
+  Trash2,
+  Users,
+  Sparkles,
 } from "lucide-react";
 
 import "./AdminStudents.css";
