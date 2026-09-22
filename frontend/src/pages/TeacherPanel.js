@@ -216,9 +216,8 @@ function TeacherPanel() {
             <div className="secretary-terms-heading-content">
               <h3>
                 کلاس‌های من در
-                {activeTerm?.name ? `«${activeTerm.name}»` : "ترم جاری"}{" "}
+                {activeTerm?.name ? `«${activeTerm.name}»` : "ترم جاری"}
               </h3>
-
               <p>
                 تنها کلاس‌های مربوط به ترم‌های فعال در این بخش نمایش داده
                 می‌شوند.

@@ -14,7 +14,6 @@ import {
   ChevronsLeft,
   Trash2,
   Sparkles,
-  CheckCircle2,
 } from "lucide-react";
 
 import "./AdminStudents.css";
@@ -23,10 +22,6 @@ import DashboardLayout from "../components/DashboardLayout";
 import StatCard from "../components/StatCard";
 import { api, getFullName } from "../services/api";
 import { useLocation, Link } from "react-router-dom";
-
-function toPersianDigits(value) {
-  return String(value ?? "").replace(/\d/g, (digit) => "۰۱۲۳۴۵۶۷۸۹"[digit]);
-}
 
 function AdminStudents() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -52,13 +47,8 @@ function AdminStudents() {
   useEffect(() => {
     if (location.state?.message) {
       setSuccessMsg(location.state.message);
-
       window.history.replaceState({}, document.title);
-
-      const timer = setTimeout(() => {
-        setSuccessMsg("");
-      }, 4000);
-
+      const timer = setTimeout(() => setSuccessMsg(""), 4000);
       return () => clearTimeout(timer);
     }
   }, [location.state]);
@@ -71,17 +61,13 @@ function AdminStudents() {
         setLoading(true);
         setError("");
 
-        const [
-          usersData,
-          enrollmentsData,
-          classroomsData,
-          termsData,
-        ] = await Promise.all([
-          api.users.list(),
-          api.enrollments.list(),
-          api.classrooms.list(),
-          api.terms.list(),
-        ]);
+        const [usersData, enrollmentsData, classroomsData, termsData] =
+          await Promise.all([
+            api.users.list(),
+            api.enrollments.list(),
+            api.classrooms.list(),
+            api.terms.list(),
+          ]);
 
         if (!alive) return;
 
@@ -91,9 +77,7 @@ function AdminStudents() {
         setTerms(termsData || []);
       } catch (err) {
         if (alive) {
-          setError(
-            err.message || "دریافت دانش‌آموزان ناموفق بود.",
-          );
+          setError(err.message || "دریافت دانش‌آموزان ناموفق بود.");
         }
       } finally {
         if (alive) {
@@ -109,117 +93,11 @@ function AdminStudents() {
     };
   }, []);
 
-  const activeTermObj = useMemo(() => {
-    return (
-      terms.find((term) => term.is_active) ||
-      terms[0] ||
-      null
-    );
-  }, [terms]);
-
-  const activeTermClassrooms = useMemo(() => {
-    if (!activeTermObj) return [];
-
-    return classrooms.filter(
-      (classroom) =>
-        String(classroom.term) === String(activeTermObj.id) ||
-        String(classroom.term_id) === String(activeTermObj.id) ||
-        String(classroom.term?.id) === String(activeTermObj.id),
-    );
-  }, [classrooms, activeTermObj]);
-
-  const activeClassesCount = activeTermClassrooms.length;
-
-  const getEnrollmentClassroomId = (enrollment) => {
-    if (!enrollment?.classroom) {
-      return null;
-    }
-
-    if (typeof enrollment.classroom === "object") {
-      return (
-        enrollment.classroom.id ||
-        enrollment.classroom_id ||
-        null
-      );
-    }
-
-    return enrollment.classroom;
-  };
-
-  const getEnrollmentTermId = (enrollment) => {
-    if (enrollment?.term_id) {
-      return enrollment.term_id;
-    }
-
-    if (enrollment?.term?.id) {
-      return enrollment.term.id;
-    }
-
-    if (enrollment?.classroom?.term) {
-      if (typeof enrollment.classroom.term === "object") {
-        return enrollment.classroom.term.id;
-      }
-
-      return enrollment.classroom.term;
-    }
-
-    const classroomId = getEnrollmentClassroomId(enrollment);
-
-    if (classroomId) {
-      const classroom = classrooms.find(
-        (item) =>
-          String(item.id) === String(classroomId),
-      );
-
-      return (
-        classroom?.term_id ||
-        classroom?.term?.id ||
-        classroom?.term ||
-        null
-      );
-    }
-
-    return null;
-  };
-
-  const totalStudents = useMemo(() => {
-    if (!activeTermObj) {
-      return users.filter(
-        (user) => user.role === "student",
-      ).length;
-    }
-
-    const activeStudentIds = new Set();
-
-    enrollments.forEach((enrollment) => {
-      const termId = getEnrollmentTermId(enrollment);
-
-      if (
-        String(termId) !== String(activeTermObj.id)
-      ) {
-        return;
-      }
-
-      const studentId =
-        typeof enrollment.student === "object"
-          ? enrollment.student?.id
-          : enrollment.student;
-
-      if (studentId) {
-        activeStudentIds.add(String(studentId));
-      }
-    });
-
-    return activeStudentIds.size;
-  }, [users, enrollments, classrooms, activeTermObj]);
-
   const handleDeleteStudent = async (student) => {
-    const studentDisplayName =
-      student.name || student.username;
-
+    const studentDisplayName = student.name || student.username;
     if (
       !window.confirm(
-        `آیا از حذف کامل پرونده دانش‌آموز «${studentDisplayName}» اطمینان دارید؟ تمامی اطلاعات، سوابق، نمرات و ثبت‌نام‌های این دانش‌آموز حذف خواهند شد.`,
+        `آیا از حذف کامل پرونده دانش‌آموز «${studentDisplayName}» اطمینان دارید؟ تمامی اطلاعات، سوابق، نمرات و ثبت‌نام‌های این دانش‌آموز حذف خواهند شد.`
       )
     ) {
       return;
@@ -227,32 +105,15 @@ function AdminStudents() {
 
     try {
       await api.users.remove(student.id);
-
-      setUsers((prev) =>
-        prev.filter((user) => user.id !== student.id),
-      );
-
+      setUsers((prev) => prev.filter((u) => u.id !== student.id));
       setEnrollments((prev) =>
-        prev.filter((enrollment) => {
-          const enrollmentStudentId =
-            typeof enrollment.student === "object"
-              ? enrollment.student?.id
-              : enrollment.student;
-
-          return (
-            String(enrollmentStudentId) !==
-            String(student.id)
-          );
-        }),
+        prev.filter(
+          (e) =>
+            (e.student === student.id || e.student?.id === student.id) === false,
+        ),
       );
-
-      setSuccessMsg(
-        `دانش‌آموز «${studentDisplayName}» با موفقیت حذف شد.`,
-      );
-
-      setTimeout(() => {
-        setSuccessMsg("");
-      }, 3500);
+      setSuccessMsg(`دانش‌آموز «${studentDisplayName}» با موفقیت حذف شد.`);
+      setTimeout(() => setSuccessMsg(""), 3500);
     } catch (err) {
       alert(err.message || "خطا در حذف دانش‌آموز");
     }
@@ -264,70 +125,36 @@ function AdminStudents() {
         .filter((user) => user.role === "student")
         .map((user) => {
           const studentEnrollments = enrollments.filter(
-            (item) => {
-              const enrollmentStudentId =
-                typeof item.student === "object"
-                  ? item.student?.id
-                  : item.student;
-
-              return (
-                String(enrollmentStudentId) ===
-                String(user.id)
-              );
-            },
+            (item) => item.student === user.id || item.student?.id === user.id,
           );
 
           studentEnrollments.sort((a, b) => {
             const aTerm = terms.find(
-              (term) =>
-                String(term.id) ===
-                String(getEnrollmentTermId(a)),
+              (t) => t.id === (a.term_id || a.classroom?.term),
             );
-
             const bTerm = terms.find(
-              (term) =>
-                String(term.id) ===
-                String(getEnrollmentTermId(b)),
+              (t) => t.id === (b.term_id || b.classroom?.term),
             );
-
-            const aActive =
-              a.is_term_active ??
-              aTerm?.is_active ??
-              false;
-
-            const bActive =
-              b.is_term_active ??
-              bTerm?.is_active ??
-              false;
-
+            const aActive = a.is_term_active ?? aTerm?.is_active;
+            const bActive = b.is_term_active ?? bTerm?.is_active;
             if (aActive && !bActive) return -1;
             if (!aActive && bActive) return 1;
-
             return (b.id || 0) - (a.id || 0);
           });
 
-          const currentEnrollment =
-            studentEnrollments[0];
-
-          const classroomId =
-            getEnrollmentClassroomId(
-              currentEnrollment,
-            );
+          const currentEnrollment = studentEnrollments[0];
 
           const classroom = classrooms.find(
             (item) =>
-              String(item.id) === String(classroomId),
+              item.id ===
+              (currentEnrollment?.classroom ||
+                currentEnrollment?.classroom?.id),
           );
 
           const className =
-            classroom?.name ||
-            currentEnrollment?.classroom_name ||
-            "بدون کلاس";
-
+            classroom?.name || currentEnrollment?.classroom_name || "بدون کلاس";
           const classId =
-            classroom?.id ||
-            classroomId ||
-            "none";
+            classroom?.id || currentEnrollment?.classroom || "none";
 
           let tuitionStatus = "بدون کلاس";
           let tuitionStatusClass = "unassigned";
@@ -357,25 +184,18 @@ function AdminStudents() {
   );
 
   const classes = useMemo(() => {
-    const uniqueClasses = students.reduce(
-      (acc, student) => {
-        const exists = acc.some(
-          (item) =>
-            String(item.id) ===
-            String(student.classId),
-        );
+    const uniqueClasses = students.reduce((acc, student) => {
+      const exists = acc.some((item) => item.id === student.classId);
 
-        if (!exists) {
-          acc.push({
-            id: student.classId,
-            name: student.className,
-          });
-        }
+      if (!exists) {
+        acc.push({
+          id: student.classId,
+          name: student.className,
+        });
+      }
 
-        return acc;
-      },
-      [],
-    );
+      return acc;
+    }, []);
 
     return [
       {
@@ -387,52 +207,32 @@ function AdminStudents() {
   }, [students]);
 
   const filteredStudents = useMemo(() => {
-    const normalizedSearch =
-      searchTerm.trim().toLowerCase();
+    const normalizedSearch = searchTerm.trim().toLowerCase();
 
     return students.filter((student) => {
       const matchesSearch =
         !normalizedSearch ||
-        String(student.name || "")
-          .toLowerCase()
-          .includes(normalizedSearch) ||
-        String(student.id)
-          .toLowerCase()
-          .includes(normalizedSearch) ||
-        String(student.username || "")
-          .toLowerCase()
-          .includes(normalizedSearch) ||
-        String(student.phone || "")
-          .toLowerCase()
-          .includes(normalizedSearch) ||
-        String(student.className || "")
-          .toLowerCase()
-          .includes(normalizedSearch);
+        student.name.toLowerCase().includes(normalizedSearch) ||
+        String(student.id).toLowerCase().includes(normalizedSearch) ||
+        student.username.toLowerCase().includes(normalizedSearch) ||
+        student.phone.toLowerCase().includes(normalizedSearch) ||
+        student.className.toLowerCase().includes(normalizedSearch);
 
       const matchesClass =
-        selectedClass === "all" ||
-        String(student.classId) ===
-          String(selectedClass);
+        selectedClass === "all" || student.classId === selectedClass;
 
       return matchesSearch && matchesClass;
     });
   }, [students, searchTerm, selectedClass]);
-
   const totalPages = Math.max(
     1,
-    Math.ceil(
-      filteredStudents.length / itemsPerPage,
-    ),
+    Math.ceil(filteredStudents.length / itemsPerPage),
   );
 
   const paginatedStudents = useMemo(() => {
-    const startIndex =
-      (currentPage - 1) * itemsPerPage;
+    const startIndex = (currentPage - 1) * itemsPerPage;
 
-    return filteredStudents.slice(
-      startIndex,
-      startIndex + itemsPerPage,
-    );
+    return filteredStudents.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredStudents, currentPage]);
 
   useEffect(() => {
@@ -483,9 +283,7 @@ function AdminStudents() {
   }, [currentPage, totalPages]);
 
   const paginationStart =
-    filteredStudents.length === 0
-      ? 0
-      : (currentPage - 1) * itemsPerPage + 1;
+    filteredStudents.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
 
   const paginationEnd = Math.min(
     currentPage * itemsPerPage,
@@ -506,13 +304,10 @@ function AdminStudents() {
             </div>
 
             <div>
-              <h3 className="admin-students-x7k2-title">
-                مدیریت دانش‌آموزان
-              </h3>
+              <h3 className="admin-students-x7k2-title">مدیریت دانش‌آموزان</h3>
 
               <p className="admin-students-x7k2-description">
-                مشاهده و مدیریت اطلاعات دانش‌آموزان
-                ثبت‌نام‌شده
+                مشاهده و مدیریت اطلاعات دانش‌آموزان ثبت‌نام‌شده
               </p>
             </div>
           </div>
@@ -528,36 +323,25 @@ function AdminStudents() {
           </Link>
         </div>
 
-        <div className="secretary-classes-stats-grid">
+        <div className="admin-students-x7k2-stats">
           <StatCard
-            title="کلاس‌های ترم"
-            value={`${toPersianDigits(
-              activeClassesCount,
-            )} کلاس`}
-            hint={
-              activeTermObj?.name || "ترم فعال"
-            }
-            icon={<BookOpen />}
+            title="کل دانش‌آموزان"
+            value={`${students.length} نفر`}
+            icon={<Users size={23} />}
             color="red"
           />
 
           <StatCard
             title="کلاس‌های فعال"
-            value={`${toPersianDigits(
-              activeClassesCount,
-            )} کلاس`}
-            hint="در حال برگزاری"
-            icon={<CheckCircle2 />}
+            value={`${Math.max(classes.length - 1, 0)} کلاس`}
+            icon={<BookOpen size={23} />}
             color="green"
           />
 
           <StatCard
-            title="دانش‌آموزان ثبت‌نامی"
-            value={`${toPersianDigits(
-              totalStudents,
-            )} نفر`}
-            hint="در ترم فعال"
-            icon={<Users />}
+            title="نمایش فعلی"
+            value={`${filteredStudents.length} نفر`}
+            icon={<GraduationCap size={23} />}
             color="blue"
           />
         </div>
@@ -569,38 +353,30 @@ function AdminStudents() {
           </div>
         )}
 
+        {/* ================= MAIN CARD ================= */}
+
         <div className="admin-students-x7k2-content">
+          {/* Section Header */}
+
           <div className="admin-students-x7k2-content-header">
             <div>
               <h3>لیست دانش‌آموزان</h3>
 
-              <p>
-                اطلاعات دانش‌آموزان و کلاس‌های ثبت‌شده
-                را مدیریت کنید.
-              </p>
+              <p>اطلاعات دانش‌آموزان و کلاس‌های ثبت‌شده را مدیریت کنید.</p>
             </div>
 
             <span className="admin-students-x7k2-count">
-              {toPersianDigits(
-                filteredStudents.length,
-              )}{" "}
-              دانش‌آموز
+              {filteredStudents.length} دانش‌آموز
             </span>
           </div>
-
           <div className="admin-students-x7k2-filters">
             <div className="admin-students-x7k2-search-wrapper">
-              <Search
-                size={18}
-                className="admin-students-x7k2-search-icon"
-              />
+              <Search size={18} className="admin-students-x7k2-search-icon" />
 
               <input
                 type="text"
                 value={searchTerm}
-                onChange={(event) =>
-                  setSearchTerm(event.target.value)
-                }
+                onChange={(event) => setSearchTerm(event.target.value)}
                 placeholder="جستجو بر اساس نام، شناسه، شماره تماس یا کلاس..."
                 className="admin-students-x7k2-search-input"
               />
@@ -618,23 +394,15 @@ function AdminStudents() {
             </div>
 
             <div className="admin-students-x7k2-select-wrapper">
-              <Filter
-                size={18}
-                className="admin-students-x7k2-filter-icon"
-              />
+              <Filter size={18} className="admin-students-x7k2-filter-icon" />
 
               <select
                 value={selectedClass}
-                onChange={(event) =>
-                  setSelectedClass(event.target.value)
-                }
+                onChange={(event) => setSelectedClass(event.target.value)}
                 className="admin-students-x7k2-select"
               >
                 {classes.map((item) => (
-                  <option
-                    key={item.id}
-                    value={item.id}
-                  >
+                  <option key={item.id} value={item.id}>
                     {item.name}
                   </option>
                 ))}
@@ -642,79 +410,59 @@ function AdminStudents() {
             </div>
           </div>
 
-          {!loading &&
-            !error &&
-            filteredStudents.length > 0 && (
-              <div className="admin-students-x7k2-result-info">
-                <span>
-                  نمایش{" "}
-                  <strong>
-                    {toPersianDigits(paginationStart)}
-                  </strong>
-                  {" تا "}
-                  <strong>
-                    {toPersianDigits(paginationEnd)}
-                  </strong>
-                  {" از "}
-                  <strong>
-                    {toPersianDigits(
-                      filteredStudents.length,
-                    )}
-                  </strong>
-                  {" دانش‌آموز"}
-                </span>
+          {!loading && !error && filteredStudents.length > 0 && (
+            <div className="admin-students-x7k2-result-info">
+              <span>
+                نمایش <strong>{paginationStart}</strong>
+                {" تا "}
+                <strong>{paginationEnd}</strong>
+                {" از "}
+                <strong>{filteredStudents.length}</strong>
+                {" دانش‌آموز"}
+              </span>
 
-                {(searchTerm ||
-                  selectedClass !== "all") && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSearchTerm("");
-                      setSelectedClass("all");
-                    }}
-                  >
-                    حذف فیلترها
-                  </button>
-                )}
-              </div>
-            )}
-
+              {(searchTerm || selectedClass !== "all") && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchTerm("");
+                    setSelectedClass("all");
+                  }}
+                >
+                  حذف فیلترها
+                </button>
+              )}
+            </div>
+          )}
           {loading ? (
             <div className="admin-students-x7k2-loading">
               <div className="admin-students-x7k2-spinner" />
 
-              <strong>
-                در حال دریافت اطلاعات...
-              </strong>
+              <strong>در حال دریافت اطلاعات...</strong>
 
-              <span>
-                لطفاً چند لحظه صبر کنید
-              </span>
+              <span>لطفاً چند لحظه صبر کنید</span>
             </div>
           ) : error ? (
+            /* ================= ERROR ================= */
+
             <div className="admin-students-x7k2-empty error">
               <Users size={42} />
 
-              <strong>
-                دریافت اطلاعات با خطا مواجه شد
-              </strong>
+              <strong>دریافت اطلاعات با خطا مواجه شد</strong>
 
               <span>{error}</span>
             </div>
           ) : filteredStudents.length === 0 ? (
+            /* ================= EMPTY ================= */
+
             <div className="admin-students-x7k2-empty">
               <Search size={42} />
 
-              <strong>
-                دانش‌آموزی پیدا نشد
-              </strong>
+              <strong>دانش‌آموزی پیدا نشد</strong>
 
-              <span>
-                عبارت جستجو یا فیلتر کلاس را تغییر دهید.
-              </span>
+              <span>عبارت جستجو یا فیلتر کلاس را تغییر دهید.</span>
 
-              {(searchTerm ||
-                selectedClass !== "all") && (
+              {(searchTerm || selectedClass !== "all") && (
                 <button
                   type="button"
                   onClick={() => {
@@ -743,199 +491,159 @@ function AdminStudents() {
                     </thead>
 
                     <tbody>
-                      {paginatedStudents.map(
-                        (student) => (
-                          <tr key={student.id}>
-                            <td data-label="شناسه">
-                              <span className="admin-students-x7k2-id">
-                                #
-                                {toPersianDigits(
-                                  student.id,
-                                )}
-                              </span>
-                            </td>
+                      {paginatedStudents.map((student) => (
+                        <tr key={student.id}>
+                          <td data-label="شناسه">
+                            <span className="admin-students-x7k2-id">
+                              #{student.id}
+                            </span>
+                          </td>
 
-                            <td data-label="نام دانش‌آموز">
-                              <div className="admin-students-x7k2-name">
-                                <div className="admin-students-x7k2-avatar">
-                                  <GraduationCap
-                                    size={18}
-                                  />
-                                </div>
-
-                                <div>
-                                  <strong>
-                                    {student.name}
-                                  </strong>
-
-                                  <small>
-                                    @{student.username}
-                                  </small>
-                                </div>
+                          <td data-label="نام دانش‌آموز">
+                            <div className="admin-students-x7k2-name">
+                              <div className="admin-students-x7k2-avatar">
+                                <GraduationCap size={18} />
                               </div>
-                            </td>
 
-                            <td data-label="شماره موبایل">
-                              <span className="admin-students-x7k2-phone">
-                                <Phone size={15} />
-                                {student.phone}
-                              </span>
-                            </td>
+                              <div>
+                                <strong>{student.name}</strong>
 
-                            <td data-label="کلاس">
-                              <span className="admin-students-x7k2-class-badge">
-                                <BookOpen size={14} />
-                                {student.className}
-                              </span>
-                            </td>
+                                <small>@{student.username}</small>
+                              </div>
+                            </div>
+                          </td>
 
-                            <td data-label="شهریه">
-                              <span
-                                className={`admin-students-x7k2-status admin-students-x7k2-status-${student.tuitionStatusClass}`}
+                          <td data-label="شماره موبایل">
+                            <span className="admin-students-x7k2-phone">
+                              <Phone size={15} />
+                              {student.phone}
+                            </span>
+                          </td>
+
+                          <td data-label="کلاس">
+                            <span className="admin-students-x7k2-class-badge">
+                              <BookOpen size={14} />
+                              {student.className}
+                            </span>
+                          </td>
+
+                          <td data-label="شهریه">
+                            <span
+                              className={`admin-students-x7k2-status admin-students-x7k2-status-${student.tuitionStatusClass}`}
+                            >
+                              {student.tuitionStatus}
+                            </span>
+                          </td>
+
+                          <td data-label="عملیات">
+                            <div className="admin-students-x7k2-actions-cell">
+                              <Link
+                                to={`/panel/${menuType}/students/${student.id}`}
                               >
-                                {student.tuitionStatus}
-                              </span>
-                            </td>
+                                <AnimatedButton variant="secondary" size="small">
+                                  <Eye size={16} />
+                                  مشاهده
+                                </AnimatedButton>
+                              </Link>
 
-                            <td data-label="عملیات">
-                              <div className="admin-students-x7k2-actions-cell">
-                                <Link
-                                  to={`/panel/${menuType}/students/${student.id}`}
-                                >
-                                  <AnimatedButton
-                                    variant="secondary"
-                                    size="small"
-                                  >
-                                    <Eye size={16} />
-                                    مشاهده
-                                  </AnimatedButton>
-                                </Link>
-
-                                <button
-                                  type="button"
-                                  className="admin-students-x7k2-delete-btn"
-                                  onClick={() =>
-                                    handleDeleteStudent(
-                                      student,
-                                    )
-                                  }
-                                  title="حذف حساب دانش‌آموز"
-                                >
-                                  <Trash2 size={15} />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ),
-                      )}
+                              <button
+                                type="button"
+                                className="admin-students-x7k2-delete-btn"
+                                onClick={() => handleDeleteStudent(student)}
+                                title="حذف حساب دانش‌آموز"
+                              >
+                                <Trash2 size={15} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
               </div>
-
               <div className="admin-students-x7k2-mobile-list">
-                {paginatedStudents.map(
-                  (student) => (
-                    <article
-                      key={student.id}
-                      className="admin-students-x7k2-student-card"
-                    >
-                      <div className="admin-students-x7k2-card-top">
-                        <div className="admin-students-x7k2-card-user">
-                          <div className="admin-students-x7k2-avatar">
-                            <GraduationCap size={19} />
-                          </div>
-
-                          <div>
-                            <strong>
-                              {student.name}
-                            </strong>
-
-                            <span>
-                              شناسه #
-                              {toPersianDigits(
-                                student.id,
-                              )}
-                            </span>
-                          </div>
-                        </div>
-
-                        <span
-                          className={`admin-students-x7k2-status admin-students-x7k2-status-${student.tuitionStatusClass}`}
-                        >
-                          {student.tuitionStatus}
-                        </span>
-                      </div>
-
-                      <div className="admin-students-x7k2-card-details">
-                        <div>
-                          <span>
-                            شماره موبایل
-                          </span>
-
-                          <strong>
-                            <Phone size={14} />
-                            {student.phone}
-                          </strong>
+                {paginatedStudents.map((student) => (
+                  <article
+                    key={student.id}
+                    className="admin-students-x7k2-student-card"
+                  >
+                    <div className="admin-students-x7k2-card-top">
+                      <div className="admin-students-x7k2-card-user">
+                        <div className="admin-students-x7k2-avatar">
+                          <GraduationCap size={19} />
                         </div>
 
                         <div>
-                          <span>کلاس</span>
+                          <strong>{student.name}</strong>
 
-                          <strong>
-                            <BookOpen size={14} />
-                            {student.className}
-                          </strong>
-                        </div>
-
-                        <div>
-                          <span>نام کاربری</span>
-
-                          <strong>
-                            @{student.username}
-                          </strong>
+                          <span>شناسه #{student.id}</span>
                         </div>
                       </div>
 
-                      <div className="admin-students-x7k2-card-footer">
-                        <Link
-                          to={`/panel/${menuType}/students/${student.id}`}
-                          className="admin-students-x7k2-card-action"
-                        >
-                          <Eye size={16} />
-                          مشاهده پرونده
-                        </Link>
+                      <span
+                        className={`admin-students-x7k2-status admin-students-x7k2-status-${student.tuitionStatusClass}`}
+                      >
+                        {student.tuitionStatus}
+                      </span>
+                    </div>
 
-                        <button
-                          type="button"
-                          className="admin-students-x7k2-mobile-delete-btn"
-                          onClick={() =>
-                            handleDeleteStudent(
-                              student,
-                            )
-                          }
-                          title="حذف حساب دانش‌آموز"
-                        >
-                          <Trash2 size={15} />
-                          <span>حذف</span>
-                        </button>
+                    <div className="admin-students-x7k2-card-details">
+                      <div>
+                        <span>شماره موبایل</span>
+
+                        <strong>
+                          <Phone size={14} />
+                          {student.phone}
+                        </strong>
                       </div>
-                    </article>
-                  ),
-                )}
+
+                      <div>
+                        <span>کلاس</span>
+
+                        <strong>
+                          <BookOpen size={14} />
+                          {student.className}
+                        </strong>
+                      </div>
+
+                      <div>
+                        <span>نام کاربری</span>
+
+                        <strong>@{student.username}</strong>
+                      </div>
+                    </div>
+
+                    <div className="admin-students-x7k2-card-footer">
+                      <Link
+                        to={`/panel/${menuType}/students/${student.id}`}
+                        className="admin-students-x7k2-card-action"
+                      >
+                        <Eye size={16} />
+                        مشاهده پرونده
+                      </Link>
+
+                      <button
+                        type="button"
+                        className="admin-students-x7k2-mobile-delete-btn"
+                        onClick={() => handleDeleteStudent(student)}
+                        title="حذف حساب دانش‌آموز"
+                      >
+                        <Trash2 size={15} />
+                        <span>حذف</span>
+                      </button>
+                    </div>
+                  </article>
+                ))}
               </div>
 
               {totalPages > 1 && (
                 <div className="admin-students-x7k2-pagination">
                   <div className="admin-students-x7k2-pagination-info">
                     صفحه
-                    <strong>
-                      {toPersianDigits(currentPage)}
-                    </strong>
+                    <strong>{currentPage}</strong>
                     از
-                    <strong>
-                      {toPersianDigits(totalPages)}
-                    </strong>
+                    <strong>{totalPages}</strong>
                   </div>
 
                   <div className="admin-students-x7k2-pagination-controls">
@@ -943,9 +651,7 @@ function AdminStudents() {
                       type="button"
                       className="admin-students-x7k2-page-btn admin-students-x7k2-first-btn"
                       disabled={currentPage === 1}
-                      onClick={() =>
-                        setCurrentPage(1)
-                      }
+                      onClick={() => setCurrentPage(1)}
                       title="صفحه اول"
                     >
                       <ChevronsRight size={17} />
@@ -956,9 +662,7 @@ function AdminStudents() {
                       className="admin-students-x7k2-page-btn"
                       disabled={currentPage === 1}
                       onClick={() =>
-                        setCurrentPage((prev) =>
-                          Math.max(1, prev - 1),
-                        )
+                        setCurrentPage((prev) => Math.max(1, prev - 1))
                       }
                       title="صفحه قبل"
                     >
@@ -966,47 +670,35 @@ function AdminStudents() {
                     </button>
 
                     <div className="admin-students-x7k2-page-numbers">
-                      {pageNumbers.map(
-                        (page, index) =>
-                          page === "..." ? (
-                            <span
-                              key={`dots-${index}`}
-                              className="admin-students-x7k2-page-dots"
-                            >
-                              …
-                            </span>
-                          ) : (
-                            <button
-                              key={page}
-                              type="button"
-                              className={`admin-students-x7k2-page-number ${
-                                currentPage === page
-                                  ? "active"
-                                  : ""
-                              }`}
-                              onClick={() =>
-                                setCurrentPage(page)
-                              }
-                            >
-                              {toPersianDigits(page)}
-                            </button>
-                          ),
+                      {pageNumbers.map((page, index) =>
+                        page === "..." ? (
+                          <span
+                            key={`dots-${index}`}
+                            className="admin-students-x7k2-page-dots"
+                          >
+                            …
+                          </span>
+                        ) : (
+                          <button
+                            key={page}
+                            type="button"
+                            className={`admin-students-x7k2-page-number ${
+                              currentPage === page ? "active" : ""
+                            }`}
+                            onClick={() => setCurrentPage(page)}
+                          >
+                            {page}
+                          </button>
+                        ),
                       )}
                     </div>
 
                     <button
                       type="button"
                       className="admin-students-x7k2-page-btn"
-                      disabled={
-                        currentPage === totalPages
-                      }
+                      disabled={currentPage === totalPages}
                       onClick={() =>
-                        setCurrentPage((prev) =>
-                          Math.min(
-                            totalPages,
-                            prev + 1,
-                          ),
-                        )
+                        setCurrentPage((prev) => Math.min(totalPages, prev + 1))
                       }
                       title="صفحه بعد"
                     >
@@ -1016,12 +708,8 @@ function AdminStudents() {
                     <button
                       type="button"
                       className="admin-students-x7k2-page-btn admin-students-x7k2-first-btn"
-                      disabled={
-                        currentPage === totalPages
-                      }
-                      onClick={() =>
-                        setCurrentPage(totalPages)
-                      }
+                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage(totalPages)}
                       title="صفحه آخر"
                     >
                       <ChevronsLeft size={17} />

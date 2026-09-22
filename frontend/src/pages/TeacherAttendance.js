@@ -86,10 +86,7 @@ function getAttendanceStatus(record) {
     return "late";
   }
 
-  if (
-    record.status === "excused" ||
-    record.status === "موجه"
-  ) {
+  if (record.status === "excused" || record.status === "موجه") {
     return "excused";
   }
 
@@ -105,10 +102,7 @@ function getStudentFromEnrollment(enrollment) {
     return enrollment.student_detail;
   }
 
-  if (
-    enrollment.student &&
-    typeof enrollment.student === "object"
-  ) {
+  if (enrollment.student && typeof enrollment.student === "object") {
     return enrollment.student;
   }
 
@@ -135,29 +129,17 @@ function getClassroomName(classroom) {
 }
 
 function getSessionDate(session) {
-  return (
-    session?.date ||
-    session?.session_date ||
-    session?.created_at ||
-    null
-  );
+  return session?.date || session?.session_date || session?.created_at || null;
 }
 
 function getSessionTitle(session) {
   return (
-    session?.title ||
-    session?.topic ||
-    session?.description ||
-    "جلسه کلاس"
+    session?.title || session?.topic || session?.description || "جلسه کلاس"
   );
 }
 
 function getEnrollmentClassroomId(enrollment) {
-  return (
-    getEntityId(enrollment?.classroom) ||
-    enrollment?.classroom_id ||
-    null
-  );
+  return getEntityId(enrollment?.classroom) || enrollment?.classroom_id || null;
 }
 
 function getEnrollmentStudentId(enrollment) {
@@ -228,44 +210,23 @@ function TeacherAttendance() {
           return;
         }
 
-        setClassrooms(
-          Array.isArray(classroomsData)
-            ? classroomsData
-            : [],
-        );
+        setClassrooms(Array.isArray(classroomsData) ? classroomsData : []);
 
-        setSessions(
-          Array.isArray(sessionsData)
-            ? sessionsData
-            : [],
-        );
+        setSessions(Array.isArray(sessionsData) ? sessionsData : []);
 
         setAttendanceRecords(
-          Array.isArray(attendanceData)
-            ? attendanceData
-            : [],
+          Array.isArray(attendanceData) ? attendanceData : [],
         );
 
-        setEnrollments(
-          Array.isArray(enrollmentsData)
-            ? enrollmentsData
-            : [],
-        );
+        setEnrollments(Array.isArray(enrollmentsData) ? enrollmentsData : []);
 
-        setUsers(
-          Array.isArray(usersData)
-            ? usersData
-            : [],
-        );
+        setUsers(Array.isArray(usersData) ? usersData : []);
       } catch (err) {
         if (!alive) {
           return;
         }
 
-        setError(
-          err?.message ||
-            "دریافت اطلاعات حضور و غیاب ناموفق بود.",
-        );
+        setError(err?.message || "دریافت اطلاعات حضور و غیاب ناموفق بود.");
       } finally {
         if (alive) {
           setLoading(false);
@@ -292,18 +253,12 @@ function TeacherAttendance() {
     }
 
     const filtered = classrooms.filter((classroom) => {
-      const teacherId =
-        getClassroomTeacherId(classroom);
+      const teacherId = getClassroomTeacherId(classroom);
 
-      return (
-        Number(teacherId) ===
-        Number(currentUserId)
-      );
+      return Number(teacherId) === Number(currentUserId);
     });
 
-    return filtered.length > 0
-      ? filtered
-      : classrooms;
+    return filtered.length > 0 ? filtered : classrooms;
   }, [classrooms]);
 
   /* =========================================================
@@ -311,13 +266,8 @@ function TeacherAttendance() {
   ========================================================= */
 
   useEffect(() => {
-    if (
-      teacherClasses.length > 0 &&
-      !selectedClassId
-    ) {
-      setSelectedClassId(
-        String(teacherClasses[0].id),
-      );
+    if (teacherClasses.length > 0 && !selectedClassId) {
+      setSelectedClassId(String(teacherClasses[0].id));
     }
   }, [teacherClasses, selectedClassId]);
 
@@ -328,9 +278,7 @@ function TeacherAttendance() {
   const selectedClass = useMemo(() => {
     return (
       teacherClasses.find(
-        (item) =>
-          String(item.id) ===
-          String(selectedClassId),
+        (item) => String(item.id) === String(selectedClassId),
       ) || null
     );
   }, [teacherClasses, selectedClassId]);
@@ -347,22 +295,14 @@ function TeacherAttendance() {
     return sessions
       .filter((session) => {
         const classroomId =
-          getEntityId(session.classroom) ||
-          session.classroom_id;
+          getEntityId(session.classroom) || session.classroom_id;
 
-        return (
-          Number(classroomId) ===
-          Number(selectedClassId)
-        );
+        return Number(classroomId) === Number(selectedClassId);
       })
       .sort((a, b) => {
-        const dateA = new Date(
-          getSessionDate(a) || 0,
-        );
+        const dateA = new Date(getSessionDate(a) || 0);
 
-        const dateB = new Date(
-          getSessionDate(b) || 0,
-        );
+        const dateB = new Date(getSessionDate(b) || 0);
 
         return dateB - dateA;
       });
@@ -373,30 +313,18 @@ function TeacherAttendance() {
   ========================================================= */
 
   useEffect(() => {
-    if (
-      selectedClassSessions.length > 0
-    ) {
-      const exists =
-        selectedClassSessions.some(
-          (session) =>
-            String(session.id) ===
-            String(selectedSessionId),
-        );
+    if (selectedClassSessions.length > 0) {
+      const exists = selectedClassSessions.some(
+        (session) => String(session.id) === String(selectedSessionId),
+      );
 
       if (!exists) {
-        setSelectedSessionId(
-          String(
-            selectedClassSessions[0].id,
-          ),
-        );
+        setSelectedSessionId(String(selectedClassSessions[0].id));
       }
     } else {
       setSelectedSessionId("");
     }
-  }, [
-    selectedClassSessions,
-    selectedSessionId,
-  ]);
+  }, [selectedClassSessions, selectedSessionId]);
 
   /* =========================================================
      Students Of Selected Class
@@ -413,19 +341,15 @@ function TeacherAttendance() {
        First priority: classroom.enrollments
     ------------------------------------------------------- */
 
-    const classroomEnrollments =
-      selectedClass?.enrollments || [];
+    const classroomEnrollments = selectedClass?.enrollments || [];
 
-    classroomEnrollments.forEach(
-      (enrollment) => {
-        const student =
-          getStudentFromEnrollment(enrollment);
+    classroomEnrollments.forEach((enrollment) => {
+      const student = getStudentFromEnrollment(enrollment);
 
-        if (student) {
-          result.push(student);
-        }
-      },
-    );
+      if (student) {
+        result.push(student);
+      }
+    });
 
     /* -------------------------------------------------------
        Second priority: global enrollments
@@ -435,29 +359,17 @@ function TeacherAttendance() {
       enrollments
         .filter(
           (enrollment) =>
-            Number(
-              getEnrollmentClassroomId(
-                enrollment,
-              ),
-            ) ===
+            Number(getEnrollmentClassroomId(enrollment)) ===
             Number(selectedClassId),
         )
         .forEach((enrollment) => {
-          let student =
-            getStudentFromEnrollment(
-              enrollment,
-            );
+          let student = getStudentFromEnrollment(enrollment);
 
           if (!student) {
-            const studentId =
-              getEnrollmentStudentId(
-                enrollment,
-              );
+            const studentId = getEnrollmentStudentId(enrollment);
 
             student = users.find(
-              (user) =>
-                Number(user.id) ===
-                Number(studentId),
+              (user) => Number(user.id) === Number(studentId),
             );
           }
 
@@ -489,17 +401,9 @@ function TeacherAttendance() {
     });
 
     return unique.sort((a, b) =>
-      getFullName(a).localeCompare(
-        getFullName(b),
-        "fa",
-      ),
+      getFullName(a).localeCompare(getFullName(b), "fa"),
     );
-  }, [
-    selectedClass,
-    selectedClassId,
-    enrollments,
-    users,
-  ]);
+  }, [selectedClass, selectedClassId, enrollments, users]);
 
   /* =========================================================
      Selected Session
@@ -508,25 +412,17 @@ function TeacherAttendance() {
   const selectedSession = useMemo(() => {
     return (
       selectedClassSessions.find(
-        (session) =>
-          String(session.id) ===
-          String(selectedSessionId),
+        (session) => String(session.id) === String(selectedSessionId),
       ) || null
     );
-  }, [
-    selectedClassSessions,
-    selectedSessionId,
-  ]);
+  }, [selectedClassSessions, selectedSessionId]);
 
   /* =========================================================
      Build Attendance Draft
   ========================================================= */
 
   useEffect(() => {
-    if (
-      !selectedSession ||
-      classStudents.length === 0
-    ) {
+    if (!selectedSession || classStudents.length === 0) {
       setAttendanceDraft({});
       return;
     }
@@ -534,71 +430,46 @@ function TeacherAttendance() {
     const draft = {};
 
     classStudents.forEach((student) => {
-      const record =
-        attendanceRecords.find((item) => {
-          const recordSessionId =
-            getEntityId(item.session) ||
-            getEntityId(
-              item.session_detail,
-            );
+      const record = attendanceRecords.find((item) => {
+        const recordSessionId =
+          getEntityId(item.session) || getEntityId(item.session_detail);
 
-          const recordStudentId =
-            getEntityId(item.student) ||
-            getEntityId(
-              item.student_detail,
-            );
+        const recordStudentId =
+          getEntityId(item.student) || getEntityId(item.student_detail);
 
-          return (
-            Number(recordSessionId) ===
-              Number(selectedSession.id) &&
-            Number(recordStudentId) ===
-              Number(student.id)
-          );
-        });
+        return (
+          Number(recordSessionId) === Number(selectedSession.id) &&
+          Number(recordStudentId) === Number(student.id)
+        );
+      });
 
       draft[student.id] = {
         status: getAttendanceStatus(record),
         recordId: record?.id || null,
-        note:
-          record?.note ||
-          record?.description ||
-          record?.remarks ||
-          "",
+        note: record?.note || record?.description || record?.remarks || "",
       };
     });
 
     setAttendanceDraft(draft);
-  }, [
-    selectedSession,
-    classStudents,
-    attendanceRecords,
-  ]);
+  }, [selectedSession, classStudents, attendanceRecords]);
 
   /* =========================================================
      Filter Students
   ========================================================= */
 
   const filteredStudents = useMemo(() => {
-    const query =
-      studentSearch.trim().toLowerCase();
+    const query = studentSearch.trim().toLowerCase();
 
     if (!query) {
       return classStudents;
     }
 
     return classStudents.filter((student) => {
-      const fullName =
-        getFullName(student).toLowerCase();
+      const fullName = getFullName(student).toLowerCase();
 
-      const phone = String(
-        student.phone ||
-          student.mobile ||
-          "",
-      ).toLowerCase();
+      const phone = String(student.phone || student.mobile || "").toLowerCase();
 
-      const username = String(
-        student.username || "",
-      ).toLowerCase();
+      const username = String(student.username || "").toLowerCase();
 
       return (
         fullName.includes(query) ||
@@ -606,10 +477,7 @@ function TeacherAttendance() {
         username.includes(query)
       );
     });
-  }, [
-    classStudents,
-    studentSearch,
-  ]);
+  }, [classStudents, studentSearch]);
 
   /* =========================================================
      Statistics
@@ -622,30 +490,28 @@ function TeacherAttendance() {
     let excused = 0;
     let unknown = 0;
 
-    Object.values(attendanceDraft).forEach(
-      (item) => {
-        switch (item.status) {
-          case "present":
-            present++;
-            break;
+    Object.values(attendanceDraft).forEach((item) => {
+      switch (item.status) {
+        case "present":
+          present++;
+          break;
 
-          case "absent":
-            absent++;
-            break;
+        case "absent":
+          absent++;
+          break;
 
-          case "late":
-            late++;
-            break;
+        case "late":
+          late++;
+          break;
 
-          case "excused":
-            excused++;
-            break;
+        case "excused":
+          excused++;
+          break;
 
-          default:
-            unknown++;
-        }
-      },
-    );
+        default:
+          unknown++;
+      }
+    });
 
     return {
       total: classStudents.length,
@@ -655,19 +521,13 @@ function TeacherAttendance() {
       excused,
       unknown,
     };
-  }, [
-    attendanceDraft,
-    classStudents,
-  ]);
+  }, [attendanceDraft, classStudents]);
 
   /* =========================================================
      Change Attendance
   ========================================================= */
 
-  const changeStatus = (
-    studentId,
-    status,
-  ) => {
+  const changeStatus = (studentId, status) => {
     setAttendanceDraft((previous) => ({
       ...previous,
       [studentId]: {
@@ -688,9 +548,7 @@ function TeacherAttendance() {
     }
 
     if (classStudents.length === 0) {
-      setError(
-        "دانش‌آموزی برای این کلاس پیدا نشد.",
-      );
+      setError("دانش‌آموزی برای این کلاس پیدا نشد.");
       return;
     }
 
@@ -699,25 +557,17 @@ function TeacherAttendance() {
       setError("");
       setSuccess("");
 
-      const updatedRecords = [
-        ...attendanceRecords,
-      ];
+      const updatedRecords = [...attendanceRecords];
 
       for (const student of classStudents) {
-        const draft =
-          attendanceDraft[student.id];
+        const draft = attendanceDraft[student.id];
 
-        if (
-          !draft?.status ||
-          draft.status === "unknown"
-        ) {
+        if (!draft?.status || draft.status === "unknown") {
           continue;
         }
 
         const payload = {
-          session: Number(
-            selectedSession.id,
-          ),
+          session: Number(selectedSession.id),
           student: Number(student.id),
           status: draft.status,
           note: draft.note || "",
@@ -726,39 +576,25 @@ function TeacherAttendance() {
         let saved;
 
         if (draft.recordId) {
-          saved =
-            await api.attendance.update(
-              draft.recordId,
-              payload,
-            );
+          saved = await api.attendance.update(draft.recordId, payload);
 
-          const index =
-            updatedRecords.findIndex(
-              (item) =>
-                Number(item.id) ===
-                Number(draft.recordId),
-            );
+          const index = updatedRecords.findIndex(
+            (item) => Number(item.id) === Number(draft.recordId),
+          );
 
           if (index !== -1) {
             updatedRecords[index] = saved;
           }
         } else {
-          saved =
-            await api.attendance.create(
-              payload,
-            );
+          saved = await api.attendance.create(payload);
 
           updatedRecords.push(saved);
         }
       }
 
-      setAttendanceRecords(
-        updatedRecords,
-      );
+      setAttendanceRecords(updatedRecords);
 
-      setSuccess(
-        "حضور و غیاب این جلسه با موفقیت ذخیره شد.",
-      );
+      setSuccess("حضور و غیاب این جلسه با موفقیت ذخیره شد.");
 
       setTimeout(() => {
         setSuccess("");
@@ -766,10 +602,7 @@ function TeacherAttendance() {
     } catch (err) {
       console.error(err);
 
-      setError(
-        err?.message ||
-          "ذخیره حضور و غیاب انجام نشد.",
-      );
+      setError(err?.message || "ذخیره حضور و غیاب انجام نشد.");
     } finally {
       setSaving(false);
     }
@@ -795,34 +628,22 @@ function TeacherAttendance() {
       setError("");
       setSuccess("");
 
-      const created =
-        await api.sessions.create({
-          classroom: Number(
-            selectedClassId,
-          ),
-          date: newSessionDate,
-          title:
-            newSessionTitle.trim() ||
-            "جلسه کلاس",
-        });
+      const created = await api.sessions.create({
+        classroom: Number(selectedClassId),
+        date: newSessionDate,
+        title: newSessionTitle.trim() || "جلسه کلاس",
+      });
 
-      setSessions((previous) => [
-        ...previous,
-        created,
-      ]);
+      setSessions((previous) => [...previous, created]);
 
-      setSelectedSessionId(
-        String(created.id),
-      );
+      setSelectedSessionId(String(created.id));
 
       setNewSessionDate("");
       setNewSessionTitle("");
 
       setShowNewSession(false);
 
-      setSuccess(
-        "جلسه جدید با موفقیت ایجاد شد.",
-      );
+      setSuccess("جلسه جدید با موفقیت ایجاد شد.");
 
       setTimeout(() => {
         setSuccess("");
@@ -830,10 +651,7 @@ function TeacherAttendance() {
     } catch (err) {
       console.error(err);
 
-      setError(
-        err?.message ||
-          "ایجاد جلسه جدید انجام نشد.",
-      );
+      setError(err?.message || "ایجاد جلسه جدید انجام نشد.");
     } finally {
       setCreatingSession(false);
     }
@@ -843,29 +661,16 @@ function TeacherAttendance() {
      Status UI
   ========================================================= */
 
-  const renderStatusButton = (
-    student,
-    status,
-    label,
-    Icon,
-  ) => {
-    const currentStatus =
-      attendanceDraft[student.id]?.status;
+  const renderStatusButton = (student, status, label, Icon) => {
+    const currentStatus = attendanceDraft[student.id]?.status;
 
     return (
       <button
         type="button"
         className={`teacher-attendance-x4m2-status-button ${
-          currentStatus === status
-            ? `is-${status}`
-            : ""
+          currentStatus === status ? `is-${status}` : ""
         }`}
-        onClick={() =>
-          changeStatus(
-            student.id,
-            status,
-          )
-        }
+        onClick={() => changeStatus(student.id, status)}
       >
         <Icon size={15} />
         <span>{label}</span>
@@ -879,29 +684,17 @@ function TeacherAttendance() {
 
   if (loading) {
     return (
-      <DashboardLayout
-        role="پنل معلم"
-        title="حضور و غیاب"
-        menuType="teacher"
-      >
-        <div
-          className="teacher-attendance-x4m2-page"
-          dir="rtl"
-        >
+      <DashboardLayout role="پنل معلم" title="حضور و غیاب" menuType="teacher">
+        <div className="teacher-attendance-x4m2-page" dir="rtl">
           <section className="teacher-attendance-x4m2-state">
             <Loader2
               size={30}
               className="teacher-attendance-x4m2-loading-icon"
             />
 
-            <strong>
-              در حال دریافت اطلاعات...
-            </strong>
+            <strong>در حال دریافت اطلاعات...</strong>
 
-            <span>
-              کلاس‌ها، جلسات و دانش‌آموزان در حال
-              بارگذاری هستند.
-            </span>
+            <span>کلاس‌ها، جلسات و دانش‌آموزان در حال بارگذاری هستند.</span>
           </section>
         </div>
       </DashboardLayout>
@@ -913,47 +706,23 @@ function TeacherAttendance() {
   ========================================================= */
 
   return (
-    <DashboardLayout
-      role="پنل معلم"
-      title="حضور و غیاب"
-      menuType="teacher"
-    >
-      <div
-        className="teacher-attendance-x4m2-page"
-        dir="rtl"
-      >
+    <DashboardLayout role="پنل معلم" title="حضور و غیاب" menuType="teacher">
+      <div className="teacher-attendance-x4m2-page" dir="rtl">
         {/* =====================================================
             Header
         ====================================================== */}
-
-        <header className="teacher-attendance-x4m2-header">
-          <div className="teacher-attendance-x4m2-header-info">
-            <div className="teacher-attendance-x4m2-header-icon">
-              <ClipboardIcon />
+        <section className="secretary-terms-header">
+          <div className="secretary-terms-heading">
+            <div className="secretary-terms-avatar">
+              <ClipboardIcon size={25} />
             </div>
 
-            <div>
-              <h1>حضور و غیاب کلاس‌ها</h1>
-
-              <p>
-                مدیریت جلسات و ثبت وضعیت حضور دانش‌آموزان
-              </p>
+            <div className="secretary-terms-heading-content">
+              <h3>حضور و غیاب کلاس‌ها</h3>
+              <p>مدیریت جلسات و ثبت وضعیت حضور دانش‌آموزان</p>
             </div>
           </div>
-
-          {selectedClass && (
-            <div className="teacher-attendance-x4m2-header-class">
-              <BookOpen size={17} />
-
-              <span>
-                {getClassroomName(
-                  selectedClass,
-                )}
-              </span>
-            </div>
-          )}
-        </header>
-
+        </section>
         {/* =====================================================
             Alerts
         ====================================================== */}
@@ -964,10 +733,7 @@ function TeacherAttendance() {
 
             <span>{error}</span>
 
-            <button
-              type="button"
-              onClick={() => setError("")}
-            >
+            <button type="button" onClick={() => setError("")}>
               <X size={15} />
             </button>
           </div>
@@ -979,10 +745,7 @@ function TeacherAttendance() {
 
             <span>{success}</span>
 
-            <button
-              type="button"
-              onClick={() => setSuccess("")}
-            >
+            <button type="button" onClick={() => setSuccess("")}>
               <X size={15} />
             </button>
           </div>
@@ -992,7 +755,7 @@ function TeacherAttendance() {
             Class Selector
         ====================================================== */}
 
-        <section className="teacher-attendance-x4m2-selector-card">
+        <section className="teacher-attendance-x4m2-selector-card mt-2">
           <div className="teacher-attendance-x4m2-selector-main">
             <div className="teacher-attendance-x4m2-selector-icon">
               <UsersRound size={21} />
@@ -1003,13 +766,9 @@ function TeacherAttendance() {
                 کلاس آموزشی
               </span>
 
-              <strong>
-                انتخاب کلاس برای ثبت حضور و غیاب
-              </strong>
+              <strong>انتخاب کلاس برای ثبت حضور و غیاب</strong>
 
-              <p>
-                ابتدا کلاس موردنظر را انتخاب کنید.
-              </p>
+              <p>ابتدا کلاس موردنظر را انتخاب کنید.</p>
             </div>
           </div>
 
@@ -1017,32 +776,21 @@ function TeacherAttendance() {
             <select
               value={selectedClassId}
               onChange={(event) => {
-                setSelectedClassId(
-                  event.target.value,
-                );
+                setSelectedClassId(event.target.value);
                 setSelectedSessionId("");
                 setStudentSearch("");
               }}
               className="teacher-attendance-x4m2-select"
             >
               {teacherClasses.length === 0 && (
-                <option value="">
-                  کلاسی برای شما ثبت نشده است
-                </option>
+                <option value="">کلاسی برای شما ثبت نشده است</option>
               )}
 
-              {teacherClasses.map(
-                (classroom) => (
-                  <option
-                    key={classroom.id}
-                    value={classroom.id}
-                  >
-                    {getClassroomName(
-                      classroom,
-                    )}
-                  </option>
-                ),
-              )}
+              {teacherClasses.map((classroom) => (
+                <option key={classroom.id} value={classroom.id}>
+                  {getClassroomName(classroom)}
+                </option>
+              ))}
             </select>
 
             <ChevronDown
@@ -1056,13 +804,9 @@ function TeacherAttendance() {
           <section className="teacher-attendance-x4m2-state">
             <BookOpen size={34} />
 
-            <strong>
-              کلاسی برای نمایش وجود ندارد
-            </strong>
+            <strong>کلاسی برای نمایش وجود ندارد</strong>
 
-            <span>
-              ابتدا یک کلاس به حساب مدرس اختصاص دهید.
-            </span>
+            <span>ابتدا یک کلاس به حساب مدرس اختصاص دهید.</span>
           </section>
         ) : (
           <>
@@ -1073,31 +817,20 @@ function TeacherAttendance() {
             <section className="teacher-attendance-x4m2-session-section">
               <div className="teacher-attendance-x4m2-section-header">
                 <div>
-                  <h2>
-                    جلسات{" "}
-                    {getClassroomName(
-                      selectedClass,
-                    )}
-                  </h2>
+                  <h2>جلسات {getClassroomName(selectedClass)}</h2>
 
                   <p>
-                    جلسه موردنظر را انتخاب کنید و سپس
-                    حضور و غیاب دانش‌آموزان را ثبت کنید.
+                    جلسه موردنظر را انتخاب کنید و سپس حضور و غیاب دانش‌آموزان را
+                    ثبت کنید.
                   </p>
                 </div>
 
                 <button
                   type="button"
                   className="teacher-attendance-x4m2-new-session-btn"
-                  onClick={() =>
-                    setShowNewSession(
-                      (previous) =>
-                        !previous,
-                    )
-                  }
+                  onClick={() => setShowNewSession((previous) => !previous)}
                 >
                   <FilePlus2 size={17} />
-
                   جلسه جدید
                 </button>
               </div>
@@ -1105,33 +838,25 @@ function TeacherAttendance() {
               {showNewSession && (
                 <div className="teacher-attendance-x4m2-new-session-box">
                   <div className="teacher-attendance-x4m2-field">
-                    <label>
-                      تاریخ جلسه
-                    </label>
+                    <label>تاریخ جلسه</label>
 
                     <input
                       type="date"
                       value={newSessionDate}
                       onChange={(event) =>
-                        setNewSessionDate(
-                          event.target.value,
-                        )
+                        setNewSessionDate(event.target.value)
                       }
                     />
                   </div>
 
                   <div className="teacher-attendance-x4m2-field">
-                    <label>
-                      عنوان جلسه
-                    </label>
+                    <label>عنوان جلسه</label>
 
                     <input
                       type="text"
                       value={newSessionTitle}
                       onChange={(event) =>
-                        setNewSessionTitle(
-                          event.target.value,
-                        )
+                        setNewSessionTitle(event.target.value)
                       }
                       placeholder="مثلاً جلسه پنجم - Unit 4"
                     />
@@ -1141,9 +866,7 @@ function TeacherAttendance() {
                     <button
                       type="button"
                       className="teacher-attendance-x4m2-cancel-btn"
-                      onClick={() =>
-                        setShowNewSession(false)
-                      }
+                      onClick={() => setShowNewSession(false)}
                     >
                       انصراف
                     </button>
@@ -1151,12 +874,8 @@ function TeacherAttendance() {
                     <button
                       type="button"
                       className="teacher-attendance-x4m2-create-session-btn"
-                      onClick={
-                        handleCreateSession
-                      }
-                      disabled={
-                        creatingSession
-                      }
+                      onClick={handleCreateSession}
+                      disabled={creatingSession}
                     >
                       {creatingSession ? (
                         <Loader2
@@ -1166,120 +885,73 @@ function TeacherAttendance() {
                       ) : (
                         <Check size={16} />
                       )}
-
                       ایجاد جلسه
                     </button>
                   </div>
                 </div>
               )}
 
-              {selectedClassSessions.length ===
-              0 ? (
+              {selectedClassSessions.length === 0 ? (
                 <div className="teacher-attendance-x4m2-empty-sessions">
                   <CalendarDays size={30} />
 
-                  <strong>
-                    هنوز جلسه‌ای ثبت نشده است
-                  </strong>
+                  <strong>هنوز جلسه‌ای ثبت نشده است</strong>
 
-                  <span>
-                    برای شروع، یک جلسه جدید ایجاد کنید.
-                  </span>
+                  <span>برای شروع، یک جلسه جدید ایجاد کنید.</span>
                 </div>
               ) : (
                 <div className="teacher-attendance-x4m2-sessions">
-                  {selectedClassSessions.map(
-                    (session, index) => {
-                      const active =
-                        String(
-                          selectedSessionId,
-                        ) ===
-                        String(session.id);
+                  {selectedClassSessions.map((session, index) => {
+                    const active =
+                      String(selectedSessionId) === String(session.id);
 
-                      const sessionRecords =
-                        attendanceRecords.filter(
-                          (record) => {
-                            const recordSessionId =
-                              getEntityId(
-                                record.session,
-                              ) ||
-                              getEntityId(
-                                record.session_detail,
-                              );
+                    const sessionRecords = attendanceRecords.filter(
+                      (record) => {
+                        const recordSessionId =
+                          getEntityId(record.session) ||
+                          getEntityId(record.session_detail);
 
-                            return (
-                              Number(
-                                recordSessionId,
-                              ) ===
-                              Number(
-                                session.id,
-                              )
-                            );
-                          },
-                        );
+                        return Number(recordSessionId) === Number(session.id);
+                      },
+                    );
 
-                      return (
-                        <button
-                          type="button"
-                          key={session.id}
-                          className={`teacher-attendance-x4m2-session-card ${
-                            active
-                              ? "is-active"
-                              : ""
-                          }`}
-                          onClick={() =>
-                            setSelectedSessionId(
-                              String(
-                                session.id,
-                              ),
-                            )
-                          }
-                        >
-                          <div className="teacher-attendance-x4m2-session-number">
-                            {toPersianDigits(
-                              selectedClassSessions.length -
-                                index,
-                            )}
-                          </div>
-
-                          <div className="teacher-attendance-x4m2-session-content">
-                            <strong>
-                              {getSessionTitle(
-                                session,
-                              )}
-                            </strong>
-
-                            <span>
-                              <CalendarDays
-                                size={13}
-                              />
-
-                              {toJalaliDateString(
-                                getSessionDate(
-                                  session,
-                                ),
-                              )}
-                            </span>
-                          </div>
-
-                          <div className="teacher-attendance-x4m2-session-records">
-                            {toPersianDigits(
-                              sessionRecords.length,
-                            )}{" "}
-                            ثبت
-                          </div>
-
-                          {active && (
-                            <div className="teacher-attendance-x4m2-session-check">
-                              <Check
-                                size={14}
-                              />
-                            </div>
+                    return (
+                      <button
+                        type="button"
+                        key={session.id}
+                        className={`teacher-attendance-x4m2-session-card ${
+                          active ? "is-active" : ""
+                        }`}
+                        onClick={() => setSelectedSessionId(String(session.id))}
+                      >
+                        <div className="teacher-attendance-x4m2-session-number">
+                          {toPersianDigits(
+                            selectedClassSessions.length - index,
                           )}
-                        </button>
-                      );
-                    },
-                  )}
+                        </div>
+
+                        <div className="teacher-attendance-x4m2-session-content">
+                          <strong>{getSessionTitle(session)}</strong>
+
+                          <span>
+                            <CalendarDays size={13} />
+
+                            {toJalaliDateString(getSessionDate(session))}
+                          </span>
+                        </div>
+
+                        <div className="teacher-attendance-x4m2-session-records">
+                          {toPersianDigits(sessionRecords.length)} ثبت
+                        </div>
+
+                        {active && (
+                          <div className="teacher-attendance-x4m2-session-check">
+                            <Check size={14} />
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </section>
@@ -1297,26 +969,14 @@ function TeacherAttendance() {
                     </div>
 
                     <div>
-                      <span>
-                        جلسه انتخاب‌شده
-                      </span>
+                      <span>جلسه انتخاب‌شده</span>
 
-                      <h2>
-                        {getSessionTitle(
-                          selectedSession,
-                        )}
-                      </h2>
+                      <h2>{getSessionTitle(selectedSession)}</h2>
 
                       <p>
-                        <CalendarDays
-                          size={13}
-                        />
+                        <CalendarDays size={13} />
 
-                        {toJalaliDateString(
-                          getSessionDate(
-                            selectedSession,
-                          ),
-                        )}
+                        {toJalaliDateString(getSessionDate(selectedSession))}
                       </p>
                     </div>
                   </div>
@@ -1324,9 +984,7 @@ function TeacherAttendance() {
                   <button
                     type="button"
                     className="teacher-attendance-x4m2-save-btn"
-                    onClick={
-                      handleSaveAttendance
-                    }
+                    onClick={handleSaveAttendance}
                     disabled={saving}
                   >
                     {saving ? (
@@ -1338,9 +996,7 @@ function TeacherAttendance() {
                       <Save size={17} />
                     )}
 
-                    {saving
-                      ? "در حال ذخیره..."
-                      : "ذخیره حضور و غیاب"}
+                    {saving ? "در حال ذخیره..." : "ذخیره حضور و غیاب"}
                   </button>
                 </div>
 
@@ -1353,15 +1009,9 @@ function TeacherAttendance() {
                     <UsersRound size={17} />
 
                     <div>
-                      <span>
-                        کل دانش‌آموزان
-                      </span>
+                      <span>کل دانش‌آموزان</span>
 
-                      <strong>
-                        {toPersianDigits(
-                          statistics.total,
-                        )}
-                      </strong>
+                      <strong>{toPersianDigits(statistics.total)}</strong>
                     </div>
                   </div>
 
@@ -1371,11 +1021,7 @@ function TeacherAttendance() {
                     <div>
                       <span>حاضر</span>
 
-                      <strong>
-                        {toPersianDigits(
-                          statistics.present,
-                        )}
-                      </strong>
+                      <strong>{toPersianDigits(statistics.present)}</strong>
                     </div>
                   </div>
 
@@ -1385,11 +1031,7 @@ function TeacherAttendance() {
                     <div>
                       <span>غایب</span>
 
-                      <strong>
-                        {toPersianDigits(
-                          statistics.absent,
-                        )}
-                      </strong>
+                      <strong>{toPersianDigits(statistics.absent)}</strong>
                     </div>
                   </div>
 
@@ -1399,11 +1041,7 @@ function TeacherAttendance() {
                     <div>
                       <span>تأخیر</span>
 
-                      <strong>
-                        {toPersianDigits(
-                          statistics.late,
-                        )}
-                      </strong>
+                      <strong>{toPersianDigits(statistics.late)}</strong>
                     </div>
                   </div>
 
@@ -1413,11 +1051,7 @@ function TeacherAttendance() {
                     <div>
                       <span>موجه</span>
 
-                      <strong>
-                        {toPersianDigits(
-                          statistics.excused,
-                        )}
-                      </strong>
+                      <strong>{toPersianDigits(statistics.excused)}</strong>
                     </div>
                   </div>
 
@@ -1427,11 +1061,7 @@ function TeacherAttendance() {
                     <div>
                       <span>ثبت نشده</span>
 
-                      <strong>
-                        {toPersianDigits(
-                          statistics.unknown,
-                        )}
-                      </strong>
+                      <strong>{toPersianDigits(statistics.unknown)}</strong>
                     </div>
                   </div>
                 </div>
@@ -1447,20 +1077,14 @@ function TeacherAttendance() {
                     <input
                       type="text"
                       value={studentSearch}
-                      onChange={(event) =>
-                        setStudentSearch(
-                          event.target.value,
-                        )
-                      }
+                      onChange={(event) => setStudentSearch(event.target.value)}
                       placeholder="جستجوی نام، شماره تماس یا نام کاربری..."
                     />
 
                     {studentSearch && (
                       <button
                         type="button"
-                        onClick={() =>
-                          setStudentSearch("")
-                        }
+                        onClick={() => setStudentSearch("")}
                       >
                         <X size={15} />
                       </button>
@@ -1469,11 +1093,7 @@ function TeacherAttendance() {
 
                   <div className="teacher-attendance-x4m2-count">
                     <UsersRound size={15} />
-
-                    {toPersianDigits(
-                      filteredStudents.length,
-                    )}{" "}
-                    دانش‌آموز
+                    {toPersianDigits(filteredStudents.length)} دانش‌آموز
                   </div>
                 </div>
 
@@ -1485,23 +1105,18 @@ function TeacherAttendance() {
                   <div className="teacher-attendance-x4m2-empty-students">
                     <UsersRound size={32} />
 
-                    <strong>
-                      دانش‌آموزی در این کلاس پیدا نشد
-                    </strong>
+                    <strong>دانش‌آموزی در این کلاس پیدا نشد</strong>
 
                     <span>
-                      ابتدا دانش‌آموزان را در این کلاس
-                      ثبت‌نام کنید تا در فرم حضور و غیاب نمایش داده شوند.
+                      ابتدا دانش‌آموزان را در این کلاس ثبت‌نام کنید تا در فرم
+                      حضور و غیاب نمایش داده شوند.
                     </span>
                   </div>
-                ) : filteredStudents.length ===
-                  0 ? (
+                ) : filteredStudents.length === 0 ? (
                   <div className="teacher-attendance-x4m2-empty-students">
                     <Search size={30} />
 
-                    <strong>
-                      دانش‌آموزی با این جستجو پیدا نشد
-                    </strong>
+                    <strong>دانش‌آموزی با این جستجو پیدا نشد</strong>
                   </div>
                 ) : (
                   <div className="teacher-attendance-x4m2-students-table-wrap">
@@ -1515,126 +1130,96 @@ function TeacherAttendance() {
                       </thead>
 
                       <tbody>
-                        {filteredStudents.map(
-                          (student, index) => {
-                            const draft =
-                              attendanceDraft[
-                                student.id
-                              ] || {};
+                        {filteredStudents.map((student, index) => {
+                          const draft = attendanceDraft[student.id] || {};
 
-                            return (
-                              <tr
-                                key={student.id}
-                              >
-                                <td data-label="دانش‌آموز">
-                                  <div className="teacher-attendance-x4m2-student">
-                                    <div className="teacher-attendance-x4m2-student-number">
-                                      {toPersianDigits(
-                                        index + 1,
-                                      )}
-                                    </div>
-
-                                    <div className="teacher-attendance-x4m2-student-avatar">
-                                      <UserRound
-                                        size={17}
-                                      />
-                                    </div>
-
-                                    <div className="teacher-attendance-x4m2-student-info">
-                                      <strong>
-                                        {getFullName(
-                                          student,
-                                        ) ||
-                                          "دانش‌آموز بدون نام"}
-                                      </strong>
-
-                                      <span>
-                                        {student.phone ||
-                                          student.mobile ||
-                                          student.username ||
-                                          "اطلاعات تماس ثبت نشده"}
-                                      </span>
-                                    </div>
+                          return (
+                            <tr key={student.id}>
+                              <td data-label="دانش‌آموز">
+                                <div className="teacher-attendance-x4m2-student">
+                                  <div className="teacher-attendance-x4m2-student-number">
+                                    {toPersianDigits(index + 1)}
                                   </div>
-                                </td>
 
-                                <td data-label="وضعیت حضور">
-                                  <div className="teacher-attendance-x4m2-statuses">
-                                    {renderStatusButton(
-                                      student,
-                                      "present",
-                                      "حاضر",
-                                      CheckCircle2,
-                                    )}
-
-                                    {renderStatusButton(
-                                      student,
-                                      "absent",
-                                      "غایب",
-                                      XCircle,
-                                    )}
-
-                                    {renderStatusButton(
-                                      student,
-                                      "late",
-                                      "تأخیر",
-                                      Clock3,
-                                    )}
-
-                                    {renderStatusButton(
-                                      student,
-                                      "excused",
-                                      "موجه",
-                                      Check,
-                                    )}
-
-                                    {renderStatusButton(
-                                      student,
-                                      "unknown",
-                                      "ثبت نشده",
-                                      AlertCircle,
-                                    )}
+                                  <div className="teacher-attendance-x4m2-student-avatar">
+                                    <UserRound size={17} />
                                   </div>
-                                </td>
 
-                                <td data-label="توضیحات">
-                                  <input
-                                    className="teacher-attendance-x4m2-note-input"
-                                    type="text"
-                                    value={
-                                      draft.note ||
-                                      ""
-                                    }
-                                    onChange={(
-                                      event,
-                                    ) =>
-                                      setAttendanceDraft(
-                                        (
-                                          previous,
-                                        ) => ({
-                                          ...previous,
-                                          [student.id]:
-                                            {
-                                              ...(previous[
-                                                student
-                                                  .id
-                                              ] ||
-                                                {}),
-                                              note:
-                                                event
-                                                  .target
-                                                  .value,
-                                            },
-                                        }),
-                                      )
-                                    }
-                                    placeholder="توضیح اختیاری..."
-                                  />
-                                </td>
-                              </tr>
-                            );
-                          },
-                        )}
+                                  <div className="teacher-attendance-x4m2-student-info">
+                                    <strong>
+                                      {getFullName(student) ||
+                                        "دانش‌آموز بدون نام"}
+                                    </strong>
+
+                                    <span>
+                                      {student.phone ||
+                                        student.mobile ||
+                                        student.username ||
+                                        "اطلاعات تماس ثبت نشده"}
+                                    </span>
+                                  </div>
+                                </div>
+                              </td>
+
+                              <td data-label="وضعیت حضور">
+                                <div className="teacher-attendance-x4m2-statuses">
+                                  {renderStatusButton(
+                                    student,
+                                    "present",
+                                    "حاضر",
+                                    CheckCircle2,
+                                  )}
+
+                                  {renderStatusButton(
+                                    student,
+                                    "absent",
+                                    "غایب",
+                                    XCircle,
+                                  )}
+
+                                  {renderStatusButton(
+                                    student,
+                                    "late",
+                                    "تأخیر",
+                                    Clock3,
+                                  )}
+
+                                  {renderStatusButton(
+                                    student,
+                                    "excused",
+                                    "موجه",
+                                    Check,
+                                  )}
+
+                                  {renderStatusButton(
+                                    student,
+                                    "unknown",
+                                    "ثبت نشده",
+                                    AlertCircle,
+                                  )}
+                                </div>
+                              </td>
+
+                              <td data-label="توضیحات">
+                                <input
+                                  className="teacher-attendance-x4m2-note-input"
+                                  type="text"
+                                  value={draft.note || ""}
+                                  onChange={(event) =>
+                                    setAttendanceDraft((previous) => ({
+                                      ...previous,
+                                      [student.id]: {
+                                        ...(previous[student.id] || {}),
+                                        note: event.target.value,
+                                      },
+                                    }))
+                                  }
+                                  placeholder="توضیح اختیاری..."
+                                />
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
@@ -1647,22 +1232,18 @@ function TeacherAttendance() {
                 {classStudents.length > 0 && (
                   <div className="teacher-attendance-x4m2-bottom-save">
                     <div>
-                      <strong>
-                        وضعیت حضور جلسه آماده ثبت است
-                      </strong>
+                      <strong>وضعیت حضور جلسه آماده ثبت است</strong>
 
                       <span>
-                        برای دانش‌آموزان حاضر، غایب، تأخیر یا موجه
-                        وضعیت را انتخاب کنید و سپس ذخیره کنید.
+                        برای دانش‌آموزان حاضر، غایب، تأخیر یا موجه وضعیت را
+                        انتخاب کنید و سپس ذخیره کنید.
                       </span>
                     </div>
 
                     <button
                       type="button"
                       className="teacher-attendance-x4m2-save-btn"
-                      onClick={
-                        handleSaveAttendance
-                      }
+                      onClick={handleSaveAttendance}
                       disabled={saving}
                     >
                       {saving ? (
@@ -1673,7 +1254,6 @@ function TeacherAttendance() {
                       ) : (
                         <Save size={17} />
                       )}
-
                       ذخیره نهایی
                     </button>
                   </div>
@@ -1703,13 +1283,7 @@ function ClipboardIcon() {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <rect
-        x="4"
-        y="4"
-        width="16"
-        height="17"
-        rx="2"
-      />
+      <rect x="4" y="4" width="16" height="17" rx="2" />
 
       <path d="M9 4.5V3.5A1.5 1.5 0 0 1 10.5 2h3A1.5 1.5 0 0 1 15 3.5v1" />
 

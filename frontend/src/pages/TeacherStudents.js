@@ -211,7 +211,7 @@ function TeacherStudents() {
 
         <section className="teacher-students-k7p2-section">
           <section className="teacher-students-k7p2-header">
-            <div className="teacher-students-k7p2-header-icon">
+            <div className="secretary-terms-avatar">
               <GraduationCap size={25} />
             </div>
 
@@ -400,7 +400,9 @@ function TeacherStudents() {
                               {student.averageGrade}
                             </strong>
 
-                            {student.averageGrade !== "-" && <span>از 100</span>}
+                            {student.averageGrade !== "-" && (
+                              <span>از 100</span>
+                            )}
                           </div>
                         </td>
 

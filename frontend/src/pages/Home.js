@@ -155,12 +155,8 @@ export default function Landing() {
 
             <div className="hero-trust reveal" ref={r}>
               <div className="trust-item">
-                <span className="trust-icon">✅</span>
-                <span></span>
-              </div>
-              <div className="trust-item">
                 <span className="trust-icon">🏆</span>
-                <span>اساتید با مدرک بین‌المللی</span>
+                <span>اساتید با مدرک آیلتس و TTC</span>
               </div>
             </div>
           </div>

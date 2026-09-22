@@ -463,21 +463,64 @@ function AdminPanel() {
               </button>
 
               <div className="admin-panel-pagination-pages">
-                {Array.from(
-                  { length: totalStudentPages },
-                  (_, index) => index + 1,
-                ).map((page) => (
-                  <button
-                    key={page}
-                    type="button"
-                    className={`admin-panel-pagination-page ${
-                      studentPage === page ? "active" : ""
-                    }`}
-                    onClick={() => setStudentPage(page)}
-                  >
-                    {toPersianDigits(page)}
-                  </button>
-                ))}
+                {(() => {
+                  const pages = [];
+
+                  const addPage = (page) => {
+                    pages.push(
+                      <button
+                        key={`page-${page}`}
+                        type="button"
+                        className={`admin-panel-pagination-page ${
+                          studentPage === page ? "active" : ""
+                        }`}
+                        onClick={() => setStudentPage(page)}
+                      >
+                        {toPersianDigits(page)}
+                      </button>,
+                    );
+                  };
+
+                  const addDots = (key) => {
+                    pages.push(
+                      <span key={key} className="admin-panel-pagination-dots">
+                        …
+                      </span>,
+                    );
+                  };
+
+                  if (totalStudentPages <= 7) {
+                    for (let page = 1; page <= totalStudentPages; page++) {
+                      addPage(page);
+                    }
+                  } else {
+                    addPage(1);
+
+                    if (studentPage > 4) {
+                      addDots("dots-start");
+                    }
+
+                    const startPage = Math.max(2, studentPage - 1);
+                    const endPage = Math.min(
+                      totalStudentPages - 1,
+                      studentPage + 1,
+                    );
+
+                    for (let page = startPage; page <= endPage; page++) {
+                      if (page !== 1 && page !== totalStudentPages) {
+                        addPage(page);
+                      }
+                    }
+
+                    if (studentPage < totalStudentPages - 3) {
+                      addDots("dots-end");
+                    }
+
+                    addPage(totalStudentPages);
+                  }
+
+                  return pages;
+                })()}
               </div>
 
               <button
