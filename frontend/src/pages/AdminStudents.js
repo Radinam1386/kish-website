@@ -174,6 +174,7 @@ function AdminStudents() {
             username: user.username,
             name: getFullName(user),
             phone: user.phone_number || "-",
+            parentPhone : user.parentPhone,
             className,
             classId,
             tuitionStatus,
@@ -516,7 +517,7 @@ function AdminStudents() {
                           <td data-label="شماره موبایل">
                             <span className="admin-students-x7k2-phone">
                               <Phone size={15} />
-                              {student.phone}
+                              {student.parentPhone}
                             </span>
                           </td>
 
