@@ -1145,8 +1145,10 @@ function AdminStudentDetails() {
                 <h2>{studentName}</h2>
 
                 <div className="admin-student-details-x9p4-subtitle">
-                  <span>نام کاربری: {studentUser.username}</span>
-
+                  <span>
+                    نام کاربری:
+                    {studentUser.parent_phone || studentUser.username || "-"}
+                  </span>
                   <span className="admin-student-details-x9p4-dot">•</span>
 
                   <span>
@@ -1507,7 +1509,7 @@ function AdminStudentDetails() {
                 <span>شماره تماس والدین</span>
 
                 <strong className="admin-student-details-x9p4-phone">
-                  {studentUser.phone_number || "-"}
+                  {studentUser.parent_phone || "-"}
                 </strong>
               </div>
             </div>

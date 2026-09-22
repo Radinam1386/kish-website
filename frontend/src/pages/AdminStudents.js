@@ -97,7 +97,7 @@ function AdminStudents() {
     const studentDisplayName = student.name || student.username;
     if (
       !window.confirm(
-        `آیا از حذف کامل پرونده دانش‌آموز «${studentDisplayName}» اطمینان دارید؟ تمامی اطلاعات، سوابق، نمرات و ثبت‌نام‌های این دانش‌آموز حذف خواهند شد.`
+        `آیا از حذف کامل پرونده دانش‌آموز «${studentDisplayName}» اطمینان دارید؟ تمامی اطلاعات، سوابق، نمرات و ثبت‌نام‌های این دانش‌آموز حذف خواهند شد.`,
       )
     ) {
       return;
@@ -109,7 +109,8 @@ function AdminStudents() {
       setEnrollments((prev) =>
         prev.filter(
           (e) =>
-            (e.student === student.id || e.student?.id === student.id) === false,
+            (e.student === student.id || e.student?.id === student.id) ===
+            false,
         ),
       );
       setSuccessMsg(`دانش‌آموز «${studentDisplayName}» با موفقیت حذف شد.`);
@@ -174,7 +175,7 @@ function AdminStudents() {
             username: user.username,
             name: getFullName(user),
             phone: user.phone_number || "-",
-            parentPhone : user.parentPhone,
+            parentPhone: user.parentPhone,
             className,
             classId,
             tuitionStatus,
@@ -541,7 +542,10 @@ function AdminStudents() {
                               <Link
                                 to={`/panel/${menuType}/students/${student.id}`}
                               >
-                                <AnimatedButton variant="secondary" size="small">
+                                <AnimatedButton
+                                  variant="secondary"
+                                  size="small"
+                                >
                                   <Eye size={16} />
                                   مشاهده
                                 </AnimatedButton>
@@ -591,11 +595,11 @@ function AdminStudents() {
 
                     <div className="admin-students-x7k2-card-details">
                       <div>
-                        <span>شماره موبایل</span>
+                        <span> شماره موبایل والدین</span>
 
                         <strong>
                           <Phone size={14} />
-                          {student.phone}
+                          {student.parentPhone}
                         </strong>
                       </div>
 
