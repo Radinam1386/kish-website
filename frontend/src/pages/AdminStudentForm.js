@@ -41,6 +41,7 @@ function AdminStudentForm() {
     nationalId: "",
     birthDate: "",
     phone: "",
+    parentPhone: "",
     email: "",
     address: "",
     username: "",
@@ -50,14 +51,50 @@ function AdminStudentForm() {
     status: "active",
   });
 
+  const normalizeDigits = (value) => {
+    if (!value) return "";
+
+    return String(value)
+      .replace(/[۰-۹]/g, (digit) =>
+        String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)),
+      )
+      .replace(/[٠-٩]/g, (digit) =>
+        String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)),
+      );
+  };
+
+  const normalizePhone = (value) => {
+    return normalizeDigits(value)
+      .replace(/\D/g, "")
+      .replace(/^98/, "0")
+      .replace(/^9(?=\d{9}$)/, "0$&");
+  };
+
+  const isValidIranianMobile = (value) => {
+    const phone = normalizePhone(value);
+    return /^09\d{9}$/.test(phone);
+  };
+
   const handleChange = (event) => {
     const { name, value } = event.target;
+
     if (databaseError) {
       setDatabaseError(null);
     }
+
+    let newValue = value;
+
+    if (name === "phone" || name === "parentPhone") {
+      newValue = normalizePhone(value);
+    }
+
+    if (name === "nationalId") {
+      newValue = normalizeDigits(value).replace(/\D/g, "").slice(0, 10);
+    }
+
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: newValue,
     }));
   };
 
@@ -67,25 +104,44 @@ function AdminStudentForm() {
     async function loadData() {
       try {
         setDatabaseError(null);
+
         const [classroomsData, termsData] = await Promise.all([
           api.classrooms.list(),
           api.terms.list(),
         ]);
 
         if (!alive) return;
+
         const activeTermIds = (termsData || [])
-          .filter((t) => t.is_active)
-          .map((t) => t.id);
-        const activeClasses = (classroomsData || []).filter(
-          (c) =>
+          .filter((term) => term.is_active)
+          .map((term) =>
+            typeof term.id === "string" ? Number(term.id) : term.id,
+          );
+
+        const activeClasses = (classroomsData || []).filter((classroom) => {
+          const classroomTermId =
+            typeof classroom.term === "object"
+              ? classroom.term?.id
+              : classroom.term;
+
+          return (
             activeTermIds.length === 0 ||
-            activeTermIds.includes(c.term || c.term?.id),
-        );
+            activeTermIds.includes(Number(classroomTermId))
+          );
+        });
+
         setClassrooms(activeClasses);
 
         if (id) {
           const user = await api.users.get(id);
+
           if (!alive) return;
+
+          const parentPhone = normalizePhone(
+            user.parent_phone || "",
+          );
+
+          const username = user.username || parentPhone;
 
           setFormData((prev) => ({
             ...prev,
@@ -93,11 +149,12 @@ function AdminStudentForm() {
             lastName: user.last_name || "",
             nationalId: user.national_code || "",
             birthDate: user.birth_date || "",
-            phone: user.phone_number || "",
+            phone: normalizePhone(user.phone_number || ""),
+            parentPhone,
             email: user.email || "",
             address: user.address || "",
             level: user.level || "",
-            username: user.username || "",
+            username,
             password: user.plain_password || "",
             confirmPassword: user.plain_password || "",
             status: user.is_active ? "active" : "inactive",
@@ -116,8 +173,40 @@ function AdminStudentForm() {
     };
   }, [id]);
 
+  const handleParentPhoneChange = (event) => {
+    const parentPhone = normalizePhone(event.target.value);
+
+    if (databaseError) {
+      setDatabaseError(null);
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      parentPhone,
+      username: parentPhone,
+      password: id ? prev.password : parentPhone,
+      confirmPassword: id ? prev.confirmPassword : parentPhone,
+    }));
+
+    setPasswordCopied(false);
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    const parentPhone = normalizePhone(formData.parentPhone);
+
+    if (!isValidIranianMobile(parentPhone)) {
+      alert(
+        "شماره تماس والدین نامعتبر است.\nشماره باید به صورت 09123456789 وارد شود.",
+      );
+      return;
+    }
+
+    if (!formData.firstName.trim() || !formData.lastName.trim()) {
+      alert("نام و نام خانوادگی را وارد کنید.");
+      return;
+    }
 
     if (
       formData.password &&
@@ -133,11 +222,12 @@ function AdminStudentForm() {
 
     try {
       const payload = {
-        username: formData.username,
-        first_name: formData.firstName,
-        last_name: formData.lastName,
+        username: parentPhone,
+        first_name: formData.firstName.trim(),
+        last_name: formData.lastName.trim(),
         email: formData.email,
         phone_number: formData.phone,
+        parent_phone: parentPhone,
         national_code: formData.nationalId,
         birth_date: formData.birthDate,
         address: formData.address,
@@ -146,7 +236,14 @@ function AdminStudentForm() {
         is_active: formData.status === "active",
       };
 
-      if (formData.password) {
+      /*
+       * برای دانش‌آموز جدید:
+       * username = شماره والدین
+       * password = شماره والدین
+       */
+      if (!id) {
+        payload.password = parentPhone;
+      } else if (formData.password) {
         payload.password = formData.password;
       }
 
@@ -155,7 +252,6 @@ function AdminStudentForm() {
       } else {
         const createdUser = await api.users.create(payload);
 
-        // Optionally enroll in selected class
         if (selectedClassId) {
           try {
             await api.enrollments.create({
@@ -224,7 +320,9 @@ function AdminStudentForm() {
 
     try {
       await navigator.clipboard.writeText(formData.password);
+
       setPasswordCopied(true);
+
       setTimeout(() => {
         setPasswordCopied(false);
       }, 1800);
@@ -250,7 +348,10 @@ function AdminStudentForm() {
           </Link>
         </div>
 
-        <form className="secretary-student-form" onSubmit={handleSubmit}>
+        <form
+          className="secretary-student-form"
+          onSubmit={handleSubmit}
+        >
           <section className="secretary-student-form-card">
             <div className="secretary-student-form-card-header">
               <div className="secretary-student-form-card-icon">
@@ -259,7 +360,9 @@ function AdminStudentForm() {
 
               <div>
                 <h2>اطلاعات شخصی</h2>
-                <p>اطلاعات هویتی و تاریخ تولد دانش‌آموز را وارد کنید.</p>
+                <p>
+                  اطلاعات هویتی و تاریخ تولد دانش‌آموز را وارد کنید.
+                </p>
               </div>
             </div>
 
@@ -268,6 +371,7 @@ function AdminStudentForm() {
                 <span>
                   نام <b>*</b>
                 </span>
+
                 <input
                   name="firstName"
                   value={formData.firstName}
@@ -281,6 +385,7 @@ function AdminStudentForm() {
                 <span>
                   نام خانوادگی <b>*</b>
                 </span>
+
                 <input
                   name="lastName"
                   value={formData.lastName}
@@ -292,6 +397,7 @@ function AdminStudentForm() {
 
               <label className="secretary-student-form-field">
                 <span>کد ملی</span>
+
                 <input
                   name="nationalId"
                   value={formData.nationalId}
@@ -306,31 +412,47 @@ function AdminStudentForm() {
                 <span>
                   شماره موبایل <b>*</b>
                 </span>
+
                 <input
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
                   placeholder="09123456789"
                   inputMode="tel"
+                  maxLength="11"
+                  dir="ltr"
                   required
                 />
               </label>
 
               <label className="secretary-student-form-field">
                 <span>
-                  شماره تماس والدین  <b>*</b>
+                  شماره تماس والدین <b>*</b>
                 </span>
+
                 <input
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
+                  name="parentPhone"
+                  value={formData.parentPhone}
+                  onChange={handleParentPhoneChange}
                   placeholder="09123456789"
                   inputMode="tel"
+                  maxLength="11"
+                  dir="ltr"
                   required
                 />
+
+                <small
+                  style={{
+                    color: "var(--muted, #64748b)",
+                    marginTop: "0.35rem",
+                    display: "block",
+                  }}
+                >
+                  نام کاربری و رمز ورود دانش‌آموز بر اساس این شماره تنظیم
+                  می‌شود.
+                </small>
               </label>
 
-              {/* Persian Date Picker for Birth Date */}
               <div
                 className="secretary-student-form-field full"
                 style={{ marginTop: "0.25rem" }}
@@ -339,7 +461,10 @@ function AdminStudentForm() {
                   label="تاریخ تولد (شمسی)"
                   value={formData.birthDate}
                   onChange={(iso, jalali) =>
-                    setFormData((prev) => ({ ...prev, birthDate: jalali }))
+                    setFormData((prev) => ({
+                      ...prev,
+                      birthDate: jalali,
+                    }))
                   }
                   minYear={1350}
                   maxYear={1410}
@@ -349,6 +474,7 @@ function AdminStudentForm() {
 
               <label className="secretary-student-form-field full">
                 <span>آدرس</span>
+
                 <textarea
                   name="address"
                   value={formData.address}
@@ -360,7 +486,6 @@ function AdminStudentForm() {
             </div>
           </section>
 
-          {/* Class Assignment (on creation) */}
           {!id && (
             <section className="secretary-student-form-card">
               <div className="secretary-student-form-card-header">
@@ -370,10 +495,13 @@ function AdminStudentForm() {
                 >
                   <BookOpen size={20} />
                 </div>
+
                 <div>
                   <h2>تعیین کلاس اولیه</h2>
+
                   <p>
-                    کلاس آموزشی ترم جاری را برای دانش‌آموز تعیین کنید (اختیاری)
+                    کلاس آموزشی ترم جاری را برای دانش‌آموز تعیین کنید
+                    (اختیاری)
                   </p>
                 </div>
               </div>
@@ -381,18 +509,24 @@ function AdminStudentForm() {
               <div className="secretary-student-form-grid">
                 <label className="secretary-student-form-field full">
                   <span>انتخاب کلاس آموزشی</span>
+
                   <select
                     value={selectedClassId}
-                    onChange={(e) => setSelectedClassId(e.target.value)}
+                    onChange={(e) =>
+                      setSelectedClassId(e.target.value)
+                    }
                   >
                     <option value="">
                       بدون کلاس فعلاً (بعداً در پرونده تعیین شود)
                     </option>
+
                     {classrooms.map((cls) => (
                       <option key={cls.id} value={cls.id}>
                         {cls.name} (شهریه:{" "}
                         {toPersianDigits(
-                          (cls.tuition_fee || 2500000).toLocaleString("fa-IR"),
+                          (
+                            cls.tuition_fee || 2500000
+                          ).toLocaleString("fa-IR"),
                         )}{" "}
                         تومان)
                       </option>
@@ -414,11 +548,14 @@ function AdminStudentForm() {
                       <input
                         type="checkbox"
                         checked={initialIsPaid}
-                        onChange={(e) => setInitialIsPaid(e.target.checked)}
+                        onChange={(e) =>
+                          setInitialIsPaid(e.target.checked)
+                        }
                       />
+
                       <span>
-                        شهریه این کلاس هم‌اکنون به صورت نقدی/کارتخوان در دفتر
-                        تسویه شد.
+                        شهریه این کلاس هم‌اکنون به صورت نقدی/کارتخوان
+                        در دفتر تسویه شد.
                       </span>
                     </label>
                   </div>
@@ -444,11 +581,12 @@ function AdminStudentForm() {
                 <span>
                   نام کاربری <b>*</b>
                 </span>
+
                 <input
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
-                  placeholder="مثلاً ali.mohammadi"
+                  placeholder="شماره والدین"
                   dir="ltr"
                   required
                 />
@@ -456,6 +594,7 @@ function AdminStudentForm() {
 
               <label className="secretary-student-form-field">
                 <span>ایمیل</span>
+
                 <input
                   type="email"
                   name="email"
@@ -468,6 +607,7 @@ function AdminStudentForm() {
 
               <label className="secretary-student-form-field">
                 <span>سطح زبان</span>
+
                 <select
                   name="level"
                   value={formData.level}
@@ -508,6 +648,7 @@ function AdminStudentForm() {
 
               <label className="secretary-student-form-field">
                 <span>وضعیت حساب</span>
+
                 <select
                   name="status"
                   value={formData.status}
@@ -538,10 +679,18 @@ function AdminStudentForm() {
                       <button
                         type="button"
                         className="secretary-student-form-icon-btn"
-                        onClick={() => setShowPassword((prev) => !prev)}
-                        title={showPassword ? "مخفی کردن رمز" : "نمایش رمز"}
+                        onClick={() =>
+                          setShowPassword((prev) => !prev)
+                        }
+                        title={
+                          showPassword
+                            ? "مخفی کردن رمز"
+                            : "نمایش رمز"
+                        }
                         aria-label={
-                          showPassword ? "مخفی کردن رمز" : "نمایش رمز"
+                          showPassword
+                            ? "مخفی کردن رمز"
+                            : "نمایش رمز"
                         }
                       >
                         {showPassword ? (
@@ -568,6 +717,7 @@ function AdminStudentForm() {
                       required
                     />
                   </div>
+
                   <div className="secretary-student-form-password-actions full">
                     <div className="secretary-student-form-password-tools-content">
                       <div className="secretary-student-form-password-tools-title">
@@ -579,14 +729,13 @@ function AdminStudentForm() {
                           <strong>ابزارهای رمز عبور</strong>
 
                           <span>
-                            برای امنیت بیشتر می‌توانید یک رمز قوی و تصادفی تولید
-                            کنید.
+                            برای امنیت بیشتر می‌توانید یک رمز قوی و
+                            تصادفی تولید کنید.
                           </span>
                         </div>
                       </div>
 
                       <div className="secretary-student-form-password-buttons">
-                        {/* Generate */}
                         <button
                           type="button"
                           className="secretary-student-form-action-btn generate"
@@ -601,7 +750,6 @@ function AdminStudentForm() {
                           </span>
                         </button>
 
-                        {/* Copy */}
                         <button
                           type="button"
                           className={`secretary-student-form-action-btn copy ${
@@ -620,7 +768,9 @@ function AdminStudentForm() {
 
                           <span className="secretary-student-form-action-text">
                             <strong>
-                              {passwordCopied ? "کپی شد" : "کپی رمز"}
+                              {passwordCopied
+                                ? "کپی شد"
+                                : "کپی رمز"}
                             </strong>
 
                             <small>
