@@ -54,18 +54,12 @@ function SecretaryStudentForm() {
     if (value === null || value === undefined) return "";
 
     return String(value)
-      .replace(/[۰-۹]/g, (digit) =>
-        String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)),
-      )
-      .replace(/[٠-٩]/g, (digit) =>
-        String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)),
-      );
+      .replace(/[۰-۹]/g, (digit) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)))
+      .replace(/[٠-٩]/g, (digit) => String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)));
   };
 
   const normalizePhone = (value) => {
-    let phone = normalizeDigits(value)
-      .trim()
-      .replace(/\D/g, "");
+    let phone = normalizeDigits(value).trim().replace(/\D/g, "");
 
     if (phone.startsWith("98") && phone.length === 12) {
       phone = "0" + phone.slice(2);
@@ -252,14 +246,9 @@ function SecretaryStudentForm() {
               is_paid: initialIsPaid,
             });
           } catch (enrollmentError) {
-            console.error(
-              "Enrollment creation error:",
-              enrollmentError,
-            );
+            console.error("Enrollment creation error:", enrollmentError);
 
-            alert(
-              "دانش‌آموز ثبت شد، اما اتصال او به کلاس با خطا مواجه شد.",
-            );
+            alert("دانش‌آموز ثبت شد، اما اتصال او به کلاس با خطا مواجه شد.");
           }
         }
       }
@@ -317,10 +306,7 @@ function SecretaryStudentForm() {
           </Link>
         </div>
 
-        <form
-          className="secretary-student-form"
-          onSubmit={handleSubmit}
-        >
+        <form className="secretary-student-form" onSubmit={handleSubmit}>
           <section className="secretary-student-form-card">
             <div className="secretary-student-form-card-header">
               <div className="secretary-student-form-card-icon">
@@ -329,9 +315,7 @@ function SecretaryStudentForm() {
 
               <div>
                 <h2>اطلاعات شخصی</h2>
-                <p>
-                  اطلاعات هویتی و مشخصات تماس دانش‌آموز را وارد کنید.
-                </p>
+                <p>اطلاعات هویتی و مشخصات تماس دانش‌آموز را وارد کنید.</p>
               </div>
             </div>
 
@@ -405,10 +389,7 @@ function SecretaryStudentForm() {
                   maxLength="11"
                   required
                   className={
-                    formData.parentPhone &&
-                    !parentPhoneIsValid
-                      ? "invalid"
-                      : ""
+                    formData.parentPhone && !parentPhoneIsValid ? "invalid" : ""
                   }
                 />
 
@@ -420,8 +401,8 @@ function SecretaryStudentForm() {
 
                 {parentPhoneIsValid && (
                   <small className="secretary-student-form-help-text">
-                    این شماره به صورت خودکار برای نام کاربری و رمز عبور
-                    استفاده می‌شود.
+                    این شماره به صورت خودکار برای نام کاربری و رمز عبور استفاده
+                    می‌شود.
                   </small>
                 )}
               </label>
@@ -473,8 +454,7 @@ function SecretaryStudentForm() {
                   <h2>تعیین کلاس اولیه</h2>
 
                   <p>
-                    کلاس آموزشی ترم جاری را برای دانش‌آموز تعیین کنید
-                    (اختیاری)
+                    کلاس آموزشی ترم جاری را برای دانش‌آموز تعیین کنید (اختیاری)
                   </p>
                 </div>
               </div>
@@ -485,9 +465,7 @@ function SecretaryStudentForm() {
 
                   <select
                     value={selectedClassId}
-                    onChange={(event) =>
-                      setSelectedClassId(event.target.value)
-                    }
+                    onChange={(event) => setSelectedClassId(event.target.value)}
                   >
                     <option value="">
                       بدون کلاس فعلاً (بعداً در پرونده تعیین شود)
@@ -497,9 +475,9 @@ function SecretaryStudentForm() {
                       <option key={cls.id} value={cls.id}>
                         {cls.name} (شهریه:{" "}
                         {toPersianDigits(
-                          Number(
-                            cls.tuition_fee || 2500000,
-                          ).toLocaleString("fa-IR"),
+                          Number(cls.tuition_fee || 2500000).toLocaleString(
+                            "fa-IR",
+                          ),
                         )}{" "}
                         تومان)
                       </option>
@@ -527,8 +505,8 @@ function SecretaryStudentForm() {
                       />
 
                       <span>
-                        شهریه این کلاس هم‌اکنون به صورت نقدی/کارتخوان
-                        در دفتر تسویه شد.
+                        شهریه این کلاس هم‌اکنون به صورت نقدی/کارتخوان در دفتر
+                        تسویه شد.
                       </span>
                     </label>
                   </div>
@@ -546,9 +524,7 @@ function SecretaryStudentForm() {
               <div>
                 <h2>اطلاعات حساب کاربری</h2>
 
-                <p>
-                  اطلاعات ورود دانش‌آموز به پنل شخصی
-                </p>
+                <p>اطلاعات ورود دانش‌آموز به پنل شخصی</p>
               </div>
             </div>
 
@@ -594,15 +570,54 @@ function SecretaryStudentForm() {
                   onChange={handleChange}
                 >
                   <option value="">انتخاب سطح</option>
-                  <option value="Elementary">Elementary</option>
-                  <option value="Pre-Intermediate">
-                    Pre-Intermediate
-                  </option>
-                  <option value="Intermediate">Intermediate</option>
-                  <option value="Upper-Intermediate">
-                    Upper-Intermediate
-                  </option>
-                  <option value="Advanced">Advanced</option>
+                  <option value="fam1.1">fam1.1</option>
+                  <option value="fam1.2">fam1.2</option>
+                  <option value="fam1.3">fam1.3</option>
+                  <option value="fam1.4">fam1.4</option>
+                  <option value="hip1.1">hip1.1</option>
+                  <option value="hip1.2">hip1.2</option>
+                  <option value="hip2.1">hip2.1</option>
+                  <option value="hip2.2">hip2.2</option>
+                  <option value="hip2.1">hip3.1</option>
+                  <option value="hip2.2">hip3.2</option>
+                  <option value="hip2.1">hip4.1</option>
+                  <option value="hip2.2">hip4.2</option>
+                  <option value="hip2.1">hip5.1</option>
+                  <option value="hip2.2">hip5.2</option>
+                  <option value="con1.1">con1.1</option>
+                  <option value="con1.2">con1.2</option>
+                  <option value="con1.3">con1.3</option>
+                  <option value="con2.1">con2.1</option>
+                  <option value="con2.2">con2.2</option>
+                  <option value="con2.3">con2.3</option>
+                  <option value="con3.1">con3.1</option>
+                  <option value="con3.2">con3.2</option>
+                  <option value="con3.3">con3.3</option>
+                  <option value="top1.1">top1.1</option>
+                  <option value="top1.2">top1.2</option>
+                  <option value="top1.3">top1.3</option>
+                  <option value="top1.4">top1.4</option>
+                  <option value="top2.1">top2.1</option>
+                  <option value="top2.2">top2.2</option>
+                  <option value="top2.3">top2.3</option>
+                  <option value="top2.4">top2.4</option>
+                  <option value="top3.1">top3.1</option>
+                  <option value="top3.2">top3.2</option>
+                  <option value="top3.3">top3.3</option>
+                  <option value="top3.4">top3.4</option>
+                  <option value="sum1.1">sum1.1</option>
+                  <option value="sum1.2">sum1.2</option>
+                  <option value="sum1.3">sum1.3</option>
+                  <option value="sum1.4">sum1.4</option>
+                  <option value="sum2.1">sum2.1</option>
+                  <option value="sum2.2">sum2.2</option>
+                  <option value="sum2.3">sum2.3</option>
+                  <option value="sum2.4">sum2.4</option>
+                  <option value="fce1">fce1</option>
+                  <option value="fce2">fce2</option>
+                  <option value="fce3">fce3</option>
+                  <option value="fce4">fce4</option>
+                  <option value="IELTS1">IELTS1</option>
                 </select>
               </label>
 
@@ -637,20 +652,10 @@ function SecretaryStudentForm() {
                   <button
                     type="button"
                     className="secretary-student-form-icon-btn"
-                    onClick={() =>
-                      setShowPassword((prev) => !prev)
-                    }
-                    title={
-                      showPassword
-                        ? "مخفی کردن"
-                        : "نمایش رمز"
-                    }
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    title={showPassword ? "مخفی کردن" : "نمایش رمز"}
                   >
-                    {showPassword ? (
-                      <EyeOff size={16} />
-                    ) : (
-                      <Eye size={16} />
-                    )}
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
 
@@ -679,13 +684,11 @@ function SecretaryStudentForm() {
                     </div>
 
                     <div>
-                      <strong>
-                        اطلاعات ورود دانش‌آموز
-                      </strong>
+                      <strong>اطلاعات ورود دانش‌آموز</strong>
 
                       <span>
-                        نام کاربری و رمز عبور به صورت خودکار از
-                        شماره تماس والدین تعیین می‌شوند.
+                        نام کاربری و رمز عبور به صورت خودکار از شماره تماس
+                        والدین تعیین می‌شوند.
                       </span>
                     </div>
                   </div>
@@ -709,9 +712,7 @@ function SecretaryStudentForm() {
 
                       <span className="secretary-student-form-action-text">
                         <strong>
-                          {passwordCopied
-                            ? "کپی شد"
-                            : "کپی اطلاعات ورود"}
+                          {passwordCopied ? "کپی شد" : "کپی اطلاعات ورود"}
                         </strong>
 
                         <small>

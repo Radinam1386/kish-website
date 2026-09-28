@@ -97,8 +97,7 @@ function AdminStudentForm() {
               : classroom.term;
 
           return (
-            activeTermIds.length === 0 ||
-            activeTermIds.includes(Number(termId))
+            activeTermIds.length === 0 || activeTermIds.includes(Number(termId))
           );
         });
 
@@ -234,10 +233,7 @@ function AdminStudentForm() {
               is_paid: initialIsPaid,
             });
           } catch (enrollmentError) {
-            console.error(
-              "Enrollment creation failed:",
-              enrollmentError,
-            );
+            console.error("Enrollment creation failed:", enrollmentError);
 
             /*
              * خود ثبت دانش‌آموز موفق بوده،
@@ -369,9 +365,7 @@ function AdminStudentForm() {
 
               <div>
                 <h2>اطلاعات شخصی</h2>
-                <p>
-                  اطلاعات هویتی و اطلاعات تماس دانش‌آموز را وارد کنید.
-                </p>
+                <p>اطلاعات هویتی و اطلاعات تماس دانش‌آموز را وارد کنید.</p>
               </div>
             </div>
 
@@ -445,9 +439,7 @@ function AdminStudentForm() {
                   dir="ltr"
                 />
 
-                <small>
-                  برای خواهر و برادر می‌تواند یکسان باشد.
-                </small>
+                <small>برای خواهر و برادر می‌تواند یکسان باشد.</small>
               </label>
 
               <div
@@ -499,8 +491,7 @@ function AdminStudentForm() {
                   <h2>تعیین کلاس اولیه</h2>
 
                   <p>
-                    کلاس آموزشی ترم جاری را برای دانش‌آموز تعیین کنید
-                    (اختیاری)
+                    کلاس آموزشی ترم جاری را برای دانش‌آموز تعیین کنید (اختیاری)
                   </p>
                 </div>
               </div>
@@ -511,9 +502,7 @@ function AdminStudentForm() {
 
                   <select
                     value={selectedClassId}
-                    onChange={(event) =>
-                      setSelectedClassId(event.target.value)
-                    }
+                    onChange={(event) => setSelectedClassId(event.target.value)}
                   >
                     <option value="">
                       بدون کلاس فعلاً (بعداً در پرونده تعیین شود)
@@ -521,12 +510,9 @@ function AdminStudentForm() {
 
                     {classrooms.map((cls) => (
                       <option key={cls.id} value={cls.id}>
-                        {cls.name}{" "}
-                        (شهریه:{" "}
+                        {cls.name} (شهریه:{" "}
                         {toPersianDigits(
-                          (cls.tuition_fee || 2500000).toLocaleString(
-                            "fa-IR",
-                          ),
+                          (cls.tuition_fee || 2500000).toLocaleString("fa-IR"),
                         )}{" "}
                         تومان)
                       </option>
@@ -554,8 +540,8 @@ function AdminStudentForm() {
                       />
 
                       <span>
-                        شهریه این کلاس هم‌اکنون به صورت نقدی/کارتخوان
-                        در دفتر تسویه شد.
+                        شهریه این کلاس هم‌اکنون به صورت نقدی/کارتخوان در دفتر
+                        تسویه شد.
                       </span>
                     </label>
                   </div>
@@ -575,9 +561,7 @@ function AdminStudentForm() {
               <div>
                 <h2>اطلاعات حساب کاربری</h2>
 
-                <p>
-                  اطلاعات ورود دانش‌آموز به پنل شخصی
-                </p>
+                <p>اطلاعات ورود دانش‌آموز به پنل شخصی</p>
               </div>
             </div>
 
@@ -597,9 +581,7 @@ function AdminStudentForm() {
                   required
                 />
 
-                <small>
-                  نام کاربری باید برای هر دانش‌آموز یکتا باشد.
-                </small>
+                <small>نام کاربری باید برای هر دانش‌آموز یکتا باشد.</small>
               </label>
 
               <label className="secretary-student-form-field">
@@ -625,17 +607,54 @@ function AdminStudentForm() {
                   onChange={handleChange}
                 >
                   <option value="">انتخاب سطح</option>
-                  <option value="Elementary">Elementary</option>
-                  <option value="Pre-Intermediate">
-                    Pre-Intermediate
-                  </option>
-                  <option value="Intermediate">
-                    Intermediate
-                  </option>
-                  <option value="Upper-Intermediate">
-                    Upper-Intermediate
-                  </option>
-                  <option value="Advanced">Advanced</option>
+                  <option value="fam1.1">fam1.1</option>
+                  <option value="fam1.2">fam1.2</option>
+                  <option value="fam1.3">fam1.3</option>
+                  <option value="fam1.4">fam1.4</option>
+                  <option value="hip1.1">hip1.1</option>
+                  <option value="hip1.2">hip1.2</option>
+                  <option value="hip2.1">hip2.1</option>
+                  <option value="hip2.2">hip2.2</option>
+                  <option value="hip2.1">hip3.1</option>
+                  <option value="hip2.2">hip3.2</option>
+                  <option value="hip2.1">hip4.1</option>
+                  <option value="hip2.2">hip4.2</option>
+                  <option value="hip2.1">hip5.1</option>
+                  <option value="hip2.2">hip5.2</option>
+                  <option value="con1.1">con1.1</option>
+                  <option value="con1.2">con1.2</option>
+                  <option value="con1.3">con1.3</option>
+                  <option value="con2.1">con2.1</option>
+                  <option value="con2.2">con2.2</option>
+                  <option value="con2.3">con2.3</option>
+                  <option value="con3.1">con3.1</option>
+                  <option value="con3.2">con3.2</option>
+                  <option value="con3.3">con3.3</option>
+                  <option value="top1.1">top1.1</option>
+                  <option value="top1.2">top1.2</option>
+                  <option value="top1.3">top1.3</option>
+                  <option value="top1.4">top1.4</option>
+                  <option value="top2.1">top2.1</option>
+                  <option value="top2.2">top2.2</option>
+                  <option value="top2.3">top2.3</option>
+                  <option value="top2.4">top2.4</option>
+                  <option value="top3.1">top3.1</option>
+                  <option value="top3.2">top3.2</option>
+                  <option value="top3.3">top3.3</option>
+                  <option value="top3.4">top3.4</option>
+                  <option value="sum1.1">sum1.1</option>
+                  <option value="sum1.2">sum1.2</option>
+                  <option value="sum1.3">sum1.3</option>
+                  <option value="sum1.4">sum1.4</option>
+                  <option value="sum2.1">sum2.1</option>
+                  <option value="sum2.2">sum2.2</option>
+                  <option value="sum2.3">sum2.3</option>
+                  <option value="sum2.4">sum2.4</option>
+                  <option value="fce1">fce1</option>
+                  <option value="fce2">fce2</option>
+                  <option value="fce3">fce3</option>
+                  <option value="fce4">fce4</option>
+                  <option value="IELTS1">IELTS1</option>
                 </select>
               </label>
 
@@ -661,11 +680,7 @@ function AdminStudentForm() {
 
                     <div className="secretary-student-form-password-wrapper">
                       <input
-                        type={
-                          showPassword
-                            ? "text"
-                            : "password"
-                        }
+                        type={showPassword ? "text" : "password"}
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
@@ -677,20 +692,10 @@ function AdminStudentForm() {
                       <button
                         type="button"
                         className="secretary-student-form-icon-btn"
-                        onClick={() =>
-                          setShowPassword(
-                            (prev) => !prev,
-                          )
-                        }
-                        title={
-                          showPassword
-                            ? "مخفی کردن رمز"
-                            : "نمایش رمز"
-                        }
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        title={showPassword ? "مخفی کردن رمز" : "نمایش رمز"}
                         aria-label={
-                          showPassword
-                            ? "مخفی کردن رمز"
-                            : "نمایش رمز"
+                          showPassword ? "مخفی کردن رمز" : "نمایش رمز"
                         }
                       >
                         {showPassword ? (
@@ -708,11 +713,7 @@ function AdminStudentForm() {
                     </span>
 
                     <input
-                      type={
-                        showPassword
-                          ? "text"
-                          : "password"
-                      }
+                      type={showPassword ? "text" : "password"}
                       name="confirmPassword"
                       value={formData.confirmPassword}
                       onChange={handleChange}
@@ -731,13 +732,10 @@ function AdminStudentForm() {
                         </div>
 
                         <div>
-                          <strong>
-                            ابزارهای رمز عبور
-                          </strong>
+                          <strong>ابزارهای رمز عبور</strong>
 
                           <span>
-                            برای امنیت بیشتر می‌توانید
-                            یک رمز قوی و تصادفی تولید
+                            برای امنیت بیشتر می‌توانید یک رمز قوی و تصادفی تولید
                             کنید.
                           </span>
                         </div>
@@ -754,23 +752,17 @@ function AdminStudentForm() {
                           </span>
 
                           <span className="secretary-student-form-action-text">
-                            <strong>
-                              تولید رمز امن
-                            </strong>
+                            <strong>تولید رمز امن</strong>
                           </span>
                         </button>
 
                         <button
                           type="button"
                           className={`secretary-student-form-action-btn copy ${
-                            passwordCopied
-                              ? "copied"
-                              : ""
+                            passwordCopied ? "copied" : ""
                           }`}
                           onClick={copyPassword}
-                          disabled={
-                            !formData.password
-                          }
+                          disabled={!formData.password}
                         >
                           <span className="secretary-student-form-action-icon">
                             {passwordCopied ? (
@@ -782,9 +774,7 @@ function AdminStudentForm() {
 
                           <span className="secretary-student-form-action-text">
                             <strong>
-                              {passwordCopied
-                                ? "کپی شد"
-                                : "کپی رمز"}
+                              {passwordCopied ? "کپی شد" : "کپی رمز"}
                             </strong>
 
                             <small>
@@ -805,9 +795,7 @@ function AdminStudentForm() {
           {databaseError && (
             <DatabaseErrorHandler
               error={databaseError}
-              onClose={() =>
-                setDatabaseError(null)
-              }
+              onClose={() => setDatabaseError(null)}
             />
           )}
 
