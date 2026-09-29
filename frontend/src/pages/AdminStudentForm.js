@@ -439,7 +439,6 @@ function AdminStudentForm() {
                   dir="ltr"
                 />
 
-                <small>برای خواهر و برادر می‌تواند یکسان باشد.</small>
               </label>
 
               <div
