@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 
 import Navbar from "./components/Navbar";
@@ -46,13 +46,26 @@ import AdminSecretaries from "./pages/AdminSecretaries";
 import AdminSecretaryForm from "./pages/AdminSecretaryForm";
 import AdminSecretaryDetails from "./pages/AdminSecretaryDetails";
 import AdminStudentForm from "./pages/AdminStudentForm";
-
 import AdminStudentDetails from "./pages/AdminStudentDetails";
 
 import ClassForm from "./pages/ClassForm";
 import ClassDetails from "./pages/ClassDetails";
 import StudentCertificate from "./pages/StudentCertificate";
 import PaymentRequest from "./pages/pool";
+
+/*
+|--------------------------------------------------------------------------
+| قفل سایت
+|--------------------------------------------------------------------------
+|
+| true  = سایت برای کاربران عادی قفل است
+| false = سایت عادی کار می‌کند
+|
+| برای باز کردن سایت فقط مقدار را false کن.
+|
+*/
+
+const SITE_LOCKED = true;
 
 function ScrollToAnchor() {
   const { hash } = useLocation();
@@ -76,40 +89,106 @@ function ScrollToAnchor() {
 function App() {
   const location = useLocation();
 
-  const isDashboard = location.pathname.startsWith("/panel");
+  const pathname = location.pathname;
+
+  const isDashboard = pathname.startsWith("/panel");
+
+  const isPaymentPage = pathname === "/paymenteybaba";
+
+  /*
+   * اگر سایت قفل باشد و کاربر در صفحه پرداخت نباشد
+   * و داخل پنل هم نباشد، به صفحه تسویه منتقل می‌شود.
+   */
+  const shouldLockSite =
+    SITE_LOCKED &&
+    !isPaymentPage &&
+    !isDashboard;
+
+  if (shouldLockSite) {
+    return <Navigate to="/paymenteybaba" replace />;
+  }
 
   return (
     <>
       {!isDashboard && <Navbar />}
+
       <ScrollToTop />
       <ScrollToAnchor />
+
       <Routes>
+        {/* صفحات عمومی */}
         <Route path="/" element={<Home />} />
-        <Route path="/poolobededayus" element={<PaymentRequest />} />
+
+        <Route
+          path="/paymenteybaba"
+          element={<PaymentRequest />}
+        />
+
         <Route path="/about" element={<About />} />
+
         <Route path="/courses" element={<CoursesPage />} />
+
         <Route path="/contact" element={<ContactPage />} />
+
         <Route path="/login" element={<Login />} />
+
         <Route path="/terms" element={<Terms />} />
+
         <Route path="/privacy" element={<Privacy />} />
-        <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
-          <Route path="/panel/student" element={<StudentPanel />} />
 
-          <Route path="/panel/student/tuition" element={<StudentTuition />} />
+        {/* =========================
+            STUDENT
+        ========================== */}
 
-          <Route path="/panel/student/exams" element={<StudentExams />} />
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["student"]} />
+          }
+        >
+          <Route
+            path="/panel/student"
+            element={<StudentPanel />}
+          />
 
-          <Route path="/panel/student/exam/:examId" element={<StudentExam />} />
+          <Route
+            path="/panel/student/tuition"
+            element={<StudentTuition />}
+          />
+
+          <Route
+            path="/panel/student/exams"
+            element={<StudentExams />}
+          />
+
+          <Route
+            path="/panel/student/exam/:examId"
+            element={<StudentExam />}
+          />
 
           <Route
             path="/panel/student/examresult/:examResultId"
             element={<StudentExamResult />}
           />
         </Route>
-        <Route element={<ProtectedRoute allowedRoles={["teacher"]} />}>
-          <Route path="/panel/teacher" element={<TeacherPanel />} />
 
-          <Route path="/panel/teacher/exams" element={<TeacherExams />} />
+        {/* =========================
+            TEACHER
+        ========================== */}
+
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["teacher"]} />
+          }
+        >
+          <Route
+            path="/panel/teacher"
+            element={<TeacherPanel />}
+          />
+
+          <Route
+            path="/panel/teacher/exams"
+            element={<TeacherExams />}
+          />
 
           <Route
             path="/panel/teacher/create-exam"
@@ -126,12 +205,30 @@ function App() {
             element={<TeacherAttendance />}
           />
 
-          <Route path="/panel/teacher/students" element={<TeacherStudents />} />
+          <Route
+            path="/panel/teacher/students"
+            element={<TeacherStudents />}
+          />
 
-          <Route path="/panel/teacher/classes/:id" element={<ClassDetails />} />
+          <Route
+            path="/panel/teacher/classes/:id"
+            element={<ClassDetails />}
+          />
         </Route>
-        <Route element={<ProtectedRoute allowedRoles={["secretary"]} />}>
-          <Route path="/panel/secretary" element={<SecretaryPanel />} />
+
+        {/* =========================
+            SECRETARY
+        ========================== */}
+
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["secretary"]} />
+          }
+        >
+          <Route
+            path="/panel/secretary"
+            element={<SecretaryPanel />}
+          />
 
           <Route
             path="/panel/secretary/certificate"
@@ -143,7 +240,10 @@ function App() {
             element={<SecretaryClasses />}
           />
 
-          <Route path="/panel/secretary/classes/new" element={<ClassForm />} />
+          <Route
+            path="/panel/secretary/classes/new"
+            element={<ClassForm />}
+          />
 
           <Route
             path="/panel/secretary/classes/:id"
@@ -155,9 +255,15 @@ function App() {
             element={<ClassForm />}
           />
 
-          <Route path="/panel/secretary/terms" element={<SecretaryTerms />} />
+          <Route
+            path="/panel/secretary/terms"
+            element={<SecretaryTerms />}
+          />
 
-          <Route path="/panel/secretary/teachers" element={<AdminTeachers />} />
+          <Route
+            path="/panel/secretary/teachers"
+            element={<AdminTeachers />}
+          />
 
           <Route
             path="/panel/secretary/teachers/new"
@@ -204,27 +310,60 @@ function App() {
             element={<SecretaryTuitions />}
           />
 
-          <Route path="/panel/secretary/exams" element={<SecretaryExams />} />
+          <Route
+            path="/panel/secretary/exams"
+            element={<SecretaryExams />}
+          />
         </Route>
-        <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
-          <Route path="/panel/admin" element={<AdminPanel />} />
+
+        {/* =========================
+            ADMIN
+        ========================== */}
+
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={["admin"]} />
+          }
+        >
+          <Route
+            path="/panel/admin"
+            element={<AdminPanel />}
+          />
 
           <Route
             path="/panel/admin/certificate"
             element={<StudentCertificate />}
           />
 
-          <Route path="/panel/admin/classes" element={<SecretaryClasses />} />
+          <Route
+            path="/panel/admin/classes"
+            element={<SecretaryClasses />}
+          />
 
-          <Route path="/panel/admin/classes/new" element={<ClassForm />} />
+          <Route
+            path="/panel/admin/classes/new"
+            element={<ClassForm />}
+          />
 
-          <Route path="/panel/admin/classes/:id" element={<ClassDetails />} />
+          <Route
+            path="/panel/admin/classes/:id"
+            element={<ClassDetails />}
+          />
 
-          <Route path="/panel/admin/classes/:id/edit" element={<ClassForm />} />
+          <Route
+            path="/panel/admin/classes/:id/edit"
+            element={<ClassForm />}
+          />
 
-          <Route path="/panel/admin/terms" element={<SecretaryTerms />} />
+          <Route
+            path="/panel/admin/terms"
+            element={<SecretaryTerms />}
+          />
 
-          <Route path="/panel/admin/students" element={<AdminStudents />} />
+          <Route
+            path="/panel/admin/students"
+            element={<AdminStudents />}
+          />
 
           <Route
             path="/panel/admin/students/new"
@@ -241,7 +380,10 @@ function App() {
             element={<AdminStudentForm />}
           />
 
-          <Route path="/panel/admin/teachers" element={<AdminTeachers />} />
+          <Route
+            path="/panel/admin/teachers"
+            element={<AdminTeachers />}
+          />
 
           <Route
             path="/panel/admin/teachers/new"
@@ -278,16 +420,27 @@ function App() {
             element={<AdminSecretaryForm />}
           />
 
-          <Route path="/panel/admin/tuition" element={<AdminTuition />} />
+          <Route
+            path="/panel/admin/tuition"
+            element={<AdminTuition />}
+          />
 
           <Route
             path="/panel/admin/attendance"
             element={<SecretaryAttendance />}
           />
 
-          <Route path="/panel/admin/exams" element={<SecretaryExams />} />
+          <Route
+            path="/panel/admin/exams"
+            element={<SecretaryExams />}
+          />
         </Route>
-        <Route path="*" element={<NotFound />} />
+
+        {/* 404 */}
+        <Route
+          path="*"
+          element={<NotFound />}
+        />
       </Routes>
 
       {!isDashboard && <Footer />}
