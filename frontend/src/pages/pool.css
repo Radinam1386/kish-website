@@ -270,7 +270,8 @@
 
 @media (max-width: 800px) {
   .payment-page {
-    padding: 20px 14px;
+    padding: 100px 14px;
+
   }
 
   .payment-hero {
