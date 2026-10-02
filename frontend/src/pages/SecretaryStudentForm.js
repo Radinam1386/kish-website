@@ -6,6 +6,7 @@ import {
   Eye,
   EyeOff,
   Lock,
+  RefreshCw,
   Save,
   UserRound,
   BookOpen,
@@ -102,19 +103,10 @@ function SecretaryStudentForm() {
       setDatabaseError(null);
     }
 
-    setFormData((prev) => {
-      const nextParentPhone = normalizePhone(value);
-
-      return {
-        ...prev,
-        parentPhone: value,
-        username: nextParentPhone,
-        password: nextParentPhone,
-        confirmPassword: nextParentPhone,
-      };
-    });
-
-    setPasswordCopied(false);
+    setFormData((prev) => ({
+      ...prev,
+      parentPhone: value,
+    }));
   };
 
   useEffect(() => {
@@ -133,19 +125,21 @@ function SecretaryStudentForm() {
 
         const activeTermIds = (termsData || [])
           .filter((term) => term.is_active)
-          .map((term) => term.id);
+          .map((term) => Number(term.id));
 
-        const activeClasses = (classroomsData || []).filter((classroom) => {
-          const classroomTermId =
-            typeof classroom.term === "object"
-              ? classroom.term?.id
-              : classroom.term;
+        const activeClasses = (classroomsData || []).filter(
+          (classroom) => {
+            const classroomTermId =
+              typeof classroom.term === "object"
+                ? classroom.term?.id
+                : classroom.term;
 
-          return (
-            activeTermIds.length === 0 ||
-            activeTermIds.includes(classroomTermId)
-          );
-        });
+            return (
+              activeTermIds.length === 0 ||
+              activeTermIds.includes(Number(classroomTermId))
+            );
+          },
+        );
 
         setClassrooms(activeClasses);
 
@@ -154,27 +148,31 @@ function SecretaryStudentForm() {
 
           if (!alive) return;
 
-          const parentPhone = normalizePhone(user.parent_phone || "");
-
           setFormData({
             firstName: user.first_name || "",
             lastName: user.last_name || "",
             nationalId: user.national_code || "",
             birthDate: user.birth_date || "",
             phone: user.phone_number || "",
-            parentPhone,
+            parentPhone: normalizePhone(user.parent_phone || ""),
             email: user.email || "",
             address: user.address || "",
+
+            // مهم:
+            // username از username واقعی User گرفته می‌شود.
+            // دیگر از parent_phone پر نمی‌شود.
+            username: user.username || "",
+
+            password: user.plain_password || "",
+            confirmPassword: user.plain_password || "",
             level: user.level || "",
-            username: parentPhone || user.username || "",
-            password: parentPhone || user.plain_password || "",
-            confirmPassword: parentPhone || user.plain_password || "",
             status: user.is_active ? "active" : "inactive",
           });
         }
       } catch (error) {
         if (!alive) return;
 
+        console.error("Secretary student loading error:", error);
         setDatabaseError(error);
       }
     }
@@ -189,12 +187,27 @@ function SecretaryStudentForm() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    if (submitting) return;
+
     const parentPhone = normalizePhone(formData.parentPhone);
+    const phone = normalizePhone(formData.phone);
+    const username = String(formData.username || "").trim();
 
     if (!isValidIranianMobile(parentPhone)) {
       alert(
-        "شماره تماس والدین معتبر نیست.\n\nشماره باید به صورت 09xxxxxxxxx وارد شود.",
+        "شماره تماس والدین معتبر نیست.\n\n" +
+          "شماره باید به صورت 09xxxxxxxxx وارد شود.",
       );
+      return;
+    }
+
+    if (!username) {
+      alert("لطفاً نام کاربری را وارد کنید.");
+      return;
+    }
+
+    if (!id && !formData.password) {
+      alert("لطفاً رمز عبور را وارد کنید.");
       return;
     }
 
@@ -212,38 +225,63 @@ function SecretaryStudentForm() {
 
     try {
       /*
-       * سیاست حساب دانش‌آموز:
+       * username کاملاً مستقل از parent_phone است.
        *
-       * username = parent_phone
-       * password = parent_phone
+       * مثال:
        *
-       * شماره والدین منبع اصلی اطلاعات ورود است.
+       * فرزند اول:
+       * username = 09121234567
+       *
+       * فرزند دوم:
+       * username = 09121234567-2
+       *
+       * parent_phone هر دو:
+       * 09121234567
        */
+
       const payload = {
-        username: parentPhone,
-        password: parentPhone,
+        username,
 
-        first_name: formData.firstName.trim(),
-        last_name: formData.lastName.trim(),
+        first_name: String(formData.firstName || "").trim(),
+        last_name: String(formData.lastName || "").trim(),
 
-        email: formData.email.trim(),
-        phone_number: normalizePhone(formData.phone),
+        email: String(formData.email || "").trim(),
+
+        phone_number: phone,
         parent_phone: parentPhone,
 
-        national_code: normalizeDigits(formData.nationalId).trim(),
-        birth_date: formData.birthDate,
-        address: formData.address,
+        national_code: normalizeDigits(
+          formData.nationalId,
+        ).trim(),
 
-        level: formData.level,
+        birth_date: formData.birthDate || "",
+
+        address: String(formData.address || "").trim(),
+
+        level: formData.level || "",
+
         role: "student",
+
         is_active: formData.status === "active",
       };
+
+      /*
+       * فقط اگر رمز وارد شده باشد ارسال می‌شود.
+       */
+      if (formData.password) {
+        payload.password = formData.password;
+      }
+
+      console.log("Secretary student payload:", payload);
 
       if (id) {
         await api.users.update(id, payload);
       } else {
         const createdUser = await api.users.create(payload);
 
+        /*
+         * ثبت کلاس اولیه
+         */
         if (selectedClassId) {
           try {
             await api.enrollments.create({
@@ -258,7 +296,9 @@ function SecretaryStudentForm() {
             );
 
             alert(
-              "دانش‌آموز ثبت شد، اما اتصال او به کلاس با خطا مواجه شد.",
+              "دانش‌آموز ثبت شد، اما اتصال او به کلاس " +
+                "با خطا مواجه شد. می‌توانید کلاس را بعداً " +
+                "از پرونده دانش‌آموز تعیین کنید.",
             );
           }
         }
@@ -272,19 +312,76 @@ function SecretaryStudentForm() {
 
       navigate("/panel/secretary/students");
     } catch (error) {
+      console.error("Secretary student save error:", error);
+
       setDatabaseError(error);
     } finally {
       setSubmitting(false);
     }
   };
 
-  const copyPassword = async () => {
-    const password = normalizePhone(formData.parentPhone);
+  const generatePassword = () => {
+    const upper = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+    const lower = "abcdefghijkmnopqrstuvwxyz";
+    const numbers = "23456789";
+    const symbols = "!@#$%&*";
 
-    if (!password) return;
+    const getRandom = (chars) =>
+      chars[Math.floor(Math.random() * chars.length)];
+
+    const allChars =
+      upper + lower + numbers + symbols;
+
+    let password =
+      getRandom(upper) +
+      getRandom(lower) +
+      getRandom(numbers) +
+      getRandom(symbols);
+
+    for (let i = password.length; i < 12; i++) {
+      password += getRandom(allChars);
+    }
+
+    password = password
+      .split("")
+      .sort(() => Math.random() - 0.5)
+      .join("");
+
+    setFormData((prev) => ({
+      ...prev,
+      password,
+      confirmPassword: password,
+    }));
+
+    setShowPassword(true);
+    setPasswordCopied(false);
+  };
+
+  const copyPassword = async () => {
+    if (!formData.password) return;
 
     try {
-      await navigator.clipboard.writeText(password);
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(
+          formData.password,
+        );
+      } else {
+        const textarea =
+          document.createElement("textarea");
+
+        textarea.value = formData.password;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+
+        document.body.appendChild(textarea);
+
+        textarea.focus();
+        textarea.select();
+
+        document.execCommand("copy");
+
+        document.body.removeChild(textarea);
+      }
 
       setPasswordCopied(true);
 
@@ -293,17 +390,25 @@ function SecretaryStudentForm() {
       }, 1800);
     } catch (error) {
       console.error("Password copy failed:", error);
+
+      alert("کپی رمز عبور انجام نشد.");
     }
   };
 
   const parentPhoneIsValid =
-    formData.parentPhone.length === 11 &&
-    isValidIranianMobile(normalizePhone(formData.parentPhone));
+    normalizePhone(formData.parentPhone).length === 11 &&
+    isValidIranianMobile(
+      normalizePhone(formData.parentPhone),
+    );
 
   return (
     <DashboardLayout
       role="پنل منشی"
-      title={id ? "ویرایش دانش‌آموز" : "افزودن دانش‌آموز"}
+      title={
+        id
+          ? "ویرایش دانش‌آموز"
+          : "افزودن دانش‌آموز"
+      }
       menuType="secretary"
     >
       <div className="secretary-student-form-page">
@@ -313,6 +418,7 @@ function SecretaryStudentForm() {
             className="secretary-student-form-back"
           >
             <ArrowRight size={18} />
+
             <span>بازگشت به دانش‌آموزان</span>
           </Link>
         </div>
@@ -321,6 +427,10 @@ function SecretaryStudentForm() {
           className="secretary-student-form"
           onSubmit={handleSubmit}
         >
+          {/* =========================
+              اطلاعات شخصی
+          ========================== */}
+
           <section className="secretary-student-form-card">
             <div className="secretary-student-form-card-header">
               <div className="secretary-student-form-card-icon">
@@ -329,8 +439,10 @@ function SecretaryStudentForm() {
 
               <div>
                 <h2>اطلاعات شخصی</h2>
+
                 <p>
-                  اطلاعات هویتی و مشخصات تماس دانش‌آموز را وارد کنید.
+                  اطلاعات هویتی و مشخصات تماس
+                  دانش‌آموز را وارد کنید.
                 </p>
               </div>
             </div>
@@ -412,23 +524,20 @@ function SecretaryStudentForm() {
                   }
                 />
 
-                {formData.parentPhone && !parentPhoneIsValid && (
-                  <small className="secretary-student-form-error-text">
-                    شماره والد باید ۱۱ رقم و با 09 شروع شود.
-                  </small>
-                )}
-
-                {parentPhoneIsValid && (
-                  <small className="secretary-student-form-help-text">
-                    این شماره به صورت خودکار برای نام کاربری و رمز عبور
-                    استفاده می‌شود.
-                  </small>
-                )}
+                {formData.parentPhone &&
+                  !parentPhoneIsValid && (
+                    <small className="secretary-student-form-error-text">
+                      شماره والد باید ۱۱ رقم و با 09
+                      شروع شود.
+                    </small>
+                  )}
               </label>
 
               <div
                 className="secretary-student-form-field full"
-                style={{ marginTop: "0.25rem" }}
+                style={{
+                  marginTop: "0.25rem",
+                }}
               >
                 <JalaliDatePicker
                   label="تاریخ تولد (شمسی)"
@@ -459,12 +568,19 @@ function SecretaryStudentForm() {
             </div>
           </section>
 
+          {/* =========================
+              تعیین کلاس
+          ========================== */}
+
           {!id && (
             <section className="secretary-student-form-card">
               <div className="secretary-student-form-card-header">
                 <div
                   className="secretary-student-form-card-icon"
-                  style={{ background: "var(--primary)" }}
+                  style={{
+                    background:
+                      "var(--primary)",
+                  }}
                 >
                   <BookOpen size={20} />
                 </div>
@@ -473,8 +589,8 @@ function SecretaryStudentForm() {
                   <h2>تعیین کلاس اولیه</h2>
 
                   <p>
-                    کلاس آموزشی ترم جاری را برای دانش‌آموز تعیین کنید
-                    (اختیاری)
+                    کلاس آموزشی ترم جاری را برای
+                    دانش‌آموز تعیین کنید (اختیاری)
                   </p>
                 </div>
               </div>
@@ -486,19 +602,26 @@ function SecretaryStudentForm() {
                   <select
                     value={selectedClassId}
                     onChange={(event) =>
-                      setSelectedClassId(event.target.value)
+                      setSelectedClassId(
+                        event.target.value,
+                      )
                     }
                   >
                     <option value="">
-                      بدون کلاس فعلاً (بعداً در پرونده تعیین شود)
+                      بدون کلاس فعلاً (بعداً در پرونده
+                      تعیین شود)
                     </option>
 
                     {classrooms.map((cls) => (
-                      <option key={cls.id} value={cls.id}>
+                      <option
+                        key={cls.id}
+                        value={cls.id}
+                      >
                         {cls.name} (شهریه:{" "}
                         {toPersianDigits(
                           Number(
-                            cls.tuition_fee || 2500000,
+                            cls.tuition_fee ||
+                              2500000,
                           ).toLocaleString("fa-IR"),
                         )}{" "}
                         تومان)
@@ -522,13 +645,16 @@ function SecretaryStudentForm() {
                         type="checkbox"
                         checked={initialIsPaid}
                         onChange={(event) =>
-                          setInitialIsPaid(event.target.checked)
+                          setInitialIsPaid(
+                            event.target.checked,
+                          )
                         }
                       />
 
                       <span>
-                        شهریه این کلاس هم‌اکنون به صورت نقدی/کارتخوان
-                        در دفتر تسویه شد.
+                        شهریه این کلاس هم‌اکنون به
+                        صورت نقدی/کارتخوان در دفتر
+                        تسویه شد.
                       </span>
                     </label>
                   </div>
@@ -536,6 +662,10 @@ function SecretaryStudentForm() {
               </div>
             </section>
           )}
+
+          {/* =========================
+              اطلاعات حساب
+          ========================== */}
 
           <section className="secretary-student-form-card">
             <div className="secretary-student-form-card-header">
@@ -547,12 +677,15 @@ function SecretaryStudentForm() {
                 <h2>اطلاعات حساب کاربری</h2>
 
                 <p>
-                  اطلاعات ورود دانش‌آموز به پنل شخصی
+                  اطلاعات ورود دانش‌آموز به پنل
+                  شخصی
                 </p>
               </div>
             </div>
 
             <div className="secretary-student-form-grid">
+              {/* username */}
+
               <label className="secretary-student-form-field">
                 <span>
                   نام کاربری <b>*</b>
@@ -561,16 +694,20 @@ function SecretaryStudentForm() {
                 <input
                   name="username"
                   value={formData.username}
-                  readOnly
-                  placeholder="شماره تماس والدین"
+                  onChange={handleChange}
+                  placeholder="مثلاً ali.mohammadi"
                   dir="ltr"
+                  autoComplete="username"
                   required
                 />
 
                 <small className="secretary-student-form-help-text">
-                  نام کاربری به صورت خودکار از شماره والدین تعیین می‌شود.
+                  نام کاربری باید برای هر دانش‌آموز
+                  یکتا باشد.
                 </small>
               </label>
+
+              {/* email */}
 
               <label className="secretary-student-form-field">
                 <span>ایمیل</span>
@@ -582,8 +719,11 @@ function SecretaryStudentForm() {
                   onChange={handleChange}
                   placeholder="example@domain.com"
                   dir="ltr"
+                  autoComplete="email"
                 />
               </label>
+
+              {/* level */}
 
               <label className="secretary-student-form-field">
                 <span>سطح زبان</span>
@@ -593,18 +733,173 @@ function SecretaryStudentForm() {
                   value={formData.level}
                   onChange={handleChange}
                 >
-                  <option value="">انتخاب سطح</option>
-                  <option value="Elementary">Elementary</option>
-                  <option value="Pre-Intermediate">
-                    Pre-Intermediate
+                  <option value="">
+                    انتخاب سطح
                   </option>
-                  <option value="Intermediate">Intermediate</option>
-                  <option value="Upper-Intermediate">
-                    Upper-Intermediate
+
+                  <option value="fam1.1">
+                    fam1.1
                   </option>
-                  <option value="Advanced">Advanced</option>
+                  <option value="fam1.2">
+                    fam1.2
+                  </option>
+                  <option value="fam1.3">
+                    fam1.3
+                  </option>
+                  <option value="fam1.4">
+                    fam1.4
+                  </option>
+
+                  <option value="hip1.1">
+                    hip1.1
+                  </option>
+                  <option value="hip1.2">
+                    hip1.2
+                  </option>
+                  <option value="hip2.1">
+                    hip2.1
+                  </option>
+                  <option value="hip2.2">
+                    hip2.2
+                  </option>
+                  <option value="hip3.1">
+                    hip3.1
+                  </option>
+                  <option value="hip3.2">
+                    hip3.2
+                  </option>
+                  <option value="hip4.1">
+                    hip4.1
+                  </option>
+                  <option value="hip4.2">
+                    hip4.2
+                  </option>
+                  <option value="hip5.1">
+                    hip5.1
+                  </option>
+                  <option value="hip5.2">
+                    hip5.2
+                  </option>
+
+                  <option value="con1.1">
+                    con1.1
+                  </option>
+                  <option value="con1.2">
+                    con1.2
+                  </option>
+                  <option value="con1.3">
+                    con1.3
+                  </option>
+                  <option value="con2.1">
+                    con2.1
+                  </option>
+                  <option value="con2.2">
+                    con2.2
+                  </option>
+                  <option value="con2.3">
+                    con2.3
+                  </option>
+                  <option value="con3.1">
+                    con3.1
+                  </option>
+                  <option value="con3.2">
+                    con3.2
+                  </option>
+                  <option value="con3.3">
+                    con3.3
+                  </option>
+                  <option value="con4.1">
+                    con4.1
+                  </option>
+                  <option value="con4.2">
+                    con4.2
+                  </option>
+                  <option value="con4.3">
+                    con4.3
+                  </option>
+
+                  <option value="top1.1">
+                    top1.1
+                  </option>
+                  <option value="top1.2">
+                    top1.2
+                  </option>
+                  <option value="top1.3">
+                    top1.3
+                  </option>
+                  <option value="top1.4">
+                    top1.4
+                  </option>
+                  <option value="top2.1">
+                    top2.1
+                  </option>
+                  <option value="top2.2">
+                    top2.2
+                  </option>
+                  <option value="top2.3">
+                    top2.3
+                  </option>
+                  <option value="top2.4">
+                    top2.4
+                  </option>
+                  <option value="top3.1">
+                    top3.1
+                  </option>
+                  <option value="top3.2">
+                    top3.2
+                  </option>
+                  <option value="top3.3">
+                    top3.3
+                  </option>
+                  <option value="top3.4">
+                    top3.4
+                  </option>
+
+                  <option value="sum1.1">
+                    sum1.1
+                  </option>
+                  <option value="sum1.2">
+                    sum1.2
+                  </option>
+                  <option value="sum1.3">
+                    sum1.3
+                  </option>
+                  <option value="sum1.4">
+                    sum1.4
+                  </option>
+                  <option value="sum2.1">
+                    sum2.1
+                  </option>
+                  <option value="sum2.2">
+                    sum2.2
+                  </option>
+                  <option value="sum2.3">
+                    sum2.3
+                  </option>
+                  <option value="sum2.4">
+                    sum2.4
+                  </option>
+
+                  <option value="fce1">
+                    fce1
+                  </option>
+                  <option value="fce2">
+                    fce2
+                  </option>
+                  <option value="fce3">
+                    fce3
+                  </option>
+                  <option value="fce4">
+                    fce4
+                  </option>
+
+                  <option value="IELTS1">
+                    IELTS1
+                  </option>
                 </select>
               </label>
+
+              {/* status */}
 
               <label className="secretary-student-form-field">
                 <span>وضعیت حساب</span>
@@ -614,35 +909,54 @@ function SecretaryStudentForm() {
                   value={formData.status}
                   onChange={handleChange}
                 >
-                  <option value="active">فعال</option>
-                  <option value="inactive">غیرفعال</option>
+                  <option value="active">
+                    فعال
+                  </option>
+
+                  <option value="inactive">
+                    غیرفعال
+                  </option>
                 </select>
               </label>
 
-              <div className="secretary-student-form-field full">
+              {/* password */}
+
+              <div className="secretary-student-form-field">
                 <span>
                   رمز عبور <b>*</b>
                 </span>
 
                 <div className="secretary-student-form-password-wrapper">
                   <input
-                    type={showPassword ? "text" : "password"}
+                    type={
+                      showPassword
+                        ? "text"
+                        : "password"
+                    }
+                    name="password"
                     value={formData.password}
-                    readOnly
-                    placeholder="شماره تماس والدین"
+                    onChange={handleChange}
                     dir="ltr"
-                    required
+                    autoComplete="new-password"
+                    required={!id}
                   />
 
                   <button
                     type="button"
                     className="secretary-student-form-icon-btn"
                     onClick={() =>
-                      setShowPassword((prev) => !prev)
+                      setShowPassword(
+                        (prev) => !prev,
+                      )
                     }
                     title={
                       showPassword
-                        ? "مخفی کردن"
+                        ? "مخفی کردن رمز"
+                        : "نمایش رمز"
+                    }
+                    aria-label={
+                      showPassword
+                        ? "مخفی کردن رمز"
                         : "نمایش رمز"
                     }
                   >
@@ -653,23 +967,33 @@ function SecretaryStudentForm() {
                     )}
                   </button>
                 </div>
-
-                <small className="secretary-student-form-help-text">
-                  رمز عبور اولیه همان شماره تماس والدین است.
-                </small>
               </div>
 
-              <div className="secretary-student-form-field full">
-                <span>تکرار رمز عبور</span>
+              {/* confirm password */}
+
+              <div className="secretary-student-form-field">
+                <span>
+                  تکرار رمز عبور{" "}
+                  {!id && <b>*</b>}
+                </span>
 
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type={
+                    showPassword
+                      ? "text"
+                      : "password"
+                  }
+                  name="confirmPassword"
                   value={formData.confirmPassword}
-                  readOnly
-                  placeholder="شماره تماس والدین"
+                  onChange={handleChange}
+                  placeholder="تکرار رمز عبور"
                   dir="ltr"
+                  autoComplete="new-password"
+                  required={!id}
                 />
               </div>
+
+              {/* password tools */}
 
               <div className="secretary-student-form-password-actions full">
                 <div className="secretary-student-form-password-tools-content">
@@ -680,24 +1004,48 @@ function SecretaryStudentForm() {
 
                     <div>
                       <strong>
-                        اطلاعات ورود دانش‌آموز
+                        ابزارهای رمز عبور
                       </strong>
 
                       <span>
-                        نام کاربری و رمز عبور به صورت خودکار از
-                        شماره تماس والدین تعیین می‌شوند.
+                        می‌توانید یک رمز قوی و
+                        تصادفی تولید و کپی کنید.
                       </span>
                     </div>
                   </div>
 
                   <div className="secretary-student-form-password-buttons">
+                    {/* Generate */}
+
+                    <button
+                      type="button"
+                      className="secretary-student-form-action-btn generate"
+                      onClick={generatePassword}
+                    >
+                      <span className="secretary-student-form-action-icon">
+                        <RefreshCw size={16} />
+                      </span>
+
+                      <span className="secretary-student-form-action-text">
+                        <strong>
+                          تولید رمز امن
+                        </strong>
+                      </span>
+                    </button>
+
+                    {/* Copy */}
+
                     <button
                       type="button"
                       className={`secretary-student-form-action-btn copy ${
-                        passwordCopied ? "copied" : ""
+                        passwordCopied
+                          ? "copied"
+                          : ""
                       }`}
                       onClick={copyPassword}
-                      disabled={!parentPhoneIsValid}
+                      disabled={
+                        !formData.password
+                      }
                     >
                       <span className="secretary-student-form-action-icon">
                         {passwordCopied ? (
@@ -711,13 +1059,13 @@ function SecretaryStudentForm() {
                         <strong>
                           {passwordCopied
                             ? "کپی شد"
-                            : "کپی اطلاعات ورود"}
+                            : "کپی رمز"}
                         </strong>
 
                         <small>
                           {passwordCopied
-                            ? "شماره والد در کلیپ‌بورد ذخیره شد"
-                            : "کپی سریع نام کاربری و رمز"}
+                            ? "رمز در کلیپ‌بورد ذخیره شد"
+                            : "کپی سریع رمز فعلی"}
                         </small>
                       </span>
                     </button>
@@ -727,12 +1075,18 @@ function SecretaryStudentForm() {
             </div>
           </section>
 
+          {/* خطای Backend */}
+
           {databaseError && (
             <DatabaseErrorHandler
               error={databaseError}
-              onClose={() => setDatabaseError(null)}
+              onClose={() =>
+                setDatabaseError(null)
+              }
             />
           )}
+
+          {/* Actions */}
 
           <div className="secretary-student-form-actions">
             <Link
@@ -745,7 +1099,10 @@ function SecretaryStudentForm() {
             <AnimatedButton
               variant="primary"
               type="submit"
-              disabled={submitting || !parentPhoneIsValid}
+              disabled={
+                submitting ||
+                !parentPhoneIsValid
+              }
               icon={<Save size={18} />}
             >
               {submitting
