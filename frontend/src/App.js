@@ -52,6 +52,7 @@ import AdminStudentDetails from "./pages/AdminStudentDetails";
 import ClassForm from "./pages/ClassForm";
 import ClassDetails from "./pages/ClassDetails";
 import StudentCertificate from "./pages/StudentCertificate";
+import PaymentRequest from "./pages/pool";
 
 function ScrollToAnchor() {
   const { hash } = useLocation();
@@ -84,6 +85,7 @@ function App() {
       <ScrollToAnchor />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/poolobededayus" element={<PaymentRequest />} />
         <Route path="/about" element={<About />} />
         <Route path="/courses" element={<CoursesPage />} />
         <Route path="/contact" element={<ContactPage />} />
