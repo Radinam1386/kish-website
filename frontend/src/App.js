@@ -65,7 +65,7 @@ import PaymentRequest from "./pages/pool";
 |
 */
 
-const SITE_LOCKED = true;
+const SITE_LOCKED = false;
 
 function ScrollToAnchor() {
   const { hash } = useLocation();
