@@ -33,7 +33,14 @@ export default function ClassDetails() {
   const navigate = useNavigate();
   const currentUser = storage.getUser();
   const userRole = currentUser?.role || "secretary";
-  const basePath = `/panel/${userRole === "admin" ? "admin" : userRole === "teacher" ? "teacher" : "secretary"}`;
+
+  const basePath = `/panel/${
+    userRole === "admin"
+      ? "admin"
+      : userRole === "teacher"
+        ? "teacher"
+        : "secretary"
+  }`;
 
   const [classroom, setClassroom] = useState(null);
   const [term, setTerm] = useState(null);
@@ -67,31 +74,35 @@ export default function ClassDetails() {
         setClassroom(clsData);
 
         const currentTerm = (termsData || []).find(
-          (t) => t.id === clsData.term,
+          (t) => String(t.id) === String(clsData.term?.id ?? clsData.term),
         );
         setTerm(currentTerm);
 
         const currentTeacher = (usersData || []).find(
           (u) =>
-            u.id === clsData.teacher || u.id === clsData.teacher_detail?.id,
+            String(u.id) === String(clsData.teacher?.id ?? clsData.teacher),
         );
+
         setTeacher(currentTeacher || clsData.teacher_detail);
 
         const classSessions = (sessionsData || []).filter(
-          (s) => s.classroom === Number(id) || s.classroom?.id === Number(id),
+          (s) => String(s.classroom?.id ?? s.classroom) === String(id),
         );
+
         setSessions(classSessions);
 
-        const classSessionIds = classSessions.map((s) => s.id);
+        const classSessionIds = classSessions.map((s) => String(s.id));
+
         const relevantAttendance = (attendanceData || []).filter((a) => {
           const sessionId = a.session?.id ?? a.session;
-          return classSessionIds.some(
-            (classSessionId) => String(classSessionId) === String(sessionId),
-          );
+          return classSessionIds.includes(String(sessionId));
         });
+
         setAttendanceRecords(relevantAttendance);
       } catch (err) {
-        if (alive) setError(err.message || "خطا در دریافت جزئیات کلاس");
+        if (alive) {
+          setError(err.message || "خطا در دریافت جزئیات کلاس");
+        }
       } finally {
         if (alive) setLoading(false);
       }
@@ -104,23 +115,55 @@ export default function ClassDetails() {
     };
   }, [id]);
 
+  // آخرین جلسه بر اساس تاریخ واقعی
+  const latestSession = useMemo(() => {
+    if (!sessions.length) return null;
+
+    return [...sessions].sort((a, b) => {
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
+
+      return dateB - dateA;
+    })[0];
+  }, [sessions]);
+
+  // تعداد غایبین آخرین جلسه
+  const latestSessionAbsentCount = useMemo(() => {
+    if (!latestSession) return 0;
+
+    return attendanceRecords.filter((a) => {
+      const attendanceSessionId = a.session?.id ?? a.session;
+
+      return (
+        String(attendanceSessionId) === String(latestSession.id) &&
+        a.status === "absent"
+      );
+    }).length;
+  }, [latestSession, attendanceRecords]);
+
   const enrolledStudents = useMemo(() => {
     if (!classroom?.enrollments) return [];
+
     return classroom.enrollments.map((e) => {
       const student = e.student_detail || {
-        id: e.student,
-        username: `کاربر ${e.student}`,
+        id: e.student?.id ?? e.student,
+        username: `کاربر ${e.student?.id ?? e.student}`,
       };
+
       const studentAttendance = attendanceRecords.filter((a) => {
         const attendanceStudentId = a.student?.id ?? a.student;
+
         return String(attendanceStudentId) === String(student.id);
       });
+
       const totalAttended = studentAttendance.filter(
         (a) => a.status === "present" || a.status === "late",
       ).length;
+
       const totalAbsences = studentAttendance.filter(
         (a) => a.status === "absent",
       ).length;
+
       const attRate =
         studentAttendance.length > 0
           ? Math.round((totalAttended / studentAttendance.length) * 100)
@@ -133,28 +176,16 @@ export default function ClassDetails() {
         enrolledAt: e.enrolled_at,
         attendanceCount: totalAttended,
         absentCount: totalAbsences,
-        attendanceRate: attRate,
       };
     });
   }, [classroom, attendanceRecords]);
 
   const overallStats = useMemo(() => {
-    const totalStudents = enrolledStudents.length;
-    const totalSessions = sessions.length;
-    const totalPresent = attendanceRecords.filter(
-      (a) => a.status === "present" || a.status === "late",
-    ).length;
-    const rate =
-      attendanceRecords.length > 0
-        ? Math.round((totalPresent / attendanceRecords.length) * 100)
-        : 100;
-
     return {
-      totalStudents,
-      totalSessions,
-      overallAttendanceRate: rate,
+      totalStudents: enrolledStudents.length,
+      totalSessions: sessions.length,
     };
-  }, [enrolledStudents, sessions, attendanceRecords]);
+  }, [enrolledStudents, sessions]);
 
   const getStudentSessionAttendance = (sessionId, studentId) => {
     return attendanceRecords.find((a) => {
@@ -228,24 +259,26 @@ export default function ClassDetails() {
     }
   };
 
+  const dashboardRole =
+    userRole === "admin"
+      ? "پنل مدیریت"
+      : userRole === "teacher"
+        ? "پنل معلم"
+        : "پنل منشی";
+
+  const menuType =
+    userRole === "admin"
+      ? "admin"
+      : userRole === "teacher"
+        ? "teacher"
+        : "secretary";
+
   if (loading) {
     return (
       <DashboardLayout
-        role={
-          userRole === "admin"
-            ? "پنل مدیریت"
-            : userRole === "teacher"
-              ? "پنل معلم"
-              : "پنل منشی"
-        }
+        role={dashboardRole}
         title="جزئیات کلاس"
-        menuType={
-          userRole === "admin"
-            ? "admin"
-            : userRole === "teacher"
-              ? "teacher"
-              : "secretary"
-        }
+        menuType={menuType}
       >
         <div style={{ textAlign: "center", padding: "4rem" }}>
           در حال بارگذاری اطلاعات کلاس...
@@ -257,27 +290,16 @@ export default function ClassDetails() {
   if (error || !classroom) {
     return (
       <DashboardLayout
-        role={
-          userRole === "admin"
-            ? "پنل مدیریت"
-            : userRole === "teacher"
-              ? "پنل معلم"
-              : "پنل منشی"
-        }
+        role={dashboardRole}
         title="جزئیات کلاس"
-        menuType={
-          userRole === "admin"
-            ? "admin"
-            : userRole === "teacher"
-              ? "teacher"
-              : "secretary"
-        }
+        menuType={menuType}
       >
         <div className="class-details-page">
           <div className="class-form-alert error">
             <AlertCircle size={18} />
             <span>{error || "کلاس مورد نظر یافت نشد."}</span>
           </div>
+
           <Link to={`${basePath}/classes`}>
             <AnimatedButton variant="secondary">
               <ArrowRight size={16} />
@@ -291,21 +313,9 @@ export default function ClassDetails() {
 
   return (
     <DashboardLayout
-      role={
-        userRole === "admin"
-          ? "پنل مدیریت"
-          : userRole === "teacher"
-            ? "پنل معلم"
-            : "پنل منشی"
-      }
+      role={dashboardRole}
       title={`جزئیات ${classroom.name}`}
-      menuType={
-        userRole === "admin"
-          ? "admin"
-          : userRole === "teacher"
-            ? "teacher"
-            : "secretary"
-      }
+      menuType={menuType}
     >
       <div className="class-details-page">
         <div className="class-details-header">
@@ -315,18 +325,24 @@ export default function ClassDetails() {
                 <ArrowRight size={16} />
               </AnimatedButton>
             </Link>
+
             <div className="class-details-badge-icon">
               <BookOpen size={28} />
             </div>
+
             <div>
               <div className="class-title-row">
                 <h2>{classroom.name}</h2>
+
                 <span
-                  className={`term-status-pill ${term?.is_active ? "active" : "inactive"}`}
+                  className={`term-status-pill ${
+                    term?.is_active ? "active" : "inactive"
+                  }`}
                 >
                   {term?.is_active ? "ترم جاری (فعال)" : "پایان‌یافته"}
                 </span>
               </div>
+
               <p className="class-term-name">
                 <Calendar size={14} />
                 ترم: {term?.name || "نامشخص"} | تاریخ شروع:{" "}
@@ -366,7 +382,7 @@ export default function ClassDetails() {
           </div>
         </div>
 
-        {/* Stats Grid */}
+        {/* آمار کلاس */}
         <div className="class-details-stats-grid">
           <StatCard
             title="تعداد دانش‌آموزان"
@@ -374,29 +390,36 @@ export default function ClassDetails() {
             icon={<Users size={24} />}
             color="blue"
           />
+
           <StatCard
             title="جلسات برگزار شده"
             value={`${toPersianDigits(overallStats.totalSessions)} جلسه`}
             icon={<Calendar size={24} />}
             color="green"
           />
+
           <StatCard
-            title="میانگین حضور کلاس"
-            value={`${toPersianDigits(overallStats.overallAttendanceRate)}٪`}
-            icon={<UserCheck size={24} />}
-            color="orange"
+            title="غایبین آخرین جلسه"
+            value={`${toPersianDigits(latestSessionAbsentCount)} نفر`}
+            hint={
+              latestSession
+                ? `تاریخ: ${toJalaliDateString(latestSession.date)}`
+                : "هنوز جلسه‌ای ثبت نشده است"
+            }
+            icon={<UserX size={24} />}
+            color="red"
           />
+
           <StatCard
             title="وضعیت ترم"
             value={term?.is_active ? "فعال" : "خاتمه یافته"}
             icon={<Clock size={24} />}
-            color="red"
+            color="orange"
           />
         </div>
 
-        {/* Main Grid: Teacher info & Student table */}
+        {/* اطلاعات مدرس و دانش‌آموزان */}
         <div className="class-details-main-grid">
-          {/* Teacher Profile Card */}
           <div className="class-card teacher-info-card">
             <h4 className="card-heading">
               <GraduationCap size={18} />
@@ -408,7 +431,9 @@ export default function ClassDetails() {
                 <div className="teacher-avatar">
                   {getFullName(teacher).charAt(0) || "م"}
                 </div>
+
                 <h3 className="teacher-name">{getFullName(teacher)}</h3>
+
                 <span className="teacher-role-badge">
                   استاد رسمی آموزشگاه کیش
                 </span>
@@ -418,6 +443,7 @@ export default function ClassDetails() {
                     <Phone size={14} />
                     <span>{teacher.phone_number || "شماره ثبت نشده"}</span>
                   </div>
+
                   <div className="contact-item">
                     <Mail size={14} />
                     <span>{teacher.email || "ایمیل ثبت نشده"}</span>
@@ -440,7 +466,7 @@ export default function ClassDetails() {
             )}
           </div>
 
-          {/* Enrolled Students Table */}
+          {/* دانش‌آموزان ثبت‌نامی */}
           <div className="class-card enrolled-students-card">
             <div className="enrolled-students-header">
               <h4 className="card-heading">
@@ -462,7 +488,7 @@ export default function ClassDetails() {
 
             {enrolledStudents.length > 0 ? (
               <>
-                {/* Desktop Table */}
+                {/* جدول دسکتاپ */}
                 <div className="enrolled-table-wrap desktop-only">
                   <table className="enrolled-table">
                     <thead>
@@ -470,7 +496,7 @@ export default function ClassDetails() {
                         <th>دانش‌آموز</th>
                         <th>شماره تماس</th>
                         <th>تاریخ عضویت</th>
-                        <th>درصد حضور</th>
+                        <th>تعداد غیبت</th>
                         <th>عملیات</th>
                       </tr>
                     </thead>
@@ -494,18 +520,12 @@ export default function ClassDetails() {
                           <td>{st.phone_number || "-"}</td>
 
                           <td>{toJalaliDateString(st.enrolledAt)}</td>
-
                           <td>
                             <span
-                              className={`att-pill ${
-                                st.attendanceRate >= 80
-                                  ? "high"
-                                  : st.attendanceRate >= 50
-                                    ? "medium"
-                                    : "low"
-                              }`}
+                              className={`att-pill ${st.absentCount > 0 ? "low" : "high"}`}
                             >
-                              {toPersianDigits(st.attendanceRate)}٪
+                              <UserX size={14} />
+                              {toPersianDigits(st.absentCount)} جلسه
                             </span>
                           </td>
 
@@ -529,7 +549,7 @@ export default function ClassDetails() {
                   </table>
                 </div>
 
-                {/* Mobile Cards */}
+                {/* کارت‌های موبایل */}
                 <div className="students-mobile-list">
                   {enrolledStudents.map((st) => (
                     <div className="student-mobile-card" key={st.id}>
@@ -544,17 +564,11 @@ export default function ClassDetails() {
                             <small>{st.username}</small>
                           </div>
                         </div>
-
                         <span
-                          className={`att-pill ${
-                            st.attendanceRate >= 80
-                              ? "high"
-                              : st.attendanceRate >= 50
-                                ? "medium"
-                                : "low"
-                          }`}
+                          className={`att-pill ${st.absentCount > 0 ? "low" : "high"}`}
                         >
-                          {toPersianDigits(st.attendanceRate)}٪
+                          <UserX size={14} />
+                          {toPersianDigits(st.absentCount)} غیبت
                         </span>
                       </div>
 
@@ -573,13 +587,6 @@ export default function ClassDetails() {
                           <span>حضور</span>
                           <strong>
                             {toPersianDigits(st.attendanceCount)} جلسه
-                          </strong>
-                        </div>
-
-                        <div className="mobile-info-item">
-                          <span>غیبت</span>
-                          <strong>
-                            {toPersianDigits(st.absentCount)} جلسه
                           </strong>
                         </div>
                       </div>
@@ -619,15 +626,16 @@ export default function ClassDetails() {
           </div>
         </div>
 
-        {/* Held Sessions History Table */}
+        {/* تاریخچه جلسات */}
         <div className="class-card sessions-history-card">
           <h4 className="card-heading">
             <Calendar size={18} />
             تاریخچه جلسات برگزار شده ({toPersianDigits(sessions.length)} جلسه)
           </h4>
+
           {sessions.length > 0 ? (
             <>
-              {/* Desktop Table */}
+              {/* جدول دسکتاپ */}
               <div className="sessions-table-wrap desktop-only">
                 <table className="sessions-table">
                   <thead>
@@ -645,6 +653,7 @@ export default function ClassDetails() {
                     {sessions.map((s, idx) => {
                       const sessionAtt = attendanceRecords.filter((a) => {
                         const attendanceSessionId = a.session?.id ?? a.session;
+
                         return String(attendanceSessionId) === String(s.id);
                       });
 
@@ -708,6 +717,7 @@ export default function ClassDetails() {
                                 ) : (
                                   <ChevronDown size={15} />
                                 )}
+
                                 {expandedSessionId === s.id
                                   ? "بستن لیست"
                                   : "مشاهده لیست"}
@@ -722,60 +732,72 @@ export default function ClassDetails() {
                                   <div className="session-attendance-details-header">
                                     <div>
                                       <h4>لیست حضور و غیاب دانش‌آموزان</h4>
+
                                       <span>
-                                        جلسه {toPersianDigits(sessions.length - idx)}
+                                        جلسه{" "}
+                                        {toPersianDigits(sessions.length - idx)}
                                         {" - "}
                                         {toJalaliDateString(s.date)}
                                       </span>
                                     </div>
 
                                     <span className="attendance-total">
-                                      {toPersianDigits(enrolledStudents.length)} دانش‌آموز
+                                      {toPersianDigits(enrolledStudents.length)}{" "}
+                                      دانش‌آموز
                                     </span>
                                   </div>
 
                                   <div className="session-student-attendance-list">
-                                    {enrolledStudents.map((st, studentIndex) => {
-                                      const status = getAttendanceStatus(s.id, st.id);
+                                    {enrolledStudents.map(
+                                      (st, studentIndex) => {
+                                        const status = getAttendanceStatus(
+                                          s.id,
+                                          st.id,
+                                        );
 
-                                      return (
-                                        <div
-                                          className="session-student-attendance-item"
-                                          key={st.id}
-                                        >
-                                          <div className="session-student-identity">
-                                            <div className="session-student-number">
-                                              {toPersianDigits(studentIndex + 1)}
+                                        return (
+                                          <div
+                                            className="session-student-attendance-item"
+                                            key={st.id}
+                                          >
+                                            <div className="session-student-identity">
+                                              <div className="session-student-number">
+                                                {toPersianDigits(
+                                                  studentIndex + 1,
+                                                )}
+                                              </div>
+
+                                              <div className="student-small-avatar">
+                                                {st.fullName.charAt(0)}
+                                              </div>
+
+                                              <div className="session-student-name">
+                                                <strong>{st.fullName}</strong>
+
+                                                <small>
+                                                  {st.phone_number ||
+                                                    "شماره تماس ثبت نشده"}
+                                                </small>
+                                              </div>
                                             </div>
 
-                                            <div className="student-small-avatar">
-                                              {st.fullName.charAt(0)}
-                                            </div>
-
-                                            <div className="session-student-name">
-                                              <strong>{st.fullName}</strong>
-                                              <small>
-                                                {st.phone_number || "شماره تماس ثبت نشده"}
-                                              </small>
-                                            </div>
-                                          </div>
-
-                                          <div className="session-student-result">
-                                            <span
-                                              className={`session-attendance-status ${status.className}`}
-                                            >
-                                              {status.label}
-                                            </span>
-
-                                            {status.note && (
-                                              <span className="session-attendance-note">
-                                                توضیحات: {status.note}
+                                            <div className="session-student-result">
+                                              <span
+                                                className={`session-attendance-status ${status.className}`}
+                                              >
+                                                {status.label}
                                               </span>
-                                            )}
+
+                                              {status.note && (
+                                                <span className="session-attendance-note">
+                                                  توضیحات: {status.note}
+                                                </span>
+                                              )}
+                                            </div>
                                           </div>
-                                        </div>
-                                      );
-                                    })}
+                                        );
+                                      },
+                                    )}
                                   </div>
 
                                   {enrolledStudents.length === 0 && (
@@ -794,11 +816,12 @@ export default function ClassDetails() {
                 </table>
               </div>
 
-              {/* Mobile Cards */}
+              {/* کارت‌های موبایل */}
               <div className="sessions-mobile-list">
                 {sessions.map((s, idx) => {
                   const sessionAtt = attendanceRecords.filter((a) => {
                     const attendanceSessionId = a.session?.id ?? a.session;
+
                     return String(attendanceSessionId) === String(s.id);
                   });
 
@@ -863,6 +886,7 @@ export default function ClassDetails() {
                           </div>
                         </div>
                       </div>
+
                       <button
                         type="button"
                         className="session-attendance-toggle mobile-toggle"
@@ -902,6 +926,7 @@ export default function ClassDetails() {
 
                                   <div className="session-student-name">
                                     <strong>{st.fullName}</strong>
+
                                     <small>
                                       {st.phone_number || "شماره تماس ثبت نشده"}
                                     </small>
