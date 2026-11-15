@@ -1,3 +1,4 @@
+
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -48,6 +49,7 @@ function SecretaryAttendance() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTermId, setSelectedTermId] = useState("");
   const [selectedClass, setSelectedClass] = useState("all");
+  const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedDate, setSelectedDate] = useState(today.isoGregorian);
 
   const [terms, setTerms] = useState([]);
@@ -128,7 +130,9 @@ function SecretaryAttendance() {
   const activeTermObj = useMemo(() => {
     if (selectedTermId === "all") return null;
 
-    return terms.find((t) => String(t.id) === String(selectedTermId));
+    return terms.find(
+      (t) => String(t.id) === String(selectedTermId),
+    );
   }, [terms, selectedTermId]);
 
   const termClassrooms = useMemo(() => {
@@ -137,7 +141,7 @@ function SecretaryAttendance() {
     }
 
     return classrooms.filter(
-      (c) => String(c.term || c.term?.id) === String(selectedTermId),
+      (c) => String(c.term?.id ?? c.term) === String(selectedTermId),
     );
   }, [classrooms, selectedTermId]);
 
@@ -154,26 +158,32 @@ function SecretaryAttendance() {
       );
     }
 
-    const relevantClassIds = relevantClassrooms.map((c) => c.id);
+    const relevantClassIds = relevantClassrooms.map((c) => String(c.id));
 
     const relevantEnrollments = enrollments.filter((e) =>
-      relevantClassIds.includes(e.classroom || e.classroom?.id),
+      relevantClassIds.includes(
+        String(e.classroom?.id ?? e.classroom),
+      ),
     );
 
     return relevantEnrollments.map((enr) => {
+      const studentId = enr.student?.id ?? enr.student;
+
       const student =
         enr.student_detail ||
-        users.find((u) => u.id === (enr.student || enr.student?.id)) ||
+        users.find((u) => String(u.id) === String(studentId)) ||
         {};
+
+      const classroomId = enr.classroom?.id ?? enr.classroom;
 
       const classroom =
         termClassrooms.find(
-          (c) => c.id === (enr.classroom || enr.classroom?.id),
+          (c) => String(c.id) === String(classroomId),
         ) || {};
 
       const matchedSession = sessions.find(
         (s) =>
-          (s.classroom === classroom.id || s.classroom?.id === classroom.id) &&
+          String(s.classroom?.id ?? s.classroom) === String(classroom.id) &&
           s.date === selectedDate,
       );
 
@@ -183,9 +193,8 @@ function SecretaryAttendance() {
       if (matchedSession) {
         const att = attendanceRecords.find(
           (a) =>
-            (a.session === matchedSession.id ||
-              a.session?.id === matchedSession.id) &&
-            (a.student === student.id || a.student?.id === student.id),
+            String(a.session?.id ?? a.session) === String(matchedSession.id) &&
+            String(a.student?.id ?? a.student) === String(student.id),
         );
 
         if (att) {
@@ -194,7 +203,8 @@ function SecretaryAttendance() {
         }
       }
 
-      const statusInfo = statusMapping[statusKey] || statusMapping.not_recorded;
+      const statusInfo =
+        statusMapping[statusKey] || statusMapping.not_recorded;
 
       return {
         id: student.id,
@@ -219,26 +229,32 @@ function SecretaryAttendance() {
     selectedDate,
   ]);
 
+  // فیلتر جستجو و وضعیت حضور و غیاب
   const filteredStudents = useMemo(() => {
     const q = searchTerm.trim().toLowerCase();
 
-    if (!q) {
-      return studentsList;
-    }
-
-    return studentsList.filter(
-      (item) =>
+    return studentsList.filter((item) => {
+      const matchesSearch =
+        !q ||
         item.studentName.toLowerCase().includes(q) ||
         item.username.toLowerCase().includes(q) ||
         item.phone.toLowerCase().includes(q) ||
-        item.className.toLowerCase().includes(q),
-    );
-  }, [studentsList, searchTerm]);
-  const totalPages = Math.ceil(filteredStudents.length / STUDENTS_PER_PAGE);
+        item.className.toLowerCase().includes(q);
+
+      const matchesStatus =
+        selectedStatus === "all" ||
+        item.statusKey === selectedStatus;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [studentsList, searchTerm, selectedStatus]);
+
+  const totalPages = Math.ceil(
+    filteredStudents.length / STUDENTS_PER_PAGE,
+  );
 
   const paginatedStudents = useMemo(() => {
     const startIndex = (currentPage - 1) * STUDENTS_PER_PAGE;
-
     const endIndex = startIndex + STUDENTS_PER_PAGE;
 
     return filteredStudents.slice(startIndex, endIndex);
@@ -246,7 +262,14 @@ function SecretaryAttendance() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedClass, selectedDate, selectedTermId]);
+  }, [
+    searchTerm,
+    selectedClass,
+    selectedDate,
+    selectedTermId,
+    selectedStatus,
+  ]);
+
   const stats = useMemo(() => {
     const total = studentsList.length;
 
@@ -254,7 +277,9 @@ function SecretaryAttendance() {
       (s) => s.statusKey === "present",
     ).length;
 
-    const absent = studentsList.filter((s) => s.statusKey === "absent").length;
+    const absent = studentsList.filter(
+      (s) => s.statusKey === "absent",
+    ).length;
 
     const notRecorded = studentsList.filter(
       (s) => s.statusKey === "not_recorded",
@@ -327,20 +352,12 @@ function SecretaryAttendance() {
           </div>
         </div>
 
-        {/* =========================
-            ERROR
-        ========================== */}
-
         {error && (
           <div className="secretary-attendance-alert error">
             <AlertCircle size={18} />
             <span>{error}</span>
           </div>
         )}
-
-        {/* =========================
-            NOTICE
-        ========================== */}
 
         <div className="secretary-attendance-notice">
           <div className="notice-icon">
@@ -357,10 +374,6 @@ function SecretaryAttendance() {
             </p>
           </div>
         </div>
-
-        {/* =========================
-            STATS
-        ========================== */}
 
         <div className="secretary-attendance-stats-grid">
           <StatCard
@@ -396,10 +409,6 @@ function SecretaryAttendance() {
           />
         </div>
 
-        {/* =========================
-            MAIN
-        ========================== */}
-
         <section className="secretary-attendance-main-section">
           <div className="secretary-attendance-section-header">
             <div className="attendance-heading-info">
@@ -419,10 +428,7 @@ function SecretaryAttendance() {
             </div>
           </div>
 
-          {/* =========================
-              FILTERS
-          ========================== */}
-
+          {/* فیلترها */}
           <div className="secretary-attendance-filters-row">
             <div className="attendance-search-wrapper">
               <input
@@ -450,6 +456,23 @@ function SecretaryAttendance() {
               </select>
             </div>
 
+            {/* فیلتر وضعیت حضور و غیاب */}
+            <div className="attendance-select-wrapper">
+              <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                className="attendance-select"
+                aria-label="فیلتر وضعیت حضور و غیاب"
+              >
+                <option value="all">همه وضعیت‌ها</option>
+                <option value="present">حاضر</option>
+                <option value="absent">غایب</option>
+                <option value="late">دیرکرد</option>
+                <option value="excused">موجه</option>
+                <option value="not_recorded">ثبت نشده</option>
+              </select>
+            </div>
+
             <div className="attendance-datepicker-wrapper">
               <JalaliDatePicker
                 value={selectedDate}
@@ -459,22 +482,14 @@ function SecretaryAttendance() {
             </div>
           </div>
 
-          {/* =========================
-              LOADING
-          ========================== */}
-
           {loading ? (
             <div className="attendance-loading-state">
               <div className="attendance-loading-spinner" />
-
               <span>در حال بارگذاری اطلاعات حضور و غیاب...</span>
             </div>
           ) : filteredStudents.length > 0 ? (
             <>
-              {/* =========================
-                  DESKTOP TABLE
-              ========================== */}
-
+              {/* جدول دسکتاپ */}
               <div className="secretary-attendance-table-wrapper attendance-desktop-table">
                 <table className="secretary-attendance-table">
                   <thead>
@@ -554,10 +569,7 @@ function SecretaryAttendance() {
                 </table>
               </div>
 
-              {/* =========================
-                  MOBILE CARDS
-              ========================== */}
-
+              {/* کارت‌های موبایل */}
               <div className="attendance-mobile-list">
                 {paginatedStudents.map((item) => (
                   <article
@@ -572,7 +584,6 @@ function SecretaryAttendance() {
 
                         <div className="attendance-card-student-info">
                           <strong>{item.studentName}</strong>
-
                           <span>{item.username}</span>
                         </div>
                       </div>
@@ -628,6 +639,8 @@ function SecretaryAttendance() {
                   </article>
                 ))}
               </div>
+
+              {/* صفحه‌بندی */}
               {totalPages > 1 && (
                 <div className="attendance-pagination">
                   <button
@@ -664,7 +677,9 @@ function SecretaryAttendance() {
                     type="button"
                     className="attendance-pagination-btn attendance-pagination-next"
                     onClick={() =>
-                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                      setCurrentPage((prev) =>
+                        Math.min(prev + 1, totalPages),
+                      )
                     }
                     disabled={currentPage === totalPages}
                   >
@@ -682,7 +697,7 @@ function SecretaryAttendance() {
 
               <h4>هیچ دانش‌آموزی در این فیلتر یافت نشد</h4>
 
-              <p>لطفاً تاریخ یا کلاس انتخابی را تغییر دهید.</p>
+              <p>لطفاً تاریخ، کلاس یا وضعیت حضور و غیاب را تغییر دهید.</p>
             </div>
           )}
         </section>

@@ -65,7 +65,7 @@ import UnderConstruction from "./pages/UnderConstruction";
 |
 */
 
-const SITE_LOCKED = false;
+const SITE_LOCKED = false ;
 
 function ScrollToAnchor() {
   const { hash } = useLocation();
