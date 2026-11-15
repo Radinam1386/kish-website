@@ -1,121 +1,85 @@
 import React from "react";
 import {
-  AlertTriangle,
-  Banknote,
-  CalendarClock,
-  CheckCircle2,
+  Construction,
   Clock3,
-  MessageCircleWarning,
-  Send,
+  ArrowLeft,
+  Code2,
+  Sparkles,
 } from "lucide-react";
 import "./pool.css";
 
-const PaymentRequest = () => {
-  const amount = "۲۴,۰۰۰,۰۰۰";
-  const daysOverdue = 18;
-
+export default function UnderConstruction() {
   return (
-    <div className="payment-page" dir="rtl">
-      <div className="payment-container">
-        <div className="payment-alert">
-          <div className="payment-alert-icon">
-            <AlertTriangle size={26} />
+    <main className="uc-page" dir="rtl">
+      <div className="uc-glow uc-glow-one" />
+      <div className="uc-glow uc-glow-two" />
+
+      <nav className="uc-navbar">
+        <div className="uc-logo">
+          <Code2 size={23} />
+          <span>WEBSITE</span>
+        </div>
+        <span className="uc-status">
+          <span className="uc-status-dot" />
+          در حال توسعه
+        </span>
+      </nav>
+
+      <section className="uc-content">
+        <div className="uc-illustration">
+          <div className="uc-orbit uc-orbit-one" />
+          <div className="uc-orbit uc-orbit-two" />
+
+          <div className="uc-icon-box">
+            <Construction size={65} strokeWidth={1.4} />
           </div>
 
+          <Sparkles className="uc-sparkle uc-sparkle-one" size={23} />
+          <Sparkles className="uc-sparkle uc-sparkle-two" size={17} />
+        </div>
+
+        <span className="uc-eyebrow">
+          <span />
+          WE'LL BE BACK SOON
+        </span>
+
+        <h1>
+          چیزی جدید
+          <br />
+          <strong>در راه است!</strong>
+        </h1>
+
+        <p className="uc-description">
+          در حال انجام تغییرات و به‌روزرسانی‌های جدید روی وب‌سایت هستیم.
+          به‌زودی با تجربه‌ای بهتر و امکانات جدید بازخواهیم گشت.
+        </p>
+
+        <div className="uc-progress">
+          <div className="uc-progress-heading">
+            <span>وضعیت توسعه وب‌سایت</span>
+            <span>در حال انجام</span>
+          </div>
+          <div className="uc-progress-track">
+            <div className="uc-progress-fill" />
+          </div>
+        </div>
+
+        <div className="uc-info">
+          <div className="uc-info-icon">
+            <Clock3 size={20} />
+          </div>
           <div>
-            <span className="payment-alert-label">هشدار تسویه حساب</span>
-            <h1>پرداخت کنید.</h1>
+            <strong>لطفاً کمی صبور باشید</strong>
+            <span>تا پایان عملیات به‌روزرسانی، سایت در دسترس نخواهد بود.</span>
           </div>
         </div>
 
-        <section className="payment-hero">
-          <div className="payment-hero-content">
-            <span className="payment-eyebrow">
-              <MessageCircleWarning size={17} />
-              پیام مستقیم به کارفرما
-            </span>
-
-            <h2>
-              کار انجام شده،
-              <br />
-              <strong>حالا نوبت پرداخت شماست.</strong>
-            </h2>
-
-            <p>
-              پروژه طبق توافق انجام شده و کار تحویل داده شده است.
-              با این حال، مبلغ توافق‌شده هنوز پرداخت نشده و مدت زیادی
-              از موعد تسویه گذشته است.
-            </p>
-
-            <p className="payment-critical">
-              لطفاً این موضوع را بیشتر از این به «فردا واریز می‌کنم»
-              و «تا چند روز دیگه» موکول نکنید. ما برای انجام کار وقت،
-              انرژی و تخصص گذاشته‌ایم و انتظار ما هم نداریم؛
-              <strong> فقط پول کاری را که انجام داده‌ایم می‌خواهیم.</strong>
-            </p>
-
-            <div className="payment-actions">
-              <button className="payment-primary">
-                <Send size={18} />
-                لطفاً همین امروز تسویه کنید
-              </button>
-            </div>
-          </div>
-
-          <div className="payment-amount-card">
-            <div className="amount-icon">
-              <Banknote size={25} />
-            </div>
-
-            <span>مبلغ قابل پرداخت</span>
-
-            <strong>{amount}</strong>
-
-            <small>تومان</small>
-
-            <div className="amount-divider" />
-
-            <div className="amount-status">
-              <Clock3 size={17} />
-              <span>{daysOverdue} روز از موعد پرداخت گذشته</span>
-            </div>
-          </div>
-        </section>
-
-        <section className="payment-message">
-          <div className="message-title">
-            <CheckCircle2 size={21} />
-            <h3>حرف آخر</h3>
-          </div>
-
-          <p>
-            من برای دریافت پول کاری که انجام داده‌ام، قرار نیست هر بار
-            پیگیری کنم یا منتظر وعده‌های جدید باشم. اگر پروژه انجام شده
-            و مورد تأیید بوده، طبیعی است که دستمزد آن هم در موعد مقرر
-            پرداخت شود.
-          </p>
-
-          <p>
-            <strong>
-              لطفاً احترام به زمان و زحمت من را با پرداخت به‌موقع نشان دهید.
-            </strong>
-          </p>
-
-          <div className="message-sign">
-            <span>وضعیت حساب</span>
-            <strong>در انتظار تسویه</strong>
-          </div>
-        </section>
-
-        <div className="payment-footer">
-          <CalendarClock size={18} />
-          <span>
-            این پیام جهت یادآوری و درخواست رسمی تسویه حساب پروژه ارسال شده است.
-          </span>
+        <div className="uc-footer">
+          <span>THANK YOU FOR YOUR PATIENCE</span>
+          <span className="uc-footer-line" />
+          <span>© {new Date().getFullYear()} ALL RIGHTS RESERVED</span>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
-};
-
-export default PaymentRequest;
+}
