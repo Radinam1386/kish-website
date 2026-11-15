@@ -83,9 +83,12 @@ export default function ClassDetails() {
         setSessions(classSessions);
 
         const classSessionIds = classSessions.map((s) => s.id);
-        const relevantAttendance = (attendanceData || []).filter((a) =>
-          classSessionIds.includes(a.session || a.session?.id),
-        );
+        const relevantAttendance = (attendanceData || []).filter((a) => {
+          const sessionId = a.session?.id ?? a.session;
+          return classSessionIds.some(
+            (classSessionId) => String(classSessionId) === String(sessionId),
+          );
+        });
         setAttendanceRecords(relevantAttendance);
       } catch (err) {
         if (alive) setError(err.message || "خطا در دریافت جزئیات کلاس");
@@ -108,9 +111,10 @@ export default function ClassDetails() {
         id: e.student,
         username: `کاربر ${e.student}`,
       };
-      const studentAttendance = attendanceRecords.filter(
-        (a) => a.student === student.id || a.student?.id === student.id,
-      );
+      const studentAttendance = attendanceRecords.filter((a) => {
+        const attendanceStudentId = a.student?.id ?? a.student;
+        return String(attendanceStudentId) === String(student.id);
+      });
       const totalAttended = studentAttendance.filter(
         (a) => a.status === "present" || a.status === "late",
       ).length;
@@ -639,9 +643,10 @@ export default function ClassDetails() {
 
                   <tbody>
                     {sessions.map((s, idx) => {
-                      const sessionAtt = attendanceRecords.filter(
-                        (a) => a.session === s.id || a.session?.id === s.id,
-                      );
+                      const sessionAtt = attendanceRecords.filter((a) => {
+                        const attendanceSessionId = a.session?.id ?? a.session;
+                        return String(attendanceSessionId) === String(s.id);
+                      });
 
                       const present = sessionAtt.filter(
                         (a) => a.status === "present",
@@ -656,56 +661,60 @@ export default function ClassDetails() {
                       ).length;
 
                       return (
-                        <tr key={s.id}>
-                          <td>
-                            <strong>
-                              جلسه {toPersianDigits(sessions.length - idx)}
-                            </strong>
-                          </td>
+                        <React.Fragment key={s.id}>
+                          <tr>
+                            <td>
+                              <strong>
+                                جلسه {toPersianDigits(sessions.length - idx)}
+                              </strong>
+                            </td>
 
-                          <td>
-                            <span className="shamsi-date-tag">
-                              <Calendar size={13} />
-                              {toJalaliDateString(s.date)}
-                            </span>
-                          </td>
+                            <td>
+                              <span className="shamsi-date-tag">
+                                <Calendar size={13} />
+                                {toJalaliDateString(s.date)}
+                              </span>
+                            </td>
 
-                          <td>
-                            <span className="present-count">
-                              <UserCheck size={14} />
-                              {toPersianDigits(present)} نفر
-                            </span>
-                          </td>
+                            <td>
+                              <span className="present-count">
+                                <UserCheck size={14} />
+                                {toPersianDigits(present)} نفر
+                              </span>
+                            </td>
 
-                          <td>
-                            <span className="absent-count">
-                              <UserX size={14} />
-                              {toPersianDigits(absent)} نفر
-                            </span>
-                          </td>
+                            <td>
+                              <span className="absent-count">
+                                <UserX size={14} />
+                                {toPersianDigits(absent)} نفر
+                              </span>
+                            </td>
 
-                          <td>{toPersianDigits(other)} نفر</td>
+                            <td>{toPersianDigits(other)} نفر</td>
 
-                          <td>
-                            <button
-                              type="button"
-                              className="session-attendance-toggle"
-                              onClick={() =>
-                                setExpandedSessionId(
-                                  expandedSessionId === s.id ? null : s.id,
-                                )
-                              }
-                            >
-                              {expandedSessionId === s.id ? (
-                                <ChevronUp size={15} />
-                              ) : (
-                                <ChevronDown size={15} />
-                              )}
-                              {expandedSessionId === s.id
-                                ? "بستن لیست"
-                                : "مشاهده لیست"}
-                            </button>
-                          </td>
+                            <td>
+                              <button
+                                type="button"
+                                className="session-attendance-toggle"
+                                aria-expanded={expandedSessionId === s.id}
+                                onClick={() =>
+                                  setExpandedSessionId(
+                                    expandedSessionId === s.id ? null : s.id,
+                                  )
+                                }
+                              >
+                                {expandedSessionId === s.id ? (
+                                  <ChevronUp size={15} />
+                                ) : (
+                                  <ChevronDown size={15} />
+                                )}
+                                {expandedSessionId === s.id
+                                  ? "بستن لیست"
+                                  : "مشاهده لیست"}
+                              </button>
+                            </td>
+                          </tr>
+
                           {expandedSessionId === s.id && (
                             <tr className="session-expanded-row">
                               <td colSpan={6}>
@@ -714,74 +723,59 @@ export default function ClassDetails() {
                                     <div>
                                       <h4>لیست حضور و غیاب دانش‌آموزان</h4>
                                       <span>
-                                        جلسه{" "}
-                                        {toPersianDigits(sessions.length - idx)}{" "}
-                                        - {toJalaliDateString(s.date)}
+                                        جلسه {toPersianDigits(sessions.length - idx)}
+                                        {" - "}
+                                        {toJalaliDateString(s.date)}
                                       </span>
                                     </div>
 
                                     <span className="attendance-total">
-                                      {toPersianDigits(enrolledStudents.length)}{" "}
-                                      دانش‌آموز
+                                      {toPersianDigits(enrolledStudents.length)} دانش‌آموز
                                     </span>
                                   </div>
 
                                   <div className="session-student-attendance-list">
-                                    {enrolledStudents.map(
-                                      (st, studentIndex) => {
-                                        const attendance =
-                                          getStudentSessionAttendance(
-                                            s.id,
-                                            st.id,
-                                          );
+                                    {enrolledStudents.map((st, studentIndex) => {
+                                      const status = getAttendanceStatus(s.id, st.id);
 
-                                        const status = getAttendanceStatus(
-                                          s.id,
-                                          st.id,
-                                        );
-
-                                        return (
-                                          <div
-                                            className="session-student-attendance-item"
-                                            key={st.id}
-                                          >
-                                            <div className="session-student-identity">
-                                              <div className="session-student-number">
-                                                {toPersianDigits(
-                                                  studentIndex + 1,
-                                                )}
-                                              </div>
-
-                                              <div className="student-small-avatar">
-                                                {st.fullName.charAt(0)}
-                                              </div>
-
-                                              <div className="session-student-name">
-                                                <strong>{st.fullName}</strong>
-                                                <small>
-                                                  {st.phone_number ||
-                                                    "شماره تماس ثبت نشده"}
-                                                </small>
-                                              </div>
+                                      return (
+                                        <div
+                                          className="session-student-attendance-item"
+                                          key={st.id}
+                                        >
+                                          <div className="session-student-identity">
+                                            <div className="session-student-number">
+                                              {toPersianDigits(studentIndex + 1)}
                                             </div>
 
-                                            <div className="session-student-result">
-                                              <span
-                                                className={`session-attendance-status ${status.className}`}
-                                              >
-                                                {status.label}
-                                              </span>
+                                            <div className="student-small-avatar">
+                                              {st.fullName.charAt(0)}
+                                            </div>
 
-                                              {status.note && (
-                                                <span className="session-attendance-note">
-                                                  توضیحات: {status.note}
-                                                </span>
-                                              )}
+                                            <div className="session-student-name">
+                                              <strong>{st.fullName}</strong>
+                                              <small>
+                                                {st.phone_number || "شماره تماس ثبت نشده"}
+                                              </small>
                                             </div>
                                           </div>
-                                        );
-                                      },
-                                    )}
+
+                                          <div className="session-student-result">
+                                            <span
+                                              className={`session-attendance-status ${status.className}`}
+                                            >
+                                              {status.label}
+                                            </span>
+
+                                            {status.note && (
+                                              <span className="session-attendance-note">
+                                                توضیحات: {status.note}
+                                              </span>
+                                            )}
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
                                   </div>
 
                                   {enrolledStudents.length === 0 && (
@@ -793,7 +787,7 @@ export default function ClassDetails() {
                               </td>
                             </tr>
                           )}
-                        </tr>
+                        </React.Fragment>
                       );
                     })}
                   </tbody>
@@ -803,9 +797,10 @@ export default function ClassDetails() {
               {/* Mobile Cards */}
               <div className="sessions-mobile-list">
                 {sessions.map((s, idx) => {
-                  const sessionAtt = attendanceRecords.filter(
-                    (a) => a.session === s.id || a.session?.id === s.id,
-                  );
+                  const sessionAtt = attendanceRecords.filter((a) => {
+                    const attendanceSessionId = a.session?.id ?? a.session;
+                    return String(attendanceSessionId) === String(s.id);
+                  });
 
                   const present = sessionAtt.filter(
                     (a) => a.status === "present",
