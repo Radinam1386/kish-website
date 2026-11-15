@@ -51,7 +51,7 @@ import AdminStudentDetails from "./pages/AdminStudentDetails";
 import ClassForm from "./pages/ClassForm";
 import ClassDetails from "./pages/ClassDetails";
 import StudentCertificate from "./pages/StudentCertificate";
-import PaymentRequest from "./pages/pool";
+import UnderConstruction from "./pages/UnderConstruction";
 
 /*
 |--------------------------------------------------------------------------
@@ -65,7 +65,7 @@ import PaymentRequest from "./pages/pool";
 |
 */
 
-const SITE_LOCKED = false;
+const SITE_LOCKED = true;
 
 function ScrollToAnchor() {
   const { hash } = useLocation();
@@ -121,7 +121,7 @@ function App() {
 
         <Route
           path="/paymenteybaba"
-          element={<PaymentRequest />}
+          element={<UnderConstruction />}
         />
 
         <Route path="/about" element={<About />} />

@@ -1860,3 +1860,212 @@
     font-size: 0.76rem;
   }
 }
+
+/* Session attendance expandable list */
+
+.session-attendance-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 13px;
+  border: 1px solid #fecaca;
+  border-radius: 9px;
+  background: #fff5f5;
+  color: #dc2626;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.session-attendance-toggle:hover {
+  background: #dc2626;
+  color: white;
+  border-color: #dc2626;
+}
+
+.session-expanded-row > td {
+  padding: 0 !important;
+  background: #fafafa;
+}
+
+.session-attendance-details {
+  padding: 22px;
+  border: 1px solid #e5e7eb;
+  border-radius: 0 0 14px 14px;
+}
+
+.session-attendance-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.session-attendance-details-header h4 {
+  margin: 0 0 6px;
+  color: #18181b;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.session-attendance-details-header span {
+  color: #71717a;
+  font-size: 12px;
+}
+
+.session-attendance-details-header .attendance-total {
+  padding: 7px 12px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #475569;
+  white-space: nowrap;
+}
+
+.session-student-attendance-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.session-student-attendance-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.session-student-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.session-student-number {
+  width: 25px;
+  height: 25px;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  background: #f4f4f5;
+  color: #71717a;
+  font-size: 11px;
+}
+
+.session-student-name {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.session-student-name strong {
+  color: #27272a;
+  font-size: 13px;
+}
+
+.session-student-name small {
+  color: #a1a1aa;
+  font-size: 11px;
+}
+
+.session-student-result {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.session-attendance-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 85px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.session-attendance-status.present {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.session-attendance-status.absent {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.session-attendance-status.late {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.session-attendance-status.excused {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.session-attendance-status.not-recorded {
+  background: #f4f4f5;
+  color: #71717a;
+}
+
+.session-attendance-note {
+  max-width: 250px;
+  color: #71717a;
+  font-size: 11px;
+  text-align: left;
+}
+
+.mobile-toggle {
+  width: 100%;
+  margin-top: 14px;
+}
+
+.mobile-attendance-details {
+  margin-top: 14px;
+  padding: 15px;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+.mobile-attendance-details h4 {
+  margin: 0 0 14px;
+  font-size: 14px;
+}
+
+@media (max-width: 600px) {
+  .session-student-attendance-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .session-student-result {
+    width: 100%;
+    align-items: flex-start;
+    padding-right: 35px;
+  }
+
+  .session-attendance-note {
+    max-width: 100%;
+  }
+
+  .session-attendance-details-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

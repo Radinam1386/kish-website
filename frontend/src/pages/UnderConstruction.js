@@ -6,7 +6,7 @@ import {
   Code2,
   Sparkles,
 } from "lucide-react";
-import "./pool.css";
+import "./UnderConstruction.css";
 
 export default function UnderConstruction() {
   return (

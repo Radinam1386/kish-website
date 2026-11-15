@@ -16,6 +16,8 @@ import {
   Phone,
   Mail,
   Eye,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 
 import DashboardLayout from "../components/DashboardLayout";
@@ -38,6 +40,7 @@ export default function ClassDetails() {
   const [teacher, setTeacher] = useState(null);
   const [sessions, setSessions] = useState([]);
   const [attendanceRecords, setAttendanceRecords] = useState([]);
+  const [expandedSessionId, setExpandedSessionId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [deleting, setDeleting] = useState(false);
@@ -148,6 +151,59 @@ export default function ClassDetails() {
       overallAttendanceRate: rate,
     };
   }, [enrolledStudents, sessions, attendanceRecords]);
+
+  const getStudentSessionAttendance = (sessionId, studentId) => {
+    return attendanceRecords.find((a) => {
+      const aSessionId = a.session?.id ?? a.session;
+      const aStudentId = a.student?.id ?? a.student;
+
+      return (
+        String(aSessionId) === String(sessionId) &&
+        String(aStudentId) === String(studentId)
+      );
+    });
+  };
+
+  const getAttendanceStatus = (sessionId, studentId) => {
+    const record = getStudentSessionAttendance(sessionId, studentId);
+
+    if (!record) {
+      return {
+        label: "ثبت نشده",
+        className: "not-recorded",
+        note: "",
+      };
+    }
+
+    const statuses = {
+      present: {
+        label: "حاضر",
+        className: "present",
+      },
+      absent: {
+        label: "غایب",
+        className: "absent",
+      },
+      late: {
+        label: "با تأخیر",
+        className: "late",
+      },
+      excused: {
+        label: "غیبت موجه",
+        className: "excused",
+      },
+    };
+
+    const status = statuses[record.status] || {
+      label: record.status || "نامشخص",
+      className: "not-recorded",
+    };
+
+    return {
+      ...status,
+      note: record.note || "",
+    };
+  };
 
   const handleDeleteClass = async () => {
     if (
@@ -577,6 +633,7 @@ export default function ClassDetails() {
                       <th>حاضرین</th>
                       <th>غایبین</th>
                       <th>تأخیر / موجه</th>
+                      <th>جزئیات حضور و غیاب</th>
                     </tr>
                   </thead>
 
@@ -628,6 +685,114 @@ export default function ClassDetails() {
                           </td>
 
                           <td>{toPersianDigits(other)} نفر</td>
+
+                          <td>
+                            <button
+                              type="button"
+                              className="session-attendance-toggle"
+                              onClick={() =>
+                                setExpandedSessionId(
+                                  expandedSessionId === s.id ? null : s.id,
+                                )
+                              }
+                            >
+                              {expandedSessionId === s.id ? (
+                                <ChevronUp size={15} />
+                              ) : (
+                                <ChevronDown size={15} />
+                              )}
+                              {expandedSessionId === s.id
+                                ? "بستن لیست"
+                                : "مشاهده لیست"}
+                            </button>
+                          </td>
+                          {expandedSessionId === s.id && (
+                            <tr className="session-expanded-row">
+                              <td colSpan={6}>
+                                <div className="session-attendance-details">
+                                  <div className="session-attendance-details-header">
+                                    <div>
+                                      <h4>لیست حضور و غیاب دانش‌آموزان</h4>
+                                      <span>
+                                        جلسه{" "}
+                                        {toPersianDigits(sessions.length - idx)}{" "}
+                                        - {toJalaliDateString(s.date)}
+                                      </span>
+                                    </div>
+
+                                    <span className="attendance-total">
+                                      {toPersianDigits(enrolledStudents.length)}{" "}
+                                      دانش‌آموز
+                                    </span>
+                                  </div>
+
+                                  <div className="session-student-attendance-list">
+                                    {enrolledStudents.map(
+                                      (st, studentIndex) => {
+                                        const attendance =
+                                          getStudentSessionAttendance(
+                                            s.id,
+                                            st.id,
+                                          );
+
+                                        const status = getAttendanceStatus(
+                                          s.id,
+                                          st.id,
+                                        );
+
+                                        return (
+                                          <div
+                                            className="session-student-attendance-item"
+                                            key={st.id}
+                                          >
+                                            <div className="session-student-identity">
+                                              <div className="session-student-number">
+                                                {toPersianDigits(
+                                                  studentIndex + 1,
+                                                )}
+                                              </div>
+
+                                              <div className="student-small-avatar">
+                                                {st.fullName.charAt(0)}
+                                              </div>
+
+                                              <div className="session-student-name">
+                                                <strong>{st.fullName}</strong>
+                                                <small>
+                                                  {st.phone_number ||
+                                                    "شماره تماس ثبت نشده"}
+                                                </small>
+                                              </div>
+                                            </div>
+
+                                            <div className="session-student-result">
+                                              <span
+                                                className={`session-attendance-status ${status.className}`}
+                                              >
+                                                {status.label}
+                                              </span>
+
+                                              {status.note && (
+                                                <span className="session-attendance-note">
+                                                  توضیحات: {status.note}
+                                                </span>
+                                              )}
+                                            </div>
+                                          </div>
+                                        );
+                                      },
+                                    )}
+                                  </div>
+
+                                  {enrolledStudents.length === 0 && (
+                                    <div className="empty-sessions-box">
+                                      دانش‌آموزی برای نمایش وجود ندارد.
+                                    </div>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          )}
                         </tr>
                       );
                     })}
@@ -703,6 +868,69 @@ export default function ClassDetails() {
                           </div>
                         </div>
                       </div>
+                      <button
+                        type="button"
+                        className="session-attendance-toggle mobile-toggle"
+                        onClick={() =>
+                          setExpandedSessionId(
+                            expandedSessionId === s.id ? null : s.id,
+                          )
+                        }
+                      >
+                        {expandedSessionId === s.id ? (
+                          <ChevronUp size={16} />
+                        ) : (
+                          <ChevronDown size={16} />
+                        )}
+
+                        {expandedSessionId === s.id
+                          ? "بستن لیست حضور و غیاب"
+                          : "مشاهده وضعیت تک‌تک دانش‌آموزان"}
+                      </button>
+
+                      {expandedSessionId === s.id && (
+                        <div className="session-attendance-details mobile-attendance-details">
+                          <h4>لیست دانش‌آموزان</h4>
+
+                          {enrolledStudents.map((st, studentIndex) => {
+                            const status = getAttendanceStatus(s.id, st.id);
+
+                            return (
+                              <div
+                                className="session-student-attendance-item"
+                                key={st.id}
+                              >
+                                <div className="session-student-identity">
+                                  <div className="session-student-number">
+                                    {toPersianDigits(studentIndex + 1)}
+                                  </div>
+
+                                  <div className="session-student-name">
+                                    <strong>{st.fullName}</strong>
+                                    <small>
+                                      {st.phone_number || "شماره تماس ثبت نشده"}
+                                    </small>
+                                  </div>
+                                </div>
+
+                                <div className="session-student-result">
+                                  <span
+                                    className={`session-attendance-status ${status.className}`}
+                                  >
+                                    {status.label}
+                                  </span>
+
+                                  {status.note && (
+                                    <span className="session-attendance-note">
+                                      {status.note}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
