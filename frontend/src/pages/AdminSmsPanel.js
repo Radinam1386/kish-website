@@ -1,3 +1,4 @@
+
 import React, { useEffect, useMemo, useState } from "react";
 import {
   MessageSquareText,
@@ -11,15 +12,19 @@ import {
   Filter,
   Megaphone,
   Phone,
-  RotateCcw,
   AlertCircle,
   History,
   ChevronDown,
 } from "lucide-react";
 
 import DashboardLayout from "../components/DashboardLayout";
+import JalaliDatePicker from "../components/JalaliDatePicker";
 import { api, getFullName } from "../services/api";
-import { toPersianDigits } from "../utils/dateUtils";
+import {
+  toPersianDigits,
+  getTodayJalali,
+  toJalaliDateString,
+} from "../utils/dateUtils";
 
 import "./AdminSmsPanel.css";
 
@@ -65,50 +70,94 @@ const TEMPLATES = [
 ];
 
 function AdminSmsPanel() {
+  const today = getTodayJalali();
+
   const [users, setUsers] = useState([]);
   const [classrooms, setClassrooms] = useState([]);
   const [enrollments, setEnrollments] = useState([]);
+  const [terms, setTerms] = useState([]);
+  const [sessions, setSessions] = useState([]);
+  const [attendanceRecords, setAttendanceRecords] = useState([]);
+
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
 
   const [activeTab, setActiveTab] = useState("compose");
   const [recipientMode, setRecipientMode] = useState("class");
+
+  const [selectedTermId, setSelectedTermId] = useState("");
   const [selectedClassId, setSelectedClassId] = useState("");
+  const [selectedDate, setSelectedDate] = useState(today.isoGregorian);
+
   const [selectedStudents, setSelectedStudents] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+
   const [message, setMessage] = useState("");
   const [messageTitle, setMessageTitle] = useState("");
+
   const [logs, setLogs] = useState(INITIAL_LOGS);
   const [reportFilter, setReportFilter] = useState("all");
   const [reportSearch, setReportSearch] = useState("");
+
   const [showPreview, setShowPreview] = useState(false);
   const [notice, setNotice] = useState("");
 
+  // دریافت اطلاعات موردنیاز از APIهای موجود
   useEffect(() => {
     let alive = true;
 
     async function loadData() {
       try {
-        const [usersData, classroomsData, enrollmentsData] = await Promise.all([
+        setLoading(true);
+        setLoadError("");
+
+        const [
+          usersData,
+          classroomsData,
+          enrollmentsData,
+          termsData,
+          sessionsData,
+          attendanceData,
+        ] = await Promise.all([
           api.users.list(),
           api.classrooms.list(),
           api.enrollments.list(),
+          api.terms.list(),
+          api.sessions.list(),
+          api.attendance.list(),
         ]);
 
         if (!alive) return;
 
-        setUsers(usersData || []);
-        setClassrooms(classroomsData || []);
-        setEnrollments(enrollmentsData || []);
+        const loadedTerms = termsData || [];
+        const loadedClassrooms = classroomsData || [];
 
-        if (classroomsData?.length) {
-          setSelectedClassId(String(classroomsData[0].id));
+        setUsers(usersData || []);
+        setClassrooms(loadedClassrooms);
+        setEnrollments(enrollmentsData || []);
+        setTerms(loadedTerms);
+        setSessions(sessionsData || []);
+        setAttendanceRecords(attendanceData || []);
+
+        const activeTerm = loadedTerms.find((term) => term.is_active);
+
+        if (activeTerm) {
+          setSelectedTermId(String(activeTerm.id));
+        } else if (loadedTerms.length) {
+          setSelectedTermId(String(loadedTerms[0].id));
+        } else {
+          setSelectedTermId("all");
         }
-      } catch {
+
+        if (loadedClassrooms.length) {
+          setSelectedClassId(String(loadedClassrooms[0].id));
+        }
+      } catch (error) {
         if (!alive) return;
 
-        setUsers([]);
-        setClassrooms([]);
-        setEnrollments([]);
+        setLoadError(
+          error?.message || "دریافت اطلاعات از سرور با مشکل مواجه شد.",
+        );
       } finally {
         if (alive) setLoading(false);
       }
@@ -121,116 +170,242 @@ function AdminSmsPanel() {
     };
   }, []);
 
-  const students = useMemo(() => {
+  // ترم انتخاب‌شده
+  const termClassrooms = useMemo(() => {
+    if (selectedTermId === "all") return classrooms;
+
+    return classrooms.filter(
+      (classroom) =>
+        String(classroom.term?.id ?? classroom.term) ===
+        String(selectedTermId),
+    );
+  }, [classrooms, selectedTermId]);
+
+  // انتخاب اولین کلاس معتبر پس از تغییر ترم
+  useEffect(() => {
+    if (!termClassrooms.length) {
+      setSelectedClassId("");
+      return;
+    }
+
+    const selectedClassExists = termClassrooms.some(
+      (classroom) => String(classroom.id) === String(selectedClassId),
+    );
+
+    if (!selectedClassExists) {
+      setSelectedClassId(String(termClassrooms[0].id));
+    }
+  }, [termClassrooms, selectedClassId]);
+
+  // ساخت فهرست دانش‌آموزان عضو کلاس‌ها
+  const enrolledStudents = useMemo(() => {
     const studentUsers = users.filter((user) => user.role === "student");
 
-    return studentUsers.map((user) => {
-      const enrollment = enrollments.find((item) => {
+    return enrollments
+      .map((enrollment) => {
         const studentId =
-          typeof item.student === "object" ? item.student?.id : item.student;
+          enrollment.student?.id ?? enrollment.student;
 
-        return String(studentId) === String(user.id);
-      });
+        const student =
+          enrollment.student_detail ||
+          studentUsers.find(
+            (user) => String(user.id) === String(studentId),
+          );
 
-      const classroomId =
-        typeof enrollment?.classroom === "object"
-          ? enrollment.classroom?.id
-          : enrollment?.classroom;
+        if (!student || student.role === "teacher") return null;
 
-      const classroom = classrooms.find(
-        (item) => String(item.id) === String(classroomId),
-      );
+        const classroomId =
+          enrollment.classroom?.id ?? enrollment.classroom;
 
-      return {
-        id: user.id,
-        name: getFullName(user),
-        phone: user.phone_number || "",
-        classroomId: classroomId ? String(classroomId) : "",
-        classroomName: classroom?.name || "بدون کلاس",
-      };
-    });
+        const classroom = classrooms.find(
+          (item) => String(item.id) === String(classroomId),
+        );
+
+        if (!classroom) return null;
+
+        return {
+          id: student.id,
+          name: getFullName(student) || `دانش‌آموز ${student.id}`,
+          phone: student.phone_number || "",
+          classroomId: String(classroom.id),
+          classroomName: classroom.name || "کلاس نامشخص",
+        };
+      })
+      .filter(Boolean);
   }, [users, enrollments, classrooms]);
 
+  // فهرست یکتای دانش‌آموزان برای ارسال عمومی
+  const students = useMemo(() => {
+    const studentMap = new Map();
+
+    enrolledStudents.forEach((student) => {
+      if (!studentMap.has(String(student.id))) {
+        studentMap.set(String(student.id), student);
+      }
+    });
+
+    return Array.from(studentMap.values());
+  }, [enrolledStudents]);
+
+  // دانش‌آموزان کلاس انتخاب‌شده
   const classStudents = useMemo(() => {
     if (!selectedClassId) return [];
 
-    return students.filter(
-      (student) => student.classroomId === String(selectedClassId),
+    return enrolledStudents.filter(
+      (student) =>
+        String(student.classroomId) === String(selectedClassId),
     );
-  }, [students, selectedClassId]);
+  }, [enrolledStudents, selectedClassId]);
 
-  const demoAbsentStudents = useMemo(
-    () => classStudents.filter((student, index) => index % 4 === 0),
-    [classStudents],
-  );
+  // جلسه کلاس در تاریخ انتخاب‌شده
+  const selectedSession = useMemo(() => {
+    if (!selectedClassId || !selectedDate) return null;
 
+    return (
+      sessions.find(
+        (session) =>
+          String(session.classroom?.id ?? session.classroom) ===
+            String(selectedClassId) &&
+          session.date === selectedDate,
+      ) || null
+    );
+  }, [sessions, selectedClassId, selectedDate]);
+
+  // استخراج غایبین واقعی از سوابق حضور و غیاب
+  const absentStudents = useMemo(() => {
+    if (!selectedSession) return [];
+
+    return classStudents.filter((student) => {
+      const attendance = attendanceRecords.find(
+        (record) =>
+          String(record.session?.id ?? record.session) ===
+            String(selectedSession.id) &&
+          String(record.student?.id ?? record.student) ===
+            String(student.id),
+      );
+
+      return attendance?.status === "absent";
+    });
+  }, [classStudents, selectedSession, attendanceRecords]);
+
+  // فهرست گیرندگان بر اساس نوع ارسال
+  const recipientCandidates = useMemo(() => {
+    if (recipientMode === "all") return students;
+
+    if (recipientMode === "absent") return absentStudents;
+
+    return classStudents;
+  }, [recipientMode, students, absentStudents, classStudents]);
+
+  // فیلتر جستجو
   const visibleStudents = useMemo(() => {
-    const source =
-      recipientMode === "absent"
-        ? demoAbsentStudents
-        : recipientMode === "all"
-          ? students
-          : classStudents;
-
     const query = searchTerm.trim().toLowerCase();
 
-    if (!query) return source;
+    if (!query) return recipientCandidates;
 
-    return source.filter(
+    return recipientCandidates.filter(
       (student) =>
         student.name.toLowerCase().includes(query) ||
-        student.phone.includes(query),
+        student.phone.toLowerCase().includes(query),
     );
-  }, [recipientMode, demoAbsentStudents, students, classStudents, searchTerm]);
+  }, [recipientCandidates, searchTerm]);
 
+  // گیرندگان انتخاب‌شده از فهرست فعلی
   const selectedRecipients = useMemo(
-    () => students.filter((student) => selectedStudents.includes(student.id)),
-    [students, selectedStudents],
+    () =>
+      recipientCandidates.filter((student) =>
+        selectedStudents.some(
+          (id) => String(id) === String(student.id),
+        ),
+      ),
+    [recipientCandidates, selectedStudents],
   );
 
-  const validRecipients = selectedRecipients.filter((student) => student.phone);
+  const validRecipients = selectedRecipients.filter(
+    (student) => student.phone.trim(),
+  );
 
   const selectedClass = classrooms.find(
-    (item) => String(item.id) === String(selectedClassId),
+    (classroom) =>
+      String(classroom.id) === String(selectedClassId),
+  );
+
+  const selectedTerm = terms.find(
+    (term) => String(term.id) === String(selectedTermId),
   );
 
   const characterCount = message.length;
-  const smsCount = Math.max(1, Math.ceil(characterCount / 70));
+  const smsCount =
+    characterCount === 0 ? 0 : Math.ceil(characterCount / 70);
 
   const toggleStudent = (studentId) => {
     setSelectedStudents((current) =>
-      current.includes(studentId)
-        ? current.filter((id) => id !== studentId)
+      current.some((id) => String(id) === String(studentId))
+        ? current.filter((id) => String(id) !== String(studentId))
         : [...current, studentId],
     );
   };
 
   const toggleVisibleStudents = () => {
     const visibleIds = visibleStudents.map((student) => student.id);
-    const allSelected = visibleIds.every((id) => selectedStudents.includes(id));
+
+    const allSelected =
+      visibleIds.length > 0 &&
+      visibleIds.every((id) =>
+        selectedStudents.some(
+          (selectedId) => String(selectedId) === String(id),
+        ),
+      );
 
     setSelectedStudents((current) =>
       allSelected
-        ? current.filter((id) => !visibleIds.includes(id))
-        : [...new Set([...current, ...visibleIds])],
+        ? current.filter(
+            (id) =>
+              !visibleIds.some(
+                (visibleId) => String(visibleId) === String(id),
+              ),
+          )
+        : [
+            ...current,
+            ...visibleIds.filter(
+              (id) =>
+                !current.some(
+                  (selectedId) => String(selectedId) === String(id),
+                ),
+            ),
+          ],
     );
   };
 
   const selectAbsentStudents = () => {
-    setSelectedStudents(demoAbsentStudents.map((student) => student.id));
+    setSelectedStudents(absentStudents.map((student) => student.id));
+
+    setNotice(
+      absentStudents.length
+        ? `${toPersianDigits(absentStudents.length)} دانش‌آموز غایب انتخاب شدند.`
+        : "برای این کلاس و تاریخ، دانش‌آموز غایبی ثبت نشده است.",
+    );
   };
 
   const handleModeChange = (mode) => {
     setRecipientMode(mode);
     setSelectedStudents([]);
     setSearchTerm("");
+    setNotice("");
   };
 
   const applyTemplate = (template) => {
     setMessageTitle(template.title);
+
+    const className = selectedClass?.name || "کلاس مربوطه";
+
     setMessage(
-      template.text.replace("{{class}}", selectedClass?.name || "کلاس مربوطه"),
+      template.text
+        .replaceAll("{{class}}", className)
+        .replaceAll("{{message}}", "اطلاعیه موردنظر"),
     );
+
+    setNotice("");
   };
 
   const handleSend = () => {
@@ -253,13 +428,20 @@ function AdminSmsPanel() {
       failed: 0,
       date: new Date().toLocaleString("fa-IR"),
       status: "demo",
-      type: recipientMode === "absent" ? "غایبین" : "گروهی",
+      type:
+        recipientMode === "absent"
+          ? "اطلاع‌رسانی غیبت"
+          : recipientMode === "all"
+            ? "ارسال عمومی"
+            : "ارسال کلاسی",
     };
 
     setLogs((current) => [newLog, ...current]);
+
     setNotice(
       `ارسال آزمایشی ثبت شد؛ ${toPersianDigits(validRecipients.length)} گیرنده در گزارش قرار گرفتند. پیام واقعی ارسال نشده است.`,
     );
+
     setShowPreview(false);
     setActiveTab("reports");
     setMessage("");
@@ -267,6 +449,7 @@ function AdminSmsPanel() {
     setSelectedStudents([]);
   };
 
+  // فیلتر گزارش‌ها
   const filteredLogs = useMemo(() => {
     return logs.filter((log) => {
       const matchesStatus =
@@ -283,9 +466,15 @@ function AdminSmsPanel() {
     });
   }, [logs, reportFilter, reportSearch]);
 
-  const totalRecipients = logs.reduce((sum, log) => sum + log.recipients, 0);
+  const totalRecipients = logs.reduce(
+    (sum, log) => sum + log.recipients,
+    0,
+  );
 
-  const successfulMessages = logs.reduce((sum, log) => sum + log.successful, 0);
+  const successfulMessages = logs.reduce(
+    (sum, log) => sum + log.successful,
+    0,
+  );
 
   return (
     <DashboardLayout
@@ -299,6 +488,7 @@ function AdminSmsPanel() {
             <div className="admin-students-x7k2-heading-icon">
               <MessageSquareText size={25} />
             </div>
+
             <div className="student-certificate-x8k4-header-content">
               <h1>مدیریت پیامک‌ها</h1>
               <p>
@@ -307,13 +497,21 @@ function AdminSmsPanel() {
             </div>
           </div>
         </div>
+
         <div className="admin-sms-demo-alert">
           <AlertCircle size={19} />
           <span>
-            حالت نمایشی: پیامک واقعی ارسال نمی‌شود و گزارش‌ها در حال حاضر
-            اطلاعات آزمایشی هستند.
+            حالت نمایشی: پیامک واقعی ارسال نمی‌شود و گزارش‌های جدید فقط در
+            حافظه همین صفحه ثبت می‌شوند.
           </span>
         </div>
+
+        {loadError && (
+          <div className="admin-sms-notice">
+            <AlertCircle size={17} />
+            {loadError}
+          </div>
+        )}
 
         <div className="admin-sms-stats">
           <div className="admin-sms-stat-card">
@@ -409,37 +607,107 @@ function AdminSmsPanel() {
               </div>
 
               {recipientMode !== "all" && (
-                <div className="admin-sms-field">
-                  <label htmlFor="admin-sms-class">انتخاب کلاس</label>
-                  <div className="admin-sms-select-wrap">
-                    <select
-                      id="admin-sms-class"
-                      value={selectedClassId}
-                      onChange={(event) => {
-                        setSelectedClassId(event.target.value);
-                        setSelectedStudents([]);
-                      }}
-                    >
-                      {classrooms.map((classroom) => (
-                        <option key={classroom.id} value={classroom.id}>
-                          {classroom.name}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown size={17} />
+                <>
+                  <div className="admin-sms-field">
+                    <label htmlFor="admin-sms-term">انتخاب ترم</label>
+                    <div className="admin-sms-select-wrap">
+                      <select
+                        id="admin-sms-term"
+                        value={selectedTermId}
+                        onChange={(event) => {
+                          setSelectedTermId(event.target.value);
+                          setSelectedStudents([]);
+                          setNotice("");
+                        }}
+                      >
+                        {terms.map((term) => (
+                          <option key={term.id} value={term.id}>
+                            {term.name}
+                            {term.is_active ? " (ترم فعال)" : ""}
+                          </option>
+                        ))}
+                        <option value="all">همه ترم‌ها</option>
+                      </select>
+                      <ChevronDown size={17} />
+                    </div>
                   </div>
-                  {loading && <small>در حال دریافت کلاس‌ها...</small>}
-                  {!loading && classrooms.length === 0 && (
-                    <small>کلاسی برای انتخاب وجود ندارد.</small>
-                  )}
-                </div>
+
+                  <div className="admin-sms-field">
+                    <label htmlFor="admin-sms-class">انتخاب کلاس</label>
+                    <div className="admin-sms-select-wrap">
+                      <select
+                        id="admin-sms-class"
+                        value={selectedClassId}
+                        onChange={(event) => {
+                          setSelectedClassId(event.target.value);
+                          setSelectedStudents([]);
+                          setNotice("");
+                        }}
+                        disabled={!termClassrooms.length}
+                      >
+                        {termClassrooms.map((classroom) => (
+                          <option key={classroom.id} value={classroom.id}>
+                            {classroom.name}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown size={17} />
+                    </div>
+                  </div>
+                </>
               )}
 
               {recipientMode === "absent" && (
+                <>
+                  <div className="admin-sms-field">
+                    <label>تاریخ جلسه</label>
+                    <JalaliDatePicker
+                      value={selectedDate}
+                      onChange={(date) => {
+                        setSelectedDate(date);
+                        setSelectedStudents([]);
+                        setNotice("");
+                      }}
+                      placeholder="انتخاب تاریخ جلسه..."
+                    />
+                  </div>
+
+                  <div className="admin-sms-absent-note">
+                    <AlertCircle size={17} />
+                    <div>
+                      {selectedSession ? (
+                        <>
+                          <strong>
+                            جلسه در تاریخ{" "}
+                            {toJalaliDateString(selectedDate)} پیدا شد.
+                          </strong>
+                          <span>
+                            {toPersianDigits(absentStudents.length)} دانش‌آموز
+                            با وضعیت «غایب» ثبت شده‌اند. غیبت موجه در این فهرست
+                            قرار نمی‌گیرد.
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <strong>جلسه‌ای برای این تاریخ ثبت نشده است.</strong>
+                          <span>
+                            برای مشاهده غایبین، کلاسی را انتخاب کنید که در
+                            تاریخ انتخاب‌شده جلسه داشته باشد.
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {recipientMode === "class" && selectedClass && (
                 <div className="admin-sms-absent-note">
-                  <AlertCircle size={17} />
-                  فهرست غایبین فعلاً نمونه‌ای است؛ اتصال به سوابق حضور و غیاب در
-                  مرحله بعد انجام می‌شود.
+                  <UsersRound size={17} />
+                  <span>
+                    {toPersianDigits(classStudents.length)} دانش‌آموز در کلاس{" "}
+                    {selectedClass.name} ثبت‌نام شده‌اند.
+                  </span>
                 </div>
               )}
 
@@ -468,6 +736,11 @@ function AdminSmsPanel() {
                   <div className="admin-sms-empty">
                     در حال دریافت اطلاعات دانش‌آموزان...
                   </div>
+                ) : recipientMode === "absent" && !selectedSession ? (
+                  <div className="admin-sms-empty">
+                    ابتدا کلاس و تاریخ جلسه دارای سابقه حضور و غیاب را انتخاب
+                    کنید.
+                  </div>
                 ) : visibleStudents.length === 0 ? (
                   <div className="admin-sms-empty">
                     دانش‌آموزی برای نمایش پیدا نشد.
@@ -477,12 +750,18 @@ function AdminSmsPanel() {
                     <label
                       key={student.id}
                       className={`admin-sms-student-item ${
-                        selectedStudents.includes(student.id) ? "selected" : ""
+                        selectedStudents.some(
+                          (id) => String(id) === String(student.id),
+                        )
+                          ? "selected"
+                          : ""
                       }`}
                     >
                       <input
                         type="checkbox"
-                        checked={selectedStudents.includes(student.id)}
+                        checked={selectedStudents.some(
+                          (id) => String(id) === String(student.id),
+                        )}
                         onChange={() => toggleStudent(student.id)}
                       />
 
@@ -508,7 +787,7 @@ function AdminSmsPanel() {
 
               <div className="admin-sms-selection-footer">
                 <span>
-                  {toPersianDigits(selectedStudents.length)} نفر انتخاب شده
+                  {toPersianDigits(selectedRecipients.length)} نفر انتخاب‌شده
                 </span>
 
                 <span>
@@ -516,8 +795,12 @@ function AdminSmsPanel() {
                 </span>
 
                 {recipientMode === "absent" && (
-                  <button type="button" onClick={selectAbsentStudents}>
-                    انتخاب غایبین
+                  <button
+                    type="button"
+                    onClick={selectAbsentStudents}
+                    disabled={!absentStudents.length}
+                  >
+                    انتخاب همه غایبین
                   </button>
                 )}
               </div>
@@ -563,7 +846,10 @@ function AdminSmsPanel() {
                 <textarea
                   id="admin-sms-message"
                   value={message}
-                  onChange={(event) => setMessage(event.target.value)}
+                  onChange={(event) => {
+                    setMessage(event.target.value);
+                    setNotice("");
+                  }}
                   placeholder="متن پیامک خود را اینجا بنویسید..."
                   rows={8}
                 />
@@ -671,10 +957,12 @@ function AdminSmsPanel() {
                           <UsersRound size={14} />
                           {toPersianDigits(log.recipients)} گیرنده
                         </span>
+
                         <span>
                           <Clock3 size={14} />
                           {log.date}
                         </span>
+
                         <span>{log.type}</span>
                       </div>
                     </div>
@@ -684,6 +972,7 @@ function AdminSmsPanel() {
                         <CheckCircle2 size={15} />
                         {toPersianDigits(log.successful)}
                       </span>
+
                       <span className="failed">
                         <XCircle size={15} />
                         {toPersianDigits(log.failed)}
@@ -705,10 +994,19 @@ function AdminSmsPanel() {
               }
             }}
           >
-            <div className="admin-sms-preview-modal" role="dialog">
+            <div
+              className="admin-sms-preview-modal"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="admin-sms-preview-title"
+            >
               <div className="admin-sms-preview-header">
-                <h3>پیش‌نمایش پیامک</h3>
-                <button type="button" onClick={() => setShowPreview(false)}>
+                <h3 id="admin-sms-preview-title">پیش‌نمایش پیامک</h3>
+                <button
+                  type="button"
+                  onClick={() => setShowPreview(false)}
+                  aria-label="بستن پیش‌نمایش"
+                >
                   ×
                 </button>
               </div>
@@ -718,6 +1016,7 @@ function AdminSmsPanel() {
                   <span>Kish Institute</span>
                   <MessageSquareText size={17} />
                 </div>
+
                 <div className="admin-sms-phone-message">
                   {message || "متن پیامک شما اینجا نمایش داده می‌شود."}
                 </div>
