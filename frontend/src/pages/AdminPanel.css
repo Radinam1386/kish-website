@@ -1457,3 +1457,82 @@
     border-radius: 8px;
   }
 }
+
+.admin-sms-shortcut {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 24px;
+  margin: 24px 0;
+  background: linear-gradient(120deg, #fff, #fff7f7);
+  border: 1px solid #f2dede;
+  border-radius: 18px;
+  box-shadow: 0 4px 18px rgba(30, 30, 30, 0.035);
+}
+
+.admin-sms-shortcut-icon {
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  background: #fff0f0;
+  color: #d93442;
+}
+
+.admin-sms-shortcut-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-sms-shortcut-content h3 {
+  margin: 0 0 7px;
+  color: #252525;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.admin-sms-shortcut-content p {
+  margin: 0;
+  color: #777;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.admin-sms-shortcut-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 11px 17px;
+  border-radius: 11px;
+  background: #d93442;
+  color: #fff;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  transition: 0.2s ease;
+}
+
+.admin-sms-shortcut-link:hover {
+  background: #b92130;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 600px) {
+  .admin-sms-shortcut {
+    flex-wrap: wrap;
+    padding: 17px;
+  }
+
+  .admin-sms-shortcut-content {
+    flex-basis: calc(100% - 75px);
+  }
+
+  .admin-sms-shortcut-link {
+    width: 100%;
+  }
+}

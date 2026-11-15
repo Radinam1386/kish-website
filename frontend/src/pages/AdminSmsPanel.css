@@ -1,0 +1,903 @@
+
+.admin-sms-page {
+  direction: rtl;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  color: #252b36;
+  padding-bottom: 35px;
+}
+
+.admin-sms-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.admin-sms-eyebrow {
+  display: inline-block;
+  color: #d43d49;
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.admin-sms-heading h2 {
+  margin: 0 0 7px;
+  font-size: 24px;
+  font-weight: 850;
+}
+
+.admin-sms-heading p {
+  margin: 0;
+  color: #818896;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.admin-sms-heading-icon {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 17px;
+  color: #d43d49;
+  background: #fff0f1;
+}
+
+.admin-sms-demo-alert,
+.admin-sms-absent-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 13px 15px;
+  border: 1px solid #f4dfb8;
+  border-radius: 12px;
+  color: #94651c;
+  background: #fffaf0;
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+.admin-sms-demo-alert svg,
+.admin-sms-absent-note svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.admin-sms-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.admin-sms-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 19px;
+  border: 1px solid #edf0f4;
+  border-radius: 15px;
+  background: #fff;
+  box-shadow: 0 4px 15px rgba(25, 35, 50, 0.035);
+}
+
+.admin-sms-stat-icon {
+  width: 45px;
+  height: 45px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+}
+
+.admin-sms-stat-icon.purple {
+  color: #7455c7;
+  background: #f1edff;
+}
+
+.admin-sms-stat-icon.green {
+  color: #20966a;
+  background: #eaf8f1;
+}
+
+.admin-sms-stat-icon.orange {
+  color: #d58b2b;
+  background: #fff4e6;
+}
+
+.admin-sms-stat-card span {
+  display: block;
+  margin-bottom: 7px;
+  color: #858c98;
+  font-size: 12px;
+}
+
+.admin-sms-stat-card strong {
+  display: block;
+  color: #252b36;
+  font-size: 23px;
+  font-weight: 850;
+}
+
+.admin-sms-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 6px;
+  border: 1px solid #edf0f4;
+  border-radius: 13px;
+  background: #f7f8fa;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.admin-sms-tabs button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 11px 17px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #737b89;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.admin-sms-tabs button.active {
+  color: #d43d49;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(30, 40, 55, 0.07);
+}
+
+.admin-sms-tabs button span {
+  min-width: 21px;
+  height: 21px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0 5px;
+  border-radius: 20px;
+  color: #d43d49;
+  background: #fff0f1;
+  font-size: 11px;
+}
+
+.admin-sms-compose-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  align-items: start;
+  gap: 18px;
+}
+
+.admin-sms-card {
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid #edf0f4;
+  border-radius: 17px;
+  background: #fff;
+  box-shadow: 0 5px 20px rgba(25, 35, 50, 0.035);
+}
+
+.admin-sms-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 21px;
+}
+
+.admin-sms-card-heading > svg {
+  flex-shrink: 0;
+  color: #d43d49;
+}
+
+.admin-sms-card-heading h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 850;
+}
+
+.admin-sms-card-heading p {
+  margin: 0;
+  color: #9299a5;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.admin-sms-recipient-modes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.admin-sms-recipient-modes button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 11px 6px;
+  border: 1px solid #e9edf2;
+  border-radius: 10px;
+  color: #6f7785;
+  background: #fff;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.admin-sms-recipient-modes button.active {
+  color: #d43d49;
+  border-color: #f1c5ca;
+  background: #fff5f6;
+}
+
+.admin-sms-field {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-bottom: 18px;
+}
+
+.admin-sms-field > label,
+.admin-sms-template-section > label {
+  color: #3b4350;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.admin-sms-field input,
+.admin-sms-field textarea,
+.admin-sms-select-wrap select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #e7eaf0;
+  border-radius: 10px;
+  outline: none;
+  color: #303744;
+  background: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  transition: 0.2s ease;
+}
+
+.admin-sms-field input,
+.admin-sms-select-wrap select {
+  height: 45px;
+  padding: 0 13px;
+}
+
+.admin-sms-field textarea {
+  min-height: 175px;
+  resize: vertical;
+  padding: 13px;
+  line-height: 2;
+}
+
+.admin-sms-field input:focus,
+.admin-sms-field textarea:focus,
+.admin-sms-select-wrap select:focus {
+  border-color: #df727b;
+  box-shadow: 0 0 0 3px rgba(212, 61, 73, 0.07);
+}
+
+.admin-sms-field small {
+  color: #a1a7b1;
+  font-size: 11px;
+}
+
+.admin-sms-select-wrap {
+  position: relative;
+}
+
+.admin-sms-select-wrap select {
+  appearance: none;
+  padding-left: 38px;
+}
+
+.admin-sms-select-wrap > svg {
+  position: absolute;
+  left: 13px;
+  top: 14px;
+  pointer-events: none;
+  color: #8d95a2;
+}
+
+.admin-sms-student-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 17px 0 12px;
+}
+
+.admin-sms-search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: 1;
+  min-width: 0;
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid #e9edf2;
+  border-radius: 10px;
+  color: #9aa1ad;
+  background: #fff;
+}
+
+.admin-sms-search input {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  color: #3b4350;
+  background: transparent;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.admin-sms-student-toolbar > button,
+.admin-sms-selection-footer button {
+  flex-shrink: 0;
+  padding: 10px 12px;
+  border: 1px solid #f0c9cd;
+  border-radius: 9px;
+  color: #cb3c48;
+  background: #fff6f7;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.admin-sms-student-toolbar > button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.admin-sms-student-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  max-height: 360px;
+  overflow-y: auto;
+  padding-left: 3px;
+}
+
+.admin-sms-student-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #edf0f4;
+  border-radius: 11px;
+  cursor: pointer;
+  transition: 0.18s ease;
+}
+
+.admin-sms-student-item.selected {
+  border-color: #f0c3c8;
+  background: #fff8f8;
+}
+
+.admin-sms-student-item > input {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  accent-color: #d43d49;
+  cursor: pointer;
+}
+
+.admin-sms-student-avatar {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  color: #d43d49;
+  background: #fff0f1;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.admin-sms-student-details {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  flex: 1;
+}
+
+.admin-sms-student-details strong {
+  overflow: hidden;
+  color: #343b48;
+  font-size: 12px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-sms-student-details small {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #969daa;
+  font-size: 10px;
+}
+
+.admin-sms-no-phone {
+  flex-shrink: 0;
+  color: #c17c29;
+  font-size: 10px;
+}
+
+.admin-sms-selection-footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 15px;
+  padding-top: 14px;
+  border-top: 1px solid #eff1f4;
+  color: #727b89;
+  font-size: 11px;
+}
+
+.admin-sms-selection-footer button {
+  margin-right: auto;
+}
+
+.admin-sms-template-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 19px;
+}
+
+.admin-sms-template-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.admin-sms-template-list button {
+  padding: 8px 11px;
+  border: 1px solid #e9edf2;
+  border-radius: 9px;
+  color: #6f7785;
+  background: #fafbfc;
+  font-family: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.admin-sms-template-list button:hover {
+  color: #d43d49;
+  border-color: #f0c3c8;
+  background: #fff7f8;
+}
+
+.admin-sms-message-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: #969daa;
+  font-size: 10px;
+}
+
+.admin-sms-message-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 4px 0 17px;
+  color: #9299a5;
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+.admin-sms-message-hint svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.admin-sms-notice {
+  margin-bottom: 14px;
+  padding: 11px 13px;
+  border-radius: 9px;
+  color: #95651c;
+  background: #fff8e9;
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+.admin-sms-send-actions {
+  display: flex;
+  gap: 9px;
+}
+
+.admin-sms-preview-btn,
+.admin-sms-send-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 17px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.admin-sms-preview-btn {
+  border: 1px solid #e6eaf0;
+  color: #626b79;
+  background: #fff;
+}
+
+.admin-sms-send-btn {
+  flex: 1;
+  border: 1px solid #d43d49;
+  color: #fff;
+  background: #d43d49;
+}
+
+.admin-sms-send-btn:hover:not(:disabled) {
+  background: #b92c39;
+  border-color: #b92c39;
+}
+
+.admin-sms-send-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.admin-sms-preview-btn:hover {
+  background: #f7f8fa;
+}
+
+.admin-sms-reports-card {
+  width: 100%;
+}
+
+.admin-sms-report-toolbar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.admin-sms-report-filter {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  padding: 0 11px;
+  border: 1px solid #e9edf2;
+  border-radius: 10px;
+  color: #9299a5;
+}
+
+.admin-sms-report-filter select {
+  height: 42px;
+  border: 0;
+  outline: 0;
+  color: #626b79;
+  background: transparent;
+  font-family: inherit;
+  font-size: 11px;
+}
+
+.admin-sms-report-list {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.admin-sms-report-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 17px;
+  border: 1px solid #edf0f4;
+  border-radius: 13px;
+  background: #fff;
+}
+
+.admin-sms-report-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.admin-sms-report-title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.admin-sms-report-title-row h4 {
+  margin: 0;
+  color: #343b48;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.admin-sms-report-status {
+  padding: 5px 9px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.admin-sms-report-status.success {
+  color: #18875e;
+  background: #eaf8f1;
+}
+
+.admin-sms-report-status.partial {
+  color: #bd8128;
+  background: #fff5e5;
+}
+
+.admin-sms-report-status.demo {
+  color: #6e61b4;
+  background: #f1efff;
+}
+
+.admin-sms-report-main > p {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 9px 0 12px;
+  color: #858d99;
+  font-size: 11px;
+  line-height: 1.9;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.admin-sms-report-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  color: #9aa1ad;
+  font-size: 10px;
+}
+
+.admin-sms-report-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.admin-sms-report-results {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+  min-width: 65px;
+}
+
+.admin-sms-report-results span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.admin-sms-report-results .success {
+  color: #21966b;
+}
+
+.admin-sms-report-results .failed {
+  color: #d34c57;
+}
+
+.admin-sms-empty {
+  padding: 35px 15px;
+  color: #969daa;
+  text-align: center;
+  font-size: 12px;
+}
+
+.admin-sms-modal-backdrop {
+  position: fixed;
+  z-index: 1200;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(20, 27, 38, 0.52);
+  backdrop-filter: blur(3px);
+}
+
+.admin-sms-preview-modal {
+  width: min(100%, 420px);
+  padding: 21px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.18);
+}
+
+.admin-sms-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 17px;
+}
+
+.admin-sms-preview-header h3 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.admin-sms-preview-header button {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 8px;
+  color: #777;
+  background: #f2f3f5;
+  font-size: 23px;
+  cursor: pointer;
+}
+
+.admin-sms-phone-preview {
+  overflow: hidden;
+  border: 1px solid #e7eaf0;
+  border-radius: 15px;
+  background: #f6f7f9;
+}
+
+.admin-sms-phone-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 15px;
+  color: #626b79;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.admin-sms-phone-message {
+  width: 85%;
+  margin: 16px auto;
+  padding: 13px;
+  border-radius: 13px 13px 3px 13px;
+  color: #424956;
+  background: #fff;
+  font-size: 12px;
+  line-height: 2;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.admin-sms-preview-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 17px 0;
+  color: #858d99;
+  font-size: 11px;
+}
+
+.admin-sms-preview-summary strong {
+  color: #d43d49;
+  font-size: 14px;
+}
+
+.admin-sms-preview-summary span:last-child {
+  flex-basis: 100%;
+  font-size: 10px;
+}
+
+@media (max-width: 1050px) {
+  .admin-sms-compose-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .admin-sms-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-sms-stat-card {
+    padding: 14px;
+  }
+
+  .admin-sms-heading h2 {
+    font-size: 20px;
+  }
+
+  .admin-sms-card {
+    padding: 16px;
+  }
+
+  .admin-sms-report-toolbar {
+    flex-direction: column;
+  }
+
+  .admin-sms-report-filter {
+    min-height: 42px;
+  }
+
+  .admin-sms-report-item {
+    align-items: flex-start;
+    gap: 10px;
+    padding: 13px;
+  }
+
+  .admin-sms-report-meta {
+    gap: 9px;
+  }
+
+  .admin-sms-report-results {
+    min-width: 48px;
+  }
+}
+
+@media (max-width: 450px) {
+  .admin-sms-tabs {
+    width: 100%;
+  }
+
+  .admin-sms-tabs button {
+    flex: 1;
+    padding: 10px 7px;
+    font-size: 11px;
+  }
+
+  .admin-sms-recipient-modes {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-sms-recipient-modes button {
+    justify-content: flex-start;
+    padding: 11px 13px;
+    font-size: 12px;
+  }
+
+  .admin-sms-student-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-sms-student-toolbar > button {
+    width: 100%;
+  }
+
+  .admin-sms-send-actions {
+    flex-direction: column;
+  }
+
+  .admin-sms-preview-btn,
+  .admin-sms-send-btn {
+    width: 100%;
+    min-height: 45px;
+  }
+
+  .admin-sms-selection-footer {
+    gap: 8px;
+  }
+}

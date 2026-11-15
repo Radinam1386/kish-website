@@ -12,6 +12,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Home,
+  MessageSquareText,
 } from "lucide-react";
 
 import DashboardLayout from "../components/DashboardLayout";
@@ -349,6 +350,23 @@ function AdminPanel() {
             />
           ))}
         </div>
+        <section className="admin-sms-shortcut">
+          <div className="admin-sms-shortcut-icon">
+            <MessageSquareText size={25} />
+          </div>
+
+          <div className="admin-sms-shortcut-content">
+            <h3>پنل پیامکی مدیریت</h3>
+            <p>
+              ارسال پیامک به غایبین، اطلاع‌رسانی گروهی و مشاهده گزارش ارسال‌ها
+            </p>
+          </div>
+
+          <Link to="/panel/admin/sms" className="admin-sms-shortcut-link">
+            ورود به پنل پیامکی
+            <ChevronLeft size={18} />
+          </Link>
+        </section>
         <section className="admin-panel-x7k2-section admin-panel-students-section">
           <div className="admin-panel-x7k2-section-header">
             <div className="admin-panel-section-heading">

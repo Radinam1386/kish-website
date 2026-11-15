@@ -1,0 +1,315 @@
+
+.student-payment-receipt-page {
+  direction: rtl;
+  width: 100%;
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 25px 20px;
+  font-family: "Vazirmatn", sans-serif;
+  color: #263244;
+}
+
+.receipt-top-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.receipt-back-button,
+.receipt-print-button {
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 15px;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.receipt-back-button {
+  border: 1px solid #e8ecf1;
+  color: #657184;
+  background: #fff;
+}
+
+.receipt-back-button:hover {
+  background: #f6f7f9;
+}
+
+.receipt-print-button {
+  border: none;
+  color: #fff;
+  background: #c92832;
+}
+
+.receipt-print-button:hover {
+  background: #a91e28;
+}
+
+.payment-receipt {
+  padding: 35px 40px;
+  border: 1px solid #e9edf2;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 10px 35px rgba(20, 35, 55, 0.06);
+}
+
+.receipt-success-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 17px;
+  border: 1px solid #d8f0e1;
+  border-radius: 12px;
+  color: #16844e;
+  background: #f0faf4;
+}
+
+.receipt-success-icon {
+  display: flex;
+  align-items: center;
+}
+
+.receipt-success-banner strong,
+.receipt-success-banner span {
+  display: block;
+}
+
+.receipt-success-banner strong {
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+.receipt-success-banner span {
+  color: #5f9879;
+  font-size: 10px;
+}
+
+.receipt-success-check {
+  margin-right: auto;
+}
+
+.receipt-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 30px 0;
+}
+
+.receipt-brand-logo {
+  width: 58px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px;
+  color: #c92832;
+  background: #fff0f0;
+}
+
+.receipt-brand h1 {
+  margin: 0 0 6px;
+  color: #263244;
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.receipt-brand p {
+  margin: 0;
+  color: #8993a1;
+  font-size: 11px;
+}
+
+.receipt-divider {
+  height: 1px;
+  background: #edf0f4;
+}
+
+.receipt-amount-section {
+  padding: 30px 10px;
+  text-align: center;
+}
+
+.receipt-amount-section span,
+.receipt-amount-section small {
+  display: block;
+  color: #8b95a4;
+  font-size: 11px;
+}
+
+.receipt-amount-section strong {
+  display: block;
+  margin: 12px 0;
+  color: #15965b;
+  font-size: 27px;
+  font-weight: 800;
+}
+
+.receipt-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 12px;
+  color: #394456;
+}
+
+.receipt-section-heading h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.receipt-information {
+  border: 1px solid #edf0f4;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.receipt-info-row {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #edf0f4;
+  font-size: 11px;
+}
+
+.receipt-info-row:last-child {
+  border-bottom: none;
+}
+
+.receipt-info-row span {
+  color: #8791a0;
+  flex-shrink: 0;
+}
+
+.receipt-info-row strong {
+  color: #354154;
+  font-weight: 700;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.receipt-info-row.tracking strong {
+  direction: ltr;
+  font-family: monospace;
+}
+
+.receipt-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 0;
+  margin-top: 20px;
+  border-top: 1px dashed #dce1e8;
+  border-bottom: 1px dashed #dce1e8;
+  font-size: 12px;
+}
+
+.receipt-total-row span {
+  color: #697586;
+}
+
+.receipt-total-row strong {
+  color: #15965b;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.receipt-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 22px;
+  color: #16844e;
+  font-size: 10px;
+}
+
+.receipt-footer-brand {
+  margin-top: 25px;
+  color: #a0a8b4;
+  font-size: 10px;
+  text-align: center;
+}
+
+.receipt-page-note {
+  margin: 15px 0;
+  color: #929baa;
+  font-size: 11px;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .student-payment-receipt-page {
+    padding: 16px 12px;
+  }
+
+  .payment-receipt {
+    padding: 20px 16px;
+  }
+
+  .receipt-brand h1 {
+    font-size: 16px;
+  }
+
+  .receipt-amount-section strong {
+    font-size: 22px;
+  }
+
+  .receipt-info-row {
+    font-size: 10px;
+    padding: 12px;
+  }
+
+  .receipt-top-actions button {
+    padding: 0 10px;
+    font-size: 10px;
+  }
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+
+  body {
+    background: #fff !important;
+  }
+
+  .student-payment-receipt-page {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .receipt-top-actions,
+  .receipt-page-note {
+    display: none !important;
+  }
+
+  .payment-receipt {
+    padding: 20px;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .receipt-success-banner,
+  .receipt-brand-logo,
+  .receipt-amount-section,
+  .receipt-info-row,
+  .receipt-total-row {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

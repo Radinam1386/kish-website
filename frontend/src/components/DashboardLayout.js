@@ -15,6 +15,7 @@ import {
   GraduationCap,
   UserCheck,
   Award,
+  MessageSquareText,
 } from "lucide-react";
 import "./DashboardLayout.css";
 import { storage } from "../services/api";
@@ -26,14 +27,19 @@ function DashboardLayout({ role, title, children, menuType }) {
     student: [
       { label: "خلاصه وضعیت", icon: <Home size={19} />, to: "/panel/student" },
       {
+        label: "امتحانات",
+        icon: <FileText size={19} />,
+        to: "/panel/student/exams",
+      },
+      {
         label: "شهریه",
         icon: <CreditCard size={19} />,
         to: "/panel/student/tuition",
       },
       {
-        label: "امتحانات",
+        label: "سوابق پرداخت",
         icon: <FileText size={19} />,
-        to: "/panel/student/exams",
+        to: "/panel/student/payment-history",
       },
     ],
 
@@ -103,6 +109,11 @@ function DashboardLayout({ role, title, children, menuType }) {
         to: "/panel/secretary/exams",
       },
       {
+        label: "پنل پیامکی",
+        icon: <MessageSquareText size={19} />,
+        to: "/panel/secretary/sms",
+      },
+      {
         label: "صدور گواهی",
         icon: <Award size={19} />,
         to: "/panel/secretary/certificate",
@@ -150,6 +161,11 @@ function DashboardLayout({ role, title, children, menuType }) {
         label: "نظارت بر امتحانات",
         icon: <FileText size={19} />,
         to: "/panel/admin/exams",
+      },
+      {
+        label: "پنل پیامکی",
+        icon: <MessageSquareText size={19} />,
+        to: "/panel/admin/sms",
       },
       {
         label: "صدور گواهی",
