@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import {
@@ -143,29 +142,9 @@ function DashboardLayout({ role, title, children, menuType }) {
         to: "/panel/admin",
       },
       {
-        label: "کلاس‌ها",
-        icon: <CalendarDays size={19} />,
-        to: "/panel/admin/classes",
-      },
-      {
-        label: "مدیریت ترم‌ها",
-        icon: <Layers size={19} />,
-        to: "/panel/admin/terms",
-      },
-      {
         label: "دانش‌آموزان",
         icon: <UsersRound size={19} />,
         to: "/panel/admin/students",
-      },
-      {
-        label: "معلمان",
-        icon: <GraduationCap size={19} />,
-        to: "/panel/admin/teachers",
-      },
-      {
-        label: "منشی‌ها",
-        icon: <UserCheck size={19} />,
-        to: "/panel/admin/secretaries",
       },
       {
         label: "شهریه‌ها",
@@ -178,24 +157,45 @@ function DashboardLayout({ role, title, children, menuType }) {
         to: "/panel/admin/attendance",
       },
       {
-        label: "نظارت بر امتحانات",
-        icon: <FileText size={19} />,
-        to: "/panel/admin/exams",
-      },
-      {
         label: "پنل پیامکی",
         icon: <MessageSquareText size={19} />,
         to: "/panel/admin/sms",
       },
       {
-        label: "صدور گواهی",
-        icon: <Award size={19} />,
-        to: "/panel/admin/certificate",
+        label: "کلاس‌ها",
+        icon: <CalendarDays size={19} />,
+        to: "/panel/admin/classes",
+      },
+
+      {
+        label: "نظارت بر امتحانات",
+        icon: <FileText size={19} />,
+        to: "/panel/admin/exams",
       },
       {
         label: "اطلاعیه‌ها",
         icon: <Megaphone size={19} />,
         to: "/panel/admin/announcements",
+      },
+      {
+        label: "معلمان",
+        icon: <GraduationCap size={19} />,
+        to: "/panel/admin/teachers",
+      },
+      {
+        label: "منشی‌ها",
+        icon: <UserCheck size={19} />,
+        to: "/panel/admin/secretaries",
+      },
+      {
+        label: "مدیریت ترم‌ها",
+        icon: <Layers size={19} />,
+        to: "/panel/admin/terms",
+      },
+      {
+        label: "صدور گواهی",
+        icon: <Award size={19} />,
+        to: "/panel/admin/certificate",
       },
     ],
   };
@@ -215,11 +215,7 @@ function DashboardLayout({ role, title, children, menuType }) {
       <aside className={`dashboard-sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="dashboard-brand">
           <div className="brand-flex">
-            <img
-              src="/logo.png"
-              className="brand-logo"
-              alt="Kish Institute"
-            />
+            <img src="/logo.png" className="brand-logo" alt="Kish Institute" />
             <div className="brand-text">
               <strong>Kish Institute</strong>
               <small>{role}</small>

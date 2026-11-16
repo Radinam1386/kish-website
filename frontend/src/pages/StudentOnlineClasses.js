@@ -250,7 +250,7 @@ function StudentOnlineClasses() {
   };
 
   return (
-    <DashboardLayout menuType="student">
+    <DashboardLayout role="پنل دانش‌آموز" title="کلاس های آنلاین" menuType="student">
       <main className="sol-page" dir="rtl">
         <div className="admin-students-x7k2-header">
           <div className="admin-students-x7k2-heading">
