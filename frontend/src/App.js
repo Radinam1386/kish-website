@@ -56,6 +56,7 @@ import UnderConstruction from "./pages/UnderConstruction";
 import StudentPaymentHistory from "./pages/StudentPaymentHistory";
 import StudentPaymentReceipt from "./pages/StudentPaymentReceipt";
 import AdminSmsPanel from "./pages/AdminSmsPanel";
+import AdminAnnouncements from "./pages/AdminAnnouncements";
 
 /*
 |--------------------------------------------------------------------------
@@ -366,6 +367,12 @@ function App() {
           <Route path="/panel/admin/exams" element={<SecretaryExams />} />
 
           <Route path="/panel/admin/sms" element={<AdminSmsPanel />} />
+
+          <Route
+            path="/panel/admin/announcements"
+            element={<AdminAnnouncements />}
+          />
+          
         </Route>
 
         {/* 404 */}

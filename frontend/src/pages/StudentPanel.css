@@ -1,3 +1,4 @@
+
 /* =========================================================
    STUDENT PANEL
    Responsive / RTL / Mobile First Hardened Layout
@@ -15,8 +16,6 @@
   flex-direction: column;
   gap: 1.5rem;
   direction: rtl;
-
-  /* جلوگیری از overflow ناشی از child ها */
   min-width: 0;
   box-sizing: border-box;
 }
@@ -37,7 +36,6 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-
 /* =========================================================
    ERROR ALERT
    ========================================================= */
@@ -45,22 +43,17 @@
 .student-alert.error {
   width: 100%;
   min-width: 0;
-
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-
   padding: 0.85rem 1.1rem;
-
   border-radius: 12px;
   background: oklch(95% 0.05 25 / 0.85);
   border: 1px solid oklch(75% 0.15 25 / 0.3);
-
   color: oklch(45% 0.18 25);
   font-weight: 700;
   font-size: 0.88rem;
   line-height: 1.7;
-
   overflow-wrap: anywhere;
 }
 
@@ -69,6 +62,486 @@
   margin-top: 0.2rem;
 }
 
+/* =========================================================
+   ANNOUNCEMENTS
+   ========================================================= */
+
+.student-announcement-section {
+  width: 100%;
+  min-width: 0;
+  padding: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  background: oklch(100% 0 0 / 0.92);
+  border: 1px solid oklch(0% 0 0 / 0.055);
+  border-radius: 20px;
+  box-shadow: 0 7px 28px oklch(0% 0 0 / 0.04);
+  overflow: hidden;
+}
+
+.student-announcement-header {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid oklch(0% 0 0 / 0.07);
+}
+
+.student-announcement-heading {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.student-announcement-icon {
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  color: var(--sp-primary);
+  background: oklch(96% 0.025 29);
+}
+
+.student-announcement-heading h3 {
+  margin: 0 0 0.2rem;
+  color: oklch(25% 0 0);
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.student-announcement-heading p {
+  margin: 0;
+  color: oklch(55% 0 0);
+  font-size: 0.78rem;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+.student-announcement-count {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 10px;
+  background: oklch(96% 0.025 29);
+  color: var(--sp-primary);
+  font-size: 0.76rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.student-announcement-count svg {
+  flex: 0 0 auto;
+}
+
+.student-announcement-list {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.student-announcement-item {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  padding: 1rem 1.1rem;
+  border: 1px solid oklch(0% 0 0 / 0.065);
+  border-radius: 14px;
+  background: oklch(98.5% 0.002 29);
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  overflow: hidden;
+}
+
+.student-announcement-item.is-unread {
+  background: oklch(98% 0.018 29);
+  border-color: oklch(65% 0.15 25 / 0.2);
+}
+
+.student-announcement-item.is-unread::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 3px;
+  background: var(--sp-red);
+}
+
+.student-announcement-item:hover {
+  background: #fff;
+  border-color: oklch(60% 0.15 25 / 0.2);
+  box-shadow: 0 4px 14px oklch(0% 0 0 / 0.035);
+}
+
+.student-announcement-item-top {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 0.65rem;
+}
+
+.student-announcement-badges {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.student-announcement-priority,
+.student-announcement-new {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 7px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.student-announcement-priority.important {
+  background: oklch(95% 0.06 25);
+  color: oklch(45% 0.18 25);
+}
+
+.student-announcement-new {
+  background: oklch(95% 0.05 145);
+  color: oklch(35% 0.15 145);
+}
+
+.student-announcement-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: oklch(55% 0 0);
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.student-announcement-date svg {
+  flex: 0 0 auto;
+}
+
+.student-announcement-item h4 {
+  margin: 0 0 0.45rem;
+  color: oklch(24% 0 0);
+  font-size: 0.95rem;
+  font-weight: 900;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+.student-announcement-content {
+  margin: 0;
+  color: oklch(43% 0 0);
+  font-size: 0.83rem;
+  font-weight: 500;
+  line-height: 2;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.student-announcement-read-button {
+  min-height: 34px;
+  margin-top: 0.8rem;
+  padding: 0.35rem 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 1px solid oklch(60% 0.15 145 / 0.2);
+  border-radius: 9px;
+  background: oklch(97% 0.035 145);
+  color: oklch(35% 0.15 145);
+  font-family: inherit;
+  font-size: 0.73rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.student-announcement-read-button:hover {
+  background: oklch(93% 0.06 145);
+  transform: translateY(-1px);
+}
+
+.student-announcement-read-button svg {
+  flex: 0 0 auto;
+}
+
+.student-announcement-show-more {
+  align-self: center;
+  min-height: 38px;
+  padding: 0.45rem 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border: 1px solid oklch(60% 0.15 25 / 0.2);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--sp-primary);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.student-announcement-show-more:hover {
+  background: oklch(97% 0.02 29);
+  border-color: oklch(60% 0.15 25 / 0.4);
+}
+
+.student-announcement-show-more svg {
+  transition: transform 0.2s ease;
+}
+
+.student-announcement-show-more svg.is-rotated {
+  transform: rotate(-90deg);
+}
+
+.student-announcement-empty {
+  min-height: 150px;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px dashed oklch(0% 0 0 / 0.12);
+  border-radius: 14px;
+  background: oklch(99% 0 0);
+  color: oklch(60% 0 0);
+  text-align: center;
+}
+
+.student-announcement-empty > svg {
+  color: oklch(70% 0 0);
+}
+
+.student-announcement-empty h4 {
+  margin: 0;
+  color: oklch(30% 0 0);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.student-announcement-empty p {
+  margin: 0;
+  color: oklch(55% 0 0);
+  font-size: 0.78rem;
+  line-height: 1.8;
+}
+
+/* =========================================================
+   ANNOUNCEMENT POPUP
+   ========================================================= */
+
+.student-announcement-popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  width: 100%;
+  min-height: 100dvh;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: oklch(15% 0 0 / 0.58);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  animation: studentAnnouncementFadeIn 0.2s ease both;
+}
+
+.student-announcement-popup {
+  position: relative;
+  width: min(100%, 470px);
+  max-height: min(85dvh, 650px);
+  min-width: 0;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  border: 1px solid oklch(100% 0 0 / 0.7);
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 24px 80px oklch(0% 0 0 / 0.22);
+  overflow-y: auto;
+  text-align: center;
+  animation: studentAnnouncementPopupIn 0.28s ease both;
+}
+
+.student-announcement-popup-close {
+  position: absolute;
+  top: 0.9rem;
+  left: 0.9rem;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid oklch(0% 0 0 / 0.07);
+  border-radius: 10px;
+  background: oklch(98% 0 0);
+  color: oklch(45% 0 0);
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.student-announcement-popup-close:hover {
+  background: oklch(95% 0.05 25);
+  color: oklch(45% 0.18 25);
+}
+
+.student-announcement-popup-icon {
+  width: 64px;
+  height: 64px;
+  margin-top: 0.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  background: oklch(96% 0.025 29);
+  color: var(--sp-primary);
+}
+
+.student-announcement-popup-label {
+  padding: 0.3rem 0.75rem;
+  border-radius: 8px;
+  background: oklch(95% 0.05 145);
+  color: oklch(35% 0.15 145);
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
+.student-announcement-popup-label.important {
+  background: oklch(95% 0.06 25);
+  color: oklch(45% 0.18 25);
+}
+
+.student-announcement-popup h3 {
+  width: 100%;
+  margin: 0;
+  color: oklch(23% 0 0);
+  font-size: 1.2rem;
+  font-weight: 900;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+.student-announcement-popup-content {
+  width: 100%;
+  max-height: 260px;
+  margin: 0;
+  padding: 0.2rem 0;
+  color: oklch(42% 0 0);
+  font-size: 0.9rem;
+  line-height: 2.1;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  overflow-y: auto;
+}
+
+.student-announcement-popup-footer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid oklch(0% 0 0 / 0.07);
+  color: oklch(55% 0 0);
+  font-size: 0.73rem;
+  font-weight: 600;
+}
+
+.student-announcement-popup-confirm {
+  width: 100%;
+  min-height: 46px;
+  margin-top: 0.25rem;
+  padding: 0.7rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: 12px;
+  background: var(--sp-red);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 5px 16px oklch(60% 0.19 29 / 0.2);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.student-announcement-popup-confirm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px oklch(60% 0.19 29 / 0.3);
+}
+
+.student-announcement-popup-confirm:active {
+  transform: translateY(0);
+  opacity: 0.9;
+}
+
+@keyframes studentAnnouncementFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes studentAnnouncementPopupIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
 
 /* =========================================================
    ACTIVE CLASS HERO
@@ -77,20 +550,15 @@
 .active-class-hero-banner {
   width: 100%;
   min-width: 0;
-
   background: oklch(100% 0 0 / 0.88);
   border: 1px solid oklch(0% 0 0 / 0.055);
   border-radius: 20px;
-
   padding: 1.5rem 1.75rem;
-
   display: flex;
   flex-direction: column;
   gap: 1rem;
-
   box-shadow: 0 7px 28px oklch(0% 0 0 / 0.04);
   backdrop-filter: blur(12px);
-
   overflow: hidden;
 }
 
@@ -99,7 +567,6 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 0.6rem;
-
   min-width: 0;
 }
 
@@ -107,21 +574,17 @@
 .active-class-live-pill {
   max-width: 100%;
   min-width: 0;
-
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-
   white-space: nowrap;
 }
 
 .active-term-badge {
   background: oklch(96% 0.02 29);
   color: var(--sp-primary);
-
   padding: 0.3rem 0.75rem;
   border-radius: 10px;
-
   font-size: 0.78rem;
   font-weight: 800;
 }
@@ -129,10 +592,8 @@
 .active-class-live-pill {
   background: oklch(95% 0.05 145 / 0.9);
   color: oklch(35% 0.15 145);
-
   padding: 0.3rem 0.7rem;
   border-radius: 12px;
-
   font-size: 0.78rem;
   font-weight: 800;
 }
@@ -141,10 +602,8 @@
   width: 8px;
   height: 8px;
   min-width: 8px;
-
   border-radius: 50%;
   background: oklch(50% 0.2 145);
-
   animation: pulseDot 2s infinite ease-in-out;
 }
 
@@ -161,13 +620,11 @@
   }
 }
 
-
 /* Hero main */
 
 .banner-main-row {
   width: 100%;
   min-width: 0;
-
   display: flex;
   align-items: center;
   gap: 1.25rem;
@@ -177,16 +634,12 @@
   width: 56px;
   height: 56px;
   min-width: 56px;
-
   border-radius: 16px;
-
   background: var(--sp-red);
   color: #fff;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   box-shadow: 0 8px 20px oklch(60% 0.19 29 / 0.28);
 }
 
@@ -197,27 +650,20 @@
 
 .class-hero-info h2 {
   margin: 0 0 0.35rem;
-
   font-size: clamp(1.05rem, 2vw, 1.35rem);
   line-height: 1.5;
-
   font-weight: 900;
   color: oklch(25% 0 0);
-
   overflow-wrap: anywhere;
 }
 
 .class-hero-info p {
   margin: 0;
-
   font-size: clamp(0.75rem, 1.4vw, 0.84rem);
   line-height: 1.9;
-
   color: oklch(50% 0 0);
-
   overflow-wrap: anywhere;
 }
-
 
 /* =========================================================
    NO ACTIVE CLASS
@@ -226,52 +672,37 @@
 .no-active-class-box {
   width: 100%;
   min-width: 0;
-
   background: oklch(100% 0 0 / 0.88);
   border: 1px solid oklch(0% 0 0 / 0.055);
   border-radius: 20px;
-
   padding: clamp(2rem, 5vw, 3rem) 1.25rem;
-
   text-align: center;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
-
   color: oklch(50% 0 0);
-
   box-shadow: 0 7px 28px oklch(0% 0 0 / 0.04);
-
   overflow: hidden;
 }
 
 .no-active-class-box h3 {
   max-width: 700px;
-
   margin: 0;
-
   font-size: clamp(0.95rem, 2vw, 1.15rem);
   line-height: 1.7;
-
   font-weight: 800;
   color: oklch(25% 0 0);
-
   overflow-wrap: anywhere;
 }
 
 .no-active-class-box p {
   max-width: 650px;
-
   margin: 0;
-
   font-size: 0.82rem;
   line-height: 1.9;
-
   overflow-wrap: anywhere;
 }
-
 
 /* =========================================================
    STATS GRID
@@ -280,14 +711,10 @@
 .student-panel-stats-grid {
   width: 100%;
   min-width: 0;
-
   display: grid;
-
   grid-template-columns: repeat(4, minmax(0, 1fr));
-
   gap: 1.25rem;
 }
-
 
 /* =========================================================
    MAIN CONTENT GRID
@@ -296,16 +723,11 @@
 .student-panel-main-grid {
   width: 100%;
   min-width: 0;
-
   display: grid;
-
   grid-template-columns: repeat(2, minmax(0, 1fr));
-
   gap: 1.5rem;
-
   align-items: start;
 }
-
 
 /* =========================================================
    MAIN CARDS
@@ -314,25 +736,17 @@
 .student-panel-card {
   width: 100%;
   min-width: 0;
-
   background: oklch(100% 0 0 / 0.88);
   border: 1px solid oklch(0% 0 0 / 0.055);
   border-radius: 20px;
-
   padding: 1.5rem;
-
   display: flex;
   flex-direction: column;
-
   gap: 1.25rem;
-
   box-shadow: 0 7px 28px oklch(0% 0 0 / 0.04);
-
   backdrop-filter: blur(12px);
-
   overflow: hidden;
 }
-
 
 /* =========================================================
    CARD HEADER
@@ -341,15 +755,11 @@
 .student-card-header {
   width: 100%;
   min-width: 0;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   gap: 1rem;
-
   padding-bottom: 0.85rem;
-
   border-bottom: 1px solid oklch(0% 0 0 / 0.055);
 }
 
@@ -361,18 +771,12 @@
 .header-info h3 {
   display: flex;
   align-items: center;
-
   gap: 0.5rem;
-
   margin: 0 0 0.2rem;
-
   font-size: clamp(0.9rem, 1.6vw, 1.05rem);
   line-height: 1.6;
-
   font-weight: 800;
-
   color: oklch(25% 0 0);
-
   overflow-wrap: anywhere;
 }
 
@@ -383,46 +787,32 @@
 
 .header-info p {
   margin: 0;
-
   font-size: 0.78rem;
   line-height: 1.8;
-
   color: oklch(55% 0 0);
-
   overflow-wrap: anywhere;
 }
 
 .present-ratio-tag {
   flex: 0 0 auto;
-
   background: oklch(95% 0.05 145 / 0.85);
   color: oklch(35% 0.15 145);
-
   padding: 0.3rem 0.65rem;
-
   border-radius: 8px;
-
   font-size: 0.78rem;
   font-weight: 800;
-
   white-space: nowrap;
 }
 
 .view-all-link {
   flex: 0 0 auto;
-
   display: inline-flex;
   align-items: center;
-
   gap: 0.2rem;
-
   font-size: 0.8rem;
   font-weight: 700;
-
   color: var(--sp-primary);
-
   text-decoration: none;
-
   transition:
     transform 0.2s ease,
     opacity 0.2s ease;
@@ -436,7 +826,6 @@
   opacity: 0.7;
 }
 
-
 /* =========================================================
    ATTENDANCE LIST
    ========================================================= */
@@ -444,40 +833,27 @@
 .sessions-attendance-list {
   width: 100%;
   min-width: 0;
-
   display: flex;
   flex-direction: column;
-
   gap: 0.65rem;
-
   max-height: 480px;
-
   overflow-y: auto;
   overflow-x: hidden;
-
   padding-left: 0.25rem;
-
   scrollbar-width: thin;
 }
 
 .session-attendance-row {
   width: 100%;
   min-width: 0;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   gap: 0.75rem;
-
   padding: 0.85rem 1rem;
-
   background: oklch(98% 0.003 29);
-
   border: 1px solid oklch(0% 0 0 / 0.06);
-
   border-radius: 14px;
-
   transition:
     background 0.2s ease,
     border-color 0.2s ease,
@@ -493,71 +869,49 @@
 .session-number-col {
   min-width: 0;
   flex: 1;
-
   display: flex;
   align-items: center;
-
   gap: 0.75rem;
 }
 
 .session-num-badge {
   flex: 0 0 auto;
-
   background: oklch(100% 0 0);
-
   border: 1px solid oklch(0% 0 0 / 0.08);
-
   color: oklch(25% 0 0);
-
   padding: 0.2rem 0.55rem;
-
   border-radius: 8px;
-
   font-size: 0.78rem;
   font-weight: 800;
-
   white-space: nowrap;
 }
 
 .session-date-text {
   min-width: 0;
-
   font-size: 0.82rem;
-
   color: oklch(45% 0 0);
-
   font-weight: 600;
-
   overflow-wrap: anywhere;
 }
 
 .session-status-col {
   min-width: 0;
   max-width: 55%;
-
   display: flex;
   align-items: center;
-
   justify-content: flex-end;
-
   gap: 0.5rem;
 }
 
 .attendance-status-badge {
   max-width: 100%;
-
   display: inline-flex;
   align-items: center;
-
   gap: 0.35rem;
-
   padding: 0.25rem 0.65rem;
-
   border-radius: 10px;
-
   font-size: 0.76rem;
   font-weight: 700;
-
   white-space: nowrap;
 }
 
@@ -593,24 +947,15 @@
 .session-teacher-note {
   min-width: 0;
   max-width: 140px;
-
   font-size: 0.72rem;
-
   color: oklch(55% 0 0);
-
   background: #fff;
-
   padding: 0.15rem 0.5rem;
-
   border-radius: 6px;
-
   overflow: hidden;
-
   text-overflow: ellipsis;
-
   white-space: nowrap;
 }
-
 
 /* =========================================================
    EXAMS LIST
@@ -619,40 +964,27 @@
 .active-exams-list {
   width: 100%;
   min-width: 0;
-
   display: flex;
   flex-direction: column;
-
   gap: 0.75rem;
-
   max-height: 480px;
-
   overflow-y: auto;
   overflow-x: hidden;
-
   padding-left: 0.25rem;
-
   scrollbar-width: thin;
 }
 
 .active-exam-item-card {
   width: 100%;
   min-width: 0;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   gap: 1rem;
-
   padding: 1rem 1.15rem;
-
   background: oklch(98% 0.003 29);
-
   border: 1px solid oklch(0% 0 0 / 0.06);
-
   border-radius: 14px;
-
   transition:
     background 0.2s ease,
     border-color 0.2s ease,
@@ -661,19 +993,15 @@
 
 .active-exam-item-card:hover {
   background: #fff;
-
   border-color: oklch(0% 0 0 / 0.1);
-
   box-shadow: 0 4px 14px oklch(0% 0 0 / 0.03);
 }
 
 .exam-main-details {
   min-width: 0;
   flex: 1;
-
   display: flex;
   align-items: center;
-
   gap: 0.85rem;
 }
 
@@ -681,13 +1009,9 @@
   width: 40px;
   height: 40px;
   min-width: 40px;
-
   border-radius: 10px;
-
   background: oklch(96% 0.02 29);
-
   color: var(--sp-primary);
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -699,35 +1023,24 @@
 
 .exam-main-details h4 {
   min-width: 0;
-
   margin: 0 0 0.2rem;
-
   font-size: 0.95rem;
   line-height: 1.6;
-
   font-weight: 800;
-
   color: oklch(25% 0 0);
-
   overflow-wrap: anywhere;
 }
 
 .exam-sub-info {
   min-width: 0;
-
   display: flex;
   align-items: center;
-
   flex-wrap: wrap;
-
   gap: 0.4rem;
-
   font-size: 0.75rem;
   line-height: 1.7;
-
   color: oklch(55% 0 0);
 }
-
 
 /* =========================================================
    EXAM ACTION / SCORE
@@ -735,27 +1048,21 @@
 
 .exam-action-score-col {
   flex: 0 0 auto;
-
   display: flex;
   align-items: center;
-
   gap: 0.75rem;
 }
 
 .score-badge-box {
   min-width: 0;
-
   text-align: left;
 }
 
 .score-final {
   display: flex;
   align-items: baseline;
-
   gap: 0.2rem;
-
   font-weight: 900;
-
   white-space: nowrap;
 }
 
@@ -771,16 +1078,11 @@
 
 .status-pill {
   display: inline-block;
-
   padding: 0.2rem 0.55rem;
-
   border-radius: 8px;
-
   font-size: 0.72rem;
   line-height: 1.5;
-
   font-weight: 700;
-
   white-space: nowrap;
 }
 
@@ -792,9 +1094,7 @@
 .status-pill.in-progress {
   background: #fef5e7;
   color: #d35400;
-
   border: 1px solid rgba(243, 156, 18, 0.4);
-
   animation: pulse-status 1.8s infinite;
 }
 
@@ -814,35 +1114,24 @@
   color: oklch(35% 0.15 230);
 }
 
-
 /* =========================================================
    EXAM BUTTONS
    ========================================================= */
 
 .btn-exam-action {
   min-height: 36px;
-
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   gap: 0.35rem;
-
   padding: 0.45rem 0.85rem;
-
   border-radius: 10px;
-
   font-size: 0.8rem;
   font-weight: 800;
-
   cursor: pointer;
-
   border: none;
-
   font-family: inherit;
-
   white-space: nowrap;
-
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
@@ -853,34 +1142,28 @@
 .btn-exam-action.start {
   background: var(--sp-red);
   color: #fff;
-
   box-shadow: 0 4px 12px oklch(60% 0.19 29 / 0.22);
 }
 
 .btn-exam-action.start:hover {
   transform: translateY(-2px);
-
   box-shadow: 0 6px 16px oklch(60% 0.19 29 / 0.32);
 }
 
 .btn-exam-action.resume {
   background: linear-gradient(135deg, #f39c12, #e67e22);
   color: #fff;
-
   box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
 }
 
 .btn-exam-action.resume:hover {
   transform: translateY(-2px);
-
   box-shadow: 0 6px 16px rgba(243, 156, 18, 0.45);
 }
 
 .btn-exam-action.review {
   background: oklch(96% 0.02 29);
-
   border: 1px solid oklch(60% 0.19 29 / 0.25);
-
   color: var(--sp-primary);
 }
 
@@ -889,52 +1172,37 @@
   color: #fff;
 }
 
-
 /* =========================================================
    EMPTY / LOADING
    ========================================================= */
 
 .panel-empty-box {
   width: 100%;
-
   min-height: 180px;
-
   text-align: center;
-
   padding: 2.5rem 1rem;
-
   color: oklch(55% 0 0);
-
   display: flex;
   flex-direction: column;
-
   align-items: center;
   justify-content: center;
-
   gap: 0.5rem;
 }
 
 .panel-empty-box p {
   margin: 0;
-
   font-size: 0.85rem;
   line-height: 1.8;
-
   overflow-wrap: anywhere;
 }
 
 .panel-loading-text {
   width: 100%;
-
   text-align: center;
-
   padding: 2.5rem 1rem;
-
   color: oklch(55% 0 0);
-
   font-size: 0.85rem;
 }
-
 
 /* =========================================================
    TABLET / SMALL LAPTOP
@@ -955,7 +1223,6 @@
   }
 }
 
-
 /* =========================================================
    TABLET
    <= 768px
@@ -966,6 +1233,16 @@
     width: 100%;
     padding: 0.25rem 0;
     gap: 1rem;
+  }
+
+  .student-announcement-section {
+    padding: 1.1rem;
+    border-radius: 16px;
+  }
+
+  .student-announcement-popup {
+    padding: 1.6rem 1.25rem;
+    border-radius: 18px;
   }
 
   .active-class-hero-banner {
@@ -1030,7 +1307,6 @@
   }
 }
 
-
 /* =========================================================
    LARGE MOBILE
    <= 600px
@@ -1044,6 +1320,52 @@
   .student-alert.error {
     padding: 0.75rem 0.85rem;
     font-size: 0.8rem;
+  }
+
+  .student-announcement-section {
+    padding: 0.9rem;
+    gap: 0.85rem;
+  }
+
+  .student-announcement-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .student-announcement-count {
+    align-self: flex-start;
+  }
+
+  .student-announcement-item {
+    padding: 0.85rem;
+  }
+
+  .student-announcement-item h4 {
+    font-size: 0.88rem;
+  }
+
+  .student-announcement-content {
+    font-size: 0.78rem;
+  }
+
+  .student-announcement-popup-overlay {
+    padding: 0.85rem;
+  }
+
+  .student-announcement-popup {
+    width: 100%;
+    max-height: 88dvh;
+    padding: 1.5rem 1rem;
+    gap: 0.75rem;
+  }
+
+  .student-announcement-popup h3 {
+    font-size: 1.05rem;
+  }
+
+  .student-announcement-popup-content {
+    font-size: 0.82rem;
   }
 
   .banner-badge-row {
@@ -1095,26 +1417,20 @@
   .session-attendance-row {
     align-items: stretch;
     flex-direction: column;
-
     gap: 0.65rem;
-
     padding: 0.8rem;
   }
 
   .session-number-col {
     width: 100%;
-
     justify-content: space-between;
-
     gap: 0.5rem;
   }
 
   .session-status-col {
     width: 100%;
     max-width: none;
-
     justify-content: space-between;
-
     flex-wrap: wrap;
   }
 
@@ -1126,7 +1442,6 @@
   .active-exam-item-card {
     flex-direction: column;
     align-items: stretch;
-
     gap: 0.85rem;
   }
 
@@ -1136,13 +1451,9 @@
 
   .exam-action-score-col {
     width: 100%;
-
     justify-content: space-between;
-
     gap: 0.65rem;
-
     padding-top: 0.7rem;
-
     border-top: 1px solid oklch(0% 0 0 / 0.05);
   }
 
@@ -1155,7 +1466,6 @@
   }
 }
 
-
 /* =========================================================
    SMALL MOBILE
    <= 480px
@@ -1166,6 +1476,45 @@
     gap: 0.75rem;
   }
 
+  .student-announcement-heading {
+    align-items: flex-start;
+    gap: 0.65rem;
+  }
+
+  .student-announcement-icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 12px;
+  }
+
+  .student-announcement-heading h3 {
+    font-size: 0.9rem;
+  }
+
+  .student-announcement-heading p {
+    font-size: 0.7rem;
+  }
+
+  .student-announcement-item-top {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .student-announcement-read-button {
+    width: 100%;
+  }
+
+  .student-announcement-popup-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+  }
+
+  .student-announcement-popup h3 {
+    font-size: 0.98rem;
+  }
+
   .active-class-hero-banner {
     padding: 0.95rem;
   }
@@ -1174,7 +1523,6 @@
     width: 44px;
     height: 44px;
     min-width: 44px;
-
     border-radius: 12px;
   }
 
@@ -1247,9 +1595,7 @@
   .btn-exam-action {
     min-height: 34px;
     min-width: 92px;
-
     padding: 0.4rem 0.65rem;
-
     font-size: 0.72rem;
   }
 
@@ -1259,7 +1605,6 @@
   }
 }
 
-
 /* =========================================================
    VERY SMALL PHONES
    <= 360px
@@ -1268,6 +1613,21 @@
 @media (max-width: 360px) {
   .student-panel-page {
     gap: 0.65rem;
+  }
+
+  .student-announcement-section {
+    padding: 0.75rem;
+    border-radius: 13px;
+  }
+
+  .student-announcement-popup {
+    padding: 1.3rem 0.85rem;
+    border-radius: 15px;
+  }
+
+  .student-announcement-popup-footer {
+    flex-direction: column;
+    align-items: center;
   }
 
   .active-class-hero-banner {
@@ -1325,7 +1685,6 @@
   }
 }
 
-
 /* =========================================================
    ULTRA SMALL
    <= 320px
@@ -1340,12 +1699,39 @@
     font-size: 0.72rem;
   }
 
+  .student-announcement-heading h3 {
+    font-size: 0.82rem;
+  }
+
+  .student-announcement-heading p {
+    font-size: 0.65rem;
+  }
+
+  .student-announcement-count {
+    font-size: 0.68rem;
+    white-space: normal;
+  }
+
+  .student-announcement-item h4 {
+    font-size: 0.8rem;
+  }
+
+  .student-announcement-content {
+    font-size: 0.72rem;
+  }
+
+  .student-announcement-popup h3 {
+    font-size: 0.9rem;
+  }
+
+  .student-announcement-popup-content {
+    font-size: 0.75rem;
+  }
+
   .active-class-live-pill,
   .active-term-badge {
     max-width: 100%;
-
     white-space: normal;
-
     line-height: 1.5;
   }
 
@@ -1381,7 +1767,6 @@
   }
 }
 
-
 /* =========================================================
    ACCESSIBILITY / REDUCED MOTION
    ========================================================= */
@@ -1395,11 +1780,13 @@
   .view-all-link,
   .btn-exam-action,
   .session-attendance-row,
-  .active-exam-item-card {
+  .active-exam-item-card,
+  .student-announcement-popup,
+  .student-announcement-popup-overlay {
+    animation: none;
     transition: none;
   }
 }
-
 
 /* =========================================================
    TOUCH DEVICES
@@ -1413,6 +1800,10 @@
 
   .session-attendance-row:hover,
   .active-exam-item-card:hover {
+    box-shadow: none;
+  }
+
+  .student-announcement-item:hover {
     box-shadow: none;
   }
 }

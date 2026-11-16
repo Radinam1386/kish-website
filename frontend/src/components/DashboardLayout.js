@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import {
@@ -16,6 +17,8 @@ import {
   UserCheck,
   Award,
   MessageSquareText,
+  Megaphone,
+  Video,
 } from "lucide-react";
 import "./DashboardLayout.css";
 import { storage } from "../services/api";
@@ -25,7 +28,16 @@ function DashboardLayout({ role, title, children, menuType }) {
 
   const menus = {
     student: [
-      { label: "خلاصه وضعیت", icon: <Home size={19} />, to: "/panel/student" },
+      {
+        label: "خلاصه وضعیت",
+        icon: <Home size={19} />,
+        to: "/panel/student",
+      },
+      {
+        label: "کلاس آنلاین",
+        icon: <Video size={19} />,
+        to: "/panel/student/online-classes",
+      },
       {
         label: "امتحانات",
         icon: <FileText size={19} />,
@@ -72,7 +84,11 @@ function DashboardLayout({ role, title, children, menuType }) {
     ],
 
     secretary: [
-      { label: "نمای کلی", icon: <Home size={19} />, to: "/panel/secretary" },
+      {
+        label: "نمای کلی",
+        icon: <Home size={19} />,
+        to: "/panel/secretary",
+      },
       {
         label: "کلاس‌ها",
         icon: <CalendarDays size={19} />,
@@ -121,7 +137,11 @@ function DashboardLayout({ role, title, children, menuType }) {
     ],
 
     admin: [
-      { label: "نمای کلی", icon: <Home size={19} />, to: "/panel/admin" },
+      {
+        label: "نمای کلی",
+        icon: <Home size={19} />,
+        to: "/panel/admin",
+      },
       {
         label: "کلاس‌ها",
         icon: <CalendarDays size={19} />,
@@ -172,6 +192,11 @@ function DashboardLayout({ role, title, children, menuType }) {
         icon: <Award size={19} />,
         to: "/panel/admin/certificate",
       },
+      {
+        label: "اطلاعیه‌ها",
+        icon: <Megaphone size={19} />,
+        to: "/panel/admin/announcements",
+      },
     ],
   };
 
@@ -190,7 +215,11 @@ function DashboardLayout({ role, title, children, menuType }) {
       <aside className={`dashboard-sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="dashboard-brand">
           <div className="brand-flex">
-            <img src="/logo.png" className="brand-logo" alt="Kish Institute" />
+            <img
+              src="/logo.png"
+              className="brand-logo"
+              alt="Kish Institute"
+            />
             <div className="brand-text">
               <strong>Kish Institute</strong>
               <small>{role}</small>
@@ -208,7 +237,7 @@ function DashboardLayout({ role, title, children, menuType }) {
         </div>
 
         <nav className="dashboard-nav">
-          {menus[menuType].map((item, index) => (
+          {(menus[menuType] || []).map((item, index) => (
             <NavLink
               to={item.to}
               key={index}
@@ -237,7 +266,6 @@ function DashboardLayout({ role, title, children, menuType }) {
           <div className="dashboard-header-inner">
             <div className="header-titles">
               <span className="header-subtitle">داشبورد مدیریت</span>
-
               <h1>{title}</h1>
             </div>
 
@@ -251,6 +279,7 @@ function DashboardLayout({ role, title, children, menuType }) {
             </button>
           </div>
         </header>
+
         <div className="dashboard-content">{children}</div>
       </main>
     </div>

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useMemo, useState } from "react";
 import {
   MessageSquareText,
@@ -27,6 +26,7 @@ import {
 } from "../utils/dateUtils";
 
 import "./AdminSmsPanel.css";
+import StatCard from "../components/StatCard";
 
 const INITIAL_LOGS = [
   {
@@ -176,8 +176,7 @@ function AdminSmsPanel() {
 
     return classrooms.filter(
       (classroom) =>
-        String(classroom.term?.id ?? classroom.term) ===
-        String(selectedTermId),
+        String(classroom.term?.id ?? classroom.term) === String(selectedTermId),
     );
   }, [classrooms, selectedTermId]);
 
@@ -203,19 +202,15 @@ function AdminSmsPanel() {
 
     return enrollments
       .map((enrollment) => {
-        const studentId =
-          enrollment.student?.id ?? enrollment.student;
+        const studentId = enrollment.student?.id ?? enrollment.student;
 
         const student =
           enrollment.student_detail ||
-          studentUsers.find(
-            (user) => String(user.id) === String(studentId),
-          );
+          studentUsers.find((user) => String(user.id) === String(studentId));
 
         if (!student || student.role === "teacher") return null;
 
-        const classroomId =
-          enrollment.classroom?.id ?? enrollment.classroom;
+        const classroomId = enrollment.classroom?.id ?? enrollment.classroom;
 
         const classroom = classrooms.find(
           (item) => String(item.id) === String(classroomId),
@@ -252,8 +247,7 @@ function AdminSmsPanel() {
     if (!selectedClassId) return [];
 
     return enrolledStudents.filter(
-      (student) =>
-        String(student.classroomId) === String(selectedClassId),
+      (student) => String(student.classroomId) === String(selectedClassId),
     );
   }, [enrolledStudents, selectedClassId]);
 
@@ -265,8 +259,7 @@ function AdminSmsPanel() {
       sessions.find(
         (session) =>
           String(session.classroom?.id ?? session.classroom) ===
-            String(selectedClassId) &&
-          session.date === selectedDate,
+            String(selectedClassId) && session.date === selectedDate,
       ) || null
     );
   }, [sessions, selectedClassId, selectedDate]);
@@ -280,8 +273,7 @@ function AdminSmsPanel() {
         (record) =>
           String(record.session?.id ?? record.session) ===
             String(selectedSession.id) &&
-          String(record.student?.id ?? record.student) ===
-            String(student.id),
+          String(record.student?.id ?? record.student) === String(student.id),
       );
 
       return attendance?.status === "absent";
@@ -314,20 +306,17 @@ function AdminSmsPanel() {
   const selectedRecipients = useMemo(
     () =>
       recipientCandidates.filter((student) =>
-        selectedStudents.some(
-          (id) => String(id) === String(student.id),
-        ),
+        selectedStudents.some((id) => String(id) === String(student.id)),
       ),
     [recipientCandidates, selectedStudents],
   );
 
-  const validRecipients = selectedRecipients.filter(
-    (student) => student.phone.trim(),
+  const validRecipients = selectedRecipients.filter((student) =>
+    student.phone.trim(),
   );
 
   const selectedClass = classrooms.find(
-    (classroom) =>
-      String(classroom.id) === String(selectedClassId),
+    (classroom) => String(classroom.id) === String(selectedClassId),
   );
 
   const selectedTerm = terms.find(
@@ -335,8 +324,7 @@ function AdminSmsPanel() {
   );
 
   const characterCount = message.length;
-  const smsCount =
-    characterCount === 0 ? 0 : Math.ceil(characterCount / 70);
+  const smsCount = characterCount === 0 ? 0 : Math.ceil(characterCount / 70);
 
   const toggleStudent = (studentId) => {
     setSelectedStudents((current) =>
@@ -361,9 +349,7 @@ function AdminSmsPanel() {
       allSelected
         ? current.filter(
             (id) =>
-              !visibleIds.some(
-                (visibleId) => String(visibleId) === String(id),
-              ),
+              !visibleIds.some((visibleId) => String(visibleId) === String(id)),
           )
         : [
             ...current,
@@ -466,15 +452,9 @@ function AdminSmsPanel() {
     });
   }, [logs, reportFilter, reportSearch]);
 
-  const totalRecipients = logs.reduce(
-    (sum, log) => sum + log.recipients,
-    0,
-  );
+  const totalRecipients = logs.reduce((sum, log) => sum + log.recipients, 0);
 
-  const successfulMessages = logs.reduce(
-    (sum, log) => sum + log.successful,
-    0,
-  );
+  const successfulMessages = logs.reduce((sum, log) => sum + log.successful, 0);
 
   return (
     <DashboardLayout
@@ -501,8 +481,8 @@ function AdminSmsPanel() {
         <div className="admin-sms-demo-alert">
           <AlertCircle size={19} />
           <span>
-            حالت نمایشی: پیامک واقعی ارسال نمی‌شود و گزارش‌های جدید فقط در
-            حافظه همین صفحه ثبت می‌شوند.
+            حالت نمایشی: پیامک واقعی ارسال نمی‌شود و گزارش‌های جدید فقط در حافظه
+            همین صفحه ثبت می‌شوند.
           </span>
         </div>
 
@@ -514,35 +494,24 @@ function AdminSmsPanel() {
         )}
 
         <div className="admin-sms-stats">
-          <div className="admin-sms-stat-card">
-            <div className="admin-sms-stat-icon purple">
-              <Send size={21} />
-            </div>
-            <div>
-              <span>کل گیرندگان ثبت‌شده</span>
-              <strong>{toPersianDigits(totalRecipients)}</strong>
-            </div>
-          </div>
-
-          <div className="admin-sms-stat-card">
-            <div className="admin-sms-stat-icon green">
-              <CheckCircle2 size={21} />
-            </div>
-            <div>
-              <span>ارسال موفق نمونه</span>
-              <strong>{toPersianDigits(successfulMessages)}</strong>
-            </div>
-          </div>
-
-          <div className="admin-sms-stat-card">
-            <div className="admin-sms-stat-icon orange">
-              <UsersRound size={21} />
-            </div>
-            <div>
-              <span>دانش‌آموزان قابل انتخاب</span>
-              <strong>{toPersianDigits(students.length)}</strong>
-            </div>
-          </div>
+          <StatCard
+            title="کل گیرندگان ثبت‌شده"
+            value={toPersianDigits(totalRecipients)}
+            icon={<Send size={23} />}
+            color="blue"
+          />
+          <StatCard
+            title="ارسال موفق نمونه"
+            value={toPersianDigits(successfulMessages)}
+            icon={<CheckCircle2 size={23} />}
+            color="green"
+          />
+          <StatCard
+            title="دانش‌آموزان قابل انتخاب"
+            value={toPersianDigits(students.length)}
+            icon={<UsersRound size={23} />}
+            color="orange"
+          />
         </div>
 
         <div className="admin-sms-tabs">
@@ -678,8 +647,8 @@ function AdminSmsPanel() {
                       {selectedSession ? (
                         <>
                           <strong>
-                            جلسه در تاریخ{" "}
-                            {toJalaliDateString(selectedDate)} پیدا شد.
+                            جلسه در تاریخ {toJalaliDateString(selectedDate)}{" "}
+                            پیدا شد.
                           </strong>
                           <span>
                             {toPersianDigits(absentStudents.length)} دانش‌آموز
@@ -691,8 +660,8 @@ function AdminSmsPanel() {
                         <>
                           <strong>جلسه‌ای برای این تاریخ ثبت نشده است.</strong>
                           <span>
-                            برای مشاهده غایبین، کلاسی را انتخاب کنید که در
-                            تاریخ انتخاب‌شده جلسه داشته باشد.
+                            برای مشاهده غایبین، کلاسی را انتخاب کنید که در تاریخ
+                            انتخاب‌شده جلسه داشته باشد.
                           </span>
                         </>
                       )}
