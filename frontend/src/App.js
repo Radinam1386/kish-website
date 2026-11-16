@@ -21,6 +21,7 @@ import StudentExams from "./pages/StudentExams";
 import StudentExam from "./pages/StudentExam";
 import StudentExamResult from "./pages/StudentExamResult";
 import StudentPaymentResult from "./pages/StudentPaymentResult";
+import StudentOnlineClasses from "./pages/StudentOnlineClasses";
 
 import TeacherPanel from "./pages/TeacherPanel";
 import TeacherExams from "./pages/TeacherExams";
@@ -145,6 +146,11 @@ function App() {
           <Route path="/panel/student/tuition" element={<StudentTuition />} />
 
           <Route path="/panel/student/exams" element={<StudentExams />} />
+
+          <Route
+            path="/panel/student/online-classes"
+            element={<StudentOnlineClasses />}
+          />
 
           <Route path="/panel/student/exam/:examId" element={<StudentExam />} />
 
@@ -372,7 +378,6 @@ function App() {
             path="/panel/admin/announcements"
             element={<AdminAnnouncements />}
           />
-          
         </Route>
 
         {/* 404 */}
